@@ -2,17 +2,18 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/authorization.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { deleteExistingVendor, getAllActiveVendors, getAllPendingVendors, getRejectedVendors, verifyVendorStatus } from "../controllers/vendor.controller.js";
+import {getVendorDetails, updateVendorDetails, getVendorAnalytics, getVendorSoldProducts} from "../controllers/vendor.controller.js"
 import { 
     createProductForVendor, 
     deleteProductByAdmin, 
     deleteUser, 
-    deleteVendorAndProducts, 
     getAllUsers, 
     toggleProductStatusByAdmin 
 } from "../controllers/admin.Controllers.js";
 
 const router = Router()
+
+/*
 
 router.route("/pending").get(
     verifyJWT,
@@ -44,15 +45,11 @@ router.route("/delete/:vendorId").delete(
     deleteExistingVendor
 )
 
+*/
 router.route("/delete-user/:userId").delete(
     verifyJWT,
     authorizeRoles("admin"),
     deleteUser
-)
-router.route("/delete-vendor/:vendorId").delete(
-    verifyJWT,
-    authorizeRoles("admin"),
-    deleteVendorAndProducts
 )
 router.route("/get-all-users").get(
     verifyJWT,
@@ -87,6 +84,11 @@ router.route("/products/:productId/status").patch(
     authorizeRoles("admin"),
     toggleProductStatusByAdmin
 )
+
+router.route("/profile").get(verifyJWT, authorizeRoles("admin"), getVendorDetails)
+router.route("/update-details").patch(verifyJWT, authorizeRoles("admin"), updateVendorDetails)
+router.route("/analytics").get(verifyJWT, authorizeRoles("admin"), getVendorAnalytics);
+router.route("/sold-items").get(verifyJWT, authorizeRoles("admin"), getVendorSoldProducts);
 
 
 export default router

@@ -6,7 +6,6 @@ import { ApiError } from "./utils/ApiError.js"
 //router imports begin here
 import userRouter from "./routes/user.routes.js"
 import addressRouter from "./routes/address.routes.js"
-import vendorRouter from "./routes/vendor.routes.js"
 import adminRouter from "./routes/admin.routes.js"
 import categoryRouter from "./routes/category.routes.js"
 import productRouter from "./routes/product.routes.js"
@@ -29,7 +28,6 @@ app.use(cors({
 // Routes declaration starts here
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/address",addressRouter)
-app.use("/api/v1/vendor", vendorRouter)
 app.use("/api/v1/admin", adminRouter)
 app.use("/api/v1/category", categoryRouter)
 app.use("/api/v1/product", productRouter)
