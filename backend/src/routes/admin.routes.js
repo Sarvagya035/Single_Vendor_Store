@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/authorization.middleware.js";
-import { upload } from "../middlewares/multer.middleware.js";
 import {getVendorDetails, updateVendorDetails, getVendorAnalytics, getVendorSoldProducts} from "../controllers/vendor.controller.js"
 import {  
     deleteProductByAdmin, 
