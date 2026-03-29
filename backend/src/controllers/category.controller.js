@@ -84,7 +84,7 @@ const getAllCategoriesForLandingPage = asyncHandler(async (req, res) => {
     );
 });
 
-// 3. Get Direct Sub-Categories (Vendor/Public - for filters)
+// 3. Get Direct Sub-Categories (Public - for filters)
 
 const getSubCategories = asyncHandler(async (req, res) => {
     const { parentId } = req.params;

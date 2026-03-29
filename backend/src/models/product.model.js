@@ -20,12 +20,6 @@ const productSchema = new Schema({
         default: "Generic"
     },
 
-    vendor: { 
-        type: Schema.Types.ObjectId, 
-        ref: "Vendor", 
-        required: true 
-    },
-
     category: { 
         type: Schema.Types.ObjectId, 
         ref: "Category", 

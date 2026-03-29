@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { 
-    addVariant, 
+    addVariant,
     createProduct, 
     deleteProduct, 
     deleteVariant, 
     getAllProducts, 
     getLandingPageProducts, 
     getProductById, 
-    getVendorProducts, 
+    getAllProductsAdmin, 
+    adjustVariantStock,
     restockVariant, 
     searchProductsDeep, 
     updateProductDetails, 
@@ -22,7 +23,7 @@ const router = Router();
 // Route to create a product
 router.route("/add-product").post(
     verifyJWT, 
-    authorizeRoles("vendor", "admin"),
+    authorizeRoles("admin"),
     upload.fields([
         { 
             name: "mainImages", 
@@ -38,44 +39,50 @@ router.route("/add-product").post(
 
 router.route("/add-variant/:productId").post(
     verifyJWT,
-    authorizeRoles("vendor"),
+    authorizeRoles("admin"),
     upload.single("variantImage"),
     addVariant
 )
 
-router.route("/my-products").get(
+router.route("/admin-products").get(
     verifyJWT, 
-    authorizeRoles("vendor"), 
-    getVendorProducts
+    authorizeRoles("admin"), 
+    getAllProductsAdmin
 );
 
 router.route("/delete-product/:productId").delete(
     verifyJWT, 
-    authorizeRoles("vendor"), 
+    authorizeRoles("admin"),
     deleteProduct
 );
 
 router.route("/update-product/:productId").patch(
     verifyJWT,
-    authorizeRoles("vendor", "admin"), 
+    authorizeRoles("admin"), 
     updateProductDetails
 );
 
 router.route("/restock-variant/:productId/:variantId").patch(
     verifyJWT,
-    authorizeRoles("vendor"),
+    authorizeRoles("admin"),
     restockVariant
+)
+
+router.route("/adjust-variant-stock/:productId/:variantId").patch(
+    verifyJWT,
+    authorizeRoles("admin"),
+    adjustVariantStock
 )
 
 router.route("/delete-variant/:productId/:variantId").delete(
     verifyJWT,
-    authorizeRoles("vendor"),
+    authorizeRoles("admin"),
     deleteVariant
 )
 
 router.route("/update-variant-discount/:productId/:variantId").patch(
     verifyJWT,
-    authorizeRoles("vendor"),
+    authorizeRoles("admin"),
     updateVariantDiscount
 )
 

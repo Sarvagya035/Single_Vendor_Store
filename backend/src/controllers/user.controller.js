@@ -40,11 +40,16 @@ const registerUser = asyncHandler(async (req, res) =>{
     // return response
 
     const {username, password, email, phone} = req.body
+    const normalizedPhone = String(phone || '').replace(/\D/g, '');
 
     if(
-        [username, password, email, phone].some((element) => !element || element?.trim() === "" )
+        [username, password, email].some((element) => !element || element?.trim() === "" )
     ){
         throw new ApiError(400, "All fields are required");
+    }
+
+    if (normalizedPhone.length < 10) {
+        throw new ApiError(400, "Phone number must be at least 10 digits");
     }
 
     const existingUser = await User.findOne({email})
@@ -56,7 +61,7 @@ const registerUser = asyncHandler(async (req, res) =>{
     const user = await User.create({
         username,
         email,
-        phone,
+        phone: normalizedPhone,
         password
     })
 
@@ -191,7 +196,13 @@ const updateUserDetails = asyncHandler(async(req, res) =>{
 
     const updatedUser = {}
     if(username) updatedUser.username = username
-    if(phone) updatedUser.phone = phone
+    if(phone) {
+        const normalizedPhone = String(phone || '').replace(/\D/g, '');
+        if (normalizedPhone.length < 10) {
+            throw new ApiError(400, "Phone number must be at least 10 digits");
+        }
+        updatedUser.phone = normalizedPhone;
+    }
 
     if(Object.keys(updatedUser).length == 0){
         throw new ApiError(400, "At least one field is required to update")

@@ -23,11 +23,6 @@ const orderSchema = new Schema({
             quantity: { type: Number, required: true },
             price: { type: Number, required: true }, // Price at time of purchase
             variantImage: { type: String },
-            vendor: {
-                type: Schema.Types.ObjectId,
-                ref: "Vendor",
-                required: true
-            },
             sku: String,
             orderItemStatus: {
                 type: String,

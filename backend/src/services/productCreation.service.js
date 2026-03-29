@@ -85,17 +85,8 @@ export const createProductRecord = async ({
     variantOptions,
     mainImages,
     variantImages = [],
-    vendorId,
     isActive = true
 }) => {
-    if (!vendorId) {
-        throw new ApiError(400, "vendorId is required");
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(vendorId)) {
-        throw new ApiError(400, "Invalid vendor ID");
-    }
-
     if (!mongoose.Types.ObjectId.isValid(category)) {
         throw new ApiError(400, "Invalid category ID");
     }
@@ -159,7 +150,6 @@ export const createProductRecord = async ({
         productName,
         productDescription,
         brand,
-        vendor: vendorId,
         category,
         mainImages: mainImageUrls,
         variantOptions: parsedOptions,

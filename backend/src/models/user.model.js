@@ -27,7 +27,14 @@ const userSchema = new Schema({
         type: String,
         trim: true,
         unique: true,
-        sparse: true
+        sparse: true,
+        validate: {
+            validator: function (value) {
+                if (!value) return true;
+                return String(value).replace(/\D/g, '').length >= 10;
+            },
+            message: "Phone number must be at least 10 digits"
+        }
     },
 
     password: {
@@ -38,7 +45,7 @@ const userSchema = new Schema({
 
     role: {
         type: [String],
-        enum: ["customer", "vendor", "admin"],
+        enum: ["customer", "admin"],
         default: ["customer"]
     },
 

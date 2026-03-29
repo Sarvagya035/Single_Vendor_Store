@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { Product } from "../models/product.model.js";
 import { Category } from "../models/category.model.js";
-import { Vendor } from "../models/vendor.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -20,13 +19,7 @@ const createProduct = asyncHandler(async (req, res) => {
     const categoryExists = await Category.findById(category);
     if (!categoryExists) throw new ApiError(404, "Category not found");
 
-    // 4. Check if Vendor is approved (Using req.user from verifyJWT)
-    const vendor = await Vendor.findOne({ user: req.user._id });
-    if (!vendor || vendor.verificationStatus !== "approved") {
-        throw new ApiError(403, "Only approved vendors can create products");
-    }
-
-    // 5. Handle mainImages Upload (Array)
+    // 4. Handle mainImages Upload (Array)
     const mainImageFiles = req.files?.mainImages;
     if (!mainImageFiles || mainImageFiles.length === 0) {
         throw new ApiError(400, "At least one main product image is required");
@@ -39,13 +32,13 @@ const createProduct = asyncHandler(async (req, res) => {
         })
     )).filter(url => url != null)
 
-    // 6. Parse and Process Variants
+    // 5. Parse and Process Variants
     // We expect variants as a JSON string from frontend/Postman
 
     let parsedVariants = JSON.parse(variants);
     let parsedOptions = JSON.parse(variantOptions);
 
-    // 7. Handle Variant Images (Mapping them to the correct variant)
+    // 6. Handle Variant Images (Mapping them to the correct variant)
     // Multer gives us an array of variantImages in req.files.variantImages
 
     const variantImageFiles = req.files?.variantImages || [];
@@ -85,12 +78,11 @@ const createProduct = asyncHandler(async (req, res) => {
         return variant;
     });
 
-    // 8. Create Product
+    // 7. Create Product
     const product = await Product.create({
         productName,
         productDescription,
         brand: brand || "Generic",
-        vendor: vendor._id,
         category,
         mainImages: mainImageUrls,
         variantOptions: parsedOptions,
@@ -102,20 +94,12 @@ const createProduct = asyncHandler(async (req, res) => {
     );
 });
 
-const getVendorProducts = asyncHandler(async (req, res) => {
-    const vendor = await Vendor.findOne({ user: req.user._id });
-    
-    if (!vendor) {
-        throw new ApiError(404, "Vendor profile not found");
-    }
-
+const getAllProductsAdmin = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     const myProducts = Product.aggregate([
         {
-            $match: {
-                vendor: new mongoose.Types.ObjectId(vendor._id) 
-            }
+            $match: {}
         },
         {
             $sort: { createdAt: -1 } 
@@ -141,7 +125,7 @@ const getVendorProducts = asyncHandler(async (req, res) => {
     const products = await Product.aggregatePaginate(myProducts, options);
 
     return res.status(200).json(
-        new ApiResponse(200, products, "Vendor products fetched successfully")
+        new ApiResponse(200, products, "Products fetched successfully")
     );
 });
 
@@ -151,10 +135,6 @@ const deleteProduct = asyncHandler(async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) throw new ApiError(404, "Product not found");
 
-    const vendor = await Vendor.findOne({ user: req.user._id });
-    if (product.vendor.toString() !== vendor._id.toString()) {
-        throw new ApiError(403, "You are not authorized to delete this product");
-    }
     // 4. Delete from DB
     await Product.findByIdAndDelete(productId);
 
@@ -180,10 +160,7 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     const isAdmin = roles.some((role) => String(role).toLowerCase() === "admin");
 
     if (!isAdmin) {
-        const vendor = await Vendor.findOne({ user: req.user._id });
-        if (!vendor || product.vendor.toString() !== vendor._id.toString()) {
-            throw new ApiError(403, "Unauthorized: You don't own this product");
-        }
+        throw new ApiError(403, "Unauthorized: Admin access required");
     }
 
     if (productName) product.productName = productName.trim();
@@ -339,9 +316,7 @@ const addVariant = asyncHandler(async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) throw new ApiError(404, "Product not found");
 
-    // if (product.vendor.toString() !== req.user._id.toString()) {
-    //    throw new ApiError(403, "You are not authorized to add variants to this product");
-    // }
+    // Admin owns the catalog in single-store-owner mode, so no per-seller ownership check is needed here.
     // 1. Parse Attributes
     const parsedAttributes = typeof attributes === 'string' ? JSON.parse(attributes) : attributes;
     
@@ -423,6 +398,40 @@ const deleteVariant = asyncHandler(async (req, res) => {
     );
 });
 
+const adjustVariantStock = asyncHandler(async (req, res) => {
+    const { productId, variantId } = req.params;
+    const { stockDelta } = req.body;
+
+    const delta = Number(stockDelta);
+    if (!Number.isFinite(delta) || delta === 0) {
+        throw new ApiError(400, "Stock adjustment must be a non-zero number");
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) throw new ApiError(404, "Product not found");
+
+    const variant = product.variants.id(variantId);
+    if (!variant) throw new ApiError(404, "Variant not found");
+
+    const nextStock = Number(variant.productStock || 0) + delta;
+    if (nextStock < 0) {
+        throw new ApiError(400, "Stock cannot go below zero");
+    }
+
+    variant.productStock = nextStock;
+    await product.save();
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            product,
+            delta > 0
+                ? `Restocked ${delta} units successfully`
+                : `Reduced stock by ${Math.abs(delta)} units successfully`
+        )
+    );
+});
+
 const getProductById = asyncHandler(async (req, res) => {
     const { productId } = req.params;
 
@@ -431,8 +440,7 @@ const getProductById = asyncHandler(async (req, res) => {
     }
 
     const product = await Product.findById(productId)
-        .populate("category", "name")
-        .populate("vendor", "shopName vendorLogo vendorDescription");
+        .populate("category", "name");
 
     if (!product) {
         throw new ApiError(404, "Product not found");
@@ -447,7 +455,6 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
     const products = await Product.find({})
         .populate("category", "name") 
-        .populate("vendor", "shopName vendorLogo") 
         .sort("-createdAt"); 
 
     if (!products || products.length === 0) {
@@ -512,7 +519,7 @@ const getLandingPageProducts = asyncHandler(async (req, res) => {
 
 export { 
     createProduct, 
-    getVendorProducts, 
+    getAllProductsAdmin, 
     deleteProduct, 
     updateProductDetails,
     searchProductsDeep,
@@ -520,6 +527,7 @@ export {
     addVariant,
     updateVariantDiscount,
     deleteVariant,
+    adjustVariantStock,
     getProductById,
     getAllProducts,
     getLandingPageProducts,

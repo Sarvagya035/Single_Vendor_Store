@@ -5,7 +5,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { razorpayInstance } from "../utils/razorpay.js";
 import { Cart } from "../models/cart.model.js";
-import { Vendor } from "../models/vendor.model.js";
 import crypto from "crypto";
 
 const cloneOrderWithItems = (orderDoc, filteredItems) => {
@@ -30,6 +29,23 @@ const calculateOrderStatusFromItems = (items = []) => {
     }
 
     return "Processing";
+};
+
+const restoreInventoryForOrder = async (order) => {
+    if (!order || order.paymentInfo?.status !== "Paid") {
+        return;
+    }
+
+    if (order.orderStatus === "Delivered" || order.orderStatus === "Cancelled") {
+        return;
+    }
+
+    for (const item of order.orderItems || []) {
+        await Product.updateOne(
+            { _id: item.product, "variants._id": item.variantId },
+            { $inc: { "variants.$.productStock": Number(item.quantity || 0) } }
+        );
+    }
 };
 
 const createOrder = asyncHandler(async (req, res) => {
@@ -60,7 +76,6 @@ const createOrder = asyncHandler(async (req, res) => {
             name: product.productName,
             quantity: item.quantity,
             price: price,
-            vendor: product.vendor
         });
     }
 
@@ -147,18 +162,11 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     const { orderId } = req.params;
     const { status, orderItemId } = req.body; // e.g., "Shipped", "Delivered", "Cancelled"
 
-    const vendor = await Vendor.findOne({ user: req.user._id });
-    if (!vendor) throw new ApiError(404, "Vendor profile not found");
-
     const order = await Order.findById(orderId);
     if (!order) throw new ApiError(404, "Order not found");
 
     const orderItem = order.orderItems.id(orderItemId);
     if (!orderItem) throw new ApiError(404, "Order item not found");
-
-    if (orderItem.vendor?.toString() !== vendor._id.toString()) {
-        throw new ApiError(403, "Unauthorized to update this order item");
-    }
 
     if (orderItem.orderItemStatus === "Delivered") {
         throw new ApiError(400, "Order item is already delivered");
@@ -174,14 +182,10 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
     await order.save();
 
-    const filteredItems = order.orderItems.filter(
-        (item) => item.vendor?.toString() === vendor._id.toString()
-    );
-
     return res.status(200).json(
         new ApiResponse(
             200,
-            cloneOrderWithItems(order, filteredItems),
+            order,
             `Order item status updated to ${status}`
         )
     );
@@ -218,22 +222,6 @@ const getOrderDetails = asyncHandler(async (req, res) => {
         );
     }
 
-    if (userRoles.includes("vendor")) {
-        const vendor = await Vendor.findOne({ user: req.user._id });
-
-        if (vendor) {
-            const vendorItems = order.orderItems.filter(
-                (item) => item.vendor?.toString() === vendor._id.toString()
-            );
-
-            if (vendorItems.length) {
-                return res.status(200).json(
-                    new ApiResponse(200, cloneOrderWithItems(order, vendorItems), "Order details fetched")
-                );
-            }
-        }
-    }
-
     throw new ApiError(403, "Unauthorized access to this order");
 
 });
@@ -264,39 +252,6 @@ const cancelOrder = asyncHandler(async (req, res) => {
     );
 });
 
-// Get orders belonging to a specific Vendor
-const getVendorOrders = asyncHandler(async (req, res) => {
-    const vendor = await Vendor.findOne({ user: req.user._id });
-
-    if (!vendor) {
-        throw new ApiError(404, "Vendor profile not found");
-    }
-
-    const orders = await Order.find({
-        "orderItems.vendor": vendor._id
-    })
-        .populate("user", "fullName email")
-        .sort("-createdAt");
-
-    const vendorOrders = orders
-        .map((order) => {
-            const filteredItems = order.orderItems.filter(
-                (item) => item.vendor?.toString() === vendor._id.toString()
-            );
-
-            if (!filteredItems.length) {
-                return null;
-            }
-
-            return cloneOrderWithItems(order, filteredItems);
-        })
-        .filter(Boolean);
-
-    return res.status(200).json(
-        new ApiResponse(200, vendorOrders, "Vendor orders fetched successfully")
-    );
-});
-
 // Get every single order (For Admin Dashboard)
 const getAllOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find().populate("user", "fullName email").sort("-createdAt");
@@ -311,6 +266,22 @@ const getAllOrders = asyncHandler(async (req, res) => {
     );
 });
 
+const deleteOrderByAdmin = asyncHandler(async (req, res) => {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+        throw new ApiError(404, "Order not found");
+    }
+
+    await restoreInventoryForOrder(order);
+    await Order.findByIdAndDelete(orderId);
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Order deleted successfully")
+    );
+});
+
 export {
     createOrder,
     verifyPayment,
@@ -318,7 +289,7 @@ export {
     getMyOrders,
     getOrderDetails,
     cancelOrder,
-    getVendorOrders,
     getAllOrders,
+    deleteOrderByAdmin,
     
 }

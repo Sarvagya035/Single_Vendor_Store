@@ -2,7 +2,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {User} from "../models/user.model.js"
-import {Vendor} from "../models/vendor.model.js"
 import {Product} from "../models/product.model.js"
 import { createProductRecord } from "../services/productCreation.service.js";
 
@@ -36,28 +35,6 @@ const deleteUser = asyncHandler(async (req, res) => {
     );
 });
 
-const deleteVendorAndProducts = asyncHandler(async (req, res) => {
-    const { vendorId } = req.params;
-
-    const vendor = await Vendor.findById(vendorId);
-    if (!vendor) throw new ApiError(404, "Vendor not found");
-
-    // 1. Delete all products associated with this vendor
-    await Product.deleteMany({ vendor: vendorId });
-
-    // 2. Delete the Vendor Profile
-    await Vendor.findByIdAndDelete(vendorId);
-
-    // 3. Optional: Update User Role (Vendor role hata dena)
-    await User.findByIdAndUpdate(vendor.user, {
-        $pull: { role: "vendor" } 
-    });
-
-    return res.status(200).json(
-        new ApiResponse(200, null, "Vendor and all their products have been removed")
-    );
-});
-
 const getAllUsers = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -88,35 +65,6 @@ const getAllUsers = asyncHandler(async (req, res) => {
     );
 });
 
-const createProductForVendor = asyncHandler(async (req, res) => {
-    const {
-        vendorId,
-        isActive,
-        ...productData
-    } = req.body;
-
-    if (!vendorId) {
-        throw new ApiError(400, "vendorId is required");
-    }
-
-    const vendor = await Vendor.findById(vendorId);
-    if (!vendor) throw new ApiError(404, "Vendor not found");
-    if (vendor.verificationStatus !== "approved") {
-        throw new ApiError(403, "Products can only be assigned to approved vendors");
-    }
-
-    const product = await createProductRecord({
-        ...productData,
-        vendorId: vendor._id,
-        mainImages: req.files?.mainImages || [],
-        variantImages: req.files?.variantImages || [],
-        isActive: normalizeBoolean(isActive, true)
-    });
-
-    return res.status(201).json(
-        new ApiResponse(201, product, "Product created for vendor successfully")
-    );
-});
 
 const deleteProductByAdmin = asyncHandler(async (req, res) => {
     const { productId } = req.params;
@@ -153,9 +101,7 @@ const toggleProductStatusByAdmin = asyncHandler(async (req, res) => {
 
 export {
     deleteUser,
-    deleteVendorAndProducts,
     getAllUsers,
-    createProductForVendor,
     deleteProductByAdmin,
     toggleProductStatusByAdmin
 }
