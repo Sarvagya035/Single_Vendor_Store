@@ -2,8 +2,7 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/authorization.middleware.js";
 import {
-    getVendorDetails, 
-    updateVendorDetails, 
+    getVendorDetails,  
     getVendorAnalytics, 
     getVendorSoldProducts, 
     setupInitialAdminAndStore
@@ -55,12 +54,12 @@ router.route("/delete-user/:userId").delete(
     verifyJWT,
     authorizeRoles("admin"),
     deleteUser
-)
+) //workin nicely
 router.route("/get-all-users").get(
     verifyJWT,
     authorizeRoles("admin"),
     getAllUsers
-)
+) //working nicely
 
 router.route("/products/:productId").delete(
     verifyJWT,
@@ -74,12 +73,11 @@ router.route("/products/:productId/status").patch(
     toggleProductStatusByAdmin
 )
 
-router.route("/profile").get(verifyJWT, authorizeRoles("admin"), getVendorDetails)
-router.route("/update-details").patch(verifyJWT, authorizeRoles("admin"), updateVendorDetails)
-router.route("/analytics").get(verifyJWT, authorizeRoles("admin"), getVendorAnalytics);
-router.route("/sold-items").get(verifyJWT, authorizeRoles("admin"), getVendorSoldProducts);
+router.route("/profile").get(verifyJWT, authorizeRoles("admin"), getVendorDetails) //working nicely
+router.route("/analytics").get(verifyJWT, authorizeRoles("admin"), getVendorAnalytics); //partially tested without products working
+router.route("/sold-items").get(verifyJWT, authorizeRoles("admin"), getVendorSoldProducts); //partially tested without products working
 
-router.route("/initial-setup-129986", upload.single("vendorLogo"), setupInitialAdminAndStore)
+router.route("/initial-setup-129986").post(upload.single("vendorLogo"), setupInitialAdminAndStore) //working nicely
 
 
 export default router

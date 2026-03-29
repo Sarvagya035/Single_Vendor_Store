@@ -9,7 +9,7 @@ import { Order } from "../models/order.model.js";
 const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
     const { 
         // Admin Details
-        name, email, password, secretKey,
+        username, email, password, secretKey, phone,
         // Store Details
         shopName, vendorAddress, vendorDescription, gstNumber,
         // Bank Details
@@ -27,7 +27,7 @@ const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
     }
 
     const requiredFields = [
-        name, email, password, 
+        username, email, password, phone,
         shopName, vendorAddress, vendorDescription, gstNumber, 
         accountHolderName, accountNumber, ifscCode, bankName
     ];
@@ -48,10 +48,11 @@ const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
     }
 
     const user = await User.create({
-        name,
+        username,
         email,
-        password, 
-        roles: ["customer", "admin"] 
+        password,
+        phone, 
+        role: ["customer", "admin"] 
     });
 
     const store = await Vendor.create({
@@ -368,9 +369,26 @@ const getVendorSoldProducts = asyncHandler(async (req, res) => {
     );
 });
 
+const getVendorDetails = asyncHandler(async (req, res)=>{
+
+    const userId = req.user?._id;
+
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    const vendor = await Vendor.findOne({ user: userId }).populate("user", "username email");
+    if (!vendor) {
+        throw new ApiError(404, "Store profile not found for this user");
+    }
+    return res
+        .status(200)
+        .json(new ApiResponse(200, vendor, "Store details fetched successfully"));
+})
+
 export {
     // registerVendor,
-    // getVendorDetails,
+    getVendorDetails,
     // updateVendorDetails,
     updateVendorlogo,
     verifyVendorStatus,
