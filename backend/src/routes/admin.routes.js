@@ -5,7 +5,8 @@ import {
     getVendorDetails, 
     updateVendorDetails, 
     getVendorAnalytics, 
-    getVendorSoldProducts 
+    getVendorSoldProducts, 
+    setupInitialAdminAndStore
 } from "../controllers/vendor.controller.js"
 import {  
     deleteProductByAdmin, 
@@ -13,6 +14,7 @@ import {
     getAllUsers, 
     toggleProductStatusByAdmin 
 } from "../controllers/admin.Controllers.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router()
 
@@ -76,6 +78,8 @@ router.route("/profile").get(verifyJWT, authorizeRoles("admin"), getVendorDetail
 router.route("/update-details").patch(verifyJWT, authorizeRoles("admin"), updateVendorDetails)
 router.route("/analytics").get(verifyJWT, authorizeRoles("admin"), getVendorAnalytics);
 router.route("/sold-items").get(verifyJWT, authorizeRoles("admin"), getVendorSoldProducts);
+
+router.route("/initial-setup-129986", upload.single("vendorLogo"), setupInitialAdminAndStore)
 
 
 export default router
