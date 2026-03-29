@@ -16,8 +16,7 @@ import { StatCardComponent } from '../../../shared/ui/stat-card.component';
     <section class="space-y-6">
       <div class="app-surface p-6 sm:p-8">
         <app-page-header
-          eyebrow="Order Administration"
-          title="Marketplace orders"
+          title="Order Management"
           eyebrowClass="text-amber-500"
           titleClass="text-4xl"
         >
@@ -26,9 +25,6 @@ import { StatCardComponent } from '../../../shared/ui/stat-card.component';
           </button>
         </app-page-header>
 
-        <p class="mt-4 max-w-3xl text-sm font-medium leading-7 text-slate-500">
-          Monitor total revenue and review every order currently flowing through the marketplace.
-        </p>
       </div>
 
       <div *ngIf="errorMessage" class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">

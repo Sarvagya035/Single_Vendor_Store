@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/authorization.middleware.js";
-import { deleteUser, getAllUsers } from "../controllers/admin.Controllers.js";
+import { deleteUser, getAllUsers, getDashboardAnalytics } from "../controllers/admin.Controllers.js";
 import { deleteProduct, toggleProductStatusByAdmin } from "../controllers/product.controller.js";
 
 const router = Router()
@@ -15,6 +15,12 @@ router.route("/get-all-users").get(
     verifyJWT,
     authorizeRoles("admin"),
     getAllUsers
+)
+
+router.route("/dashboard-analytics").get(
+    verifyJWT,
+    authorizeRoles("admin"),
+    getDashboardAnalytics
 )
 
 router.route("/products/:productId").delete(

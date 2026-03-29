@@ -71,3 +71,35 @@ export interface AdminProductRecord {
   basePrice?: number;
   createdAt?: string;
 }
+
+export interface DashboardChartSeries {
+  labels: string[];
+  data: number[];
+}
+
+export interface DashboardAnalyticsSummary {
+  totalRevenue: number;
+  totalOrders: number;
+  pendingOrders: number;
+  deliveredOrders: number;
+  cancelledOrders: number;
+  totalCustomers: number;
+  newCustomers: number;
+  returningCustomers: number;
+  revenueLast30: number;
+  revenuePrevious30: number;
+  ordersLast30: number;
+  ordersPrevious30: number;
+  customersLast30: number;
+  customersPrevious30: number;
+}
+
+export interface DashboardAnalyticsResponse {
+  summary: DashboardAnalyticsSummary;
+  charts: {
+    salesOverview: DashboardChartSeries;
+    revenueTrend: DashboardChartSeries;
+    ordersTrend: DashboardChartSeries;
+    customerGrowth: DashboardChartSeries;
+  };
+}
