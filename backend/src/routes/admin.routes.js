@@ -3,8 +3,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/authorization.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import {getVendorDetails, updateVendorDetails, getVendorAnalytics, getVendorSoldProducts} from "../controllers/vendor.controller.js"
-import { 
-    createProductForVendor, 
+import {  
     deleteProductByAdmin, 
     deleteUser, 
     getAllUsers, 
@@ -55,22 +54,6 @@ router.route("/get-all-users").get(
     verifyJWT,
     authorizeRoles("admin"),
     getAllUsers
-)
-
-router.route("/products").post(
-    verifyJWT,
-    authorizeRoles("admin"),
-    upload.fields([
-        {
-            name: "mainImages",
-            maxCount: 5
-        },
-        {
-            name: "variantImages",
-            maxCount: 10
-        }
-    ]),
-    createProductForVendor
 )
 
 router.route("/products/:productId").delete(
