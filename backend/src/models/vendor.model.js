@@ -34,16 +34,7 @@ const vendorSchema = new Schema(
         },
         isVerified: {
             type: Boolean,
-            default: false
-        },
-        verificationStatus: {
-            type: String,
-            enum: ["pending", "approved", "rejected"],
-            default: "pending"
-        },
-        adminRemarks: {
-            type: String,
-            default: ""
+            default: true
         },
         bankDetails: {
             accountHolderName: {

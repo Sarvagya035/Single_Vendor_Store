@@ -6,130 +6,77 @@ import { Vendor } from "../models/vendor.model.js"
 import { User } from "../models/user.model.js"
 import { Order } from "../models/order.model.js";
 
-const registerVendor = asyncHandler(async (req, res) => {
-    const userId = req.user?._id;
-
-    if (!userId) {
-        throw new ApiError(401, "Unauthorized request");
-    }
-
-    const existingApplication = await Vendor.findOne({ user: userId });
-    if (existingApplication && existingApplication.verificationStatus !== "rejected") {
-        throw new ApiError(400, "You have an active or approved vendor registration");
-    }
-
-    // 2. Destructure fields including bankDetails from req.body
-    // Frontend should send bankDetails as an object or flat fields
+const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
     const { 
-        shopName, 
-        vendorAddress, 
-        vendorDescription, 
-        gstNumber,
-        accountHolderName,
-        accountNumber,
-        ifscCode,
-        bankName,
-        upiId 
+        // Admin Details
+        name, email, password, secretKey,
+        // Store Details
+        shopName, vendorAddress, vendorDescription, gstNumber,
+        // Bank Details
+        accountHolderName, accountNumber, ifscCode, bankName, upiId 
     } = req.body;
 
-    // 3. Validation for all required fields
-    if (
-        [shopName, vendorAddress, vendorDescription, gstNumber, accountHolderName, accountNumber, ifscCode, bankName]
-        .some(field => !field || field.trim() === "")
-    ) {
-        throw new ApiError(400, "All details including primary bank details are required");
+    // 1. Security Check
+    if (secretKey !== process.env.ADMIN_SETUP_SECRET) {
+        throw new ApiError(403, "Invalid Secret Key!");
     }
 
-    // 4. Check for unique GST
-    const existingGst = await Vendor.findOne({ gstNumber: gstNumber.toUpperCase() });
-    if (existingGst) {
-        throw new ApiError(409, "Vendor with this GST already exists");
+    const adminExists = await User.findOne({ roles: "admin" }); 
+    if (adminExists) {
+        throw new ApiError(400, "Admin already exists. Use regular login.");
     }
 
-    // 5. Handle Logo Upload
+    const requiredFields = [
+        name, email, password, 
+        shopName, vendorAddress, vendorDescription, gstNumber, 
+        accountHolderName, accountNumber, ifscCode, bankName
+    ];
+
+    if (requiredFields.some(field => !field || field.trim() === "")) {
+        throw new ApiError(400, "All admin, store, and primary bank details are mandatory");
+    }
+
+    // 4. Handle Logo Upload
     const logoImageLocalPath = req.file?.path;
     if (!logoImageLocalPath) {
-        throw new ApiError(404, "Logo Image is required");
+        throw new ApiError(400, "Store Logo is required");
     }
 
     const logoImage = await uploadOnCloudinary(logoImageLocalPath);
     if (!logoImage) {
-        throw new ApiError(400, "Error uploading Logo Image");
+        throw new ApiError(500, "Failed to upload logo to Cloudinary");
     }
 
-    // 6. Create Vendor with Bank Details
-    const newVendor = await Vendor.create({
+    const user = await User.create({
+        name,
+        email,
+        password, 
+        roles: ["customer", "admin"] 
+    });
+
+    const store = await Vendor.create({
         shopName,
         vendorAddress,
         vendorDescription,
         vendorLogo: logoImage?.url,
-        user: userId,
+        user: user._id,
         gstNumber: gstNumber.toUpperCase(),
-        // Mapping flat fields to the nested bankDetails object in the model
+        verificationStatus: "approved",
         bankDetails: {
             accountHolderName,
             accountNumber,
             ifscCode,
             bankName,
-            upiId: upiId || "" // UPI is optional in our model
+            upiId: upiId || ""
         }
     });
 
-    if (!newVendor) {
-        throw new ApiError(500, "Something went wrong while creating vendor profile");
-    }
+    const createdUser = await User.findById(user._id).select("-password");
 
-    return res.status(201).json(
-        new ApiResponse(201, newVendor, "Vendor registration submitted successfully")
-    );
+    return res
+        .status(201)
+        .json(new ApiResponse(201, { user: createdUser, store }, "Admin and Store setup successful! Please login to continue."));
 });
-
-const getVendorDetails = asyncHandler(async (req, res)=>{
-
-    const userId = req.user?._id
-    
-    if(!userId){
-        throw new ApiError(401, "User Unauthorized")
-    }
-
-    const vendor = await Vendor.findOne({user: userId});
-
-    if(!vendor){
-        throw new ApiError(404, "Vendor not found")
-    }
-
-    return res.status(200).json(new ApiResponse(
-        200,
-        vendor,
-        "Vendor details fetched successfully"
-    ))
-
-})
-
-const updateVendorDetails = asyncHandler(async (req, res)=>{
-
-    const userId = req.user?._id
-    if(!userId){
-        throw new ApiError(401, "Unauthorized Request")
-    }
-
-    const vendor = await Vendor.findOne({user: userId})
-
-    if(!vendor){
-        throw new ApiError(404, "Vendor not found")
-    }
-
-    const fieldsToUpdate = ["vendorAddress", "vendorDescription"]
-
-    fieldsToUpdate.forEach((field)=>{
-        if(req.body[field] !== undefined){
-            vendor[field] = req.body[field]
-        }
-    })
-
-    await vendor.save()
-    return res.status(200).json(new ApiResponse(200, vendor, "vendor details updated successfully"))
-})
 
 const updateVendorlogo = asyncHandler(async (req, res)=>{
 
@@ -166,41 +113,41 @@ const updateVendorlogo = asyncHandler(async (req, res)=>{
     ))
 })
 
-const updateBankDetails = asyncHandler(async (req, res) => {
-    const { accountHolderName, accountNumber, ifscCode, bankName, upiId } = req.body;
+// const updateBankDetails = asyncHandler(async (req, res) => {
+//     const { accountHolderName, accountNumber, ifscCode, bankName, upiId } = req.body;
 
-    if (
-        [accountHolderName, accountNumber, ifscCode, bankName].some(
-            (field) => !field || field.trim() === ""
-        )
-    ) {
-        throw new ApiError(400, "All primary bank fields are required");
-    }
+//     if (
+//         [accountHolderName, accountNumber, ifscCode, bankName].some(
+//             (field) => !field || field.trim() === ""
+//         )
+//     ) {
+//         throw new ApiError(400, "All primary bank fields are required");
+//     }
 
-    const vendor = await Vendor.findOne({ user: req.user?._id });
+//     const vendor = await Vendor.findOne({ user: req.user?._id });
 
-    if (!vendor) {
-        throw new ApiError(404, "Vendor profile not found");
-    }
+//     if (!vendor) {
+//         throw new ApiError(404, "Vendor profile not found");
+//     }
 
-    vendor.bankDetails = {
-        accountHolderName,
-        accountNumber,
-        ifscCode,
-        bankName,
-        upiId
-    };
+//     vendor.bankDetails = {
+//         accountHolderName,
+//         accountNumber,
+//         ifscCode,
+//         bankName,
+//         upiId
+//     };
 
-    // 4. Reset verification status logic is if bank changes we have to reverify....
-    vendor.verificationStatus = "pending";
-    vendor.isVerified = false;
+//     // 4. Reset verification status logic is if bank changes we have to reverify....
+//     vendor.verificationStatus = "pending";
+//     vendor.isVerified = false;
 
-    await vendor.save();
+//     await vendor.save();
 
-    return res.status(200).json(
-        new ApiResponse(200, vendor, "Bank details updated. Profile sent for re-verification.")
-    );
-});
+//     return res.status(200).json(
+//         new ApiResponse(200, vendor, "Bank details updated. Profile sent for re-verification.")
+//     );
+// });
 
 
 // all venodor functions accessible by admin only. 
@@ -422,17 +369,18 @@ const getVendorSoldProducts = asyncHandler(async (req, res) => {
 });
 
 export {
-    registerVendor,
-    getVendorDetails,
-    updateVendorDetails,
+    // registerVendor,
+    // getVendorDetails,
+    // updateVendorDetails,
     updateVendorlogo,
     verifyVendorStatus,
     getAllPendingVendors,
     getAllActiveVendors,
     getRejectedVendors,
     deleteExistingVendor,
-    updateBankDetails,
+    // updateBankDetails,
     getVendorAnalytics,
-    getVendorSoldProducts
+    getVendorSoldProducts,
+    setupInitialAdminAndStore
 
 }
