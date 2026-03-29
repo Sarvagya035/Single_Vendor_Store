@@ -5,129 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinaryUpload.js";
-
-const createProduct = asyncHandler(async (req, res) => {
-    // 1. Extract basic details
-    const { productName, productDescription, brand, category, variantOptions, variants } = req.body;
-
-    // 2. Validation
-    if ([productName, productDescription, category].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "Required fields are missing");
-    }
-
-    // 3. Check if Category exists
-    const categoryExists = await Category.findById(category);
-    if (!categoryExists) throw new ApiError(404, "Category not found");
-
-    // 4. Handle mainImages Upload (Array)
-    const mainImageFiles = req.files?.mainImages;
-    if (!mainImageFiles || mainImageFiles.length === 0) {
-        throw new ApiError(400, "At least one main product image is required");
-    }
-
-    const mainImageUrls = (await Promise.all(
-        mainImageFiles.map(async (file) => {
-            const uploaded = await uploadOnCloudinary(file.path);
-            return uploaded?.url;
-        })
-    )).filter(url => url != null)
-
-    // 5. Parse and Process Variants
-    // We expect variants as a JSON string from frontend/Postman
-
-    let parsedVariants = JSON.parse(variants);
-    let parsedOptions = JSON.parse(variantOptions);
-
-    // 6. Handle Variant Images (Mapping them to the correct variant)
-    // Multer gives us an array of variantImages in req.files.variantImages
-
-    const variantImageFiles = req.files?.variantImages || [];
-    
-    // We upload them all to Cloudinary first
-
-    const uploadedVariantImages = await Promise.all(
-        variantImageFiles.map(async (file) => {
-            const uploaded = await uploadOnCloudinary(file.path);
-            return {
-                url: uploaded?.url,
-                originalName: file.originalname // We use this to match
-            };
-        })
-    );
-
-    // Map the uploaded URLs back to the specific variants
-    // Convention: Frontend sends 'variantImageIndex' to specify which file belongs to which variant
-
-    const finalVariants = parsedVariants.map((variant, index) => {
-
-        // If the frontend provided a reference to a specific file index
-        if (variant.imageRef !== undefined && uploadedVariantImages[variant.imageRef]) {
-            variant.variantImage = uploadedVariantImages[variant.imageRef].url;
-        }
-
-        if (!variant.sku) {
-            const randomID = Math.floor(1000 + Math.random() * 9000);
-            const cleanName = productName.substring(0, 3).toUpperCase().replace(/\s/g, '');
-            const firstAttr = variant.attributes ? Object.values(variant.attributes)[0] : "VAR";
-            const attrValue = String(firstAttr).substring(0, 3).toUpperCase().replace(/\s/g, '');
-            
-            variant.sku = `${cleanName}-${attrValue}-${randomID}`;
-        } else {
-            variant.sku = variant.sku.trim().toUpperCase();
-        }
-        return variant;
-    });
-
-    // 7. Create Product
-    const product = await Product.create({
-        productName,
-        productDescription,
-        brand: brand || "Generic",
-        category,
-        mainImages: mainImageUrls,
-        variantOptions: parsedOptions,
-        variants: finalVariants
-    });
-
-    return res.status(201).json(
-        new ApiResponse(201, product, "Product created successfully")
-    );
-});
-
-const getAllProductsAdmin = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10 } = req.query;
-
-    const myProducts = Product.aggregate([
-        {
-            $match: {}
-        },
-        {
-            $sort: { createdAt: -1 } 
-        },
-        {
-            
-            $lookup: {
-                from: "categories",
-                localField: "category",
-                foreignField: "_id",
-                as: "categoryDetails"
-            }
-        },
-        { $unwind: "$categoryDetails" }
-    ]);
-
-    const options = {
-        page: parseInt(page, 10),
-        limit: parseInt(limit, 10),
-    };
-
-    // 4. Paginate results
-    const products = await Product.aggregatePaginate(myProducts, options);
-
-    return res.status(200).json(
-        new ApiResponse(200, products, "Products fetched successfully")
-    );
-});
+import { createProductRecord } from "../services/productCreation.service.js";
 
 const deleteProduct = asyncHandler(async (req, res) => {
     const { productId } = req.params;
@@ -156,13 +34,6 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) throw new ApiError(404, "Product not found");
 
-    const roles = Array.isArray(req.user?.role) ? req.user.role : [req.user?.role];
-    const isAdmin = roles.some((role) => String(role).toLowerCase() === "admin");
-
-    if (!isAdmin) {
-        throw new ApiError(403, "Unauthorized: Admin access required");
-    }
-
     if (productName) product.productName = productName.trim();
     if (productDescription) product.productDescription = productDescription.trim();
     if (brand) product.brand = brand.trim();
@@ -181,6 +52,41 @@ const updateProductDetails = asyncHandler(async (req, res) => {
 
     return res.status(200).json(
         new ApiResponse(200, updatedProduct, "Product details updated successfully")
+    );
+});
+
+const createProductByAdmin = asyncHandler(async (req, res) => {
+    const product = await createProductRecord({
+        ...req.body,
+        mainImages: req.files?.mainImages || [],
+        variantImages: req.files?.variantImages || [],
+        isActive: req.body?.isActive
+    });
+
+    return res.status(201).json(
+        new ApiResponse(201, product, "Product created successfully")
+    );
+});
+
+const toggleProductStatusByAdmin = asyncHandler(async (req, res) => {
+    const { productId } = req.params;
+    const { isActive } = req.body;
+
+    if (typeof isActive === "undefined") {
+        throw new ApiError(400, "isActive is required");
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) throw new ApiError(404, "Product not found");
+
+    product.isActive = typeof isActive === "string"
+        ? !["false", "0", "no"].includes(isActive.trim().toLowerCase())
+        : Boolean(isActive);
+
+    const updatedProduct = await product.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new ApiResponse(200, updatedProduct, "Product status updated successfully")
     );
 });
 
@@ -279,28 +185,6 @@ const searchProductsDeep = asyncHandler(async (req, res) => {
 
     return res.status(200).json(
         new ApiResponse(200, result, "Deep search results fetched")
-    );
-});
-
-const restockVariant = asyncHandler(async (req, res) => {
-    const { productId, variantId } = req.params;
-    const { stockToAdd } = req.body; // e.g., 50
-
-    const product = await Product.findById(productId);
-    if (!product) throw new ApiError(404, "Product not found");
-
-    // Find the specific variant in the array
-    const variant = product.variants.id(variantId); 
-    if (!variant) throw new ApiError(404, "Variant not found");
-
-    // Update stock
-    variant.productStock += Number(stockToAdd);
-
-    // Save to trigger middleware (updates isAvailable flag)
-    await product.save();
-
-    return res.status(200).json(
-        new ApiResponse(200, product, `Restocked ${stockToAdd} units successfully`)
     );
 });
 
@@ -518,12 +402,11 @@ const getLandingPageProducts = asyncHandler(async (req, res) => {
 
 
 export { 
-    createProduct, 
-    getAllProductsAdmin, 
+    createProductByAdmin,
+    toggleProductStatusByAdmin,
     deleteProduct, 
     updateProductDetails,
     searchProductsDeep,
-    restockVariant,
     addVariant,
     updateVariantDiscount,
     deleteVariant,

@@ -193,6 +193,7 @@ export class AdminProductDetailPageComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.product = response?.data || null;
+        this.initializeStockAdjustments();
         this.message = '';
       },
       error: (error) => {
@@ -228,10 +229,7 @@ export class AdminProductDetailPageComponent implements OnInit {
 
   stockAmount(variant: CustomerCatalogVariant, index: number): number {
     const key = this.variantKey(variant, index);
-    if (typeof this.stockAdjustments[key] !== 'number' || this.stockAdjustments[key] <= 0) {
-      this.stockAdjustments[key] = 1;
-    }
-    return this.stockAdjustments[key];
+    return this.stockAdjustments[key] ?? 1;
   }
 
   updateStockAmount(variant: CustomerCatalogVariant, index: number, value: number | string): void {
@@ -309,5 +307,13 @@ export class AdminProductDetailPageComponent implements OnInit {
 
   private setBusy(key: string, value: boolean): void {
     this.busyStates[key] = value;
+  }
+
+  private initializeStockAdjustments(): void {
+    this.stockAdjustments = {};
+
+    for (const [index, variant] of (this.product?.variants || []).entries()) {
+      this.stockAdjustments[this.variantKey(variant, index)] = 1;
+    }
   }
 }

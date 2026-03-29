@@ -2,20 +2,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {User} from "../models/user.model.js"
-import {Product} from "../models/product.model.js"
-import { createProductRecord } from "../services/productCreation.service.js";
-
-const normalizeBoolean = (value, fallback = true) => {
-    if (typeof value === "undefined") {
-        return fallback;
-    }
-
-    if (typeof value === "string") {
-        return !["false", "0", "no"].includes(value.trim().toLowerCase());
-    }
-
-    return Boolean(value);
-};
 
 const deleteUser = asyncHandler(async (req, res) => {
     const { userId } = req.params;
@@ -66,42 +52,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 
-const deleteProductByAdmin = asyncHandler(async (req, res) => {
-    const { productId } = req.params;
-
-    const product = await Product.findById(productId);
-    if (!product) throw new ApiError(404, "Product not found");
-
-    await Product.findByIdAndDelete(productId);
-
-    return res.status(200).json(
-        new ApiResponse(200, {}, "Product deleted by admin successfully")
-    );
-});
-
-const toggleProductStatusByAdmin = asyncHandler(async (req, res) => {
-    const { productId } = req.params;
-    const { isActive } = req.body;
-
-    if (typeof isActive === "undefined") {
-        throw new ApiError(400, "isActive is required");
-    }
-
-    const product = await Product.findById(productId);
-    if (!product) throw new ApiError(404, "Product not found");
-
-    product.isActive = normalizeBoolean(isActive, product.isActive);
-
-    const updatedProduct = await product.save({ validateBeforeSave: false });
-
-    return res.status(200).json(
-        new ApiResponse(200, updatedProduct, "Product status updated successfully")
-    );
-});
-
 export {
     deleteUser,
-    getAllUsers,
-    deleteProductByAdmin,
-    toggleProductStatusByAdmin
+    getAllUsers
 }

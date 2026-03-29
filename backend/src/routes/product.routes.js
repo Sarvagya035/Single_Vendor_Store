@@ -1,15 +1,13 @@
 import { Router } from "express";
 import { 
     addVariant,
-    createProduct, 
+    createProductByAdmin,
     deleteProduct, 
     deleteVariant, 
     getAllProducts, 
     getLandingPageProducts, 
     getProductById, 
-    getAllProductsAdmin, 
     adjustVariantStock,
-    restockVariant, 
     searchProductsDeep, 
     updateProductDetails, 
     updateVariantDiscount } from "../controllers/product.controller.js";
@@ -34,7 +32,7 @@ router.route("/add-product").post(
             maxCount: 10 
         }
     ]),
-    createProduct
+    createProductByAdmin
 );
 
 router.route("/add-variant/:productId").post(
@@ -43,12 +41,6 @@ router.route("/add-variant/:productId").post(
     upload.single("variantImage"),
     addVariant
 )
-
-router.route("/admin-products").get(
-    verifyJWT, 
-    authorizeRoles("admin"), 
-    getAllProductsAdmin
-);
 
 router.route("/delete-product/:productId").delete(
     verifyJWT, 
@@ -61,12 +53,6 @@ router.route("/update-product/:productId").patch(
     authorizeRoles("admin"), 
     updateProductDetails
 );
-
-router.route("/restock-variant/:productId/:variantId").patch(
-    verifyJWT,
-    authorizeRoles("admin"),
-    restockVariant
-)
 
 router.route("/adjust-variant-stock/:productId/:variantId").patch(
     verifyJWT,
@@ -90,7 +76,6 @@ router.route("/search").get(searchProductsDeep)
 router.route("/get-landing-page-products").get(getLandingPageProducts)
 
 router.route("/public/get-product-by-id/:productId").get(getProductById)
-router.route("/get-product-by-id/:productId").get(getProductById)
 router.route("/get-all-products").get(getAllProducts)
 
 export default router;

@@ -47,7 +47,7 @@ export class AdminService {
   }
 
   createProduct(data: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/products`, data, { withCredentials: true });
+    return this.http.post(`${this.productUrl}/add-product`, data, { withCredentials: true });
   }
 
   deleteProduct(productId: string): Observable<any> {
