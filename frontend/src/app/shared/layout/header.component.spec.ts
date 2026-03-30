@@ -44,11 +44,11 @@ describe('HeaderComponent', () => {
     expect(component.logoRoute()).toBe('/vendor/dashboard');
   });
 
-  it('routes the logo to admin dashboard for admin users', () => {
+  it('routes the logo to vendor dashboard for admin users', () => {
     const component = createComponent();
     component.user = { role: 'admin' };
 
-    expect(component.logoRoute()).toBe('/admin/dashboard');
+    expect(component.logoRoute()).toBe('/vendor/dashboard');
   });
 
   it('falls back to home for customer users', () => {

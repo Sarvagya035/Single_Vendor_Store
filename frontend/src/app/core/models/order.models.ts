@@ -82,7 +82,7 @@ export interface VerifyPaymentPayload {
   razorpay_signature: string;
 }
 
-export interface AdminOrdersResponse {
+export interface StoreOrdersResponse {
   orders: OrderRecord[];
   totalRevenue: number;
 }

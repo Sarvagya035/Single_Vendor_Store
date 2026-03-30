@@ -20,14 +20,11 @@ import { CustomerVendorProfile } from '../../../core/models/customer.models';
 
         <div class="flex flex-wrap items-center gap-3 lg:justify-end">
           <div class="inline-flex items-center rounded-full bg-slate-100 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-slate-600">
-            {{ isAdmin ? 'Admin Account' : isVendor ? 'Vendor Account' : 'Customer Account' }}
+            {{ isAdmin || isVendor ? 'Store Account' : 'Customer Account' }}
           </div>
 
-          <a *ngIf="isAdmin" routerLink="/admin/dashboard" class="btn-secondary !py-3 border-indigo-100 bg-indigo-50/70 text-indigo-700">
-            Admin Dashboard
-          </a>
-          <a *ngIf="isVendor" routerLink="/vendor/dashboard" class="btn-secondary !py-3 border-emerald-100 bg-emerald-50/70 text-emerald-700">
-            Vendor Dashboard
+          <a *ngIf="isAdmin || isVendor" routerLink="/vendor/dashboard" class="btn-secondary !py-3 border-indigo-100 bg-indigo-50/70 text-indigo-700">
+            Store Dashboard
           </a>
           <div *ngIf="vendorProfile?.verificationStatus === 'pending'" class="flex items-center gap-2 rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-xs font-bold text-amber-700">
             Review Pending

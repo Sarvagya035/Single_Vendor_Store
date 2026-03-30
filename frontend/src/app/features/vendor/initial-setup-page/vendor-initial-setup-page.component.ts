@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { AdminService } from '../../../core/services/admin.service';
+import { VendorService } from '../../../core/services/vendor.service';
 
 @Component({
-  selector: 'app-admin-initial-setup-page',
+  selector: 'app-vendor-initial-setup-page',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
@@ -17,11 +17,11 @@ import { AdminService } from '../../../core/services/admin.service';
               First-time bootstrap
             </p>
             <h1 class="mt-3 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
-              Create the first admin and store
+              Create your store account
             </h1>
             <p class="mt-4 max-w-2xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
-              Use this page once to register the platform owner. It creates the admin account and
-              the first store profile using the existing backend setup endpoint.
+              Use this page once to register the store owner, store profile, and payout details.
+              It uses the existing backend bootstrap endpoint.
             </p>
           </div>
 
@@ -38,8 +38,7 @@ import { AdminService } from '../../../core/services/admin.service';
             Setup completed
           </h2>
           <p class="mx-auto mt-4 max-w-xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
-            The admin account and store profile were created successfully. You can now sign in and
-            open the dashboard.
+            The store account and profile were created successfully. You can now sign in and open the store dashboard.
           </p>
           <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <a routerLink="/login" class="btn-primary !px-8 !py-3">
@@ -55,7 +54,7 @@ import { AdminService } from '../../../core/services/admin.service';
           <section class="space-y-6">
             <div class="glass-card p-6 sm:p-8">
               <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
-                Admin Details
+                Account Details
               </h2>
               <div class="mt-6 grid gap-5 sm:grid-cols-2">
                 <label class="space-y-2">
@@ -65,7 +64,7 @@ import { AdminService } from '../../../core/services/admin.service';
                     required
                     name="username"
                     [(ngModel)]="form.username"
-                    placeholder="Admin name"
+                    placeholder="Store owner name"
                     class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
                   />
                 </label>
@@ -77,7 +76,7 @@ import { AdminService } from '../../../core/services/admin.service';
                     required
                     name="email"
                     [(ngModel)]="form.email"
-                    placeholder="admin@example.com"
+                    placeholder="owner@example.com"
                     class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
                   />
                 </label>
@@ -288,7 +287,7 @@ import { AdminService } from '../../../core/services/admin.service';
                 Setup Secret
               </h2>
               <p class="text-sm font-medium leading-7 text-slate-500">
-                Keep the secret key private. It is required only for the first admin bootstrap.
+                Keep the secret key private. It is required only for the first store bootstrap.
               </p>
             </div>
 
@@ -301,7 +300,7 @@ import { AdminService } from '../../../core/services/admin.service';
               [disabled]="isLoading"
               class="btn-primary !w-full !py-5 text-lg shadow-2xl shadow-indigo-200/60"
             >
-              {{ isLoading ? 'Creating Admin...' : 'Create Admin Account' }}
+              {{ isLoading ? 'Creating Store...' : 'Create Store Account' }}
             </button>
           </aside>
         </form>
@@ -309,7 +308,7 @@ import { AdminService } from '../../../core/services/admin.service';
     </div>
   `,
 })
-export class AdminInitialSetupPageComponent {
+export class VendorInitialSetupPageComponent {
   form = {
     username: '',
     email: '',
@@ -333,9 +332,7 @@ export class AdminInitialSetupPageComponent {
   submitted = false;
   errorMessage = '';
 
-  constructor(
-    private adminService: AdminService
-  ) {}
+  constructor(private vendorService: VendorService) {}
 
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -383,7 +380,7 @@ export class AdminInitialSetupPageComponent {
 
     payload.append('vendorLogo', this.logoFile);
 
-    this.adminService.initialAdminSetup(payload).subscribe({
+    this.vendorService.initialStoreSetup(payload).subscribe({
       next: (res) => {
         this.isLoading = false;
         if (res?.success) {

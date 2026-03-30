@@ -77,8 +77,8 @@ import { AuthService } from '../../core/services/auth.service';
             </p>
             <p class="mt-4 text-xs font-medium text-slate-400">
               First-time setup?
-              <a routerLink="/admin-setup" class="ml-1 font-black uppercase tracking-[0.14em] text-slate-700 hover:text-indigo-600">
-                Create admin store
+              <a routerLink="/vendor/initial-setup" class="ml-1 font-black uppercase tracking-[0.14em] text-slate-700 hover:text-indigo-600">
+                Create vendor store
               </a>
             </p>
           </div>
@@ -114,12 +114,10 @@ export class LoginComponent {
           const user = res.data?.user;
           const roles = Array.isArray(user?.role) ? user.role : [user?.role];
 
-          if (roles.some((role: string) => String(role).toLowerCase() === 'admin')) {
-            this.router.navigate(['/admin/dashboard']);
-            return;
-          }
-
-          if (roles.some((role: string) => String(role).toLowerCase() === 'vendor')) {
+          if (
+            roles.some((role: string) => String(role).toLowerCase() === 'vendor') ||
+            roles.some((role: string) => String(role).toLowerCase() === 'admin')
+          ) {
             this.router.navigate(['/vendor/dashboard']);
             return;
           }

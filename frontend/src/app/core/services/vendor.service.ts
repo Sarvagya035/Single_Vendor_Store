@@ -19,6 +19,10 @@ export class VendorService {
     return this.http.post(`${this.apiUrl}/registerVendor`, data, { withCredentials: true });
   }
 
+  initialStoreSetup(data: FormData): Observable<any> {
+    return this.http.post(`${this.adminUrl}/initial-setup-129986`, data, { withCredentials: true });
+  }
+
   getProfile(): Observable<any> {
     return this.http.get(`${this.adminUrl}/profile`, { withCredentials: true });
   }

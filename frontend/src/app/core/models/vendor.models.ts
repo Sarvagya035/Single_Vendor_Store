@@ -9,6 +9,8 @@ export interface VendorProfile {
   bankDetails?: VendorBankDetails;
 }
 
+export type ToastType = 'success' | 'error';
+
 export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories';
 
 export interface VendorDetailsForm {

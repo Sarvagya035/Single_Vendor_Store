@@ -2,15 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { VendorService } from '../../../core/services/vendor.service';
-import { CategoriesPanelComponent } from '../../admin/categories-panel/categories-panel.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { ToastBannerComponent } from '../../../shared/ui/toast-banner.component';
-import { CategoryRecord, ToastType } from '../../../core/models/admin.models';
+import { VendorCategoriesPanelComponent } from '../categories-panel/vendor-categories-panel.component';
+import { CategoryRecord } from '../../../core/models/store.models';
+import { ToastType } from '../../../core/models/vendor.models';
 
 @Component({
   selector: 'app-vendor-categories-page',
   standalone: true,
-  imports: [CommonModule, CategoriesPanelComponent, PageHeaderComponent, ToastBannerComponent],
+  imports: [CommonModule, VendorCategoriesPanelComponent, PageHeaderComponent, ToastBannerComponent],
   template: `
     <section class="space-y-6">
       <div class="app-surface p-6 sm:p-8">
@@ -21,7 +22,7 @@ import { CategoryRecord, ToastType } from '../../../core/models/admin.models';
         />
       </div>
 
-      <app-categories-panel
+      <app-vendor-categories-panel
         [categories]="categories"
         [isLoading]="isCategorySyncing"
         [isCreating]="isCreatingCategory"

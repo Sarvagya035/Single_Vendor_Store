@@ -35,22 +35,6 @@ import { RouterModule } from '@angular/router';
             My Orders
           </a>
           <a
-            *ngIf="isAdmin"
-            routerLink="/admin/dashboard"
-            (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-indigo-600 hover:bg-indigo-50"
-          >
-            Admin Panel
-          </a>
-          <a
-            *ngIf="isAdmin"
-            routerLink="/admin/orders"
-            (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Orders
-          </a>
-          <a
             *ngIf="isVendor"
             routerLink="/vendor/dashboard"
             (click)="close.emit()"

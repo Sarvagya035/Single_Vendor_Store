@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CategoryRecord } from '../../../core/models/admin.models';
+import { CategoryRecord } from '../../../core/models/store.models';
 
 interface CategoryFlatOption {
   _id: string;
@@ -16,7 +16,7 @@ interface CategoryCreateForm {
 }
 
 @Component({
-  selector: 'app-categories-panel',
+  selector: 'app-vendor-categories-panel',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
@@ -215,7 +215,7 @@ interface CategoryCreateForm {
     </section>
   `
 })
-export class CategoriesPanelComponent {
+export class VendorCategoriesPanelComponent {
   @Input() categories: CategoryRecord[] = [];
   @Input() isLoading = false;
   @Input() isCreating = false;

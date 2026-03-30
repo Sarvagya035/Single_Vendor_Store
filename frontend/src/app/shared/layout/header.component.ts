@@ -27,33 +27,17 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
             <ng-container *ngIf="user && !isCustomer()">
               <app-header-account-dropdown
-                *ngIf="isAdmin(); else vendorDesktopMenu"
-                theme="admin"
-                subtitle="Admin account"
-                [open]="isAdminDropdownOpen"
+                theme="vendor"
+                subtitle="Store account"
+                [open]="isVendorDropdownOpen"
                 [avatarUrl]="avatarUrl()"
                 [initials]="userInitials()"
                 [displayName]="displayName()"
                 [email]="user?.email || ''"
-                [items]="adminMenuItems"
-                (toggle)="toggleAdminDropdown($event)"
-                (itemSelected)="handleAdminItem($event)"
+                [items]="vendorMenuItems"
+                (toggle)="toggleVendorDropdown($event)"
+                (itemSelected)="handleVendorItem($event)"
               />
-
-              <ng-template #vendorDesktopMenu>
-                <app-header-account-dropdown
-                  theme="vendor"
-                  subtitle="Vendor account"
-                  [open]="isVendorDropdownOpen"
-                  [avatarUrl]="avatarUrl()"
-                  [initials]="userInitials()"
-                  [displayName]="displayName()"
-                  [email]="user?.email || ''"
-                  [items]="vendorMenuItems"
-                  (toggle)="toggleVendorDropdown($event)"
-                  (itemSelected)="handleVendorItem($event)"
-                />
-              </ng-template>
             </ng-container>
 
             <ng-container *ngIf="isCustomer()">
@@ -123,20 +107,6 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               (itemSelected)="handleVendorItem($event)"
             />
 
-            <app-header-account-dropdown
-              *ngIf="user && isAdmin()"
-              theme="admin"
-              [desktop]="false"
-              [open]="isAdminDropdownOpen"
-              [avatarUrl]="avatarUrl()"
-              [initials]="userInitials()"
-              [displayName]="displayName()"
-              [email]="user?.email || ''"
-              [items]="adminMenuItems"
-              (toggle)="toggleAdminDropdown($event)"
-              (itemSelected)="handleAdminItem($event)"
-            />
-
             <button
               type="button"
               class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2.5 text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
@@ -161,7 +131,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
         [open]="isMenuOpen"
         [loggedIn]="!!user"
         [isAdmin]="isAdmin()"
-        [isVendor]="isVendor()"
+        [isVendor]="isVendor() || isAdmin()"
         [showHomeLink]="showHomeLink()"
         (close)="closeMobileMenu()"
         (logout)="onMobileLogout()"
@@ -174,7 +144,6 @@ export class HeaderComponent implements OnInit {
   isMenuOpen = false;
   cartCount = 0;
   isDropdownOpen = false;
-  isAdminDropdownOpen = false;
   isVendorDropdownOpen = false;
 
   readonly customerMenuItems: HeaderDropdownItem[] = [
@@ -188,12 +157,6 @@ export class HeaderComponent implements OnInit {
     { label: 'Profile', route: '/profile' },
     { label: 'Orders', route: '/vendor/orders' },
     { label: 'Store profile', route: '/vendor/profile', tone: 'accent' },
-    { label: 'Logout', action: 'logout', tone: 'danger' }
-  ];
-
-  readonly adminMenuItems: HeaderDropdownItem[] = [
-    { label: 'Profile', route: '/profile' },
-    { label: 'Orders', route: '/admin/orders' },
     { label: 'Logout', action: 'logout', tone: 'danger' }
   ];
 
@@ -250,7 +213,6 @@ export class HeaderComponent implements OnInit {
 
     if (!clickedInsideAccountDropdown) {
       this.closeDropdown();
-      this.closeAdminDropdown();
       this.closeVendorDropdown();
     }
 
@@ -266,7 +228,6 @@ export class HeaderComponent implements OnInit {
 
   toggleMenu() {
     this.closeDropdown();
-    this.closeAdminDropdown();
     this.closeVendorDropdown();
     this.isMenuOpen = !this.isMenuOpen;
   }
@@ -277,7 +238,6 @@ export class HeaderComponent implements OnInit {
 
   toggleDropdown(event?: Event): void {
     event?.stopPropagation();
-    this.closeAdminDropdown();
     this.closeVendorDropdown();
     this.isDropdownOpen = !this.isDropdownOpen;
   }
@@ -286,23 +246,10 @@ export class HeaderComponent implements OnInit {
     this.isDropdownOpen = false;
   }
 
-  toggleAdminDropdown(event?: Event): void {
-    event?.stopPropagation();
-    this.isMenuOpen = false;
-    this.closeDropdown();
-    this.closeVendorDropdown();
-    this.isAdminDropdownOpen = !this.isAdminDropdownOpen;
-  }
-
-  closeAdminDropdown(): void {
-    this.isAdminDropdownOpen = false;
-  }
-
   toggleVendorDropdown(event?: Event): void {
     event?.stopPropagation();
     this.isMenuOpen = false;
     this.closeDropdown();
-    this.closeAdminDropdown();
     this.isVendorDropdownOpen = !this.isVendorDropdownOpen;
   }
 
@@ -313,7 +260,6 @@ export class HeaderComponent implements OnInit {
   closeAllMenus(): void {
     this.isMenuOpen = false;
     this.closeDropdown();
-    this.closeAdminDropdown();
     this.closeVendorDropdown();
   }
 
@@ -364,15 +310,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logoRoute(): string {
-    if (this.isVendor()) {
-      return '/vendor/dashboard';
-    }
-
-    if (this.isAdmin()) {
-      return '/admin/dashboard';
-    }
-
-    return '/';
+    return this.isCustomer() ? '/' : '/vendor/dashboard';
   }
 
   onLogout() {
@@ -411,10 +349,4 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  handleAdminItem(item: HeaderDropdownItem): void {
-    this.closeAdminDropdown();
-    if (item.action === 'logout') {
-      this.onLogout();
-    }
-  }
 }

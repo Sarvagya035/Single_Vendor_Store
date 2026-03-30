@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
-  AdminOrdersResponse,
   CheckoutResponseData,
   OrderCheckoutPayload,
   OrderRecord,
+  StoreOrdersResponse,
   VerifyPaymentPayload
 } from '../models/order.models';
 
@@ -56,7 +56,7 @@ export class OrderService {
     );
   }
 
-  getAdminOrders(): Observable<AdminOrdersResponse> {
+  getAdminOrders(): Observable<StoreOrdersResponse> {
     return this.http
       .get<any>(`${this.orderUrl}/admin/all-orders`, { withCredentials: true })
       .pipe(

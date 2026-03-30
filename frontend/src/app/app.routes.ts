@@ -54,10 +54,10 @@ export const routes: Routes = [
       import('./features/auth/register.component').then((m) => m.RegisterComponent)
   },
   {
-    path: 'admin-setup',
+    path: 'vendor/initial-setup',
     loadComponent: () =>
-      import('./features/admin/initial-setup-page/admin-initial-setup-page.component').then(
-        (m) => m.AdminInitialSetupPageComponent
+      import('./features/vendor/initial-setup-page/vendor-initial-setup-page.component').then(
+        (m) => m.VendorInitialSetupPageComponent
       )
   },
   {
@@ -71,41 +71,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/customer/edit-profile/customer-edit-profile.component').then((m) => m.EditProfileComponent),
     canActivate: [AuthGuard]
-  },
-  {
-    path: 'admin',
-    loadComponent: () =>
-      import('./features/admin/shell/admin-shell.component').then((m) => m.AdminShellComponent),
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin', 'Admin'] },
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('./features/admin/dashboard/admin-dashboard.component').then((m) => m.AdminDashboardComponent)
-      },
-      {
-        path: 'users',
-        loadComponent: () =>
-          import('./features/admin/users-page/admin-users-page.component').then((m) => m.AdminUsersPageComponent)
-      },
-      {
-        path: 'categories',
-        loadComponent: () =>
-          import('./features/admin/categories-page/admin-categories-page.component').then((m) => m.AdminCategoriesPageComponent)
-      },
-      {
-        path: 'products',
-        loadComponent: () =>
-          import('./features/admin/products-page/admin-products-page.component').then((m) => m.AdminProductsPageComponent)
-      },
-      {
-        path: 'orders',
-        loadComponent: () =>
-          import('./features/admin/orders-page/admin-orders-page.component').then((m) => m.AdminOrdersPageComponent)
-      }
-    ]
   },
   {
     path: 'vendor',
