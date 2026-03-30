@@ -12,10 +12,10 @@ import { RouterModule } from '@angular/router';
       <div>
         <h2 class="text-2xl font-black text-slate-900">No active store found</h2>
         <p class="mx-auto mt-2 max-w-sm text-slate-500">
-          Your account is not currently set up as a vendor. Ready to start selling?
+          Your account is not currently linked to a store profile.
         </p>
       </div>
-      <a routerLink="/vendor/register" class="btn-primary inline-flex">Register as a Vendor</a>
+      <a routerLink="/" class="btn-primary inline-flex">Go to Home</a>
     </div>
   `
 })
