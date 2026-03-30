@@ -52,30 +52,30 @@ router.route("/delete/:vendorId").delete(
 */
 router.route("/delete-user/:userId").delete(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     deleteUser
 ) //workin nicely
 router.route("/get-all-users").get(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     getAllUsers
 ) //working nicely
 
 router.route("/products/:productId").delete(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     deleteProductByAdmin
 )
 
 router.route("/products/:productId/status").patch(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     toggleProductStatusByAdmin
 )
 
-router.route("/profile").get(verifyJWT, authorizeRoles("admin"), getVendorDetails) //working nicely
-router.route("/analytics").get(verifyJWT, authorizeRoles("admin"), getVendorAnalytics); //partially tested without products working
-router.route("/sold-items").get(verifyJWT, authorizeRoles("admin"), getVendorSoldProducts); //partially tested without products working
+router.route("/profile").get(verifyJWT, authorizeRoles("vendor"), getVendorDetails) //working nicely
+router.route("/analytics").get(verifyJWT, authorizeRoles("vendor"), getVendorAnalytics); //partially tested without products working
+router.route("/sold-items").get(verifyJWT, authorizeRoles("vendor"), getVendorSoldProducts); //partially tested without products working
 
 router.route("/initial-setup-129986").post(upload.single("vendorLogo"), setupInitialAdminAndStore) //working nicely
 

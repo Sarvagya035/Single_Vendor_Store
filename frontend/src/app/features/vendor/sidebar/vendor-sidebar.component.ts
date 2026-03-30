@@ -1,0 +1,86 @@
+import { CommonModule } from '@angular/common';
+import { Component, Input } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { VendorDashboardView } from '../../../core/models/vendor.models';
+
+@Component({
+  selector: 'app-vendor-sidebar',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  host: {
+    class: 'block lg:sticky lg:top-24 lg:self-start'
+  },
+  template: `
+    <aside>
+      <div class="glass-card flex flex-col p-4 lg:min-h-[calc(100vh-7rem)]">
+
+        <nav class="mt-4 space-y-2">
+          <a
+            routerLink="/vendor/dashboard"
+            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            [ngClass]="activeView === 'dashboard' ? 'border-cyan-200 bg-cyan-50 text-cyan-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="mt-1 text-base font-black">Dashboard</p>
+              </div>
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'dashboard' ? 'bg-cyan-600 text-white' : 'bg-slate-100 text-slate-700'">
+                4
+              </span>
+            </div>
+          </a>
+
+          <a
+            routerLink="/vendor/products"
+            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            [ngClass]="activeView === 'products' ? 'border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="mt-1 text-base font-black">Products</p>
+              </div>
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'products' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'">
+                {{ productCount }}
+              </span>
+            </div>
+          </a>
+
+          <a
+            routerLink="/vendor/categories"
+            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            [ngClass]="activeView === 'categories' ? 'border-sky-200 bg-sky-50 text-sky-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="mt-1 text-base font-black">Categories</p>
+              </div>
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'categories' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'">
+                Manage
+              </span>
+            </div>
+          </a>
+
+          <a
+            routerLink="/vendor/orders"
+            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            [ngClass]="activeView === 'orders' ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="mt-1 text-base font-black">Orders</p>
+              </div>
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'orders' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700'">
+                {{ orderCount }}
+              </span>
+            </div>
+          </a>
+        </nav>
+      </div>
+    </aside>
+  `
+})
+export class VendorSidebarComponent {
+  @Input() activeView: VendorDashboardView = 'profile';
+  @Input() productCount = 0;
+  @Input() orderCount = 0;
+}
