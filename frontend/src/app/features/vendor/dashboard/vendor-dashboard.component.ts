@@ -155,7 +155,8 @@ export class VendorDashboardComponent implements OnInit {
   quickActions = [
     { title: 'Review Product Catalog', description: 'Open the products page and update stock, discounts, and visibility.', link: '/vendor/products' },
     { title: 'Update Store Profile', description: 'Refresh logo, address, and storefront description.', link: '/vendor/profile' },
-    { title: 'Add A New Listing', description: 'Create a new product entry with variants and images.', link: '/vendor/products/add' }
+    { title: 'Add A New Listing', description: 'Create a new product entry with variants and images.', link: '/vendor/products/add' },
+    { title: 'View Customers', description: 'See customer profiles, contact details, and signup info.', link: '/vendor/customers' }
   ];
 
   constructor(private vendorService: VendorService) {}

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { VendorAnalyticsPayload, VendorSoldOrderRecord } from '../models/vendor.models';
+import { CustomerUser } from '../models/customer.models';
+import { VendorAnalyticsPayload, VendorCustomersResponse, VendorSoldOrderRecord } from '../models/vendor.models';
 
 @Injectable({
   providedIn: 'root'
@@ -97,6 +98,58 @@ export class VendorService {
     return this.http.delete(`${this.categoryUrl}/delete-category/${categoryId}`, { withCredentials: true });
   }
 
+  getAllUsers(page = 1, limit = 100): Observable<VendorCustomersResponse> {
+    return this.http
+      .get<any>(`${this.adminUrl}/get-all-users?page=${page}&limit=${limit}`, { withCredentials: true })
+      .pipe(
+        map((response) => ({
+          users: Array.isArray(response?.data?.users) ? response.data.users : [],
+          pagination: {
+            totalUsers: Number(response?.data?.pagination?.totalUsers || 0),
+            totalPages: Number(response?.data?.pagination?.totalPages || 0),
+            currentPage: Number(response?.data?.pagination?.currentPage || page),
+            hasNextPage: Boolean(response?.data?.pagination?.hasNextPage),
+            hasPrevPage: Boolean(response?.data?.pagination?.hasPrevPage)
+          }
+        }))
+      );
+  }
+
+  getRegisteredCustomers(): Observable<CustomerUser[]> {
+    const pageSize = 100;
+
+    return this.getAllUsers(1, pageSize).pipe(
+      switchMap((response) => {
+        const firstPageUsers = response?.users || [];
+        const totalPages = Number(response?.pagination?.totalPages || 1);
+
+        if (totalPages <= 1) {
+          return of(firstPageUsers.filter((user) => this.isRegisteredCustomer(user)));
+        }
+
+        const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) =>
+          this.getAllUsers(index + 2, pageSize)
+        );
+
+        return forkJoin(remainingPages).pipe(
+          map((responses) => {
+            const allUsers = [
+              ...firstPageUsers,
+              ...responses.reduce<CustomerUser[]>((all, page) => {
+                all.push(...(page?.users || []));
+                return all;
+              }, [])
+            ];
+
+            return allUsers
+              .filter((user) => this.isRegisteredCustomer(user))
+              .sort((a, b) => this.toTimestamp(b.createdAt) - this.toTimestamp(a.createdAt));
+          })
+        );
+      })
+    );
+  }
+
   getVendorAnalytics(): Observable<VendorAnalyticsPayload> {
     return this.http
       .get<any>(`${this.adminUrl}/analytics`, { withCredentials: true })
@@ -123,5 +176,26 @@ export class VendorService {
     return this.http
       .get<any>(`${this.adminUrl}/sold-items`, { withCredentials: true })
       .pipe(map((response) => (Array.isArray(response?.data) ? response.data : [])));
+  }
+
+  private isRegisteredCustomer(user: CustomerUser): boolean {
+    const roles = Array.isArray(user.role)
+      ? user.role.map((role) => String(role).toLowerCase())
+      : user.role
+        ? [String(user.role).toLowerCase()]
+        : [];
+
+    if (roles.length === 0) {
+      return false;
+    }
+
+    const hasCustomer = roles.includes('customer');
+    const hasRestrictedRole = roles.some((role) => role === 'vendor' || role === 'admin');
+
+    return hasCustomer && !hasRestrictedRole;
+  }
+
+  private toTimestamp(value?: string): number {
+    return value ? new Date(value).getTime() : 0;
   }
 }

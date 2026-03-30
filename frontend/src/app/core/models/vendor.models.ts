@@ -1,3 +1,5 @@
+import { CustomerUser } from './customer.models';
+
 export interface VendorProfile {
   _id?: string;
   shopName?: string;
@@ -11,7 +13,7 @@ export interface VendorProfile {
 
 export type ToastType = 'success' | 'error';
 
-export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories';
+export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories' | 'customers';
 
 export interface VendorDetailsForm {
   vendorAddress: string;
@@ -78,6 +80,19 @@ export interface VendorCategoryRecord {
   slug?: string;
   level?: number;
   children?: VendorCategoryRecord[];
+}
+
+export interface VendorCustomersPagination {
+  totalUsers: number;
+  totalPages: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface VendorCustomersResponse {
+  users: CustomerUser[];
+  pagination: VendorCustomersPagination;
 }
 
 export interface VendorProductOptionForm {

@@ -61,6 +61,21 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           </a>
 
           <a
+            routerLink="/vendor/customers"
+            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            [ngClass]="activeView === 'customers' ? 'border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="mt-1 text-base font-black">Customers</p>
+              </div>
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'customers' ? 'bg-fuchsia-600 text-white' : 'bg-slate-100 text-slate-700'">
+                {{ customerCount }}
+              </span>
+            </div>
+          </a>
+
+          <a
             routerLink="/vendor/orders"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
             [ngClass]="activeView === 'orders' ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
@@ -83,5 +98,6 @@ export class VendorSidebarComponent {
   @Input() activeView: VendorDashboardView = 'profile';
   @Input() productCount = 0;
   @Input() categoryCount = 0;
+  @Input() customerCount = 0;
   @Input() orderCount = 0;
 }

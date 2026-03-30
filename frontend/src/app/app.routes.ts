@@ -134,6 +134,34 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'customers',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/customers-page/vendor-customers-page.component').then(
+                (m) => m.VendorCustomersPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'customers/:userId',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/customer-details-page/vendor-customer-details-page.component').then(
+                (m) => m.VendorCustomerDetailsPageComponent
+              )
+          }
+        ]
+      },
+      {
         path: 'orders',
         loadComponent: () =>
           import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),

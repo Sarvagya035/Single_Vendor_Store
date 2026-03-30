@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
+import { CustomerUser } from '../../../core/models/customer.models';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorSidebarComponent } from '../sidebar/vendor-sidebar.component';
 import { VendorDashboardView } from '../../../core/models/vendor.models';
@@ -20,6 +21,7 @@ import { OrderService } from '../../../core/services/order.service';
             [activeView]="activeView"
             [productCount]="productCount"
             [categoryCount]="categoryCount"
+            [customerCount]="customerCount"
             [orderCount]="orderCount"
           />
 
@@ -34,6 +36,7 @@ import { OrderService } from '../../../core/services/order.service';
 export class VendorShellComponent implements OnInit {
   productCount = 0;
   categoryCount = 0;
+  customerCount = 0;
   orderCount = 0;
 
   constructor(
@@ -60,6 +63,10 @@ export class VendorShellComponent implements OnInit {
       return 'categories';
     }
 
+    if (this.router.url.includes('/vendor/customers')) {
+      return 'customers';
+    }
+
     return 'products';
   }
 
@@ -77,16 +84,19 @@ export class VendorShellComponent implements OnInit {
     forkJoin({
       products: this.vendorService.getMyProducts(),
       orders: this.orderService.getVendorOrders(),
-      categories: this.vendorService.getCategoryTree()
+      categories: this.vendorService.getCategoryTree(),
+      users: this.vendorService.getAllUsers(1, 1000)
     }).subscribe({
-      next: ({ products, orders, categories }) => {
+      next: ({ products, orders, categories, users }) => {
         this.productCount = products?.data?.docs?.length || 0;
         this.orderCount = orders.length || 0;
         this.categoryCount = this.countCategories(categories?.data || []);
+        this.customerCount = this.countCustomers(users?.users || []);
       },
       error: () => {
         this.productCount = 0;
         this.categoryCount = 0;
+        this.customerCount = 0;
         this.orderCount = 0;
       }
     });
@@ -96,5 +106,24 @@ export class VendorShellComponent implements OnInit {
     return categories.reduce((total, category) => {
       return total + 1 + this.countCategories(category.children || []);
     }, 0);
+  }
+
+  private countCustomers(users: CustomerUser[]): number {
+    return users.filter((user) => {
+      const roles = Array.isArray(user.role)
+        ? user.role.map((role) => String(role).toLowerCase())
+        : user.role
+          ? [String(user.role).toLowerCase()]
+          : [];
+
+      if (roles.length === 0) {
+        return false;
+      }
+
+      const hasCustomer = roles.includes('customer');
+      const hasRestrictedRole = roles.some((role) => role === 'vendor' || role === 'admin');
+
+      return hasCustomer && !hasRestrictedRole;
+    }).length;
   }
 }

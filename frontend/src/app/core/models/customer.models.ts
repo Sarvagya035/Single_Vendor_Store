@@ -1,6 +1,7 @@
 export interface CustomerUser {
   _id?: string;
   username?: string;
+  fullName?: string;
   email?: string;
   phone?: string;
   avatar?: string;
