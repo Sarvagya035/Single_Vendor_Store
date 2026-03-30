@@ -52,7 +52,7 @@ const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
         email,
         password,
         phone, 
-        role: ["customer", "admin"] 
+        role: ["customer", "vendor"] 
     });
 
     const store = await Vendor.create({

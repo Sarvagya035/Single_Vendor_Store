@@ -22,7 +22,7 @@ const router = Router();
 // Route to create a product
 router.route("/add-product").post(
     verifyJWT, 
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     upload.fields([
         { 
             name: "mainImages", 
@@ -38,44 +38,44 @@ router.route("/add-product").post(
 
 router.route("/add-variant/:productId").post(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     upload.single("variantImage"),
     addVariant
 )
 
 router.route("/my-products").get(
     verifyJWT, 
-    authorizeRoles("admin"), 
+    authorizeRoles("vendor"), 
     getVendorProducts
 );
 
 router.route("/delete-product/:productId").delete(
     verifyJWT, 
-    authorizeRoles("admin"), 
+    authorizeRoles("vendor"), 
     deleteProduct
 );
 
 router.route("/update-product/:productId").patch(
     verifyJWT,
-    authorizeRoles("admin"), 
+    authorizeRoles("vendor"), 
     updateProductDetails
 );
 
 router.route("/restock-variant/:productId/:variantId").patch(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     restockVariant
 )
 
 router.route("/delete-variant/:productId/:variantId").delete(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     deleteVariant
 )
 
 router.route("/update-variant-discount/:productId/:variantId").patch(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     updateVariantDiscount
 )
 

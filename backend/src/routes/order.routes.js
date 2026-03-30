@@ -27,9 +27,9 @@ router.route("/my-orders").get(getMyOrders);
 router.route("/order/:orderId").get(getOrderDetails);
 router.route("/cancel/:orderId").put(cancelOrder);
 
-router.route("/vendor-orders").get(authorizeRoles("admin"), getVendorOrders);
-router.route("/vendor-update-status/:orderId").put(authorizeRoles("admin"), updateOrderStatus);
+router.route("/vendor-orders").get(authorizeRoles("vendor"), getVendorOrders);
+router.route("/vendor-update-status/:orderId").put(authorizeRoles("vendor"), updateOrderStatus);
 
-router.route("/admin/all-orders").get(authorizeRoles("admin"), getAllOrders);
+router.route("/admin/all-orders").get(authorizeRoles("vendor"), getAllOrders);
 
 export default router;  
