@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
@@ -7,6 +8,12 @@ import { User } from "../models/user.model.js"
 import { Order } from "../models/order.model.js";
 
 const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
+    
+    const adminExists = await User.findOne({ role: "vendor" }); 
+    if (adminExists) {
+        throw new ApiError(400, "Admin already exists. Use regular login.");
+    }
+    
     const { 
         // Admin Details
         username, email, password, secretKey, phone,
@@ -21,11 +28,6 @@ const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Invalid Secret Key!");
     }
 
-    const adminExists = await User.findOne({ roles: "admin" }); 
-    if (adminExists) {
-        throw new ApiError(400, "Admin already exists. Use regular login.");
-    }
-
     const requiredFields = [
         username, email, password, phone,
         shopName, vendorAddress, vendorDescription, gstNumber, 
@@ -36,47 +38,65 @@ const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All admin, store, and primary bank details are mandatory");
     }
 
-    // 4. Handle Logo Upload
-    const logoImageLocalPath = req.file?.path;
-    if (!logoImageLocalPath) {
-        throw new ApiError(400, "Store Logo is required");
-    }
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    const logoImage = await uploadOnCloudinary(logoImageLocalPath);
-    if (!logoImage) {
-        throw new ApiError(500, "Failed to upload logo to Cloudinary");
-    }
-
-    const user = await User.create({
-        username,
-        email,
-        password,
-        phone, 
-        role: ["customer", "vendor"] 
-    });
-
-    const store = await Vendor.create({
-        shopName,
-        vendorAddress,
-        vendorDescription,
-        vendorLogo: logoImage?.url,
-        user: user._id,
-        gstNumber: gstNumber.toUpperCase(),
-        verificationStatus: "approved",
-        bankDetails: {
-            accountHolderName,
-            accountNumber,
-            ifscCode,
-            bankName,
-            upiId: upiId || ""
+    try {
+        // 4. Handle Logo Upload
+        const logoImageLocalPath = req.file?.path;
+        if (!logoImageLocalPath) {
+            throw new ApiError(400, "Store Logo is required");
         }
-    });
+    
+        const logoImage = await uploadOnCloudinary(logoImageLocalPath);
+        if (!logoImage) {
+            throw new ApiError(500, "Failed to upload logo to Cloudinary");
+        }
+    
+        const userArray = await User.create([{
+            username,
+            email,
+            password,
+            phone, 
+            role: ["customer", "vendor"] 
+        }], {session});
 
-    const createdUser = await User.findById(user._id).select("-password");
+        const user = userArray[0]
+    
+        const storeArray = await Vendor.create([{
+            shopName,
+            vendorAddress,
+            vendorDescription,
+            vendorLogo: logoImage?.url,
+            user: user._id,
+            gstNumber: gstNumber.toUpperCase(),
+            verificationStatus: "approved",
+            bankDetails: {
+                accountHolderName,
+                accountNumber,
+                ifscCode,
+                bankName,
+                upiId: upiId || ""
+            }
+        }], {session});
 
-    return res
-        .status(201)
-        .json(new ApiResponse(201, { user: createdUser, store }, "Admin and Store setup successful! Please login to continue."));
+        const store = storeArray[0]
+        await session.commitTransaction();
+        session.endSession();
+
+        const createdUser = await User.findById(user._id).select("-password");
+    
+        return res
+            .status(201)
+            .json(new ApiResponse(201, { user: createdUser, store }, "Admin and Store setup successful! Please login to continue."));
+    
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+
+        console.error("Setup Rollback Triggered:", error.message);
+        throw new ApiError(500, `Setup Failed: ${error.message}. You can try again safely.`);
+    }
 });
 
 const updateVendorlogo = asyncHandler(async (req, res)=>{
