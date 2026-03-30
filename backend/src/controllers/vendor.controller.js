@@ -386,10 +386,35 @@ const getVendorDetails = asyncHandler(async (req, res)=>{
         .json(new ApiResponse(200, vendor, "Store details fetched successfully"));
 })
 
+const updateVendorDetails = asyncHandler(async (req, res)=>{
+
+    const userId = req.user?._id
+    if(!userId){
+        throw new ApiError(401, "Unauthorized Request")
+    }
+
+    const vendor = await Vendor.findOne({user: userId})
+
+    if(!vendor){
+        throw new ApiError(404, "Vendor not found")
+    }
+
+    const fieldsToUpdate = ["vendorAddress", "vendorDescription"]
+
+    fieldsToUpdate.forEach((field)=>{
+        if(req.body[field] !== undefined){
+            vendor[field] = req.body[field]
+        }
+    })
+
+    await vendor.save()
+    return res.status(200).json(new ApiResponse(200, vendor, "vendor details updated successfully"))
+})
+
 export {
     // registerVendor,
     getVendorDetails,
-    // updateVendorDetails,
+    updateVendorDetails,
     updateVendorlogo,
     verifyVendorStatus,
     getAllPendingVendors,

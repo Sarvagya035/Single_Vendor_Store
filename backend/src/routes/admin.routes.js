@@ -5,7 +5,9 @@ import {
     getVendorDetails,  
     getVendorAnalytics, 
     getVendorSoldProducts, 
-    setupInitialAdminAndStore
+    setupInitialAdminAndStore,
+    updateVendorDetails,
+    updateVendorlogo
 } from "../controllers/vendor.controller.js"
 import {  
     deleteProductByAdmin, 
@@ -72,6 +74,8 @@ router.route("/products/:productId/status").patch(
     authorizeRoles("vendor"),
     toggleProductStatusByAdmin
 )
+router.route("/update-details").patch(verifyJWT, authorizeRoles("vendor"), updateVendorDetails)
+router.route("/update-logo").patch(verifyJWT, authorizeRoles("vendor"), upload.single("vendorLogo"), updateVendorlogo)
 
 router.route("/profile").get(verifyJWT, authorizeRoles("vendor"), getVendorDetails) //working nicely
 router.route("/analytics").get(verifyJWT, authorizeRoles("vendor"), getVendorAnalytics); //partially tested without products working
