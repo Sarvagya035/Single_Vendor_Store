@@ -181,7 +181,6 @@ export class HeaderComponent implements OnInit {
     { label: 'Profile', route: '/profile' },
     { label: 'My Orders', route: '/orders' },
     { label: 'My Addresses', route: '/addresses' },
-    { label: 'Become a Vendor', route: '/vendor/register', tone: 'accent' },
     { label: 'Logout', action: 'logout', tone: 'danger' }
   ];
 

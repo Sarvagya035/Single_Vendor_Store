@@ -30,28 +30,12 @@ import { OrderService } from '../../../core/services/order.service';
                 />
 
                 <app-sidebar-nav-item
-                  link="/admin/applications"
-                  label="New Applications"
-                  [count]="pendingCount"
-                  [active]="isApplicationsRoute()"
-                />
-
-                <app-sidebar-nav-item
                   link="/admin/users"
                   label="Users"
                   [count]="userCount"
                   [active]="isUsersRoute()"
                   activeClasses="border-slate-200 bg-slate-50 text-slate-700 shadow-sm"
                   activeCountClasses="bg-slate-700 text-white"
-                />
-
-                <app-sidebar-nav-item
-                  link="/admin/vendors"
-                  label="Vendors"
-                  [count]="vendorCount"
-                  [active]="isVendorsRoute()"
-                  activeClasses="border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm"
-                  activeCountClasses="bg-emerald-600 text-white"
                 />
 
                 <app-sidebar-nav-item
@@ -104,9 +88,7 @@ import { OrderService } from '../../../core/services/order.service';
   `,
 })
 export class AdminShellComponent implements OnInit {
-  pendingCount = 0;
   userCount = 0;
-  vendorCount = 0;
   categoryCount = 0;
   productCount = 0;
   orderCount = 0;
@@ -133,19 +115,14 @@ export class AdminShellComponent implements OnInit {
     this.isSyncing = true;
 
     forkJoin({
-      pending: this.adminService.getPendingVendors(),
       users: this.adminService.getAllUsers(1, 1),
-      active: this.adminService.getActiveVendors(),
-      rejected: this.adminService.getRejectedVendors(),
       categories: this.adminService.getCategoryTree(),
       products: this.adminService.getAllProducts(),
       orders: this.orderService.getAdminOrders(),
     }).subscribe({
-      next: ({ pending, users, active, rejected, categories, products, orders }) => {
+      next: ({ users, categories, products, orders }) => {
         this.isSyncing = false;
-        this.pendingCount = pending?.data?.length || 0;
         this.userCount = users?.data?.pagination?.totalUsers || 0;
-        this.vendorCount = (active?.data?.length || 0) + (rejected?.data?.length || 0);
         this.categoryCount = this.totalCategoryCount(categories?.data || []);
         this.productCount = products?.data?.length || 0;
         this.orderCount = orders.orders.length || 0;
@@ -159,16 +136,8 @@ export class AdminShellComponent implements OnInit {
     });
   }
 
-  isApplicationsRoute(): boolean {
-    return this.router.url.includes('/admin/applications');
-  }
-
   isDashboardRoute(): boolean {
     return this.router.url === '/admin/dashboard';
-  }
-
-  isVendorsRoute(): boolean {
-    return this.router.url.includes('/admin/vendors');
   }
 
   isUsersRoute(): boolean {

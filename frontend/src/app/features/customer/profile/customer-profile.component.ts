@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorService } from '../../../core/services/vendor.service';
-import { CustomerMerchantProgramComponent } from '../merchant-program/customer-merchant-program.component';
 import { CustomerPersonalDetailsComponent } from '../personal-details/customer-personal-details.component';
 import { CustomerProfileHeaderComponent } from '../profile-header/customer-profile-header.component';
 import { CustomerProfileSidebarComponent } from '../profile-sidebar/customer-profile-sidebar.component';
@@ -17,8 +16,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
     CommonModule,
     CustomerProfileHeaderComponent,
     CustomerProfileSidebarComponent,
-    CustomerPersonalDetailsComponent,
-    CustomerMerchantProgramComponent
+    CustomerPersonalDetailsComponent
   ],
   template: `
     <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_24%,#f8fafc_100%)] pt-16 pb-24">
@@ -50,10 +48,6 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
 
           <div class="space-y-6">
             <app-customer-personal-details [user]="user" />
-            <app-customer-merchant-program
-              *ngIf="!isVendor() && !isAdmin()"
-              [vendorProfile]="vendorProfile"
-            />
           </div>
         </div>
       </div>

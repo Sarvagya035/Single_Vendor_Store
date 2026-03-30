@@ -28,46 +28,45 @@ import { StatCardComponent } from '../../../shared/ui/stat-card.component';
       </div>
 
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <app-stat-card label="Pending Applications" [value]="pendingCount" tone="indigo" />
-        <app-stat-card label="Approved Vendors" [value]="activeCount" tone="emerald" />
-        <app-stat-card label="Rejected Vendors" [value]="rejectedCount" tone="rose" />
+        <app-stat-card label="Users" [value]="userCount" tone="indigo" />
         <app-stat-card label="Categories" [value]="categoryCount" tone="sky" />
+        <app-stat-card label="Products" [value]="productCount" tone="emerald" />
         <app-stat-card label="Orders" [value]="orderCount" tone="amber" />
       </div>
 
       <div class="grid gap-5 xl:grid-cols-4">
-        <a routerLink="/admin/applications" class="app-card group block p-6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(79,70,229,0.12)]">
-          <p class="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-500">Queue</p>
-          <h3 class="mt-3 text-2xl font-black tracking-tight text-slate-900">Review new applications</h3>
+        <a routerLink="/admin/users" class="app-card group block p-6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(79,70,229,0.12)]">
+          <p class="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-500">People</p>
+          <h3 class="mt-3 text-2xl font-black tracking-tight text-slate-900">Manage users</h3>
           <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-            Open the dedicated applications page to inspect submitted store and bank details before approval.
+            Review customer accounts, remove spam users, and keep the store directory tidy.
           </p>
-          <p class="mt-5 text-sm font-black text-indigo-600">Go to applications</p>
+          <p class="mt-5 text-sm font-black text-indigo-600">Go to users</p>
         </a>
 
-        <a routerLink="/admin/vendors" class="app-card group block p-6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(16,185,129,0.12)]">
-          <p class="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-500">Records</p>
-          <h3 class="mt-3 text-2xl font-black tracking-tight text-slate-900">Manage vendor accounts</h3>
-          <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-            Browse approved and rejected vendors on a separate page and open each record for full details.
-          </p>
-          <p class="mt-5 text-sm font-black text-emerald-600">Go to vendors</p>
-        </a>
-
-        <a routerLink="/admin/categories" class="app-card group block p-6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(14,165,233,0.12)]">
-          <p class="text-[10px] font-black uppercase tracking-[0.22em] text-sky-500">Catalog</p>
+        <a routerLink="/admin/categories" class="app-card group block p-6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(16,185,129,0.12)]">
+          <p class="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-500">Catalog</p>
           <h3 class="mt-3 text-2xl font-black tracking-tight text-slate-900">Manage categories</h3>
           <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-            Add, edit, and remove categories from a focused page without mixing vendor operations into the same screen.
+            Add, edit, and remove category hierarchies for the catalog.
           </p>
-          <p class="mt-5 text-sm font-black text-sky-600">Go to categories</p>
+          <p class="mt-5 text-sm font-black text-emerald-600">Go to categories</p>
+        </a>
+
+        <a routerLink="/admin/products" class="app-card group block p-6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(14,165,233,0.12)]">
+          <p class="text-[10px] font-black uppercase tracking-[0.22em] text-sky-500">Inventory</p>
+          <h3 class="mt-3 text-2xl font-black tracking-tight text-slate-900">Manage products</h3>
+          <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+            Update listings, stock, prices, and visibility from the product manager.
+          </p>
+          <p class="mt-5 text-sm font-black text-sky-600">Go to products</p>
         </a>
 
         <a routerLink="/admin/orders" class="app-card group block p-6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(245,158,11,0.12)]">
           <p class="text-[10px] font-black uppercase tracking-[0.22em] text-amber-500">Orders</p>
-          <h3 class="mt-3 text-2xl font-black tracking-tight text-slate-900">Review marketplace orders</h3>
+          <h3 class="mt-3 text-2xl font-black tracking-tight text-slate-900">Review store orders</h3>
           <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-            Track customer orders, payment status, and marketplace revenue from one dedicated page.
+            Track customer orders, payment status, and fulfillment from one dedicated page.
           </p>
           <p class="mt-5 text-sm font-black text-amber-600">Go to orders</p>
         </a>
@@ -76,10 +75,9 @@ import { StatCardComponent } from '../../../shared/ui/stat-card.component';
   `
 })
 export class AdminDashboardComponent implements OnInit {
-  pendingCount = 0;
-  activeCount = 0;
-  rejectedCount = 0;
+  userCount = 0;
   categoryCount = 0;
+  productCount = 0;
   orderCount = 0;
   isLoading = false;
 
@@ -97,18 +95,16 @@ export class AdminDashboardComponent implements OnInit {
     this.isLoading = true;
 
     forkJoin({
-      pending: this.adminService.getPendingVendors(),
-      active: this.adminService.getActiveVendors(),
-      rejected: this.adminService.getRejectedVendors(),
+      users: this.adminService.getAllUsers(1, 1),
       categories: this.adminService.getCategoryTree(),
+      products: this.adminService.getAllProducts(),
       orders: this.orderService.getAdminOrders()
     }).subscribe({
-      next: ({ pending, active, rejected, categories, orders }) => {
+      next: ({ users, categories, products, orders }) => {
         this.isLoading = false;
-        this.pendingCount = pending?.data?.length || 0;
-        this.activeCount = active?.data?.length || 0;
-        this.rejectedCount = rejected?.data?.length || 0;
+        this.userCount = users?.data?.pagination?.totalUsers || 0;
         this.categoryCount = this.totalCategoryCount(categories?.data || []);
+        this.productCount = products?.data?.length || 0;
         this.orderCount = orders.orders.length || 0;
       },
       error: (err) => {

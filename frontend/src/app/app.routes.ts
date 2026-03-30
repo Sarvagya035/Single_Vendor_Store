@@ -86,16 +86,6 @@ export const routes: Routes = [
           import('./features/admin/dashboard/admin-dashboard.component').then((m) => m.AdminDashboardComponent)
       },
       {
-        path: 'applications',
-        loadComponent: () =>
-          import('./features/admin/applications-page/admin-applications-page.component').then((m) => m.AdminApplicationsPageComponent)
-      },
-      {
-        path: 'vendors',
-        loadComponent: () =>
-          import('./features/admin/vendors-page/admin-vendors-page.component').then((m) => m.AdminVendorsPageComponent)
-      },
-      {
         path: 'users',
         loadComponent: () =>
           import('./features/admin/users-page/admin-users-page.component').then((m) => m.AdminUsersPageComponent)
@@ -116,12 +106,6 @@ export const routes: Routes = [
           import('./features/admin/orders-page/admin-orders-page.component').then((m) => m.AdminOrdersPageComponent)
       }
     ]
-  },
-  {
-    path: 'vendor/register',
-    loadComponent: () =>
-      import('./features/vendor/vendor-register.component').then((m) => m.VendorRegisterComponent),
-    canActivate: [AuthGuard]
   },
   {
     path: 'vendor',
