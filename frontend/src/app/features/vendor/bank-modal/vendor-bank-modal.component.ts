@@ -83,10 +83,6 @@ import { VendorBankDetailsForm, VendorMessageType } from '../../../core/models/v
             </div>
           </div>
 
-          <div class="rounded-2xl border border-amber-100 bg-amber-50/80 p-4 text-sm font-semibold text-amber-800">
-            Updating bank details will move the vendor profile back to pending review until it is verified again.
-          </div>
-
           <div *ngIf="message" class="rounded-2xl border p-4 text-sm font-bold" [ngClass]="messageClass()">
             {{ message }}
           </div>
