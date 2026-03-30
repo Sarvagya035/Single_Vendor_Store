@@ -6,6 +6,7 @@ import {
     getVendorAnalytics, 
     getVendorSoldProducts, 
     setupInitialAdminAndStore,
+    updateBankDetails,
     updateVendorDetails,
     updateVendorlogo
 } from "../controllers/vendor.controller.js"
@@ -75,6 +76,7 @@ router.route("/products/:productId/status").patch(
     toggleProductStatusByAdmin
 )
 router.route("/update-details").patch(verifyJWT, authorizeRoles("vendor"), updateVendorDetails)
+router.route("/update-bank-details").patch(verifyJWT, authorizeRoles("vendor"), updateBankDetails)
 router.route("/update-logo").patch(verifyJWT, authorizeRoles("vendor"), upload.single("vendorLogo"), updateVendorlogo)
 
 router.route("/profile").get(verifyJWT, authorizeRoles("vendor"), getVendorDetails) //working nicely

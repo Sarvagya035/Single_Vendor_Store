@@ -55,7 +55,7 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
                 <p class="mt-1 text-base font-black">Categories</p>
               </div>
               <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'categories' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'">
-                Manage
+                {{ categoryCount }}
               </span>
             </div>
           </a>
@@ -82,5 +82,6 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
 export class VendorSidebarComponent {
   @Input() activeView: VendorDashboardView = 'profile';
   @Input() productCount = 0;
+  @Input() categoryCount = 0;
   @Input() orderCount = 0;
 }

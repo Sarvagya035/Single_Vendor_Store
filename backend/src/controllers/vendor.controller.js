@@ -134,41 +134,37 @@ const updateVendorlogo = asyncHandler(async (req, res)=>{
     ))
 })
 
-// const updateBankDetails = asyncHandler(async (req, res) => {
-//     const { accountHolderName, accountNumber, ifscCode, bankName, upiId } = req.body;
+const updateBankDetails = asyncHandler(async (req, res) => {
+    const { accountHolderName, accountNumber, ifscCode, bankName, upiId } = req.body;
 
-//     if (
-//         [accountHolderName, accountNumber, ifscCode, bankName].some(
-//             (field) => !field || field.trim() === ""
-//         )
-//     ) {
-//         throw new ApiError(400, "All primary bank fields are required");
-//     }
+    if (
+        [accountHolderName, accountNumber, ifscCode, bankName].some(
+            (field) => !field || field.trim() === ""
+        )
+    ) {
+        throw new ApiError(400, "All primary bank fields are required");
+    }
 
-//     const vendor = await Vendor.findOne({ user: req.user?._id });
+    const vendor = await Vendor.findOne({ user: req.user?._id });
 
-//     if (!vendor) {
-//         throw new ApiError(404, "Vendor profile not found");
-//     }
+    if (!vendor) {
+        throw new ApiError(404, "Vendor profile not found");
+    }
 
-//     vendor.bankDetails = {
-//         accountHolderName,
-//         accountNumber,
-//         ifscCode,
-//         bankName,
-//         upiId
-//     };
+    vendor.bankDetails = {
+        accountHolderName,
+        accountNumber,
+        ifscCode,
+        bankName,
+        upiId
+    };
+    
+    await vendor.save();
 
-//     // 4. Reset verification status logic is if bank changes we have to reverify....
-//     vendor.verificationStatus = "pending";
-//     vendor.isVerified = false;
-
-//     await vendor.save();
-
-//     return res.status(200).json(
-//         new ApiResponse(200, vendor, "Bank details updated. Profile sent for re-verification.")
-//     );
-// });
+    return res.status(200).json(
+        new ApiResponse(200, vendor, "Bank details updated successfully")
+    );
+});
 
 
 // all venodor functions accessible by admin only. 
@@ -441,7 +437,7 @@ export {
     getAllActiveVendors,
     getRejectedVendors,
     deleteExistingVendor,
-    // updateBankDetails,
+    updateBankDetails,
     getVendorAnalytics,
     getVendorSoldProducts,
     setupInitialAdminAndStore

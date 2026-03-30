@@ -19,6 +19,7 @@ import { OrderService } from '../../../core/services/order.service';
           <app-vendor-sidebar
             [activeView]="activeView"
             [productCount]="productCount"
+            [categoryCount]="categoryCount"
             [orderCount]="orderCount"
           />
 
@@ -32,6 +33,7 @@ import { OrderService } from '../../../core/services/order.service';
 })
 export class VendorShellComponent implements OnInit {
   productCount = 0;
+  categoryCount = 0;
   orderCount = 0;
 
   constructor(
@@ -74,16 +76,25 @@ export class VendorShellComponent implements OnInit {
   loadSummary(): void {
     forkJoin({
       products: this.vendorService.getMyProducts(),
-      orders: this.orderService.getVendorOrders()
+      orders: this.orderService.getVendorOrders(),
+      categories: this.vendorService.getCategoryTree()
     }).subscribe({
-      next: ({ products, orders }) => {
+      next: ({ products, orders, categories }) => {
         this.productCount = products?.data?.docs?.length || 0;
         this.orderCount = orders.length || 0;
+        this.categoryCount = this.countCategories(categories?.data || []);
       },
       error: () => {
         this.productCount = 0;
+        this.categoryCount = 0;
         this.orderCount = 0;
       }
     });
+  }
+
+  private countCategories(categories: Array<{ children?: Array<any> }>): number {
+    return categories.reduce((total, category) => {
+      return total + 1 + this.countCategories(category.children || []);
+    }, 0);
   }
 }

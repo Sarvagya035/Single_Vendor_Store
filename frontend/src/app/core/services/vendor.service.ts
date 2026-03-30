@@ -24,17 +24,17 @@ export class VendorService {
   }
 
   updateDetails(data: any): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/update-details`, data, { withCredentials: true });
+    return this.http.patch(`${this.adminUrl}/update-details`, data, { withCredentials: true });
   }
 
   updateBankDetails(data: any): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/update-bank-details`, data, { withCredentials: true });
+    return this.http.patch(`${this.adminUrl}/update-bank-details`, data, { withCredentials: true });
   }
 
   updateLogo(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('vendorLogo', file);
-    return this.http.patch(`${this.apiUrl}/update-logo`, formData, { withCredentials: true });
+    return this.http.patch(`${this.adminUrl}/update-logo`, formData, { withCredentials: true });
   }
 
   getMyProducts(page = 1, limit = 100): Observable<any> {
