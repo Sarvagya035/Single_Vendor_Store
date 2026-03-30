@@ -1,0 +1,144 @@
+export interface VendorProfile {
+  _id?: string;
+  shopName?: string;
+  vendorLogo?: string;
+  vendorDescription?: string;
+  vendorAddress?: string;
+  gstNumber?: string;
+  verificationStatus?: string;
+  bankDetails?: VendorBankDetails;
+}
+
+export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories';
+
+export interface VendorDetailsForm {
+  vendorAddress: string;
+  vendorDescription: string;
+}
+
+export interface VendorBankDetails {
+  accountHolderName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
+  bankName?: string;
+  upiId?: string;
+}
+
+export interface VendorBankDetailsForm {
+  accountHolderName: string;
+  accountNumber: string;
+  ifscCode: string;
+  bankName: string;
+  upiId: string;
+}
+
+export type VendorMessageType = 'success' | 'error';
+
+export interface VendorProductCategoryDetails {
+  _id?: string;
+  name?: string;
+  slug?: string;
+}
+
+export interface VendorProductVariant {
+  _id?: string;
+  attributes?: Record<string, string>;
+  productPrice?: number;
+  discountPercentage?: number;
+  finalPrice?: number;
+  productStock?: number;
+  isAvailable?: boolean;
+  sku?: string;
+  variantImage?: string;
+}
+
+export interface VendorProductRecord {
+  _id: string;
+  productName: string;
+  productDescription?: string;
+  brand?: string;
+  category?: string;
+  basePrice?: number;
+  mainImages?: string[];
+  variantOptions?: Array<{
+    name?: string;
+    values?: string[];
+  }>;
+  variants?: VendorProductVariant[];
+  isActive?: boolean;
+  categoryDetails?: VendorProductCategoryDetails;
+  createdAt?: string;
+}
+
+export interface VendorCategoryRecord {
+  _id: string;
+  name: string;
+  slug?: string;
+  level?: number;
+  children?: VendorCategoryRecord[];
+}
+
+export interface VendorProductOptionForm {
+  name: string;
+  valuesText: string;
+}
+
+export interface VendorProductVariantForm {
+  attributesText: string;
+  productPrice: number | null;
+  discountPercentage: number | null;
+  productStock: number | null;
+  sku: string;
+  imageFile: File | null;
+}
+
+export interface VendorProductEditForm {
+  productName: string;
+  productDescription: string;
+  brand: string;
+  category: string;
+  isActive: boolean;
+}
+
+export interface VendorVariantCreateForm {
+  attributesText: string;
+  productPrice: number | null;
+  discountPercentage: number | null;
+  productStock: number | null;
+  imageFile: File | null;
+}
+
+export interface VendorAnalyticsSummary {
+  totalRevenue: number;
+  totalItemsSold: number;
+  totalOrdersCount: number;
+}
+
+export interface VendorProductSaleRecord {
+  _id?: string;
+  productName?: string;
+  quantitySold?: number;
+  revenueGenerated?: number;
+}
+
+export interface VendorAnalyticsPayload {
+  summary: VendorAnalyticsSummary;
+  productWiseSales: VendorProductSaleRecord[];
+}
+
+export interface VendorSoldItemRecord {
+  _id?: string;
+  product?: string;
+  name?: string;
+  quantity?: number;
+  price?: number;
+  variantImage?: string;
+  orderItemStatus?: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled' | string;
+}
+
+export interface VendorSoldOrderRecord {
+  orderId?: string;
+  date?: string;
+  items?: VendorSoldItemRecord[];
+  orderStatus?: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled' | string;
+}
