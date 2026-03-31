@@ -188,7 +188,7 @@ export class HeaderComponent implements OnInit {
       );
     });
 
-    this.authService.getCurrentUser().subscribe({
+    this.authService.ensureCurrentUser().subscribe({
       error: () => this.authService.clearCurrentUser()
     });
 

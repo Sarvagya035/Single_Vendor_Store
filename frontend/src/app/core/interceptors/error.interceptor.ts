@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ErrorService } from '../services/error.service';
+import { SKIP_AUTH_ERROR_HANDLING } from './request-flags';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -15,12 +16,16 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        const shouldIgnoreRedirect =
-          request.url.includes('/users/current-user') || request.url.includes('/users/refreshToken');
+        const shouldSkipAuthErrorHandling =
+          request.context.get(SKIP_AUTH_ERROR_HANDLING) ||
+          request.url.includes('/users/current-user') ||
+          request.url.includes('/users/refreshToken');
 
-        this.errorService.handleHttpError(error);
+        if (!shouldSkipAuthErrorHandling) {
+          this.errorService.handleHttpError(error);
+        }
 
-        if (error.status === 401 && !shouldIgnoreRedirect) {
+        if (error.status === 401 && !shouldSkipAuthErrorHandling) {
           this.router.navigate(['/login']);
         }
 

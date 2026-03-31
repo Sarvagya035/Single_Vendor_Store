@@ -243,7 +243,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.user = user;
     });
 
-    this.authService.getCurrentUser().subscribe({
+    this.authService.ensureCurrentUser().subscribe({
       next: () => {},
       error: () => {
         this.authService.clearCurrentUser();
