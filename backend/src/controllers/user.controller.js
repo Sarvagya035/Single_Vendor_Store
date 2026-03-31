@@ -16,6 +16,10 @@ const generateAccessandRefreshToken = async function(userId){
     try {
 
         const user = await User.findById(userId)
+        if (!user) {
+            throw new ApiError(404, "User not found")
+        }
+
         const accessToken = await user.generateAccessToken()
         const refreshToken = await user.generateRefreshToken()
         user.refreshToken = refreshToken
@@ -82,19 +86,19 @@ const loginUser = asyncHandler(async (req, res) =>{
     const {email, password} = req.body
 
     if(!email || !password){
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, "Email and password are required")
     }
 
     const existingUser = await User.findOne({email})
 
     if(!existingUser){
-        throw new ApiError(404, "User with given email not found")
+        throw new ApiError(401, "Invalid email or password")
     }
 
     const isPasswordValid = await existingUser.isPasswordCorrect(password)
 
     if(!isPasswordValid){
-        throw new ApiError(401, "Incorrect Password")
+        throw new ApiError(401, "Invalid email or password")
     }
 
     const {accessToken, refreshToken} = await generateAccessandRefreshToken(existingUser._id)
@@ -250,14 +254,22 @@ const changeCurrentPassword = asyncHandler(async (req, res) =>{
 
     const {oldPassword, newPassword} = req.body
 
+    if (!oldPassword || !newPassword) {
+        throw new ApiError(400, "Current password and new password are required")
+    }
+
     const user = await User.findById(req.user?._id)
-    const isPasswordCorrect = user.isPasswordCorrect(oldPassword)
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
     if(!isPasswordCorrect){
-        throw new ApiError(400, "Invalid old Password")
+        throw new ApiError(401, "The current password you entered is incorrect")
     }
 
     user.password = newPassword
-    user.save({validateBeforeSave:false})
+    await user.save({validateBeforeSave:false})
 
     return res.status(200).json(new ApiResponse(200,{}, "Password Changed Successfully"))
 })

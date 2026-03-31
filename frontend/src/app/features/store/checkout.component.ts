@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AddressService } from '../../core/services/address.service';
 import { CartService } from '../../core/services/cart.service';
+import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
 import { CustomerAddress, CustomerCart } from '../../core/models/customer.models';
 import { OrderCheckoutPayload } from '../../core/models/order.models';
@@ -36,10 +37,6 @@ const EMPTY_CART: CustomerCart = {
             <a routerLink="/cart" class="btn-secondary !px-5 !py-3">Back To Cart</a>
             <a routerLink="/addresses" class="btn-secondary !px-5 !py-3">Manage Addresses</a>
           </div>
-        </div>
-
-        <div *ngIf="errorMessage" class="mt-6 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-          {{ errorMessage }}
         </div>
 
         <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
@@ -179,13 +176,13 @@ export class CheckoutComponent implements OnInit {
   selectedAddressId = '';
   isLoading = false;
   isSubmitting = false;
-  errorMessage = '';
   successMessage = '';
 
   constructor(
     private cartService: CartService,
     private addressService: AddressService,
     private orderService: OrderService,
+    private errorService: ErrorService,
     private router: Router
   ) {}
 
@@ -195,7 +192,6 @@ export class CheckoutComponent implements OnInit {
 
   loadCheckoutData(): void {
     this.isLoading = true;
-    this.errorMessage = '';
 
     forkJoin({
       cart: this.cartService.getCart(),
@@ -208,9 +204,8 @@ export class CheckoutComponent implements OnInit {
         const defaultAddress = this.addresses.find((address) => address.isDefault);
         this.selectedAddressId = defaultAddress?._id || this.addresses[0]?._id || '';
       },
-      error: (error) => {
+      error: () => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Unable to load checkout details.';
       }
     });
   }
@@ -220,18 +215,17 @@ export class CheckoutComponent implements OnInit {
     const payload = this.buildCheckoutPayload(selectedAddress);
 
     if (!payload) {
-      this.errorMessage = 'Please choose a valid delivery address before placing the order.';
+      this.errorService.showToast('Please choose a valid delivery address before placing the order.', 'error');
       return;
     }
 
     const RazorpayCheckout = (window as any).Razorpay;
     if (!RazorpayCheckout) {
-      this.errorMessage = 'Razorpay checkout failed to load. Please refresh and try again.';
+      this.errorService.showToast('Razorpay checkout failed to load. Please refresh and try again.', 'error');
       return;
     }
 
     this.isSubmitting = true;
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.orderService.checkout(payload).subscribe({
@@ -241,7 +235,7 @@ export class CheckoutComponent implements OnInit {
 
         if (!orderId || !razorOrder?.id) {
           this.isSubmitting = false;
-          this.errorMessage = 'Unable to initialize payment for this order.';
+          this.errorService.showToast('Unable to initialize payment for this order.', 'error');
           return;
         }
 
@@ -274,9 +268,8 @@ export class CheckoutComponent implements OnInit {
 
         razorpay.open();
       },
-      error: (error) => {
+      error: () => {
         this.isSubmitting = false;
-        this.errorMessage = error.error?.message || 'Unable to start checkout.';
       }
     });
   }
@@ -296,9 +289,8 @@ export class CheckoutComponent implements OnInit {
           this.cartService.resetCart();
           this.router.navigate(['/orders']);
         },
-        error: (error) => {
+        error: () => {
           this.isSubmitting = false;
-          this.errorMessage = error.error?.message || 'Payment verification failed.';
         }
       });
   }

@@ -25,10 +25,6 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
       </div>
 
-      <div *ngIf="errorMessage" class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-        {{ errorMessage }}
-      </div>
-
       <div *ngIf="successMessage" class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
         {{ successMessage }}
       </div>
@@ -136,7 +132,6 @@ export class VendorOrdersPageComponent implements OnInit {
   orders: OrderRecord[] = [];
   statuses: OrderStatus[] = ['Processing', 'Shipped', 'Delivered', 'Cancelled'];
   isLoading = false;
-  errorMessage = '';
   successMessage = '';
 
   constructor(
@@ -150,16 +145,14 @@ export class VendorOrdersPageComponent implements OnInit {
 
   loadOrders(): void {
     this.isLoading = true;
-    this.errorMessage = '';
 
     this.orderService.getVendorOrders().subscribe({
       next: (orders) => {
         this.isLoading = false;
         this.orders = orders;
       },
-      error: (error) => {
+      error: () => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Unable to load vendor orders.';
       }
     });
   }
@@ -169,7 +162,6 @@ export class VendorOrdersPageComponent implements OnInit {
       return;
     }
 
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.orderService.updateVendorOrderStatus(order._id, item._id, status).subscribe({
@@ -178,8 +170,7 @@ export class VendorOrdersPageComponent implements OnInit {
         this.successMessage = response?.message || `Order item updated to ${status}.`;
         this.orders = this.orders.map((entry) => (entry._id === order._id ? updatedOrder || entry : entry));
       },
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'Unable to update order item status.';
+      error: () => {
         this.loadOrders();
       }
     });

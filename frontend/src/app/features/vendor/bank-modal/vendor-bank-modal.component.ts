@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { VendorBankDetailsForm, VendorMessageType } from '../../../core/models/vendor.models';
+import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
 
 @Component({
   selector: 'app-vendor-bank-modal',
@@ -83,10 +83,6 @@ import { VendorBankDetailsForm, VendorMessageType } from '../../../core/models/v
             </div>
           </div>
 
-          <div *ngIf="message" class="rounded-2xl border p-4 text-sm font-bold" [ngClass]="messageClass()">
-            {{ message }}
-          </div>
-
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
             <button type="submit" [disabled]="isSaving" class="btn-primary !px-8 !py-4">
               {{ isSaving ? 'Saving Bank Details...' : 'Update Bank Details' }}
@@ -104,8 +100,6 @@ export class VendorBankModalComponent {
   @Input() open = false;
   @Input({ required: true }) form!: VendorBankDetailsForm;
   @Input() isSaving = false;
-  @Input() message = '';
-  @Input() messageType: VendorMessageType = 'success';
   @Output() formChange = new EventEmitter<VendorBankDetailsForm>();
   @Output() close = new EventEmitter<void>();
   @Output() submit = new EventEmitter<void>();
@@ -116,11 +110,5 @@ export class VendorBankModalComponent {
 
   normalizeIfsc(value: string): string {
     return String(value || '').toUpperCase();
-  }
-
-  messageClass(): string {
-    return this.messageType === 'success'
-      ? 'border-emerald-100 bg-emerald-50/80 text-emerald-700'
-      : 'border-rose-100 bg-rose-50/80 text-rose-700';
   }
 }

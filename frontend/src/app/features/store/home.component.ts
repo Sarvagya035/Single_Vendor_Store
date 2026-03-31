@@ -138,13 +138,6 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 {{ catalogMessage }}
               </div>
 
-              <div
-                *ngIf="catalogError"
-                class="mb-4 rounded-[1.1rem] border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-900"
-              >
-                {{ catalogError }}
-              </div>
-
               <div *ngIf="loadingProducts" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
@@ -236,7 +229,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectedCategorySlug = 'all';
   viewMode: 'landing' | 'search' = 'landing';
   catalogMessage = '';
-  catalogError = '';
   loadingCategories = false;
   private searchDebounceHandle: ReturnType<typeof setTimeout> | null = null;
   readonly skeletonCards = Array.from({ length: 6 });
@@ -291,7 +283,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   searchProducts(): void {
     const query = this.searchQuery.trim();
-    this.catalogError = '';
     this.catalogMessage = '';
 
     if (!query) {
@@ -316,7 +307,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.loadingProducts = false;
         this.products = [];
-        this.catalogError = error.error?.message || 'Unable to load products right now.';
       }
     });
   }
@@ -333,7 +323,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (!query) {
       this.viewMode = 'landing';
       this.selectedCategorySlug = 'all';
-      this.catalogError = '';
       this.catalogMessage = '';
       this.loadLandingProducts();
       return;
@@ -348,7 +337,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   loadLandingProducts(): void {
     this.loadingProducts = true;
-    this.catalogError = '';
     this.catalogMessage = '';
     this.products = [];
     this.landingCategories = [];
@@ -367,7 +355,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.loadingProducts = false;
         this.landingCategories = [];
-        this.catalogError = error.error?.message || 'Unable to load the catalog right now.';
       }
     });
   }
@@ -392,7 +379,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.loadingCategories = false;
         this.catalogCategories = [];
-        this.catalogError = error.error?.message || 'Unable to load categories right now.';
       }
     });
   }
@@ -432,7 +418,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.selectedCategorySlug = slug || 'all';
     this.viewMode = 'landing';
     this.searchQuery = '';
-    this.catalogError = '';
     this.products = [];
     this.refreshCatalogMessage();
   }

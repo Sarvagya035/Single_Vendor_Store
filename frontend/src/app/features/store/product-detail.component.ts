@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
+import { ErrorService } from '../../core/services/error.service';
 import { ReviewService } from '../../core/services/review.service';
 import {
   CustomerCatalogProduct,
@@ -28,10 +29,6 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
         </a>
 
         <div *ngIf="loading" class="mt-8 text-sm font-semibold text-slate-500">Loading product...</div>
-
-        <div *ngIf="errorMessage" class="mt-8 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-          {{ errorMessage }}
-        </div>
 
         <div *ngIf="successMessage" class="mt-8 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
           {{ successMessage }}
@@ -213,7 +210,6 @@ export class ProductDetailComponent implements OnInit {
   user: any = null;
   product: CustomerCatalogProduct | null = null;
   loading = false;
-  errorMessage = '';
   successMessage = '';
   selectedVariantId = '';
   selectedImage = '';
@@ -236,6 +232,7 @@ export class ProductDetailComponent implements OnInit {
     private authService: AuthService,
     private cartService: CartService,
     private catalogService: CatalogService,
+    private errorService: ErrorService,
     private reviewService: ReviewService,
     private route: ActivatedRoute,
     private router: Router
@@ -277,12 +274,11 @@ export class ProductDetailComponent implements OnInit {
   loadProduct(): void {
     const productId = this.route.snapshot.paramMap.get('productId');
     if (!productId) {
-      this.errorMessage = 'Product not found.';
+      this.errorService.showToast('Product not found.', 'error');
       return;
     }
 
     this.loading = true;
-    this.errorMessage = '';
 
     forkJoin({
       productResponse: this.catalogService.getProductDetails(productId),
@@ -302,7 +298,6 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = error.error?.message || 'Unable to load this product.';
       }
     });
   }
@@ -349,7 +344,7 @@ export class ProductDetailComponent implements OnInit {
   addToCart(): void {
     const variant = this.selectedVariant();
     if (!this.product?._id || !variant?._id) {
-      this.errorMessage = 'Please choose a valid variant.';
+      this.errorService.showToast('Please choose a valid variant.', 'error');
       return;
     }
 
@@ -363,7 +358,6 @@ export class ProductDetailComponent implements OnInit {
     }
 
     this.isAdding = true;
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.cartService.addToCart(this.product._id, variant._id, this.quantity).subscribe({
@@ -374,7 +368,6 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (error) => {
         this.isAdding = false;
-        this.errorMessage = error.error?.message || 'Unable to add this item to cart.';
       }
     });
   }
@@ -498,13 +491,12 @@ export class ProductDetailComponent implements OnInit {
     };
 
     if (!payload.title || !payload.commentBody || !payload.rating) {
-      this.errorMessage = 'Rating, title, and review text are required.';
+      this.errorService.showToast('Rating, title, and review text are required.', 'error');
       this.successMessage = '';
       return;
     }
 
     this.isSubmittingReview = true;
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.reviewService.addOrUpdateReview(payload).subscribe({
@@ -515,7 +507,6 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (error) => {
         this.isSubmittingReview = false;
-        this.errorMessage = error.error?.message || 'Unable to submit your review.';
       }
     });
   }

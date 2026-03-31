@@ -26,10 +26,6 @@ import { OrderService } from '../../core/services/order.service';
           </div>
         </div>
 
-        <div *ngIf="errorMessage" class="mt-6 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-          {{ errorMessage }}
-        </div>
-
         <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
           {{ successMessage }}
         </div>
@@ -85,7 +81,6 @@ import { OrderService } from '../../core/services/order.service';
 export class OrdersComponent implements OnInit {
   orders: OrderRecord[] = [];
   isLoading = false;
-  errorMessage = '';
   successMessage = '';
 
   constructor(private orderService: OrderService) {}
@@ -96,16 +91,14 @@ export class OrdersComponent implements OnInit {
 
   loadOrders(): void {
     this.isLoading = true;
-    this.errorMessage = '';
 
     this.orderService.getMyOrders().subscribe({
       next: (orders) => {
         this.isLoading = false;
         this.orders = orders;
       },
-      error: (error) => {
+      error: () => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Unable to load your orders.';
       }
     });
   }
@@ -120,7 +113,6 @@ export class OrdersComponent implements OnInit {
       return;
     }
 
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.orderService.cancelOrder(order._id).subscribe({
@@ -128,9 +120,7 @@ export class OrdersComponent implements OnInit {
         this.successMessage = response?.message || 'Order cancelled successfully.';
         this.loadOrders();
       },
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'Unable to cancel this order.';
-      }
+      error: () => {}
     });
   }
 

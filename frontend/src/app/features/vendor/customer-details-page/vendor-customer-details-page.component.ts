@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CustomerUser } from '../../../core/models/customer.models';
+import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 
 @Component({
@@ -30,10 +31,6 @@ import { VendorService } from '../../../core/services/vendor.service';
 
       <div *ngIf="isLoading" class="glass-card px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
         Loading customer details...
-      </div>
-
-      <div *ngIf="errorMessage" class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-        {{ errorMessage }}
       </div>
 
       <div *ngIf="!isLoading && customer" class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
@@ -103,7 +100,7 @@ import { VendorService } from '../../../core/services/vendor.service';
         </section>
       </div>
 
-      <div *ngIf="!isLoading && !customer && !errorMessage" class="glass-card px-6 py-12 text-center lg:px-8">
+      <div *ngIf="!isLoading && !customer" class="glass-card px-6 py-12 text-center lg:px-8">
         <h2 class="text-2xl font-black text-slate-900">Customer not found</h2>
         <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
           The customer you selected may have been removed or the link is invalid.
@@ -115,12 +112,12 @@ import { VendorService } from '../../../core/services/vendor.service';
 export class VendorCustomerDetailsPageComponent implements OnInit {
   customer: CustomerUser | null = null;
   isLoading = true;
-  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private vendorService: VendorService
+    private vendorService: VendorService,
+    private errorService: ErrorService
   ) {}
 
   ngOnInit(): void {
@@ -128,7 +125,7 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
 
     if (!userId) {
       this.isLoading = false;
-      this.errorMessage = 'Missing customer id.';
+      this.errorService.showToast('Missing customer id.', 'error');
       return;
     }
 
@@ -137,13 +134,8 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
         this.customer = users.find((user) => user._id === userId) || null;
         this.isLoading = false;
       },
-      error: (err) => {
+      error: () => {
         this.isLoading = false;
-        if (err.status === 401 || err.status === 403) {
-          this.router.navigate(['/login']);
-          return;
-        }
-        this.errorMessage = err.error?.message || 'Unable to load customer details.';
       }
     });
   }

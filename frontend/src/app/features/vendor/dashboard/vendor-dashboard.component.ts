@@ -56,10 +56,6 @@ interface DashboardProduct {
         </div>
       </div>
 
-      <div *ngIf="errorMessage" class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-        {{ errorMessage }}
-      </div>
-
       <div class="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
         <section class="glass-card overflow-hidden">
           <div class="border-b border-slate-200 px-6 py-5">
@@ -150,7 +146,6 @@ export class VendorDashboardComponent implements OnInit {
     productWiseSales: []
   };
   isLoading = true;
-  errorMessage = '';
 
   quickActions = [
     { title: 'Review Product Catalog', description: 'Open the products page and update stock, discounts, and visibility.', link: '/vendor/products' },
@@ -231,7 +226,6 @@ export class VendorDashboardComponent implements OnInit {
 
   loadDashboard(): void {
     this.isLoading = true;
-    this.errorMessage = '';
 
     forkJoin({
       products: this.vendorService.getMyProducts(),
@@ -244,7 +238,7 @@ export class VendorDashboardComponent implements OnInit {
         this.soldOrders = soldItems;
         this.isLoading = false;
       },
-      error: (error) => {
+      error: () => {
         this.products = [];
         this.soldOrders = [];
         this.analytics = {
@@ -252,7 +246,6 @@ export class VendorDashboardComponent implements OnInit {
           productWiseSales: []
         };
         this.isLoading = false;
-        this.errorMessage = error?.error?.message || 'Unable to load vendor dashboard data.';
       }
     });
   }

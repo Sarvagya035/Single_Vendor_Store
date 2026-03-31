@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,14 +11,14 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private api: ApiService) { }
 
   register(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, userData);
+    return this.api.post(`${this.apiUrl}/register`, userData, { withCredentials: false });
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
+    return this.api.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((res: any) => {
         if (res.success) {
           this.currentUserSubject.next(res.data?.user ?? null);
@@ -28,7 +28,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
+    return this.api.post(`${this.apiUrl}/logout`, {}).pipe(
       tap((res: any) => {
         if (res.success) {
           this.currentUserSubject.next(null);
@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/current-user`, { withCredentials: true }).pipe(
+    return this.api.get(`${this.apiUrl}/current-user`).pipe(
       tap((res: any) => {
         if (res.success) {
           this.currentUserSubject.next(res.data);
@@ -54,7 +54,7 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/refreshToken`, {}, { withCredentials: true });
+    return this.api.post(`${this.apiUrl}/refreshToken`, {});
   }
 
   clearCurrentUser(): void {

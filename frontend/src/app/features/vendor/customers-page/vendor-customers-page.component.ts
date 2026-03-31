@@ -56,10 +56,6 @@ import { VendorService } from '../../../core/services/vendor.service';
         </div>
       </div>
 
-      <div *ngIf="errorMessage" class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-        {{ errorMessage }}
-      </div>
-
       <section class="glass-card overflow-hidden">
         <div *ngIf="isLoading" class="px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
           Loading customer accounts...
@@ -115,7 +111,6 @@ export class VendorCustomersPageComponent implements OnInit {
   filteredCustomers: CustomerUser[] = [];
   searchTerm = '';
   isLoading = true;
-  errorMessage = '';
 
   constructor(
     private vendorService: VendorService,
@@ -137,7 +132,6 @@ export class VendorCustomersPageComponent implements OnInit {
 
   reloadCustomers(): void {
     this.isLoading = true;
-    this.errorMessage = '';
 
     this.vendorService.getRegisteredCustomers()
       .subscribe({
@@ -146,13 +140,8 @@ export class VendorCustomersPageComponent implements OnInit {
           this.customers = users;
           this.applyFilters();
         },
-        error: (err) => {
+        error: () => {
           this.isLoading = false;
-          if (err.status === 401 || err.status === 403) {
-            this.router.navigate(['/login']);
-            return;
-          }
-          this.errorMessage = err.error?.message || 'Unable to load customer accounts.';
         }
       });
   }

@@ -1,7 +1,7 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
-import { ApiError } from "./utils/ApiError.js"
+import { errorHandler, notFoundHandler } from "./middlewares/error.middleware.js"
 
 //router imports begin here
 import userRouter from "./routes/user.routes.js"
@@ -35,18 +35,7 @@ app.use("/api/v1/cart", cartRouter)
 app.use("/api/v1/orders", orderRouter)
 app.use("/api/v1/comments", commentRouter)
 
-app.use((err, req, res, next) => {
-    const statusCode = err instanceof ApiError ? err.statusCode : err.statusCode || 500;
-    const message = err instanceof ApiError ? err.message : err.message || "Internal Server Error";
-
-    console.error(err);
-
-    return res.status(statusCode).json({
-        success: false,
-        message,
-        errors: err.errors || [],
-        data: null
-    });
-});
+app.use(notFoundHandler)
+app.use(errorHandler)
 
 export { app }

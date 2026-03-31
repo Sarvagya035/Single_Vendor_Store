@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import {
   VendorCategoryRecord,
@@ -155,10 +156,6 @@ interface FlatCategoryOption {
             </div>
           </app-vendor-form-section>
 
-          <div *ngIf="errorMessage" class="rounded-3xl border border-rose-100 bg-rose-50/80 px-5 py-4 text-sm font-bold text-rose-700">
-            {{ errorMessage }}
-          </div>
-
           <div *ngIf="successMessage" class="rounded-3xl border border-emerald-100 bg-emerald-50/80 px-5 py-4 text-sm font-bold text-emerald-700">
             {{ successMessage }}
           </div>
@@ -180,7 +177,6 @@ export class VendorAddProductComponent implements OnInit {
   categories: VendorCategoryRecord[] = [];
   isLoadingCategories = true;
   isSubmitting = false;
-  errorMessage = '';
   successMessage = '';
 
   form = {
@@ -198,7 +194,11 @@ export class VendorAddProductComponent implements OnInit {
     this.createEmptyVariant()
   ];
 
-  constructor(private vendorService: VendorService, private router: Router) {}
+  constructor(
+    private vendorService: VendorService,
+    private router: Router,
+    private errorService: ErrorService
+  ) {}
 
   ngOnInit() {
     this.loadCategories();
@@ -223,7 +223,7 @@ export class VendorAddProductComponent implements OnInit {
       },
       error: () => {
         this.isLoadingCategories = false;
-        this.errorMessage = 'Failed to load categories.';
+        this.errorService.showToast('Failed to load categories.', 'error');
       }
     });
   }
@@ -261,16 +261,15 @@ export class VendorAddProductComponent implements OnInit {
   }
 
   submitProduct() {
-    this.errorMessage = '';
     this.successMessage = '';
 
     if (!this.form.productName.trim() || !this.form.productDescription.trim() || !this.form.category) {
-      this.errorMessage = 'Product name, description, and category are required.';
+      this.errorService.showToast('Product name, description, and category are required.', 'error');
       return;
     }
 
     if (this.mainImageFiles.length === 0) {
-      this.errorMessage = 'At least one main product image is required.';
+      this.errorService.showToast('At least one main product image is required.', 'error');
       return;
     }
 
@@ -301,7 +300,7 @@ export class VendorAddProductComponent implements OnInit {
         next: (res) => {
           this.isSubmitting = false;
           if (!res?.success) {
-            this.errorMessage = res?.message || 'Failed to create product.';
+            this.errorService.showToast(res?.message || 'Failed to create product.', 'error');
             return;
           }
 
@@ -311,13 +310,12 @@ export class VendorAddProductComponent implements OnInit {
             this.router.navigate(['/vendor/dashboard']);
           }, 1200);
         },
-        error: (err) => {
+        error: () => {
           this.isSubmitting = false;
-          this.errorMessage = err.error?.message || 'Failed to create product.';
         }
       });
     } catch (error) {
-      this.errorMessage = error instanceof Error ? error.message : 'Invalid product form data.';
+      this.errorService.showToast(error instanceof Error ? error.message : 'Invalid product form data.', 'error');
     }
   }
 

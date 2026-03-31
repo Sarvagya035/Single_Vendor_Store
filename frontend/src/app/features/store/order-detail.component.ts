@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrderItemRecord, OrderRecord, OrderStatus } from '../../core/models/order.models';
 import { AuthService } from '../../core/services/auth.service';
+import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
 
 @Component({
@@ -32,10 +33,6 @@ import { OrderService } from '../../core/services/order.service';
               Cancel Order
             </button>
           </div>
-        </div>
-
-        <div *ngIf="errorMessage" class="mt-6 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-          {{ errorMessage }}
         </div>
 
         <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
@@ -146,14 +143,14 @@ import { OrderService } from '../../core/services/order.service';
 export class OrderDetailComponent implements OnInit {
   order: OrderRecord | null = null;
   isLoading = false;
-  errorMessage = '';
   successMessage = '';
   currentRoles: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private orderService: OrderService,
-    private authService: AuthService
+    private authService: AuthService,
+    private errorService: ErrorService
   ) {}
 
   ngOnInit(): void {
@@ -225,24 +222,19 @@ export class OrderDetailComponent implements OnInit {
   loadOrder(): void {
     const orderId = this.route.snapshot.paramMap.get('orderId');
     if (!orderId) {
-      this.errorMessage = 'Order id is missing.';
+      this.errorService.showToast('Order id is missing.', 'error');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = '';
 
     this.orderService.getOrderDetails(orderId).subscribe({
       next: (order) => {
         this.isLoading = false;
         this.order = order;
-        if (!order) {
-          this.errorMessage = 'Order not found.';
-        }
       },
-      error: (error) => {
+      error: () => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Unable to load order details.';
       }
     });
   }
@@ -262,9 +254,7 @@ export class OrderDetailComponent implements OnInit {
         this.successMessage = response?.message || 'Order cancelled successfully.';
         this.loadOrder();
       },
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'Unable to cancel this order.';
-      }
+      error: () => {}
     });
   }
 

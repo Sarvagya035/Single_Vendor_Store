@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ErrorService } from '../../core/services/error.service';
+import { catchError, finalize, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -61,10 +63,6 @@ import { AuthService } from '../../core/services/auth.service';
               </div>
             </div>
 
-            <div *ngIf="errorMessage" class="bg-rose-50 text-rose-700 border border-rose-100 p-4 rounded-xl text-sm font-bold flex items-center gap-2">
-               <span>⚠️</span> {{ errorMessage }}
-            </div>
-
             <button type="submit" [disabled]="isLoading" class="btn-primary !w-full !py-4 text-lg">
               {{ isLoading ? 'Logging in...' : 'Sign In' }}
             </button>
@@ -91,49 +89,55 @@ export class LoginComponent {
   email = '';
   password = '';
   isLoading = false;
-  errorMessage = '';
   redirectTo = '';
   showPassword = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private errorService: ErrorService
   ) {
     this.redirectTo = this.route.snapshot.queryParamMap.get('redirectTo') || '';
   }
 
   onSubmit() {
     this.isLoading = true;
-    this.errorMessage = '';
 
-    this.authService.login({ email: this.email, password: this.password }).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        if (res.success) {
-          const user = res.data?.user;
-          const roles = Array.isArray(user?.role) ? user.role : [user?.role];
-
-          if (
-            roles.some((role: string) => String(role).toLowerCase() === 'vendor') ||
-            roles.some((role: string) => String(role).toLowerCase() === 'admin')
-          ) {
-            this.router.navigate(['/vendor/dashboard']);
-            return;
-          }
-
-          if (this.redirectTo && this.redirectTo.startsWith('/')) {
-            this.router.navigateByUrl(this.redirectTo);
-            return;
-          }
-
-          this.router.navigate(['/']);
+    this.authService
+      .login({ email: this.email, password: this.password })
+      .pipe(
+        catchError((error) => {
+          this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe((res) => {
+        if (!res?.success) {
+          this.errorService.showToast(res?.message || 'Login failed. Please verify credentials.', 'error');
+          return;
         }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Login failed. Please verify credentials.';
-      }
-    });
+
+        const user = res.data?.user;
+        const roles = Array.isArray(user?.role) ? user.role : [user?.role];
+
+        if (
+          roles.some((role: string) => String(role).toLowerCase() === 'vendor') ||
+          roles.some((role: string) => String(role).toLowerCase() === 'admin')
+        ) {
+          this.router.navigate(['/vendor/dashboard']);
+          return;
+        }
+
+        if (this.redirectTo && this.redirectTo.startsWith('/')) {
+          this.router.navigateByUrl(this.redirectTo);
+          return;
+        }
+
+        this.router.navigate(['/']);
+      });
   }
 }

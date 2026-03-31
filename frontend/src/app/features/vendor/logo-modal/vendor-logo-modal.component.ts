@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { VendorMessageType, VendorProfile } from '../../../core/models/vendor.models';
+import { VendorProfile } from '../../../core/models/vendor.models';
 
 @Component({
   selector: 'app-vendor-logo-modal',
@@ -34,10 +34,6 @@ import { VendorMessageType, VendorProfile } from '../../../core/models/vendor.mo
             </p>
           </div>
 
-          <div *ngIf="message" class="rounded-2xl border p-4 text-sm font-bold" [ngClass]="messageClass()">
-            {{ message }}
-          </div>
-
           <button
             type="button"
             (click)="submit.emit()"
@@ -57,15 +53,7 @@ export class VendorLogoModalComponent {
   @Input() logoPreview: string | null = null;
   @Input() selectedLogoName = '';
   @Input() isUploading = false;
-  @Input() message = '';
-  @Input() messageType: VendorMessageType = 'success';
   @Output() close = new EventEmitter<void>();
   @Output() selectLogo = new EventEmitter<Event>();
   @Output() submit = new EventEmitter<void>();
-
-  messageClass(): string {
-    return this.messageType === 'success'
-      ? 'border-emerald-100 bg-emerald-50/80 text-emerald-700'
-      : 'border-rose-100 bg-rose-50/80 text-rose-700';
-  }
 }

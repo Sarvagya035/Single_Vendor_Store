@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
+import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorBankModalComponent } from '../bank-modal/vendor-bank-modal.component';
 import { VendorDetailsModalComponent } from '../details-modal/vendor-details-modal.component';
 import { VendorEmptyStateComponent } from '../empty-state/vendor-empty-state.component';
 import { VendorLogoModalComponent } from '../logo-modal/vendor-logo-modal.component';
 import { VendorProfileCardComponent } from '../profile-card/vendor-profile-card.component';
-import { VendorBankDetailsForm, VendorDetailsForm, VendorMessageType, VendorProfile } from '../../../core/models/vendor.models';
+import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../../core/models/vendor.models';
 
 @Component({
   selector: 'app-vendor-profile-page',
@@ -45,8 +46,6 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorMessageType, VendorProf
       [open]="isEditDetailsOpen"
       [form]="form"
       [isSaving]="isSavingDetails"
-      [message]="detailsMessage"
-      [messageType]="detailsMessageType"
       (formChange)="updateForm($event)"
       (close)="toggleDetailsEditor()"
       (submit)="onUpdateDetails()"
@@ -56,8 +55,6 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorMessageType, VendorProf
       [open]="isEditBankOpen"
       [form]="bankForm"
       [isSaving]="isSavingBank"
-      [message]="bankMessage"
-      [messageType]="bankMessageType"
       (formChange)="updateBankForm($event)"
       (close)="toggleBankEditor()"
       (submit)="onUpdateBankDetails()"
@@ -69,8 +66,6 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorMessageType, VendorProf
       [logoPreview]="logoPreview"
       [selectedLogoName]="selectedLogo?.name || ''"
       [isUploading]="isUploadingLogo"
-      [message]="logoMessage"
-      [messageType]="logoMessageType"
       (close)="toggleLogoEditor()"
       (selectLogo)="onLogoSelected($event)"
       (submit)="onUpdateLogo()"
@@ -93,12 +88,6 @@ export class VendorProfilePageComponent implements OnInit {
 
   selectedLogo: File | null = null;
   logoPreview: string | null = null;
-  detailsMessage = '';
-  detailsMessageType: VendorMessageType = 'success';
-  bankMessage = '';
-  bankMessageType: VendorMessageType = 'success';
-  logoMessage = '';
-  logoMessageType: VendorMessageType = 'success';
   isLoading = true;
   isSavingDetails = false;
   isSavingBank = false;
@@ -109,7 +98,8 @@ export class VendorProfilePageComponent implements OnInit {
 
   constructor(
     private vendorService: VendorService,
-    private appRefreshService: AppRefreshService
+    private appRefreshService: AppRefreshService,
+    private errorService: ErrorService
   ) {}
 
   ngOnInit() {
@@ -152,7 +142,6 @@ export class VendorProfilePageComponent implements OnInit {
 
   onUpdateDetails() {
     this.isSavingDetails = true;
-    this.detailsMessage = '';
 
     this.vendorService
       .updateDetails({
@@ -164,30 +153,25 @@ export class VendorProfilePageComponent implements OnInit {
           this.isSavingDetails = false;
           if (res?.success) {
             this.vendor = res.data;
-            this.form = {
-              vendorAddress: res.data.vendorAddress || '',
-              vendorDescription: res.data.vendorDescription || ''
-            };
-            this.detailsMessageType = 'success';
-            this.detailsMessage = 'Vendor details updated successfully.';
-            this.isEditDetailsOpen = false;
-            this.refreshAppState();
-          } else {
-            this.detailsMessageType = 'error';
-            this.detailsMessage = res?.message || 'Unable to update store details.';
-          }
-        },
-        error: (err) => {
+          this.form = {
+            vendorAddress: res.data.vendorAddress || '',
+            vendorDescription: res.data.vendorDescription || ''
+          };
+          this.errorService.showToast('Vendor details updated successfully.', 'success');
+          this.isEditDetailsOpen = false;
+          this.refreshAppState();
+        } else {
+          this.errorService.showToast(res?.message || 'Unable to update store details.', 'error');
+        }
+      },
+        error: () => {
           this.isSavingDetails = false;
-          this.detailsMessageType = 'error';
-          this.detailsMessage = err.error?.message || 'Unable to update store details.';
         }
       });
   }
 
   onUpdateBankDetails() {
     this.isSavingBank = true;
-    this.bankMessage = '';
 
     this.vendorService
       .updateBankDetails({
@@ -209,19 +193,15 @@ export class VendorProfilePageComponent implements OnInit {
               bankName: res.data.bankDetails?.bankName || '',
               upiId: res.data.bankDetails?.upiId || ''
             };
-            this.bankMessageType = 'success';
-            this.bankMessage = res?.message || 'Bank details updated successfully.';
+            this.errorService.showToast(res?.message || 'Bank details updated successfully.', 'success');
             this.isEditBankOpen = false;
             this.refreshAppState();
           } else {
-            this.bankMessageType = 'error';
-            this.bankMessage = res?.message || 'Unable to update bank details.';
+            this.errorService.showToast(res?.message || 'Unable to update bank details.', 'error');
           }
         },
-        error: (err) => {
+        error: () => {
           this.isSavingBank = false;
-          this.bankMessageType = 'error';
-          this.bankMessage = err.error?.message || 'Unable to update bank details.';
         }
       });
   }
@@ -242,7 +222,6 @@ export class VendorProfilePageComponent implements OnInit {
     }
 
     this.isUploadingLogo = true;
-    this.logoMessage = '';
 
     this.vendorService.updateLogo(this.selectedLogo).subscribe({
       next: (res) => {
@@ -251,35 +230,28 @@ export class VendorProfilePageComponent implements OnInit {
           this.vendor = res.data;
           this.selectedLogo = null;
           this.logoPreview = null;
-          this.logoMessageType = 'success';
-          this.logoMessage = 'Vendor logo updated successfully.';
+          this.errorService.showToast('Vendor logo updated successfully.', 'success');
           this.isEditLogoOpen = false;
           this.refreshAppState();
         } else {
-          this.logoMessageType = 'error';
-          this.logoMessage = res?.message || 'Unable to update store logo.';
+          this.errorService.showToast(res?.message || 'Unable to update store logo.', 'error');
         }
       },
-      error: (err) => {
+      error: () => {
         this.isUploadingLogo = false;
-        this.logoMessageType = 'error';
-        this.logoMessage = err.error?.message || 'Unable to update store logo.';
       }
     });
   }
 
   toggleDetailsEditor() {
-    this.detailsMessage = '';
     this.isEditDetailsOpen = !this.isEditDetailsOpen;
   }
 
   toggleBankEditor() {
-    this.bankMessage = '';
     this.isEditBankOpen = !this.isEditBankOpen;
   }
 
   toggleLogoEditor() {
-    this.logoMessage = '';
     this.isEditLogoOpen = !this.isEditLogoOpen;
   }
 

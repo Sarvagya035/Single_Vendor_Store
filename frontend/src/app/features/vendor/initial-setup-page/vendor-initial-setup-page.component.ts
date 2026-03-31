@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 
 @Component({
@@ -291,10 +292,6 @@ import { VendorService } from '../../../core/services/vendor.service';
               </p>
             </div>
 
-            <div *ngIf="errorMessage" class="rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700">
-              {{ errorMessage }}
-            </div>
-
             <button
               type="submit"
               [disabled]="isLoading"
@@ -330,9 +327,11 @@ export class VendorInitialSetupPageComponent {
   logoPreview = '';
   isLoading = false;
   submitted = false;
-  errorMessage = '';
 
-  constructor(private vendorService: VendorService) {}
+  constructor(
+    private vendorService: VendorService,
+    private errorService: ErrorService
+  ) {}
 
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -352,12 +351,11 @@ export class VendorInitialSetupPageComponent {
 
   onSubmit(): void {
     if (!this.logoFile) {
-      this.errorMessage = 'Please upload a store logo.';
+      this.errorService.showToast('Please upload a store logo.', 'error');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = '';
 
     const payload = new FormData();
     payload.append('username', this.form.username.trim());
@@ -386,12 +384,11 @@ export class VendorInitialSetupPageComponent {
         if (res?.success) {
           this.submitted = true;
         } else {
-          this.errorMessage = res?.message || 'Setup failed.';
+          this.errorService.showToast(res?.message || 'Setup failed.', 'error');
         }
       },
-      error: (err) => {
+      error: () => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Setup failed. Please try again.';
       }
     });
   }
@@ -415,7 +412,6 @@ export class VendorInitialSetupPageComponent {
     };
     this.logoFile = null;
     this.logoPreview = '';
-    this.errorMessage = '';
     this.submitted = false;
   }
 }

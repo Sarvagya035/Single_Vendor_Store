@@ -35,13 +35,6 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           {{ successMessage }}
         </div>
 
-        <div
-          *ngIf="errorMessage"
-          class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700"
-        >
-          {{ errorMessage }}
-        </div>
-
         <div *ngIf="showForm" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
           <div class="flex items-center justify-between gap-4">
             <div>
@@ -219,7 +212,6 @@ export class CustomerAddressBookComponent implements OnInit {
   showForm = false;
   editingAddressId: string | null = null;
   successMessage = '';
-  errorMessage = '';
   form: CustomerAddressForm = this.createEmptyForm();
 
   constructor(private addressService: AddressService) {}
@@ -230,16 +222,14 @@ export class CustomerAddressBookComponent implements OnInit {
 
   loadAddresses(): void {
     this.loading = true;
-    this.errorMessage = '';
 
     this.addressService.getAddresses().subscribe({
       next: (res) => {
         this.loading = false;
         this.addresses = res?.data || [];
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'Failed to load addresses.';
       }
     });
   }
@@ -249,7 +239,6 @@ export class CustomerAddressBookComponent implements OnInit {
     this.editingAddressId = null;
     this.form = this.createEmptyForm();
     this.successMessage = '';
-    this.errorMessage = '';
   }
 
   startEdit(address: CustomerAddress): void {
@@ -266,7 +255,6 @@ export class CustomerAddressBookComponent implements OnInit {
       country: address.country
     };
     this.successMessage = '';
-    this.errorMessage = '';
   }
 
   cancelForm(): void {
@@ -277,7 +265,6 @@ export class CustomerAddressBookComponent implements OnInit {
 
   saveAddress(): void {
     this.isSaving = true;
-    this.errorMessage = '';
     this.successMessage = '';
 
     const request$ = this.editingAddressId
@@ -291,9 +278,8 @@ export class CustomerAddressBookComponent implements OnInit {
         this.cancelForm();
         this.loadAddresses();
       },
-      error: (err) => {
+      error: () => {
         this.isSaving = false;
-        this.errorMessage = err.error?.message || 'Failed to save address.';
       }
     });
   }
@@ -303,7 +289,6 @@ export class CustomerAddressBookComponent implements OnInit {
       return;
     }
 
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.addressService.setDefaultAddress(address._id).subscribe({
@@ -311,9 +296,7 @@ export class CustomerAddressBookComponent implements OnInit {
         this.successMessage = res?.message || 'Default address updated.';
         this.loadAddresses();
       },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Failed to update default address.';
-      }
+      error: () => {}
     });
   }
 
@@ -327,7 +310,6 @@ export class CustomerAddressBookComponent implements OnInit {
       return;
     }
 
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.addressService.deleteAddress(address._id).subscribe({
@@ -335,9 +317,7 @@ export class CustomerAddressBookComponent implements OnInit {
         this.successMessage = res?.message || 'Address deleted successfully.';
         this.loadAddresses();
       },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Failed to delete address.';
-      }
+      error: () => {}
     });
   }
 

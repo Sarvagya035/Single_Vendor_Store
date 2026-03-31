@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { ToastBannerComponent } from '../../shared/ui/toast-banner.component';
+import { ErrorService } from '../../core/services/error.service';
+import { catchError, finalize, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ToastBannerComponent],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <div class="min-h-screen bg-slate-50 flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
       <!-- Background Glow Effects -->
@@ -86,10 +87,6 @@ import { ToastBannerComponent } from '../../shared/ui/toast-banner.component';
               </div>
             </div>
 
-            <div *ngIf="errorMessage" class="bg-rose-50 text-rose-700 border border-rose-100 p-4 rounded-xl text-sm font-bold flex items-center gap-2">
-               <span>⚠️</span> {{ errorMessage }}
-            </div>
-
             <button type="submit" [disabled]="isLoading" class="btn-primary !w-full !py-4 text-lg">
               {{ isLoading ? 'Creating Account...' : 'Register' }}
             </button>
@@ -104,7 +101,6 @@ import { ToastBannerComponent } from '../../shared/ui/toast-banner.component';
         </div>
       </div>
 
-      <app-toast-banner [visible]="toast.visible" [message]="toast.message" [type]="toast.type" />
     </div>
   `
 })
@@ -114,45 +110,36 @@ export class RegisterComponent {
   phone = '';
   password = '';
   isLoading = false;
-  errorMessage = '';
-  successMessage = '';
   showPassword = false;
-  toast: {
-    visible: boolean;
-    message: string;
-    type: 'success' | 'error';
-  } = {
-    visible: false,
-    message: '',
-    type: 'success'
-  };
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private errorService: ErrorService
   ) { }
 
   onSubmit() {
     this.isLoading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
-    this.authService.register({ username: this.username, email: this.email, phone: this.phone, password: this.password }).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        if (res.success) {
-          this.successMessage = res.message || 'Registration successful.';
-          this.showToast(this.successMessage, 'success');
+    this.authService
+      .register({ username: this.username, email: this.email, phone: this.phone, password: this.password })
+      .pipe(
+        catchError((error) => {
+          this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe((res) => {
+        if (res?.success) {
+          this.errorService.showToast(res.message || 'Registration successful.', 'success');
           setTimeout(() => {
             this.router.navigate(['/login']);
           }, 900);
         }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Registration failed. Please try again.';
-      }
-    });
+      });
   }
 
   resetForm(): void {
@@ -160,16 +147,5 @@ export class RegisterComponent {
     this.email = '';
     this.phone = '';
     this.password = '';
-    this.errorMessage = '';
-    this.successMessage = '';
-    this.toast.visible = false;
-    this.toast.message = '';
-  }
-
-  private showToast(message: string, type: 'success' | 'error'): void {
-    this.toast = { visible: true, message, type };
-    setTimeout(() => {
-      this.toast.visible = false;
-    }, 3000);
   }
 }

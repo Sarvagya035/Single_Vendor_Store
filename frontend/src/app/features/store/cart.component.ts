@@ -37,13 +37,6 @@ const EMPTY_CART: CustomerCart = {
           </div>
 
           <div
-            *ngIf="cartError"
-            class="mt-6 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700"
-          >
-            {{ cartError }}
-          </div>
-
-          <div
             *ngIf="cart.alerts"
             class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700"
           >
@@ -175,7 +168,6 @@ export class CartComponent implements OnInit {
   cart: CustomerCart = EMPTY_CART;
   cartLoading = false;
   cartMessage = '';
-  cartError = '';
 
   constructor(
     private authService: AuthService,
@@ -225,7 +217,6 @@ export class CartComponent implements OnInit {
 
   loadCart(): void {
     this.cartLoading = true;
-    this.cartError = '';
 
     this.cartService.getCart().subscribe({
       next: () => {
@@ -233,7 +224,6 @@ export class CartComponent implements OnInit {
       },
       error: (error) => {
         this.cartLoading = false;
-        this.cartError = error.error?.message || 'Unable to load cart.';
       }
     });
   }
@@ -243,53 +233,42 @@ export class CartComponent implements OnInit {
     const variantId = item.variantId;
 
     if (!productId || !variantId) {
-      this.cartError = 'This cart item is missing product details.';
       return;
     }
 
-    this.cartError = '';
     this.cartMessage = '';
 
     this.cartService.updateQuantity(productId, variantId, action).subscribe({
       next: (response) => {
         this.cartMessage = response?.message || 'Cart updated.';
       },
-      error: (error) => {
-        this.cartError = error.error?.message || 'Unable to update quantity.';
-      }
+      error: () => {}
     });
   }
 
   removeFromCart(item: CustomerCartItem): void {
     if (!item.variantId) {
-      this.cartError = 'This cart item cannot be removed right now.';
       return;
     }
 
-    this.cartError = '';
     this.cartMessage = '';
 
     this.cartService.removeItem(item.variantId).subscribe({
       next: (response) => {
         this.cartMessage = response?.message || 'Item removed from cart.';
       },
-      error: (error) => {
-        this.cartError = error.error?.message || 'Unable to remove this item.';
-      }
+      error: () => {}
     });
   }
 
   clearCart(): void {
-    this.cartError = '';
     this.cartMessage = '';
 
     this.cartService.clearCart().subscribe({
       next: (response) => {
         this.cartMessage = response?.message || 'Cart cleared successfully.';
       },
-      error: (error) => {
-        this.cartError = error.error?.message || 'Unable to clear cart.';
-      }
+      error: () => {}
     });
   }
 

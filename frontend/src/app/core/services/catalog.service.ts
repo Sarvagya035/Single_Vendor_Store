@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../models/customer.models';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,24 +12,24 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
 export class CatalogService {
   private productUrl = `${environment.apiUrl}/product`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private api: ApiService) {}
 
   getCatalogProducts(page = 1, limit = 12): Observable<any> {
     const params = new HttpParams().set('page', page).set('limit', limit);
 
-    return this.http
-      .get(`${this.productUrl}/get-all-products`, { params, withCredentials: true })
+    return this.api
+      .get(`${this.productUrl}/get-all-products`, { params })
       .pipe(map((response: any) => this.normalizeProductCollection(response)));
   }
 
   getLandingPageProducts(): Observable<any> {
-    return this.http
-      .get(`${this.productUrl}/get-landing-page-products`, { withCredentials: true })
+    return this.api
+      .get(`${this.productUrl}/get-landing-page-products`)
       .pipe(map((response: any) => this.normalizeLandingCollection(response)));
   }
 
   getLandingCategories(): Observable<any> {
-    return this.http
+    return this.api
       .get(`${environment.apiUrl}/category/landing`)
       .pipe(
         map((response: any) => ({
@@ -48,13 +49,13 @@ export class CatalogService {
       .set('page', page)
       .set('limit', limit);
 
-    return this.http
-      .get(`${this.productUrl}/search`, { params, withCredentials: true })
+    return this.api
+      .get(`${this.productUrl}/search`, { params })
       .pipe(map((response: any) => this.normalizeProductCollection(response)));
   }
 
   getProductDetails(productId: string): Observable<any> {
-    return this.http
+    return this.api
       .get(`${this.productUrl}/public/get-product-by-id/${productId}`)
       .pipe(
         map((response: any) => ({
