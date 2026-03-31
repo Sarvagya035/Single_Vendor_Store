@@ -113,7 +113,7 @@ export class ProfileComponent implements OnInit {
         if (res?.success) {
           this.user = res.data;
           this.appRefreshService.notify('auth');
-          if (!this.isAdmin() && !this.isVendor()) {
+          if (this.isAdmin() || this.isVendor()) {
             this.fetchVendorProfile();
           }
         } else {
