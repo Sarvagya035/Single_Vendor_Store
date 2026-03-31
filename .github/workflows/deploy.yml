@@ -17,12 +17,16 @@ jobs:
           username: ec2-user
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
+
             cd ~/Single_Vendor_Store
-            git pull origin feature/working-backend-frontend-setup
+
+            git fetch origin
+            git reset --hard origin/feature/working-backend-frontend-setup
 
             cd backend
             npm install
-            pm2 restart backend
+            pm2 restart backend --update-env
 
             cd ../frontend
             npm install
