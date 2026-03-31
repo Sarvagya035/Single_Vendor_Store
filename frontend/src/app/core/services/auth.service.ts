@@ -77,6 +77,13 @@ export class AuthService {
     this.setSessionActive(false);
   }
 
+  setCurrentUser(user: unknown): void {
+    this.currentUserSubject.next(user);
+    if (user) {
+      this.setSessionActive(true);
+    }
+  }
+
   hasStoredSession(): boolean {
     return this.readSessionFlag();
   }

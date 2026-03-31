@@ -38,16 +38,6 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
             </label>
           </div>
 
-          <div
-            *ngIf="message"
-            [ngClass]="{ 'border-emerald-100 bg-emerald-50 text-emerald-700': isSuccess, 'border-rose-100 bg-rose-50 text-rose-700': !isSuccess }"
-            class="flex items-center gap-2 rounded-xl border p-4 text-sm font-bold"
-          >
-            <span *ngIf="isSuccess">✅</span>
-            <span *ngIf="!isSuccess">⚠️</span>
-            {{ message }}
-          </div>
-
           <button type="button" (click)="submit.emit()" [disabled]="!selectedFileName || isSubmitting" class="btn-primary !w-full !py-4">
             {{ isSubmitting ? 'Uploading...' : 'Update Picture' }}
           </button>
@@ -60,8 +50,6 @@ export class CustomerAvatarPanelComponent {
   @Input({ required: true }) user!: CustomerProfileForm;
   @Input() previewUrl: string | null = null;
   @Input() selectedFileName = '';
-  @Input() message = '';
-  @Input() isSuccess = false;
   @Input() isSubmitting = false;
   @Output() fileSelected = new EventEmitter<Event>();
   @Output() submit = new EventEmitter<void>();

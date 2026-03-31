@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AppRefreshService } from '../../../core/services/app-refresh.service';
+import { ErrorService } from '../../../core/services/error.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { CustomerAccountFormComponent } from '../account-form/customer-account-form.component';
@@ -26,8 +26,6 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
         <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
           <app-customer-account-form
             [user]="user"
-            [message]="profileMessage"
-            [isSuccess]="isProfileSuccess"
             [isSubmitting]="isUpdatingProfile"
             (userChange)="updateUser($event)"
             (submit)="onUpdateProfile()"
@@ -37,8 +35,6 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
             [user]="user"
             [previewUrl]="previewUrl"
             [selectedFileName]="selectedFile?.name || ''"
-            [message]="avatarMessage"
-            [isSuccess]="isAvatarSuccess"
             [isSubmitting]="isUpdatingAvatar"
             (fileSelected)="onFileSelected($event)"
             (submit)="onUpdateAvatar()"
@@ -54,18 +50,14 @@ export class EditProfileComponent implements OnInit {
   previewUrl: string | null = null;
 
   isUpdatingProfile = false;
-  profileMessage = '';
-  isProfileSuccess = false;
 
   isUpdatingAvatar = false;
-  avatarMessage = '';
-  isAvatarSuccess = false;
 
   constructor(
     private authService: AuthService,
     private userService: UserService,
     private router: Router,
-    private appRefreshService: AppRefreshService
+    private errorService: ErrorService
   ) {}
 
   ngOnInit() {
@@ -96,31 +88,20 @@ export class EditProfileComponent implements OnInit {
 
   onUpdateProfile() {
     this.isUpdatingProfile = true;
-    this.profileMessage = '';
     this.userService.updateProfile({ username: this.user.username, phone: this.user.phone }).subscribe({
       next: (res) => {
         this.isUpdatingProfile = false;
         if (res.success) {
-          this.profileMessage = 'Profile updated successfully!';
-          this.isProfileSuccess = true;
-          this.authService.refreshCurrentUser().subscribe({
-            next: (userRes) => {
-              if (userRes?.success) {
-                this.user = { ...userRes.data };
-                this.appRefreshService.notify('auth');
-              }
-            },
-            error: () => this.appRefreshService.notify('auth')
-          });
+          this.user = { ...this.user, ...res.data };
+          this.authService.setCurrentUser(this.user);
+          this.errorService.showToast(res.message || 'Profile updated successfully!', 'success');
         } else {
-          this.profileMessage = res.message || 'Update failed.';
-          this.isProfileSuccess = false;
+          this.errorService.showToast(res.message || 'Update failed.', 'error');
         }
       },
       error: (err) => {
         this.isUpdatingProfile = false;
-        this.profileMessage = err.error?.message || 'Update failed.';
-        this.isProfileSuccess = false;
+        this.errorService.showToast(err.error?.message || 'Update failed.', 'error');
       }
     });
   }
@@ -130,35 +111,24 @@ export class EditProfileComponent implements OnInit {
       return;
     }
     this.isUpdatingAvatar = true;
-    this.avatarMessage = '';
     this.userService.updateAvatar(this.selectedFile).subscribe({
       next: (res) => {
         this.isUpdatingAvatar = false;
         if (res.success) {
-          this.avatarMessage = 'Avatar updated successfully!';
-          this.isAvatarSuccess = true;
           this.user.avatar = res.data.avatar;
           this.selectedFile = null;
           this.previewUrl = null;
-          this.authService.refreshCurrentUser().subscribe({
-            next: (userRes) => {
-              if (userRes?.success) {
-                this.user = { ...userRes.data };
-                this.appRefreshService.notify('auth');
-              }
-            },
-            error: () => this.appRefreshService.notify('auth')
-          });
+          this.authService.setCurrentUser({ ...this.user, avatar: res.data.avatar });
+          this.errorService.showToast(res.message || 'Avatar updated successfully!', 'success');
         } else {
-          this.avatarMessage = res.message || 'Upload failed.';
-          this.isAvatarSuccess = false;
+          this.errorService.showToast(res.message || 'Upload failed.', 'error');
         }
       },
       error: (err) => {
         this.isUpdatingAvatar = false;
-        this.avatarMessage = err.error?.message || 'Upload failed.';
-        this.isAvatarSuccess = false;
+        this.errorService.showToast(err.error?.message || 'Upload failed.', 'error');
       }
     });
   }
+
 }

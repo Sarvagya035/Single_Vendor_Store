@@ -24,6 +24,20 @@
     color: var(--text-main);
   }
 
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 220ms;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  ::view-transition-old(root) {
+    animation-name: page-fade-out;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: page-fade-in;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply tracking-tight text-slate-900;
   }
@@ -113,6 +127,28 @@
   0% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0px); }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 }
 
 .animate-float {

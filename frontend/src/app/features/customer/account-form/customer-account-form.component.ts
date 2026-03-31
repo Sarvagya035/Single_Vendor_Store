@@ -44,16 +44,6 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
           </div>
         </div>
 
-        <div
-          *ngIf="message"
-          [ngClass]="{ 'border-emerald-100 bg-emerald-50 text-emerald-700': isSuccess, 'border-rose-100 bg-rose-50 text-rose-700': !isSuccess }"
-          class="flex items-center gap-2 rounded-xl border p-4 text-sm font-bold"
-        >
-          <span *ngIf="isSuccess">✅</span>
-          <span *ngIf="!isSuccess">⚠️</span>
-          {{ message }}
-        </div>
-
         <button type="submit" [disabled]="isSubmitting" class="btn-primary !w-full !py-4 text-lg">
           {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
         </button>
@@ -63,8 +53,6 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
 })
 export class CustomerAccountFormComponent {
   @Input({ required: true }) user!: CustomerProfileForm;
-  @Input() message = '';
-  @Input() isSuccess = false;
   @Input() isSubmitting = false;
   @Output() userChange = new EventEmitter<CustomerProfileForm>();
   @Output() submit = new EventEmitter<void>();
