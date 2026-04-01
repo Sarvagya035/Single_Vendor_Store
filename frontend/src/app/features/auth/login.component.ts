@@ -73,12 +73,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
               Don't have an account?
               <a routerLink="/register" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Register Now</a>
             </p>
-            <p class="mt-4 text-xs font-medium text-slate-400">
-              First-time setup?
-              <a routerLink="/vendor/initial-setup" class="ml-1 font-black uppercase tracking-[0.14em] text-slate-700 hover:text-indigo-600">
-                Create vendor store
-              </a>
-            </p>
+            
           </div>
         </div>
       </div>

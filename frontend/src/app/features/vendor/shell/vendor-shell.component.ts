@@ -1,7 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterModule
+} from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { CustomerUser } from '../../../core/models/customer.models';
 import { VendorService } from '../../../core/services/vendor.service';
@@ -26,7 +35,21 @@ import { OrderService } from '../../../core/services/order.service';
           />
 
           <section class="space-y-6">
-            <router-outlet />
+            @if (isNavigating()) {
+              <div class="rounded-[1.5rem] border border-emerald-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
+                <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                  <div class="route-progress h-full w-1/3 rounded-full bg-gradient-to-r from-emerald-500 via-cyan-500 to-indigo-500"></div>
+                </div>
+              </div>
+            }
+
+            <div
+              class="transition-all duration-300 ease-out"
+              [class.opacity-60]="isNavigating()"
+              [class.translate-y-1]="isNavigating()"
+            >
+              <router-outlet />
+            </div>
           </section>
         </div>
       </main>
@@ -38,6 +61,9 @@ export class VendorShellComponent implements OnInit {
   categoryCount = 0;
   customerCount = 0;
   orderCount = 0;
+  readonly isNavigating = signal(false);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private vendorService: VendorService,
@@ -71,6 +97,26 @@ export class VendorShellComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.router.events
+      .pipe(
+        filter(
+          (event): event is NavigationStart | NavigationEnd | NavigationCancel | NavigationError =>
+            event instanceof NavigationStart ||
+            event instanceof NavigationEnd ||
+            event instanceof NavigationCancel ||
+            event instanceof NavigationError
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          this.isNavigating.set(true);
+          return;
+        }
+
+        this.isNavigating.set(false);
+      });
+
     this.appRefreshService.refresh$.subscribe((scope) => {
       if (scope === 'global' || scope === 'vendor') {
         this.loadSummary();
