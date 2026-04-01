@@ -19,7 +19,8 @@ export class ErrorInterceptor implements HttpInterceptor {
         const shouldSkipAuthErrorHandling =
           request.context.get(SKIP_AUTH_ERROR_HANDLING) ||
           request.url.includes('/users/current-user') ||
-          request.url.includes('/users/refreshToken');
+          request.url.includes('/users/refreshToken') ||
+          request.url.includes('/users/changePassword');
 
         if (!shouldSkipAuthErrorHandling) {
           this.errorService.handleHttpError(error);

@@ -50,11 +50,11 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showOldPassword ? 'text' : 'password'"
                   autocomplete="current-password"
                   placeholder="Enter your current password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-28 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                 >
                 <button
                   type="button"
-                  class="absolute inset-y-0 right-2 my-auto rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 transition hover:bg-slate-50"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                   (click)="showOldPassword = !showOldPassword"
                 >
                   {{ showOldPassword ? 'Hide' : 'Show' }}
@@ -74,11 +74,11 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showNewPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Enter your new password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-28 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                 >
                 <button
                   type="button"
-                  class="absolute inset-y-0 right-2 my-auto rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 transition hover:bg-slate-50"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                   (click)="showNewPassword = !showNewPassword"
                 >
                   {{ showNewPassword ? 'Hide' : 'Show' }}
@@ -98,11 +98,11 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showConfirmPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Re-enter your new password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-28 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                 >
                 <button
                   type="button"
-                  class="absolute inset-y-0 right-2 my-auto rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 transition hover:bg-slate-50"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                   (click)="showConfirmPassword = !showConfirmPassword"
                 >
                   {{ showConfirmPassword ? 'Hide' : 'Show' }}
