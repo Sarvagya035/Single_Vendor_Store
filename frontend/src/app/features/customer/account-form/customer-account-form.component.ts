@@ -36,6 +36,8 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
               type="text"
               id="phone"
               name="phone"
+              inputmode="numeric"
+              pattern="[0-9]*"
               [ngModel]="user.phone"
               (ngModelChange)="updateField('phone', $event)"
               placeholder="+1 (555) 000-0000"

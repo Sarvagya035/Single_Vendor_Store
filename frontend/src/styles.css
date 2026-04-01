@@ -75,7 +75,7 @@
   }
 
   .app-card-soft {
-    @apply rounded-[1.75rem] border border-slate-200 bg-slate-50/80 shadow-[0_18px_40px_rgba(15,23,42,0.04)];
+    @apply rounded-[1.75rem] border border-slate-200/80 bg-slate-50/80 shadow-[0_18px_40px_rgba(15,23,42,0.04)];
   }
 
   .btn-primary {

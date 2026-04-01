@@ -12,6 +12,8 @@ const addNewAddress = asyncHandler(async (req, res) =>{
     }
 
     const {fullname, phone, addressLine1, addressLine2, city, state, postalCode, country} = req.body
+    const normalizedPhone = normalizeDigits(phone);
+    const normalizedPostalCode = normalizeDigits(postalCode);
 
     if (
         [fullname, phone, addressLine1, city, state, postalCode, country].some((field)=> !field || field.trim() === "")
@@ -19,14 +21,22 @@ const addNewAddress = asyncHandler(async (req, res) =>{
         throw new ApiError(400, "Please Fill out all the fields")
     }
 
+    if (normalizedPhone.length < 10) {
+        throw new ApiError(400, "Phone number must be numeric and at least 10 digits");
+    }
+
+    if (normalizedPostalCode.length < 4) {
+        throw new ApiError(400, "Postal code must be numeric");
+    }
+
     const newAddress = await Address.create({
         fullname,
-        phone,
+        phone: normalizedPhone,
         addressLine1,
         addressLine2: addressLine2 || "",
         city, 
         state,
-        postalCode,
+        postalCode: normalizedPostalCode,
         country,
         isDefault: true,
         user: userId,
@@ -64,6 +74,20 @@ const updateExistingAddress = asyncHandler(async (req, res)=>{
             existingAddress[field] = req.body[field]
         }
     });
+
+    if (typeof existingAddress.phone === "string") {
+        existingAddress.phone = normalizeDigits(existingAddress.phone);
+        if (existingAddress.phone.length > 0 && existingAddress.phone.length < 10) {
+            throw new ApiError(400, "Phone number must be numeric and at least 10 digits");
+        }
+    }
+
+    if (typeof existingAddress.postalCode === "string") {
+        existingAddress.postalCode = normalizeDigits(existingAddress.postalCode);
+        if (existingAddress.postalCode.length > 0 && existingAddress.postalCode.length < 4) {
+            throw new ApiError(400, "Postal code must be numeric");
+        }
+    }
 
     await existingAddress.save();
 
@@ -128,4 +152,8 @@ export {
     deleteExistingAddress,
     setAddressAsDefault
     
+}
+
+function normalizeDigits(value) {
+    return String(value || "").replace(/\D/g, "");
 }

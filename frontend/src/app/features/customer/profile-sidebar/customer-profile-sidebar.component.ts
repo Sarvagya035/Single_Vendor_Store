@@ -49,8 +49,9 @@ import { CustomerUser } from '../../../core/models/customer.models';
           </div>
         </div>
 
-        <div class="mt-6">
+        <div class="mt-6 space-y-3">
           <a routerLink="/profile/edit" class="btn-primary !w-full !justify-center !py-3.5">Edit Profile</a>
+          <a routerLink="/profile/edit" class="btn-secondary !w-full !justify-center !py-3.5">Security Settings</a>
         </div>
       </div>
     </div>

@@ -59,6 +59,7 @@ import { NotificationService } from '../../core/services/notification.service';
                   name="phone"
                   type="tel"
                   inputmode="numeric"
+                  pattern="[0-9]*"
                   required
                   [(ngModel)]="phone"
                   (ngModelChange)="validatePhone()"

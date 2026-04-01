@@ -11,6 +11,12 @@ const addressSchema = new Schema({
         type: String,
         trim: true,
         required: true,
+        validate: {
+            validator: function (value) {
+                return /^\d{10,}$/.test(String(value || ""));
+            },
+            message: "Phone number must be numeric and at least 10 digits"
+        }
     },
     addressLine1: {
         type: String,
@@ -35,6 +41,12 @@ const addressSchema = new Schema({
         type: String,
         trim: true,
         required: true,
+        validate: {
+            validator: function (value) {
+                return /^\d{4,10}$/.test(String(value || ""));
+            },
+            message: "Postal code must be numeric"
+        }
     },
     country: {
         type: String,

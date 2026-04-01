@@ -71,6 +71,9 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <input
                 name="phone"
                 [(ngModel)]="form.phone"
+                type="tel"
+                inputmode="numeric"
+                pattern="[0-9]*"
                 required
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
               />
@@ -81,6 +84,9 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <input
                 name="postalCode"
                 [(ngModel)]="form.postalCode"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]*"
                 required
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
               />

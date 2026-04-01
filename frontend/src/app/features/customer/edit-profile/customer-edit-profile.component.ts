@@ -7,7 +7,8 @@ import { UserService } from '../../../core/services/user.service';
 import { CustomerAccountFormComponent } from '../account-form/customer-account-form.component';
 import { CustomerAvatarPanelComponent } from '../avatar-panel/customer-avatar-panel.component';
 import { CustomerEditHeaderComponent } from '../edit-header/customer-edit-header.component';
-import { CustomerProfileForm } from '../../../core/models/customer.models';
+import { CustomerPasswordForm, CustomerProfileForm } from '../../../core/models/customer.models';
+import { CustomerPasswordPanelComponent } from '../password-panel/customer-password-panel.component';
 
 @Component({
   selector: 'app-edit-profile',
@@ -16,7 +17,8 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
     CommonModule,
     CustomerEditHeaderComponent,
     CustomerAccountFormComponent,
-    CustomerAvatarPanelComponent
+    CustomerAvatarPanelComponent,
+    CustomerPasswordPanelComponent
   ],
   template: `
     <div class="min-h-screen bg-slate-50 pt-16 pb-32">
@@ -43,6 +45,17 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
             (fileSelected)="onFileSelected($event)"
             (submit)="onUpdateAvatar()"
           />
+
+          <div class="lg:col-span-2">
+            <app-customer-password-panel
+              [passwordForm]="passwordForm"
+              [message]="passwordMessage"
+              [isSuccess]="isPasswordSuccess"
+              [isSubmitting]="isChangingPassword"
+              (passwordFormChange)="updatePasswordForm($event)"
+              (submit)="onChangePassword()"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -50,6 +63,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
 })
 export class EditProfileComponent implements OnInit {
   user: CustomerProfileForm = { username: '', phone: '', avatar: '' };
+  passwordForm: CustomerPasswordForm = { oldPassword: '', newPassword: '', confirmPassword: '' };
   selectedFile: File | null = null;
   previewUrl: string | null = null;
 
@@ -60,6 +74,10 @@ export class EditProfileComponent implements OnInit {
   isUpdatingAvatar = false;
   avatarMessage = '';
   isAvatarSuccess = false;
+
+  isChangingPassword = false;
+  passwordMessage = '';
+  isPasswordSuccess = false;
 
   constructor(
     private authService: AuthService,
@@ -81,6 +99,11 @@ export class EditProfileComponent implements OnInit {
 
   updateUser(user: CustomerProfileForm) {
     this.user = user;
+  }
+
+  updatePasswordForm(passwordForm: CustomerPasswordForm): void {
+    this.passwordForm = passwordForm;
+    this.passwordMessage = '';
   }
 
   onFileSelected(event: Event) {
@@ -158,6 +181,55 @@ export class EditProfileComponent implements OnInit {
         this.isUpdatingAvatar = false;
         this.avatarMessage = err.error?.message || 'Upload failed.';
         this.isAvatarSuccess = false;
+      }
+    });
+  }
+
+  onChangePassword(): void {
+    if (!this.passwordForm.oldPassword.trim() || !this.passwordForm.newPassword.trim()) {
+      this.passwordMessage = 'Current password and new password are required.';
+      this.isPasswordSuccess = false;
+      return;
+    }
+
+    if (this.passwordForm.newPassword.trim().length < 8) {
+      this.passwordMessage = 'New password should be at least 8 characters long.';
+      this.isPasswordSuccess = false;
+      return;
+    }
+
+    if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+      this.passwordMessage = 'New password and confirmation do not match.';
+      this.isPasswordSuccess = false;
+      return;
+    }
+
+    this.isChangingPassword = true;
+    this.passwordMessage = '';
+
+    this.userService.changePassword({
+      oldPassword: this.passwordForm.oldPassword,
+      newPassword: this.passwordForm.newPassword
+    }).subscribe({
+      next: (res) => {
+        this.isChangingPassword = false;
+        if (res.success) {
+          this.passwordMessage = 'Password changed successfully!';
+          this.isPasswordSuccess = true;
+          this.passwordForm = { oldPassword: '', newPassword: '', confirmPassword: '' };
+          this.appRefreshService.notify('auth');
+          setTimeout(() => {
+            this.router.navigate(['/profile']);
+          }, 900);
+        } else {
+          this.passwordMessage = res.message || 'Password update failed.';
+          this.isPasswordSuccess = false;
+        }
+      },
+      error: (err) => {
+        this.isChangingPassword = false;
+        this.passwordMessage = err.error?.message || 'Password update failed.';
+        this.isPasswordSuccess = false;
       }
     });
   }

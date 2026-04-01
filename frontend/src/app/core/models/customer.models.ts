@@ -14,6 +14,12 @@ export interface CustomerProfileForm {
   avatar: string;
 }
 
+export interface CustomerPasswordForm {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface CustomerAddress {
   _id?: string;
   fullname: string;
