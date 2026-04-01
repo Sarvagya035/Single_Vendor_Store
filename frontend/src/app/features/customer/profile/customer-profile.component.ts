@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { CustomerEditProfileModalComponent } from '../edit-profile-modal/customer-edit-profile-modal.component';
+import { CustomerChangePasswordPanelComponent } from '../change-password-panel/customer-change-password-panel.component';
 import { CustomerPersonalDetailsComponent } from '../personal-details/customer-personal-details.component';
 import { CustomerProfileHeaderComponent } from '../profile-header/customer-profile-header.component';
 import { CustomerProfileSidebarComponent } from '../profile-sidebar/customer-profile-sidebar.component';
@@ -16,7 +18,9 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
     CommonModule,
     CustomerProfileHeaderComponent,
     CustomerProfileSidebarComponent,
-    CustomerPersonalDetailsComponent
+    CustomerPersonalDetailsComponent,
+    CustomerChangePasswordPanelComponent,
+    CustomerEditProfileModalComponent
   ],
   template: `
     <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_24%,#f8fafc_100%)] pt-16 pb-24">
@@ -43,6 +47,8 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
               [user]="user"
               [roles]="getRoles()"
               [memberYear]="getYear()"
+              (editProfile)="openEditProfileModal()"
+              (changePassword)="openPasswordModal()"
             />
           </div>
 
@@ -50,6 +56,18 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
             <app-customer-personal-details [user]="user" />
           </div>
         </div>
+
+        <app-customer-change-password-panel
+          [open]="isPasswordModalOpen"
+          (closed)="closePasswordModal()"
+        />
+
+        <app-customer-edit-profile-modal
+          [open]="isEditProfileModalOpen"
+          [user]="user"
+          (closed)="closeEditProfileModal()"
+          (saved)="handleProfileSaved($event)"
+        />
       </div>
     </div>
   `
@@ -58,6 +76,8 @@ export class ProfileComponent implements OnInit {
   user: CustomerUser | null = null;
   vendorProfile: CustomerVendorProfile | null = null;
   error = '';
+  isEditProfileModalOpen = false;
+  isPasswordModalOpen = false;
 
   constructor(
     private authService: AuthService,
@@ -144,5 +164,25 @@ export class ProfileComponent implements OnInit {
       next: () => this.router.navigate(['/']),
       error: () => this.router.navigate(['/'])
     });
+  }
+
+  openPasswordModal(): void {
+    this.isPasswordModalOpen = true;
+  }
+
+  closePasswordModal(): void {
+    this.isPasswordModalOpen = false;
+  }
+
+  openEditProfileModal(): void {
+    this.isEditProfileModalOpen = true;
+  }
+
+  closeEditProfileModal(): void {
+    this.isEditProfileModalOpen = false;
+  }
+
+  handleProfileSaved(updatedUser: CustomerUser): void {
+    this.user = updatedUser;
   }
 }

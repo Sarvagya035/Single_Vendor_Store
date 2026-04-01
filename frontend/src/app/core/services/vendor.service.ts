@@ -46,6 +46,10 @@ export class VendorService {
     return this.http.get(`${this.productUrl}/my-products?page=${page}&limit=${limit}`, { withCredentials: true });
   }
 
+  getProductById(productId: string): Observable<any> {
+    return this.http.get(`${this.productUrl}/get-product-by-id/${productId}`, { withCredentials: true });
+  }
+
   createProduct(data: FormData): Observable<any> {
     return this.http.post(`${this.productUrl}/add-product`, data, { withCredentials: true });
   }

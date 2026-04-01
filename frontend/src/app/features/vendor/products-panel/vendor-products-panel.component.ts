@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import {
@@ -109,382 +109,302 @@ interface ProductMessage {
               [statusBusy]="isBusy('status-' + product._id)"
               [deleteBusy]="isBusy('delete-product-' + product._id)"
               (open)="toggleExpanded(product)"
-              (edit)="startEditing(product); toggleExpanded(product, true)"
+              (edit)="openEditPage(product)"
               (toggleStatus)="toggleProductStatus(product)"
               (delete)="deleteProduct(product)"
             >
+            </app-vendor-product-card>
+          </div>
+
+          <div
+            *ngIf="selectedExpandedProduct as product"
+            (click)="closeExpanded()"
+            class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/45 px-4 py-6 sm:px-6 sm:py-10 backdrop-blur-[2px]"
+          >
+            <div
+              (click)="$event.stopPropagation()"
+              class="w-full max-w-5xl rounded-[2rem] border border-slate-200 bg-slate-50 p-5 shadow-2xl sm:p-6 max-h-[calc(100vh-5rem)] overflow-y-auto"
+            >
+              <div class="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                    Product Details
+                  </p>
+                  <h3 class="mt-2 text-2xl font-black text-slate-900">
+                    {{ product.productName }}
+                  </h3>
+                  <p class="mt-2 text-sm font-medium text-slate-500">
+                    Manage pricing, stock, visibility, and variants without leaving this page.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  (click)="closeExpanded()"
+                  class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-100"
+                >
+                  Close
+                </button>
+              </div>
 
               <div
-                *ngIf="expandedProductId === product._id"
-                (click)="toggleExpanded(product)"
-                class="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-900/45 p-6 backdrop-blur-[2px]"
+                *ngIf="messageFor(product._id)"
+                class="mb-5 rounded-3xl border px-5 py-4 text-sm font-bold"
+                [ngClass]="
+                  messageFor(product._id)?.type === 'success'
+                    ? 'border-emerald-100 bg-emerald-50 text-emerald-700'
+                    : 'border-rose-100 bg-rose-50 text-rose-700'
+                "
               >
-                <div
-                  (click)="$event.stopPropagation()"
-                  class="my-auto w-full max-w-5xl rounded-[2rem] border border-slate-200 bg-slate-50 p-5 shadow-2xl sm:p-6"
-                >
-                  <div class="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
+                {{ messageFor(product._id)?.text }}
+              </div>
+
+              <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+                <section class="rounded-[1.5rem] border border-slate-200 bg-white p-5">
+                  <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
                     <div>
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
                         Product Details
                       </p>
-                      <h3 class="mt-2 text-2xl font-black text-slate-900">
-                        {{ product.productName }}
-                      </h3>
-                      <p class="mt-2 text-sm font-medium text-slate-500">
-                        Manage pricing, stock, visibility, and variants without leaving this page.
-                      </p>
+                      <h3 class="mt-2 text-xl font-black text-slate-900">Edit basics</h3>
                     </div>
                     <button
                       type="button"
-                      (click)="toggleExpanded(product)"
-                      class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-100"
+                      (click)="openEditPage(product)"
+                      class="rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50"
                     >
-                      Close
+                      Edit
                     </button>
                   </div>
 
-                  <div
-                    *ngIf="messageFor(product._id)"
-                    class="mb-5 rounded-3xl border px-5 py-4 text-sm font-bold"
-                    [ngClass]="
-                      messageFor(product._id)?.type === 'success'
-                        ? 'border-emerald-100 bg-emerald-50 text-emerald-700'
-                        : 'border-rose-100 bg-rose-50 text-rose-700'
-                    "
-                  >
-                    {{ messageFor(product._id)?.text }}
-                  </div>
-
-                  <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-                  <section class="rounded-[1.5rem] border border-slate-200 bg-white p-5">
-                    <div
-                      class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4"
-                    >
-                      <div>
-                        <p
-                          class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400"
-                        >
-                          Product Details
-                        </p>
-                        <h3 class="mt-2 text-xl font-black text-slate-900">Edit basics</h3>
-                      </div>
-                      <button
-                        type="button"
-                        (click)="startEditing(product)"
-                        class="rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50"
-                      >
-                        Edit
-                      </button>
-                    </div>
-
-                    <div
-                      *ngIf="editingProductId !== product._id"
-                      class="mt-5 space-y-3 text-sm font-medium text-slate-600"
-                    >
-                      <p>
-                        <span class="font-black text-slate-900">Name:</span>
-                        {{ product.productName }}
-                      </p>
-                      <p>
-                        <span class="font-black text-slate-900">Brand:</span>
-                        {{ product.brand || 'Generic' }}
-                      </p>
-                      <p>
-                        <span class="font-black text-slate-900">Category:</span>
-                        {{ product.categoryDetails?.name || 'Uncategorized' }}
-                      </p>
-                      <p>
-                        <span class="font-black text-slate-900">Description:</span>
-                        {{ product.productDescription || 'No description' }}
-                      </p>
-                    </div>
-
-                    <div
-                      *ngIf="editingProductId === product._id"
-                      class="mt-5 grid gap-4 md:grid-cols-2"
-                    >
-                      <input
-                        [(ngModel)]="productEditForm.productName"
-                        name="productName"
-                        placeholder="Product name"
-                        class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100 md:col-span-2"
-                      />
-                      <input
-                        [(ngModel)]="productEditForm.brand"
-                        name="brand"
-                        placeholder="Brand"
-                        class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                      />
-                      <select
-                        [(ngModel)]="productEditForm.category"
-                        name="category"
-                        class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                      >
-                        <option value="">Keep current category</option>
-                        <option *ngFor="let option of flatCategories" [value]="option._id">
-                          {{ optionLabel(option) }}
-                        </option>
-                      </select>
-                      <textarea
-                        [(ngModel)]="productEditForm.productDescription"
-                        name="productDescription"
-                        rows="4"
-                        placeholder="Description"
-                        class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100 md:col-span-2"
-                      ></textarea>
-                      <label
-                        class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 md:col-span-2"
-                      >
-                        <input
-                          type="checkbox"
-                          [(ngModel)]="productEditForm.isActive"
-                          name="isActive"
-                          class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
-                        />
-                        <span class="text-sm font-bold text-slate-700">Product is active.</span>
-                      </label>
-                      <div class="flex gap-3 md:col-span-2">
-                        <button
-                          type="button"
-                          (click)="saveProduct(product)"
-                          [disabled]="isBusy('save-' + product._id)"
-                          class="btn-primary !px-6 !py-3"
-                        >
-                          {{ isBusy('save-' + product._id) ? 'Saving...' : 'Save Changes' }}
-                        </button>
-                        <button
-                          type="button"
-                          (click)="cancelEditing()"
-                          class="rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </section>
-
-                  <app-vendor-product-quick-actions
-                    [product]="product"
-                    [statusBusy]="isBusy('status-' + product._id)"
-                    [deleteBusy]="isBusy('delete-product-' + product._id)"
-                    (toggleStatus)="toggleProductStatus(product)"
-                    (delete)="deleteProduct(product)"
-                  />
-                </div>
-
-                  <section class="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-5">
-                  <div class="border-b border-slate-100 pb-4">
-                    <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
-                      Variant Tools
+                  <div class="mt-5 space-y-3 text-sm font-medium text-slate-600">
+                    <p>
+                      <span class="font-black text-slate-900">Name:</span>
+                      {{ product.productName }}
                     </p>
-                    <h3 class="mt-2 text-xl font-black text-slate-900">Add variant</h3>
-                  </div>
-                  <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-                    <input
-                      [(ngModel)]="variantCreateForms[product._id].attributesText"
-                      [name]="'new-attributes-' + product._id"
-                      placeholder="Color:Black, Size:XL"
-                      class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100 md:col-span-2 xl:col-span-2"
-                    />
-                    <input
-                      type="number"
-                      [(ngModel)]="variantCreateForms[product._id].productPrice"
-                      [name]="'new-price-' + product._id"
-                      min="0"
-                      placeholder="Price"
-                      class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                    />
-                    <input
-                      type="number"
-                      [(ngModel)]="variantCreateForms[product._id].discountPercentage"
-                      [name]="'new-discount-' + product._id"
-                      min="0"
-                      max="100"
-                      placeholder="Discount %"
-                      class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                    />
-                    <input
-                      type="number"
-                      [(ngModel)]="variantCreateForms[product._id].productStock"
-                      [name]="'new-stock-' + product._id"
-                      min="0"
-                      placeholder="Stock"
-                      class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                    />
-                    <div class="md:col-span-2 xl:col-span-5">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        (change)="onNewVariantImageSelected($event, product._id)"
-                        class="block w-full rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-600"
-                      />
-                      <p class="mt-2 text-xs font-semibold text-slate-500">
-                        {{
-                          variantCreateForms[product._id].imageFile?.name ||
-                            'Variant image is required for this backend endpoint.'
-                        }}
-                      </p>
-                    </div>
-                    <div class="md:col-span-2 xl:col-span-5">
-                      <button
-                        type="button"
-                        (click)="addVariant(product)"
-                        [disabled]="isBusy('add-variant-' + product._id)"
-                        class="btn-primary !px-6 !py-3"
-                      >
-                        {{
-                          isBusy('add-variant-' + product._id) ? 'Adding Variant...' : 'Add Variant'
-                        }}
-                      </button>
-                    </div>
+                    <p>
+                      <span class="font-black text-slate-900">Brand:</span>
+                      {{ product.brand || 'Generic' }}
+                    </p>
+                    <p>
+                      <span class="font-black text-slate-900">Category:</span>
+                      {{ product.categoryDetails?.name || 'Uncategorized' }}
+                    </p>
+                    <p>
+                      <span class="font-black text-slate-900">Description:</span>
+                      {{ product.productDescription || 'No description' }}
+                    </p>
                   </div>
                 </section>
 
-                  <section class="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-5">
-                  <div class="border-b border-slate-100 pb-4">
-                    <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
-                      Existing Variants
-                    </p>
-                    <h3 class="mt-2 text-xl font-black text-slate-900">Inventory and pricing</h3>
-                  </div>
-                  <div class="mt-5 space-y-4" *ngIf="product.variants?.length; else noVariants">
-                    <article
-                      *ngFor="let variant of product.variants; trackBy: trackByVariantId"
-                      class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5"
-                    >
-                      <div
-                        class="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.8fr))]"
-                      >
-                        <div class="space-y-3">
-                          <div class="flex items-center gap-4">
-                            <div class="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100">
-                              <img
-                                *ngIf="variant.variantImage"
-                                [src]="variant.variantImage"
-                                [alt]="variant.sku || 'Variant'"
-                                class="h-full w-full object-cover"
-                              />
-                            </div>
-                            <div class="min-w-0">
-                              <p class="truncate text-sm font-black text-slate-900">
-                                {{ variant.sku || 'SKU pending' }}
-                              </p>
-                              <p
-                                class="mt-1 text-xs font-semibold uppercase tracking-[0.16em]"
-                                [ngClass]="
-                                  variant.isAvailable ? 'text-emerald-600' : 'text-rose-600'
-                                "
-                              >
-                                {{ variant.isAvailable ? 'In Stock' : 'Out of Stock' }}
-                              </p>
-                            </div>
-                          </div>
-                          <p class="text-sm font-medium text-slate-600">
-                            {{ attributeSummary(variant) }}
-                          </p>
-                          <p class="text-sm font-semibold text-slate-700">
-                            Base: {{ formatCurrency(variant.productPrice) }} | Final:
-                            {{ formatCurrency(variant.finalPrice) }}
-                          </p>
-                          <p class="text-sm font-semibold text-slate-700">
-                            Current stock: {{ variant.productStock || 0 }}
-                          </p>
-                        </div>
-
-                        <div class="space-y-2">
-                          <label
-                            class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400"
-                            >Restock Units</label
-                          >
-                          <input
-                            type="number"
-                            [(ngModel)]="restockDrafts[variant._id || '']"
-                            [name]="'restock-' + (variant._id || '')"
-                            min="1"
-                            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                          />
-                          <button
-                            type="button"
-                            (click)="restockVariant(product, variant)"
-                            [disabled]="!variant._id || isBusy('restock-' + (variant._id || ''))"
-                            class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-100"
-                          >
-                            {{
-                              isBusy('restock-' + (variant._id || '')) ? 'Updating...' : 'Restock'
-                            }}
-                          </button>
-                        </div>
-
-                        <div class="space-y-2">
-                          <label
-                            class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400"
-                            >Discount %</label
-                          >
-                          <input
-                            type="number"
-                            [(ngModel)]="discountDrafts[variant._id || '']"
-                            [name]="'discount-' + (variant._id || '')"
-                            min="0"
-                            max="100"
-                            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
-                          />
-                          <button
-                            type="button"
-                            (click)="updateDiscount(product, variant)"
-                            [disabled]="!variant._id || isBusy('discount-' + (variant._id || ''))"
-                            class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-100"
-                          >
-                            {{
-                              isBusy('discount-' + (variant._id || ''))
-                                ? 'Saving...'
-                                : 'Update Discount'
-                            }}
-                          </button>
-                        </div>
-
-                        <div class="space-y-2">
-                          <p
-                            class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400"
-                          >
-                            Removal
-                          </p>
-                          <button
-                            type="button"
-                            (click)="deleteVariant(product, variant)"
-                            [disabled]="
-                              !variant._id || isBusy('delete-variant-' + (variant._id || ''))
-                            "
-                            class="w-full rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100"
-                          >
-                            {{
-                              isBusy('delete-variant-' + (variant._id || ''))
-                                ? 'Deleting...'
-                                : 'Delete Variant'
-                            }}
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  </div>
-                  <ng-template #noVariants>
-                    <div
-                      class="mt-5 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm font-semibold text-slate-500"
-                    >
-                      No variants available for this product yet.
-                    </div>
-                  </ng-template>
-                  </section>
-                </div>
+                <app-vendor-product-quick-actions
+                  [product]="product"
+                  [statusBusy]="isBusy('status-' + product._id)"
+                  [deleteBusy]="isBusy('delete-product-' + product._id)"
+                  (toggleStatus)="toggleProductStatus(product)"
+                  (delete)="deleteProduct(product)"
+                />
               </div>
-            </app-vendor-product-card>
+
+              <section class="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-5">
+                <div class="border-b border-slate-100 pb-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                    Variant Tools
+                  </p>
+                  <h3 class="mt-2 text-xl font-black text-slate-900">Add variant</h3>
+                </div>
+                <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+                  <input
+                    [(ngModel)]="variantCreateForms[product._id].attributesText"
+                    [name]="'new-attributes-' + product._id"
+                    placeholder="Color:Black, Size:XL"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100 md:col-span-2 xl:col-span-2"
+                  />
+                  <input
+                    type="number"
+                    [(ngModel)]="variantCreateForms[product._id].productPrice"
+                    [name]="'new-price-' + product._id"
+                    min="0"
+                    placeholder="Price"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                  />
+                  <input
+                    type="number"
+                    [(ngModel)]="variantCreateForms[product._id].discountPercentage"
+                    [name]="'new-discount-' + product._id"
+                    min="0"
+                    max="100"
+                    placeholder="Discount %"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                  />
+                  <input
+                    type="number"
+                    [(ngModel)]="variantCreateForms[product._id].productStock"
+                    [name]="'new-stock-' + product._id"
+                    min="0"
+                    placeholder="Stock"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                  />
+                  <div class="md:col-span-2 xl:col-span-5">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      (change)="onNewVariantImageSelected($event, product._id)"
+                      class="block w-full rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-600"
+                    />
+                    <p class="mt-2 text-xs font-semibold text-slate-500">
+                      {{
+                        variantCreateForms[product._id].imageFile?.name ||
+                          'Variant image is required for this backend endpoint.'
+                      }}
+                    </p>
+                  </div>
+                  <div class="md:col-span-2 xl:col-span-5">
+                    <button
+                      type="button"
+                      (click)="addVariant(product)"
+                      [disabled]="isBusy('add-variant-' + product._id)"
+                      class="btn-primary !px-6 !py-3"
+                    >
+                      {{
+                        isBusy('add-variant-' + product._id) ? 'Adding Variant...' : 'Add Variant'
+                      }}
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-5">
+                <div class="border-b border-slate-100 pb-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                    Existing Variants
+                  </p>
+                  <h3 class="mt-2 text-xl font-black text-slate-900">Inventory and pricing</h3>
+                </div>
+                <div class="mt-5 space-y-4" *ngIf="product.variants?.length; else noVariants">
+                  <article
+                    *ngFor="let variant of product.variants; trackBy: trackByVariantId"
+                    class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5"
+                  >
+                    <div class="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.8fr))]">
+                      <div class="space-y-3">
+                        <div class="flex items-center gap-4">
+                          <div class="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100">
+                            <img
+                              *ngIf="variant.variantImage"
+                              [src]="variant.variantImage"
+                              [alt]="variant.sku || 'Variant'"
+                              class="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div class="min-w-0">
+                            <p class="truncate text-sm font-black text-slate-900">
+                              {{ variant.sku || 'SKU pending' }}
+                            </p>
+                            <p
+                              class="mt-1 text-xs font-semibold uppercase tracking-[0.16em]"
+                              [ngClass]="
+                                variant.isAvailable ? 'text-emerald-600' : 'text-rose-600'
+                              "
+                            >
+                              {{ variant.isAvailable ? 'In Stock' : 'Out of Stock' }}
+                            </p>
+                          </div>
+                        </div>
+                        <p class="text-sm font-medium text-slate-600">
+                          {{ attributeSummary(variant) }}
+                        </p>
+                        <p class="text-sm font-semibold text-slate-700">
+                          Base: {{ formatCurrency(variant.productPrice) }} | Final:
+                          {{ formatCurrency(variant.finalPrice) }}
+                        </p>
+                        <p class="text-sm font-semibold text-slate-700">
+                          Current stock: {{ variant.productStock || 0 }}
+                        </p>
+                      </div>
+
+                      <div class="space-y-2">
+                        <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                          Restock Units
+                        </label>
+                        <input
+                          type="number"
+                          [(ngModel)]="restockDrafts[variant._id || '']"
+                          [name]="'restock-' + (variant._id || '')"
+                          min="1"
+                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                        />
+                        <button
+                          type="button"
+                          (click)="restockVariant(product, variant)"
+                          [disabled]="!variant._id || isBusy('restock-' + (variant._id || ''))"
+                          class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-100"
+                        >
+                          {{ isBusy('restock-' + (variant._id || '')) ? 'Updating...' : 'Restock' }}
+                        </button>
+                      </div>
+
+                      <div class="space-y-2">
+                        <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                          Discount %
+                        </label>
+                        <input
+                          type="number"
+                          [(ngModel)]="discountDrafts[variant._id || '']"
+                          [name]="'discount-' + (variant._id || '')"
+                          min="0"
+                          max="100"
+                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                        />
+                        <button
+                          type="button"
+                          (click)="updateDiscount(product, variant)"
+                          [disabled]="!variant._id || isBusy('discount-' + (variant._id || ''))"
+                          class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-100"
+                        >
+                          {{
+                            isBusy('discount-' + (variant._id || ''))
+                              ? 'Saving...'
+                              : 'Update Discount'
+                          }}
+                        </button>
+                      </div>
+
+                      <div class="space-y-2">
+                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                          Removal
+                        </p>
+                        <button
+                          type="button"
+                          (click)="deleteVariant(product, variant)"
+                          [disabled]="!variant._id || isBusy('delete-variant-' + (variant._id || ''))"
+                          class="w-full rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100"
+                        >
+                          {{
+                            isBusy('delete-variant-' + (variant._id || ''))
+                              ? 'Deleting...'
+                              : 'Delete Variant'
+                          }}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+                <ng-template #noVariants>
+                  <div
+                    class="mt-5 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm font-semibold text-slate-500"
+                  >
+                    No variants available for this product yet.
+                  </div>
+                </ng-template>
+              </section>
+            </div>
           </div>
         </div>
       </div>
     </section>
   `,
 })
-export class VendorProductsPanelComponent implements OnInit {
+export class VendorProductsPanelComponent implements OnInit, OnChanges {
   @Input() products: VendorProductRecord[] = [];
   @Input() isLoading = false;
   @Output() refreshRequested = new EventEmitter<void>();
@@ -492,9 +412,12 @@ export class VendorProductsPanelComponent implements OnInit {
   searchQuery = '';
   selectedCategory = 'all';
   expandedProductId: string | null = null;
+  selectedExpandedProduct: VendorProductRecord | null = null;
   editingProductId: string | null = null;
   productEditForm: VendorProductEditForm = this.createEditForm();
   categoriesTree: VendorCategoryRecord[] = [];
+  categories: string[] = [];
+  flatCategories: FlatCategoryOption[] = [];
   variantCreateForms: Record<string, VendorVariantCreateForm> = {};
   restockDrafts: Record<string, number | null> = {};
   discountDrafts: Record<string, number | null> = {};
@@ -503,31 +426,25 @@ export class VendorProductsPanelComponent implements OnInit {
 
   constructor(
     private vendorService: VendorService,
-    private appRefreshService: AppRefreshService
+    private appRefreshService: AppRefreshService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.loadCategories();
+    this.updateCategoriesFromProducts();
   }
 
-  get categories(): string[] {
-    return [
-      ...new Set(this.products.map((product) => product.categoryDetails?.name || 'Uncategorized')),
-    ];
-  }
-
-  get flatCategories(): FlatCategoryOption[] {
-    const flat: FlatCategoryOption[] = [];
-    this.flattenCategories(this.categoriesTree, flat);
-    return flat;
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['products']) {
+      this.updateCategoriesFromProducts();
+    }
   }
 
   get filteredProducts(): VendorProductRecord[] {
     const query = this.searchQuery.trim().toLowerCase();
 
     return this.products.filter((product) => {
-      this.ensureProductState(product);
-
       const categoryName = product.categoryDetails?.name || 'Uncategorized';
       const matchesCategory =
         this.selectedCategory === 'all' || categoryName === this.selectedCategory;
@@ -543,11 +460,23 @@ export class VendorProductsPanelComponent implements OnInit {
 
   toggleExpanded(product: VendorProductRecord, preserveEditing = false) {
     this.ensureProductState(product);
-    this.expandedProductId = this.expandedProductId === product._id ? null : product._id;
+    const isClosing = this.expandedProductId === product._id;
+    this.expandedProductId = isClosing ? null : product._id;
+    this.selectedExpandedProduct = isClosing ? null : product;
     if (!preserveEditing) {
       this.editingProductId = null;
     }
     this.productMessages[product._id] = undefined;
+  }
+
+  closeExpanded() {
+    this.expandedProductId = null;
+    this.selectedExpandedProduct = null;
+    this.editingProductId = null;
+  }
+
+  openEditPage(product: VendorProductRecord) {
+    this.router.navigate(['/vendor/products', product._id, 'edit']);
   }
 
   startEditing(product: VendorProductRecord) {
@@ -645,7 +574,7 @@ export class VendorProductsPanelComponent implements OnInit {
           return;
         }
 
-        this.expandedProductId = null;
+        this.closeExpanded();
         this.appRefreshService.notify('vendor');
         this.refreshRequested.emit();
       },
@@ -834,6 +763,10 @@ export class VendorProductsPanelComponent implements OnInit {
     return variant._id || variant.sku || String(index);
   }
 
+  trackByFlatCategoryId(_: number, option: FlatCategoryOption): string {
+    return option._id;
+  }
+
   primaryImage(product: VendorProductRecord): string | undefined {
     return product.mainImages?.[0];
   }
@@ -894,8 +827,16 @@ export class VendorProductsPanelComponent implements OnInit {
     this.vendorService.getCategoryTree().subscribe({
       next: (res) => {
         this.categoriesTree = res?.data || [];
+        this.flatCategories = this.buildFlatCategories(this.categoriesTree);
       },
     });
+  }
+
+  private updateCategoriesFromProducts() {
+    this.categories = [
+      ...new Set(this.products.map((product) => product.categoryDetails?.name || 'Uncategorized')),
+    ];
+    this.syncProductState(this.products);
   }
 
   private ensureProductState(product: VendorProductRecord) {
@@ -976,5 +917,17 @@ export class VendorProductsPanelComponent implements OnInit {
         this.flattenCategories(node.children, target);
       }
     }
+  }
+
+  private syncProductState(products: VendorProductRecord[]) {
+    for (const product of products) {
+      this.ensureProductState(product);
+    }
+  }
+
+  private buildFlatCategories(nodes: VendorCategoryRecord[]): FlatCategoryOption[] {
+    const flat: FlatCategoryOption[] = [];
+    this.flattenCategories(nodes, flat);
+    return flat;
   }
 }

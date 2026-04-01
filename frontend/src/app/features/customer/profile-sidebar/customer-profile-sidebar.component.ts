@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CustomerUser } from '../../../core/models/customer.models';
 
 @Component({
   selector: 'app-customer-profile-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   template: `
     <div class="glass-card overflow-hidden">
       <div class="rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.9))] p-8">
@@ -50,7 +49,15 @@ import { CustomerUser } from '../../../core/models/customer.models';
         </div>
 
         <div class="mt-6">
-          <a routerLink="/profile/edit" class="btn-primary !w-full !justify-center !py-3.5">Edit Profile</a>
+          <button type="button" class="btn-primary !w-full !justify-center !py-3.5" (click)="editProfile.emit()">
+            Edit Profile
+          </button>
+        </div>
+
+        <div class="mt-3">
+          <button type="button" class="btn-secondary !w-full !justify-center !py-3.5" (click)="changePassword.emit()">
+            Edit Password
+          </button>
         </div>
       </div>
     </div>
@@ -60,6 +67,8 @@ export class CustomerProfileSidebarComponent {
   @Input() user: CustomerUser | null = null;
   @Input() roles = 'customer';
   @Input() memberYear = 'N/A';
+  @Output() editProfile = new EventEmitter<void>();
+  @Output() changePassword = new EventEmitter<void>();
 
   isValidUrl(url: string | undefined | null): boolean {
     return typeof url === 'string' && url.startsWith('http');

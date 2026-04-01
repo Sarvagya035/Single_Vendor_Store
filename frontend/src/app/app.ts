@@ -10,13 +10,14 @@ import {
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HeaderComponent } from './shared/layout/header.component';
+import { FooterComponent } from './shared/layout/footer.component';
 import { GlobalToastComponent } from './shared/ui/global-toast.component';
 import { GlobalLoadingComponent } from './shared/ui/global-loading.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, GlobalToastComponent, GlobalLoadingComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, GlobalToastComponent, GlobalLoadingComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

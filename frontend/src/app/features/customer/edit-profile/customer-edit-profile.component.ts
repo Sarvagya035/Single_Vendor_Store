@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { CustomerAccountFormComponent } from '../account-form/customer-account-form.component';
 import { CustomerAvatarPanelComponent } from '../avatar-panel/customer-avatar-panel.component';
+import { CustomerChangePasswordPanelComponent } from '../change-password-panel/customer-change-password-panel.component';
 import { CustomerEditHeaderComponent } from '../edit-header/customer-edit-header.component';
 import { CustomerProfileForm } from '../../../core/models/customer.models';
 
@@ -16,7 +17,8 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
     CommonModule,
     CustomerEditHeaderComponent,
     CustomerAccountFormComponent,
-    CustomerAvatarPanelComponent
+    CustomerAvatarPanelComponent,
+    CustomerChangePasswordPanelComponent
   ],
   template: `
     <div class="min-h-screen bg-slate-50 pt-16 pb-32">
@@ -39,6 +41,10 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
             (fileSelected)="onFileSelected($event)"
             (submit)="onUpdateAvatar()"
           />
+        </div>
+
+        <div class="mt-10">
+          <app-customer-change-password-panel />
         </div>
       </div>
     </div>

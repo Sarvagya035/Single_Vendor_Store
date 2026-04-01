@@ -77,7 +77,7 @@ interface FlatCategoryOption {
                     class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
                   >
                     <option value="">Select category</option>
-                    <option *ngFor="let option of flatCategories" [value]="option._id">
+                    <option *ngFor="let option of flatCategories; trackBy: trackByFlatCategoryId" [value]="option._id">
                       {{ optionLabel(option) }}
                     </option>
                   </select>
@@ -175,6 +175,7 @@ interface FlatCategoryOption {
 })
 export class VendorAddProductComponent implements OnInit {
   categories: VendorCategoryRecord[] = [];
+  flatCategories: FlatCategoryOption[] = [];
   isLoadingCategories = true;
   isSubmitting = false;
   successMessage = '';
@@ -204,12 +205,6 @@ export class VendorAddProductComponent implements OnInit {
     this.loadCategories();
   }
 
-  get flatCategories(): FlatCategoryOption[] {
-    const flat: FlatCategoryOption[] = [];
-    this.flattenCategories(this.categories, flat);
-    return flat;
-  }
-
   optionLabel(option: FlatCategoryOption): string {
     return `${'-- '.repeat(option.level)}${option.name}`;
   }
@@ -220,6 +215,7 @@ export class VendorAddProductComponent implements OnInit {
       next: (res) => {
         this.isLoadingCategories = false;
         this.categories = res?.data || [];
+        this.flatCategories = this.buildFlatCategories(this.categories);
       },
       error: () => {
         this.isLoadingCategories = false;
@@ -307,7 +303,7 @@ export class VendorAddProductComponent implements OnInit {
           this.successMessage = 'Product created successfully.';
           this.resetForm();
           setTimeout(() => {
-            this.router.navigate(['/vendor/dashboard']);
+            this.router.navigate(['/vendor/products']);
           }, 1200);
         },
         error: () => {
@@ -335,6 +331,10 @@ export class VendorAddProductComponent implements OnInit {
     }
 
     return payload;
+  }
+
+  trackByFlatCategoryId(_: number, option: FlatCategoryOption): string {
+    return option._id;
   }
 
   private buildVariantsPayload() {
@@ -410,6 +410,12 @@ export class VendorAddProductComponent implements OnInit {
       sku: '',
       imageFile: null
     };
+  }
+
+  private buildFlatCategories(nodes: VendorCategoryRecord[]): FlatCategoryOption[] {
+    const flat: FlatCategoryOption[] = [];
+    this.flattenCategories(nodes, flat);
+    return flat;
   }
 
   private flattenCategories(nodes: VendorCategoryRecord[], target: FlatCategoryOption[]) {

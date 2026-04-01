@@ -7,7 +7,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <article class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-sm">
+    <article class="overflow-visible rounded-[1.75rem] border border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-sm">
       <div
         role="button"
         tabindex="0"

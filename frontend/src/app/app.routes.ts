@@ -96,6 +96,20 @@ export const routes: Routes = [
           import('./features/vendor/add-product/vendor-add-product.component').then((m) => m.VendorAddProductComponent)
       },
       {
+        path: 'products/:productId/edit',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/edit-product-page/vendor-edit-product-page.component').then(
+                (m) => m.VendorEditProductPageComponent
+              )
+          }
+        ]
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
