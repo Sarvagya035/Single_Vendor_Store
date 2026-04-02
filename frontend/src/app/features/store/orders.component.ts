@@ -58,7 +58,7 @@ import { OrderService } from '../../core/services/order.service';
               </div>
 
               <div class="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-end">
-                <p class="text-2xl font-black text-slate-900">{{ formatCurrency(order.totalAmount || 0) }}</p>
+                <p class="text-2xl font-black text-slate-900">{{ formatCurrency(displayOrderTotal(order)) }}</p>
                 <div class="flex gap-3">
                   <a [routerLink]="['/orders', order._id]" class="btn-secondary !px-5 !py-3">View Details</a>
                   <button
@@ -130,6 +130,10 @@ export class OrdersComponent implements OnInit {
 
   itemCount(order: OrderRecord): number {
     return (order.orderItems || []).reduce((total, item) => total + Number(item.quantity || 0), 0);
+  }
+
+  displayOrderTotal(order: OrderRecord): number {
+    return Number(order.itemsPrice || 0) + Number(order.shippingPrice || 0);
   }
 
   orderItemPreview(order: OrderRecord): string {

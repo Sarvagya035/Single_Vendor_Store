@@ -24,10 +24,15 @@ export class ReviewService {
       .pipe(map((response) => this.normalizeStats(response?.data)));
   }
 
-  addOrUpdateReview(payload: ProductReviewForm): Observable<ProductReview | null> {
+  addOrUpdateReview(payload: ProductReviewForm | FormData): Observable<ProductReview | null> {
     return this.http
       .post<any>(`${this.reviewUrl}/add-review`, payload, { withCredentials: true })
       .pipe(map((response) => this.normalizeReview(response?.data)));
+  }
+
+  deleteReview(productId: string): Observable<any> {
+    return this.http
+      .delete<any>(`${this.reviewUrl}/delete-review/${productId}`, { withCredentials: true });
   }
 
   private normalizeReviews(payload: unknown): ProductReview[] {

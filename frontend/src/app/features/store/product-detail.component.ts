@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -171,14 +171,26 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   </label>
 
                   <label class="block">
-                    <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Review image URLs</span>
-                    <textarea
-                      [(ngModel)]="reviewImageUrls"
-                      name="reviewImages"
-                      rows="3"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      placeholder="Optional. Paste one image URL per line."
-                    ></textarea>
+                    <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Review images</span>
+                    <input
+                      #reviewImagesInput
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      multiple
+                      (change)="onReviewImagesSelected($event)"
+                      class="mt-2 w-full cursor-pointer rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                    />
+                    <p class="mt-2 text-xs font-semibold text-slate-500">
+                      Upload up to 5 images. JPG, PNG, and WEBP only.
+                    </p>
+                    <div *ngIf="reviewImageFiles.length" class="mt-3 flex flex-wrap gap-2">
+                      <span
+                        *ngFor="let file of reviewImageFiles; trackBy: trackByReviewFile"
+                        class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700"
+                      >
+                        {{ file.name }}
+                      </span>
+                    </div>
                   </label>
 
                   <button
@@ -218,7 +230,8 @@ export class ProductDetailComponent implements OnInit {
   reviews: ProductReview[] = [];
   reviewStats: ProductReviewStat[] = [];
   isSubmittingReview = false;
-  reviewImageUrls = '';
+  reviewImageFiles: File[] = [];
+  private clearReviewFormAfterReload = false;
   ratingOptions = [5, 4, 3, 2, 1];
   reviewForm: ProductReviewForm = {
     productId: '',
@@ -227,6 +240,7 @@ export class ProductDetailComponent implements OnInit {
     rating: 5,
     reviewImages: []
   };
+  @ViewChild('reviewImagesInput') reviewImagesInput?: ElementRef<HTMLInputElement>;
 
   constructor(
     private authService: AuthService,
@@ -294,7 +308,12 @@ export class ProductDetailComponent implements OnInit {
         const initialVariant = this.product?.displayVariant || this.product?.variants?.[0];
         this.selectedVariantId = initialVariant?._id || '';
         this.selectedImage = this.activeImage();
-        this.syncReviewForm();
+        if (this.clearReviewFormAfterReload) {
+          this.resetReviewForm();
+          this.clearReviewFormAfterReload = false;
+        } else {
+          this.syncReviewForm();
+        }
       },
       error: (error) => {
         this.loading = false;
@@ -484,10 +503,7 @@ export class ProductDetailComponent implements OnInit {
       title: this.reviewForm.title.trim(),
       commentBody: this.reviewForm.commentBody.trim(),
       rating: Number(this.reviewForm.rating),
-      reviewImages: this.reviewImageUrls
-        .split(/\r?\n/)
-        .map((line) => line.trim())
-        .filter(Boolean)
+      reviewImages: []
     };
 
     if (!payload.title || !payload.commentBody || !payload.rating) {
@@ -499,10 +515,27 @@ export class ProductDetailComponent implements OnInit {
     this.isSubmittingReview = true;
     this.successMessage = '';
 
-    this.reviewService.addOrUpdateReview(payload).subscribe({
+    const formData = new FormData();
+    formData.append('productId', payload.productId);
+    formData.append('title', payload.title);
+    formData.append('commentBody', payload.commentBody);
+    formData.append('rating', String(payload.rating));
+
+    if (this.reviewImageFiles.length > 0) {
+      this.reviewImageFiles.forEach((file) => {
+        formData.append('reviewImages', file);
+      });
+    } else if (this.reviewForm.reviewImages?.length) {
+      formData.append('reviewImages', JSON.stringify(this.reviewForm.reviewImages));
+    }
+
+    this.reviewService.addOrUpdateReview(formData).subscribe({
       next: () => {
         this.isSubmittingReview = false;
         this.successMessage = this.existingReview ? 'Review updated successfully.' : 'Review submitted successfully.';
+        this.clearReviewFormAfterReload = true;
+        this.resetReviewForm();
+        this.errorService.showToast('Review submitted and form cleared.', 'success');
         this.loadProduct();
       },
       error: (error) => {
@@ -515,6 +548,20 @@ export class ProductDetailComponent implements OnInit {
     return review._id || String(index);
   }
 
+  isOwnReview(review: ProductReview): boolean {
+    return !!this.user?._id && review.user?._id === this.user._id;
+  }
+
+  trackByReviewFile(_: number, file: File): string {
+    return `${file.name}-${file.size}-${file.lastModified}`;
+  }
+
+  onReviewImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files || []);
+    this.reviewImageFiles = files.slice(0, 5);
+  }
+
   private syncReviewForm(): void {
     const review = this.existingReview;
 
@@ -525,7 +572,20 @@ export class ProductDetailComponent implements OnInit {
       rating: Number(review?.rating || 5),
       reviewImages: review?.reviewImages || []
     };
+    this.reviewImageFiles = [];
+  }
 
-    this.reviewImageUrls = (review?.reviewImages || []).join('\n');
+  private resetReviewForm(): void {
+    this.reviewForm = {
+      productId: this.product?._id || '',
+      title: '',
+      commentBody: '',
+      rating: 5,
+      reviewImages: []
+    };
+    this.reviewImageFiles = [];
+    if (this.reviewImagesInput?.nativeElement) {
+      this.reviewImagesInput.nativeElement.value = '';
+    }
   }
 }

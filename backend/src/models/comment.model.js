@@ -37,7 +37,6 @@ const commentSchema = new Schema({
 
 },
 {timestamps: true})
-
 commentSchema.index({user: 1, product: 1}, {unique: true});
 
 export const Comment = mongoose.model("Comment", commentSchema)

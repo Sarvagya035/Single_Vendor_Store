@@ -120,10 +120,6 @@ import { OrderService } from '../../core/services/order.service';
                   <span>{{ formatCurrency(displayItemsPrice) }}</span>
                 </div>
                 <div *ngIf="!isVendorView()" class="flex items-center justify-between">
-                  <span>Tax</span>
-                  <span>{{ formatCurrency(order.taxPrice || 0) }}</span>
-                </div>
-                <div *ngIf="!isVendorView()" class="flex items-center justify-between">
                   <span>Shipping</span>
                   <span>{{ formatCurrency(order.shippingPrice || 0) }}</span>
                 </div>
@@ -212,11 +208,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   get displayTotal(): number {
-    if (!this.isVendorView()) {
-      return this.order?.totalAmount || 0;
-    }
-
-    return this.displayItemsPrice;
+    return this.displayItemsPrice + (this.isVendorView() ? 0 : (this.order?.shippingPrice || 0));
   }
 
   loadOrder(): void {

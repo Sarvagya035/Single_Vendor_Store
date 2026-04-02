@@ -104,7 +104,6 @@ export class OrderService {
       shippingAddress: payload.shippingAddress || undefined,
       paymentInfo: payload.paymentInfo || undefined,
       itemsPrice: Number(payload.itemsPrice || 0),
-      taxPrice: Number(payload.taxPrice || 0),
       shippingPrice: Number(payload.shippingPrice || 0),
       totalAmount: Number(payload.totalAmount || 0),
       orderStatus: payload.orderStatus,

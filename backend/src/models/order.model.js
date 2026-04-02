@@ -60,8 +60,6 @@ const orderSchema = new Schema({
 
     itemsPrice: { type: Number, required: true, default: 0 },
 
-    taxPrice: { type: Number, required: true, default: 0 },
-
     shippingPrice: { type: Number, required: true, default: 0 },
 
     totalAmount: { type: Number, required: true, default: 0 },

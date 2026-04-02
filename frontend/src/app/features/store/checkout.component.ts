@@ -138,10 +138,6 @@ const EMPTY_CART: CustomerCart = {
                 <span>{{ formatCurrency(itemsSubtotal()) }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span>Estimated tax</span>
-                <span>{{ formatCurrency(taxAmount()) }}</span>
-              </div>
-              <div class="flex items-center justify-between">
                 <span>Shipping</span>
                 <span>{{ shippingAmount() === 0 ? 'Free' : formatCurrency(shippingAmount()) }}</span>
               </div>
@@ -304,7 +300,8 @@ export class CheckoutComponent implements OnInit {
       .map((item) => ({
         product: item.product?._id || '',
         variantId: item.variantId || '',
-        quantity: Number(item.quantity || 0)
+        quantity: Number(item.quantity || 0),
+        priceAtAddition: Number(item.priceAtAddition || 0)
       }))
       .filter((item) => item.product && item.variantId && item.quantity > 0);
 
@@ -341,16 +338,12 @@ export class CheckoutComponent implements OnInit {
     );
   }
 
-  taxAmount(): number {
-    return Math.round(this.itemsSubtotal() * 0.18);
-  }
-
   shippingAmount(): number {
     return this.itemsSubtotal() > 1000 ? 0 : 50;
   }
 
   grandTotal(): number {
-    return this.itemsSubtotal() + this.taxAmount() + this.shippingAmount();
+    return this.itemsSubtotal() + this.shippingAmount();
   }
 
   variantLabel(item: any): string {

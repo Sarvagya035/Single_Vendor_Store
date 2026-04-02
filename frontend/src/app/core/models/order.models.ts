@@ -42,7 +42,6 @@ export interface OrderRecord {
   shippingAddress?: OrderShippingAddress;
   paymentInfo?: OrderPaymentInfo;
   itemsPrice?: number;
-  taxPrice?: number;
   shippingPrice?: number;
   totalAmount?: number;
   orderStatus?: OrderStatus;
@@ -56,6 +55,7 @@ export interface OrderCheckoutItemPayload {
   product: string;
   variantId: string;
   quantity: number;
+  priceAtAddition?: number;
 }
 
 export interface OrderCheckoutPayload {

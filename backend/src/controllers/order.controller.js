@@ -51,7 +51,10 @@ const createOrder = asyncHandler(async (req, res) => {
             throw new ApiError(400, `${product.productName} is currently out of stock`);
         }
 
-        const price = variant.productPrice - (variant.productPrice * (variant.discountPercentage / 100));
+        const snapshotPrice = Number(item.priceAtAddition || 0);
+        const price = snapshotPrice > 0
+            ? snapshotPrice
+            : variant.productPrice - (variant.productPrice * (variant.discountPercentage / 100));
         totalAmount += price * item.quantity;
 
         finalOrderItems.push({
@@ -64,10 +67,9 @@ const createOrder = asyncHandler(async (req, res) => {
         });
     }
 
-    // Add Tax/Shipping
-    const taxPrice = Math.round(totalAmount * 0.18);
+    // Add Shipping only
     const shippingPrice = totalAmount > 1000 ? 0 : 50;
-    const finalTotal = totalAmount + taxPrice + shippingPrice;
+    const finalTotal = totalAmount + shippingPrice;
 
     // Step 2: Create Razorpay Order
     const razorOrder = await razorpayInstance.orders.create({
@@ -82,7 +84,6 @@ const createOrder = asyncHandler(async (req, res) => {
         orderItems: finalOrderItems,
         shippingAddress,
         itemsPrice: totalAmount, 
-        taxPrice,                         
         shippingPrice,
         totalAmount: finalTotal,
         paymentInfo: { id: razorOrder.id, status: "Pending" }
