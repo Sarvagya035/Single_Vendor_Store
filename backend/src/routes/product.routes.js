@@ -9,6 +9,7 @@ import {
     getProductById, 
     adjustVariantStock,
     searchProductsDeep, 
+    getSearchSuggestions,
     updateProductDetails, 
     updateVariantDiscount } from "../controllers/product.controller.js";
 
@@ -73,6 +74,7 @@ router.route("/update-variant-discount/:productId/:variantId").patch(
 )
 
 router.route("/search").get(searchProductsDeep)
+router.route("/suggestions").get(getSearchSuggestions)
 router.route("/get-landing-page-products").get(getLandingPageProducts)
 
 router.route("/public/get-product-by-id/:productId").get(getProductById)

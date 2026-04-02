@@ -53,6 +53,16 @@ export class CatalogService {
       .pipe(map((response: any) => this.normalizeProductCollection(response)));
   }
 
+  getProductSuggestions(query: string, limit = 8): Observable<any> {
+    const params = new HttpParams()
+      .set('q', query.trim())
+      .set('limit', limit);
+
+    return this.http
+      .get(`${this.productUrl}/suggestions`, { params, withCredentials: true })
+      .pipe(map((response: any) => this.normalizeProductCollection(response)));
+  }
+
   getProductDetails(productId: string): Observable<any> {
     return this.http
       .get(`${this.productUrl}/public/get-product-by-id/${productId}`)

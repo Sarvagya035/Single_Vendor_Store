@@ -188,6 +188,80 @@ const searchProductsDeep = asyncHandler(async (req, res) => {
     );
 });
 
+const getSearchSuggestions = asyncHandler(async (req, res) => {
+    const { q, limit = 8 } = req.query;
+
+    if (!q || !String(q).trim()) {
+        return res.status(200).json(new ApiResponse(200, [], "Search suggestions fetched"));
+    }
+
+    const searchWords = String(q)
+        .trim()
+        .split(/[\s,-]+/)
+        .filter((word) => word.length > 0);
+
+    const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const prefixPattern = searchWords.map(escapeRegex).join("|");
+
+    const suggestions = await Product.aggregate([
+        { $match: { isActive: true } },
+        {
+            $lookup: {
+                from: "categories",
+                localField: "category",
+                foreignField: "_id",
+                as: "categoryDetails"
+            }
+        },
+        {
+            $unwind: {
+                path: "$categoryDetails",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $match: {
+                $or: [
+                    { productName: { $regex: `^(${prefixPattern})`, $options: "i" } },
+                    { brand: { $regex: `^(${prefixPattern})`, $options: "i" } },
+                    { "categoryDetails.name": { $regex: `^(${prefixPattern})`, $options: "i" } },
+                    { "categoryDetails.slug": { $regex: `^(${prefixPattern})`, $options: "i" } }
+                ]
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                productName: 1,
+                brand: 1,
+                basePrice: 1,
+                averageRating: 1,
+                numberOfReviews: 1,
+                mainImage: { $arrayElemAt: ["$mainImages", 0] },
+                categoryDetails: {
+                    _id: "$categoryDetails._id",
+                    name: "$categoryDetails.name",
+                    slug: "$categoryDetails.slug"
+                }
+            }
+        },
+        {
+            $sort: {
+                averageRating: -1,
+                numberOfReviews: -1,
+                createdAt: -1
+            }
+        },
+        {
+            $limit: Math.min(Number(limit) || 8, 12)
+        }
+    ]);
+
+    return res.status(200).json(
+        new ApiResponse(200, suggestions, "Search suggestions fetched")
+    );
+});
+
 const addVariant = asyncHandler(async (req, res) => {
     const { productId } = req.params;
     const { 
@@ -324,7 +398,7 @@ const getProductById = asyncHandler(async (req, res) => {
     }
 
     const product = await Product.findById(productId)
-        .populate("category", "name");
+        .populate("category", "name slug");
 
     if (!product) {
         throw new ApiError(404, "Product not found");
@@ -338,7 +412,7 @@ const getProductById = asyncHandler(async (req, res) => {
 const getAllProducts = asyncHandler(async (req, res) => {
 
     const products = await Product.find({})
-        .populate("category", "name") 
+        .populate("category", "name slug") 
         .sort("-createdAt"); 
 
     if (!products || products.length === 0) {
@@ -407,6 +481,7 @@ export {
     deleteProduct, 
     updateProductDetails,
     searchProductsDeep,
+    getSearchSuggestions,
     addVariant,
     updateVariantDiscount,
     deleteVariant,

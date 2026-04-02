@@ -5,6 +5,12 @@ import { OrderItemRecord, OrderRecord, OrderStatus } from '../../core/models/ord
 import { AuthService } from '../../core/services/auth.service';
 import { OrderService } from '../../core/services/order.service';
 
+interface OrderTimelineStep {
+  key: OrderStatus;
+  label: string;
+  description: string;
+}
+
 @Component({
   selector: 'app-order-detail',
   standalone: true,
@@ -66,6 +72,40 @@ import { OrderService } from '../../core/services/order.service';
                 <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Payment</p>
                   <p class="mt-3 text-base font-black text-slate-900">{{ order.paymentInfo?.status || 'Pending' }}</p>
+                  <p class="mt-2 text-xs font-semibold text-slate-500">{{ trackingSummary }}</p>
+                </div>
+              </div>
+
+              <div class="mt-6 rounded-[1.75rem] border border-slate-200 bg-white p-5">
+                <div class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Tracking</p>
+                    <h3 class="mt-2 text-xl font-black text-slate-900">Delivery timeline</h3>
+                  </div>
+                  <p class="text-sm font-medium text-slate-500">
+                    {{ trackingDescription }}
+                  </p>
+                </div>
+
+                <div *ngIf="displayStatus === 'Cancelled'" class="mt-4 rounded-[1.25rem] border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+                  This order was cancelled. Tracking is paused and inventory has been restored.
+                </div>
+
+                <div class="mt-5 grid gap-4 md:grid-cols-4">
+                  <article
+                    *ngFor="let step of timelineSteps; trackBy: trackByStep"
+                    class="rounded-[1.35rem] border p-4"
+                    [ngClass]="timelineStepClass(step.key)"
+                  >
+                    <div class="flex items-center justify-between gap-3">
+                      <p class="text-xs font-black uppercase tracking-[0.18em]">{{ step.label }}</p>
+                      <span class="h-3 w-3 rounded-full" [ngClass]="timelineDotClass(step.key)"></span>
+                    </div>
+                    <p class="mt-3 text-sm font-medium leading-6">{{ step.description }}</p>
+                    <p class="mt-4 text-xs font-bold uppercase tracking-[0.18em]" [ngClass]="timelineStepTextClass(step.key)">
+                      {{ timelineStepState(step.key) }}
+                    </p>
+                  </article>
                 </div>
               </div>
             </div>
@@ -96,6 +136,14 @@ import { OrderService } from '../../core/services/order.service';
                     </div>
                   </div>
                 </article>
+              </div>
+
+              <div class="mt-5 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Need help?</p>
+                <h3 class="mt-2 text-lg font-black text-slate-900">Track this order anytime</h3>
+                <p class="mt-2 text-sm font-medium leading-6 text-slate-600">
+                  Open this order again from your order history to see the current step, item status, and shipping details in one place.
+                </p>
               </div>
             </div>
           </section>
@@ -177,6 +225,72 @@ export class OrderDetailComponent implements OnInit {
 
   get displayTotal(): number {
     return this.order?.totalAmount || 0;
+  }
+
+  get timelineSteps(): OrderTimelineStep[] {
+    return [
+      {
+        key: 'Processing',
+        label: 'Processing',
+        description: 'Your order has been received and is being prepared for fulfillment.'
+      },
+      {
+        key: 'Shipped',
+        label: 'Shipped',
+        description: 'The package has left the warehouse and is on the way.'
+      },
+      {
+        key: 'Delivered',
+        label: 'Delivered',
+        description: 'The order reached the delivery address successfully.'
+      },
+      {
+        key: 'Cancelled',
+        label: 'Cancelled',
+        description: 'The order was cancelled before completion.'
+      }
+    ];
+  }
+
+  get trackingSummary(): string {
+    if (!this.order) {
+      return 'Tracking details appear after payment is confirmed.';
+    }
+
+    if (this.order.orderStatus === 'Cancelled') {
+      return 'This order was cancelled and will not move to shipping.';
+    }
+
+    if (this.order.orderStatus === 'Delivered') {
+      return this.order.deliveredAt
+        ? `Delivered on ${this.formatDate(this.order.deliveredAt)}.`
+        : 'Delivered successfully.';
+    }
+
+    if (this.order.orderStatus === 'Shipped') {
+      return 'Your package is with the carrier and on the way.';
+    }
+
+    return this.order.paymentInfo?.status === 'Paid'
+      ? 'Payment confirmed. Tracking will update as the order moves forward.'
+      : 'Waiting for payment confirmation before tracking begins.';
+  }
+
+  get trackingDescription(): string {
+    if (!this.order) {
+      return 'Progress updates will appear here once the order is loaded.';
+    }
+
+    switch (this.order.orderStatus) {
+      case 'Delivered':
+        return 'Completed journey from placement to delivery.';
+      case 'Shipped':
+        return 'Your order is moving through the delivery network.';
+      case 'Cancelled':
+        return 'No further updates are expected for a cancelled order.';
+      default:
+        return 'Watch your order move from processing to shipping and delivery.';
+    }
   }
 
   loadOrder(): void {
@@ -266,8 +380,86 @@ export class OrderDetailComponent implements OnInit {
     }
   }
 
+  timelineStepState(step: OrderStatus): string {
+    if (this.displayStatus === 'Cancelled') {
+      return step === 'Cancelled' ? 'Cancelled' : 'Paused';
+    }
+
+    const orderProgress = ['Processing', 'Shipped', 'Delivered'];
+    const currentIndex = orderProgress.indexOf(this.displayStatus);
+    const stepIndex = orderProgress.indexOf(step);
+
+    if (step === 'Cancelled') {
+      return 'Only if cancelled';
+    }
+
+    if (currentIndex === -1) {
+      return step === 'Processing' ? 'Current' : 'Upcoming';
+    }
+
+    if (stepIndex < currentIndex) {
+      return 'Completed';
+    }
+
+    if (stepIndex === currentIndex) {
+      return 'Current';
+    }
+
+    return 'Upcoming';
+  }
+
+  timelineStepClass(step: OrderStatus): string {
+    const state = this.timelineStepState(step);
+
+    if (state === 'Completed') {
+      return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+    }
+
+    if (state === 'Current') {
+      return 'border-sky-200 bg-sky-50 text-sky-700';
+    }
+
+    if (state === 'Paused' || step === 'Cancelled') {
+      return 'border-rose-200 bg-rose-50 text-rose-700';
+    }
+
+    return 'border-slate-200 bg-white text-slate-600';
+  }
+
+  timelineStepTextClass(step: OrderStatus): string {
+    const state = this.timelineStepState(step);
+    if (state === 'Completed') {
+      return 'text-emerald-700';
+    }
+    if (state === 'Current') {
+      return 'text-sky-700';
+    }
+    if (state === 'Paused' || step === 'Cancelled') {
+      return 'text-rose-700';
+    }
+    return 'text-slate-500';
+  }
+
+  timelineDotClass(step: OrderStatus): string {
+    const state = this.timelineStepState(step);
+    if (state === 'Completed') {
+      return 'bg-emerald-500';
+    }
+    if (state === 'Current') {
+      return 'bg-sky-500';
+    }
+    if (state === 'Paused' || step === 'Cancelled') {
+      return 'bg-rose-500';
+    }
+    return 'bg-slate-300';
+  }
+
   trackByItem(index: number, item: any): string {
     return item.variantId || item.product || String(index);
+  }
+
+  trackByStep(_: number, step: OrderTimelineStep): string {
+    return step.key;
   }
 
   itemTotal(item: OrderItemRecord): number {

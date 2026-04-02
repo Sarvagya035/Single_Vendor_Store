@@ -65,6 +65,7 @@ export interface CustomerCatalogProduct {
   isActive?: boolean;
   averageRating?: number;
   numberOfReviews?: number;
+  createdAt?: string;
   category?: string;
   mainImages?: string[];
   basePrice?: number;

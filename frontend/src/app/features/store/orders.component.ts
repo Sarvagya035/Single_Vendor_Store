@@ -59,6 +59,29 @@ import { OrderService } from '../../core/services/order.service';
                   Placed on {{ formatDate(order.createdAt) }} • {{ itemCount(order) }} items
                 </p>
                 <p class="mt-3 text-sm font-semibold text-slate-700">{{ orderItemPreview(order) }}</p>
+
+                <div class="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div class="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3">
+                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Payment</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ order.paymentInfo?.status || 'Pending' }}</p>
+                  </div>
+                  <div class="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3">
+                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Placed</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
+                  </div>
+                  <div class="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3">
+                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Progress</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ trackingLabel(order.orderStatus) }}</p>
+                  </div>
+                </div>
+
+                <div class="mt-4 flex items-center gap-2">
+                  <span class="h-2.5 w-2.5 rounded-full" [ngClass]="progressDotClass(order.orderStatus, 'Processing')"></span>
+                  <span class="h-1.5 w-8 rounded-full" [ngClass]="progressLineClass(order.orderStatus, 'Processing')"></span>
+                  <span class="h-2.5 w-2.5 rounded-full" [ngClass]="progressDotClass(order.orderStatus, 'Shipped')"></span>
+                  <span class="h-1.5 w-8 rounded-full" [ngClass]="progressLineClass(order.orderStatus, 'Shipped')"></span>
+                  <span class="h-2.5 w-2.5 rounded-full" [ngClass]="progressDotClass(order.orderStatus, 'Delivered')"></span>
+                </div>
               </div>
 
               <div class="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-end">
@@ -186,6 +209,55 @@ export class OrdersComponent implements OnInit {
       default:
         return 'bg-amber-100 text-amber-700';
     }
+  }
+
+  trackingLabel(status?: string): string {
+    switch (status) {
+      case 'Delivered':
+        return 'Delivered';
+      case 'Shipped':
+        return 'On the way';
+      case 'Cancelled':
+        return 'Cancelled';
+      default:
+        return 'Processing';
+    }
+  }
+
+  progressDotClass(status: string | undefined, step: 'Processing' | 'Shipped' | 'Delivered'): string {
+    if (status === 'Cancelled') {
+      return 'bg-rose-500';
+    }
+
+    const orderProgress = ['Processing', 'Shipped', 'Delivered'];
+    const currentIndex = orderProgress.indexOf((status || 'Processing') as any);
+    const stepIndex = orderProgress.indexOf(step);
+
+    if (stepIndex <= currentIndex) {
+      return step === 'Delivered' && status !== 'Delivered' ? 'bg-sky-500' : 'bg-emerald-500';
+    }
+
+    return 'bg-slate-300';
+  }
+
+  progressLineClass(status: string | undefined, step: 'Processing' | 'Shipped'): string {
+    if (status === 'Cancelled') {
+      return 'bg-rose-200';
+    }
+
+    const orderProgress = ['Processing', 'Shipped', 'Delivered'];
+    const currentIndex = orderProgress.indexOf((status || 'Processing') as any);
+    const stepIndex = orderProgress.indexOf(step);
+
+    if (currentIndex > stepIndex) {
+      return 'bg-emerald-500';
+    }
+
+    if (currentIndex === stepIndex) {
+      return 'bg-sky-500';
+    }
+
+    return 'bg-slate-200';
   }
 
   trackByOrder(index: number, order: OrderRecord): string {

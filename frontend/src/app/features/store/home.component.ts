@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogService } from '../../core/services/catalog.service';
@@ -8,6 +9,21 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
 
 interface LandingCategoryNode extends CustomerLandingCategory {
   children: LandingCategoryNode[];
+}
+
+interface ProductSuggestion {
+  _id: string;
+  productName: string;
+  brand?: string;
+  basePrice?: number;
+  averageRating?: number;
+  numberOfReviews?: number;
+  mainImage?: string;
+  categoryDetails?: {
+    _id?: string;
+    name?: string;
+    slug?: string;
+  };
 }
 
 @Component({
@@ -112,24 +128,150 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 </div>
 
                 <form class="w-full md:max-w-xl" (ngSubmit)="searchProducts()">
-                  <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-sky-400 focus-within:bg-white">
-                    <span class="text-slate-400">
-                      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="7"></circle>
-                        <path d="m20 20-3.5-3.5"></path>
-                      </svg>
-                    </span>
-                    <input
-                      name="searchQuery"
-                      [(ngModel)]="searchQuery"
-                      (ngModelChange)="onSearchQueryChange($event)"
-                      type="text"
-                      placeholder="Search for products, brands and more"
-                      class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400"
-                    />
+                  <div class="relative">
+                    <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-sky-400 focus-within:bg-white">
+                      <span class="text-slate-400">
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <circle cx="11" cy="11" r="7"></circle>
+                          <path d="m20 20-3.5-3.5"></path>
+                        </svg>
+                      </span>
+                      <input
+                        name="searchQuery"
+                        [(ngModel)]="searchQuery"
+                        (ngModelChange)="onSearchQueryChange($event)"
+                        (focus)="onSearchFocus()"
+                        (blur)="onSearchBlur()"
+                        type="text"
+                        placeholder="Search for products, brands and more"
+                        class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400"
+                      />
+                    </div>
+
+                    <div
+                      *ngIf="showSuggestions && (loadingSuggestions || searchSuggestions.length > 0)"
+                      class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.12)]"
+                    >
+                      <div *ngIf="loadingSuggestions" class="px-4 py-4 text-sm font-semibold text-slate-500">
+                        Loading suggestions...
+                      </div>
+
+                      <button
+                        *ngFor="let suggestion of searchSuggestions; trackBy: trackBySuggestionId"
+                        type="button"
+                        class="flex w-full items-center gap-3 border-t border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50"
+                        (mousedown)="$event.preventDefault(); selectSuggestion(suggestion)"
+                      >
+                        <div class="h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-slate-100">
+                          <img
+                            [src]="suggestion.mainImage || 'https://via.placeholder.com/120x120?text=Product'"
+                            [alt]="suggestion.productName"
+                            class="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <p class="truncate text-sm font-black text-slate-900">{{ suggestion.productName }}</p>
+                          <p class="mt-0.5 truncate text-xs font-semibold text-slate-500">
+                            {{ suggestion.brand || 'Generic Brand' }} · {{ suggestion.categoryDetails?.name || 'General Category' }}
+                          </p>
+                        </div>
+                        <div class="text-right">
+                          <p class="text-sm font-black text-slate-900">
+                            {{ formatCurrency(suggestion.basePrice || 0) }}
+                          </p>
+                          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                            {{ (suggestion.averageRating || 0).toFixed(1) }} rating
+                          </p>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
+
+              <section class="mb-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 shadow-sm">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                  <div class="grid flex-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+                    <label class="space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
+                      <select
+                        [(ngModel)]="selectedCategorySlug"
+                        name="categoryFilter"
+                        (ngModelChange)="onCategoryFilterChange($event)"
+                        class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      >
+                        <option value="all">All categories</option>
+                        <option *ngFor="let category of catalogCategories; trackBy: trackByCategoryId" [value]="category.slug">
+                          {{ category.name }}
+                        </option>
+                      </select>
+                    </label>
+
+                    <label class="space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Sort</span>
+                      <select
+                        [(ngModel)]="selectedSort"
+                        name="sortFilter"
+                        (ngModelChange)="onSortChange($event)"
+                        class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      >
+                        <option value="featured">Featured</option>
+                        <option value="rating-desc">Highest rating</option>
+                        <option value="price-asc">Price: low to high</option>
+                        <option value="price-desc">Price: high to low</option>
+                        <option value="newest">Newest first</option>
+                      </select>
+                    </label>
+
+                    <label class="space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Min price</span>
+                      <input
+                        [(ngModel)]="minPriceFilter"
+                        name="minPriceFilter"
+                        type="number"
+                        min="0"
+                        placeholder="0"
+                        (ngModelChange)="onPriceFilterChange()"
+                        class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      />
+                    </label>
+
+                    <label class="space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Max price</span>
+                      <input
+                        [(ngModel)]="maxPriceFilter"
+                        name="maxPriceFilter"
+                        type="number"
+                        min="0"
+                        placeholder="Any"
+                        (ngModelChange)="onPriceFilterChange()"
+                        class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      />
+                    </label>
+                  </div>
+
+                  <div class="flex flex-wrap items-center gap-3">
+                    <label class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm">
+                      <input
+                        [(ngModel)]="inStockOnly"
+                        name="inStockOnly"
+                        type="checkbox"
+                        class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                        (ngModelChange)="onInStockToggle()"
+                      />
+                      In stock only
+                    </label>
+
+                    <button
+                      type="button"
+                      class="rounded-full border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50"
+                      (click)="clearFilters()"
+                    >
+                      Clear filters
+                    </button>
+                  </div>
+                </div>
+              </section>
 
               <div
                 *ngIf="catalogMessage"
@@ -155,16 +297,16 @@ interface LandingCategoryNode extends CustomerLandingCategory {
               </div>
 
               <ng-container *ngIf="!loadingProducts">
-                <div *ngIf="displayProducts().length === 0" class="rounded-[1.6rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
+                <div *ngIf="filteredProducts.length === 0" class="rounded-[1.6rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
                   <h2 class="text-2xl font-black text-slate-900">No products found</h2>
                   <p class="mt-3 text-sm font-medium text-slate-500">
                     Try a different search or switch to another category.
                   </p>
                 </div>
 
-                <div *ngIf="displayProducts().length > 0" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                <div *ngIf="filteredProducts.length > 0" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                   <a
-                    *ngFor="let product of displayProducts(); trackBy: trackByProductId"
+                    *ngFor="let product of filteredProducts; trackBy: trackByProductId"
                     [routerLink]="['/products', product._id]"
                     class="group rounded-[1.8rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
                   >
@@ -228,22 +370,30 @@ export class HomeComponent implements OnInit, OnDestroy {
   searchQuery = '';
   loadingProducts = false;
   products: CustomerCatalogProduct[] = [];
-  landingCategories: CustomerLandingCategoryGroup[] = [];
+  filteredProducts: CustomerCatalogProduct[] = [];
+  searchSuggestions: ProductSuggestion[] = [];
   catalogCategories: CustomerLandingCategory[] = [];
   catalogCategoryTree: LandingCategoryNode[] = [];
   visibleCatalogCategories: LandingCategoryNode[] = [];
   expandedCategoryIds = new Set<string>();
   selectedCategorySlug = 'all';
-  viewMode: 'landing' | 'search' = 'landing';
   catalogMessage = '';
   catalogError = '';
   loadingCategories = false;
-  private searchDebounceHandle: ReturnType<typeof setTimeout> | null = null;
+  loadingSuggestions = false;
+  showSuggestions = false;
+  selectedSort = 'featured';
+  minPriceFilter = '';
+  maxPriceFilter = '';
+  inStockOnly = false;
+  private suggestionDebounceHandle: ReturnType<typeof setTimeout> | null = null;
+  private suggestionBlurHandle: ReturnType<typeof setTimeout> | null = null;
   readonly skeletonCards = Array.from({ length: 6 });
 
   constructor(
     private authService: AuthService,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -258,14 +408,18 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.loadLandingProducts();
+    this.loadCatalogProducts();
     this.loadLandingCategories();
   }
 
   ngOnDestroy(): void {
-    if (this.searchDebounceHandle) {
-      clearTimeout(this.searchDebounceHandle);
-      this.searchDebounceHandle = null;
+    if (this.suggestionDebounceHandle) {
+      clearTimeout(this.suggestionDebounceHandle);
+      this.suggestionDebounceHandle = null;
+    }
+    if (this.suggestionBlurHandle) {
+      clearTimeout(this.suggestionBlurHandle);
+      this.suggestionBlurHandle = null;
     }
   }
 
@@ -282,83 +436,113 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   searchProducts(): void {
-    const query = this.searchQuery.trim();
-    this.catalogError = '';
-    this.catalogMessage = '';
-
-    if (!query) {
-      this.viewMode = 'landing';
-      this.loadLandingProducts();
-      return;
-    }
-
-    this.loadingProducts = true;
-    this.viewMode = 'search';
-    this.selectedCategorySlug = 'all';
-    this.products = [];
-    this.catalogService.searchProducts(query).subscribe({
-      next: (response) => {
-        this.loadingProducts = false;
-        const rawProducts = Array.isArray(response?.data) ? response.data : response?.data?.docs || [];
-        this.products = this.filterProductsByPrefix(rawProducts, query);
-        this.catalogMessage = this.products.length
-          ? `${this.products.length} product${this.products.length === 1 ? '' : 's'} found for "${query}".`
-          : `No products matched "${query}".`;
-      },
-      error: (error) => {
-        this.loadingProducts = false;
-        this.products = [];
-        this.catalogError = error.error?.message || 'Unable to load products right now.';
-      }
-    });
+    this.showSuggestions = false;
+    this.refreshFilteredProducts();
+    this.refreshCatalogMessage();
   }
 
   onSearchQueryChange(value: string): void {
     this.searchQuery = value;
+    this.refreshFilteredProducts();
 
-    if (this.searchDebounceHandle) {
-      clearTimeout(this.searchDebounceHandle);
-      this.searchDebounceHandle = null;
+    if (this.suggestionDebounceHandle) {
+      clearTimeout(this.suggestionDebounceHandle);
+      this.suggestionDebounceHandle = null;
     }
 
     const query = value.trim();
-    if (!query) {
-      this.viewMode = 'landing';
-      this.selectedCategorySlug = 'all';
+    if (query.length < 2) {
+      this.searchSuggestions = [];
+      this.showSuggestions = false;
+      this.loadingSuggestions = false;
       this.catalogError = '';
       this.catalogMessage = '';
-      this.loadLandingProducts();
+      this.refreshCatalogMessage();
       return;
     }
 
-    this.searchDebounceHandle = setTimeout(() => {
-      if (this.searchQuery.trim() === query) {
-        this.searchProducts();
+    this.loadingSuggestions = true;
+    this.suggestionDebounceHandle = setTimeout(() => {
+      if (this.searchQuery.trim() !== query) {
+        this.loadingSuggestions = false;
+        return;
       }
-    }, 200);
+
+      this.catalogService.getProductSuggestions(query, 8).subscribe({
+        next: (response) => {
+          this.loadingSuggestions = false;
+          const rawSuggestions = Array.isArray(response?.data) ? response.data : [];
+          this.searchSuggestions = rawSuggestions;
+          this.showSuggestions = true;
+        },
+        error: () => {
+          this.loadingSuggestions = false;
+          this.searchSuggestions = [];
+          this.showSuggestions = false;
+        }
+      });
+    }, 180);
   }
 
-  loadLandingProducts(): void {
+  onSearchFocus(): void {
+    if (this.searchQuery.trim().length >= 2 && this.searchSuggestions.length > 0) {
+      this.showSuggestions = true;
+    }
+  }
+
+  onSearchBlur(): void {
+    if (this.suggestionBlurHandle) {
+      clearTimeout(this.suggestionBlurHandle);
+    }
+
+    this.suggestionBlurHandle = setTimeout(() => {
+      this.showSuggestions = false;
+    }, 150);
+  }
+
+  selectSuggestion(suggestion: ProductSuggestion): void {
+    this.searchQuery = suggestion.productName || '';
+    this.showSuggestions = false;
+    this.searchSuggestions = [];
+    this.router.navigate(['/products', suggestion._id]);
+  }
+
+  onCategoryFilterChange(_: string): void {
+    this.refreshFilteredProducts();
+    this.refreshCatalogMessage();
+  }
+
+  onSortChange(_: string): void {
+    this.refreshFilteredProducts();
+    this.refreshCatalogMessage();
+  }
+
+  onPriceFilterChange(): void {
+    this.refreshFilteredProducts();
+    this.refreshCatalogMessage();
+  }
+
+  onInStockToggle(): void {
+    this.refreshFilteredProducts();
+    this.refreshCatalogMessage();
+  }
+
+  loadCatalogProducts(): void {
     this.loadingProducts = true;
     this.catalogError = '';
     this.catalogMessage = '';
     this.products = [];
-    this.landingCategories = [];
 
-    this.catalogService.getLandingPageProducts().subscribe({
+    this.catalogService.getCatalogProducts().subscribe({
       next: (response) => {
         this.loadingProducts = false;
-        this.landingCategories = Array.isArray(response?.data) ? response.data : [];
-        this.products = [];
-        this.viewMode = 'landing';
-        if (!this.landingCategories.some((category) => this.normalizeCategoryKey(category.categorySlug || category.categoryName || '') === this.normalizeCategoryKey(this.selectedCategorySlug))) {
-          this.selectedCategorySlug = 'all';
-        }
+        const rawProducts = Array.isArray(response?.data) ? response.data : response?.data?.docs || [];
+        this.products = rawProducts;
+        this.refreshFilteredProducts();
         this.refreshCatalogMessage();
       },
       error: (error) => {
         this.loadingProducts = false;
-        this.landingCategories = [];
         this.catalogError = error.error?.message || 'Unable to load the catalog right now.';
       }
     });
@@ -374,6 +558,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.catalogCategoryTree = this.buildCategoryTree(this.catalogCategories);
         this.expandedCategoryIds = new Set<string>();
         this.visibleCatalogCategories = this.buildVisibleCategoryList();
+        if (
+          this.selectedCategorySlug !== 'all' &&
+          !this.catalogCategories.some((category) => this.normalizeCategoryKey(category.slug || category.name) === this.normalizeCategoryKey(this.selectedCategorySlug))
+        ) {
+          this.selectedCategorySlug = 'all';
+        }
         this.catalogCategories = [...this.catalogCategories].sort((a, b) => {
           const levelDiff = Number(a.level || 0) - Number(b.level || 0);
           if (levelDiff !== 0) return levelDiff;
@@ -422,10 +612,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   selectCategory(slug: string): void {
     this.selectedCategorySlug = slug || 'all';
-    this.viewMode = 'landing';
-    this.searchQuery = '';
-    this.catalogError = '';
-    this.products = [];
+    this.refreshFilteredProducts();
     this.refreshCatalogMessage();
   }
 
@@ -439,24 +626,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   displayProducts(): CustomerCatalogProduct[] {
-    if (this.viewMode === 'search') {
-      return this.products;
-    }
-
-    if (this.selectedCategorySlug === 'all') {
-      return this.landingCategories.reduce<CustomerCatalogProduct[]>(
-        (allProducts, category) => allProducts.concat(category.products || []),
-        []
-      );
-    }
-
-    return this.landingCategories.find(
-      (category) => this.normalizeCategoryKey(category.categorySlug || category.categoryName || '') === this.normalizeCategoryKey(this.selectedCategorySlug)
-    )?.products || [];
+    return this.filteredProducts;
   }
 
   totalProductCount(): number {
-    return this.landingCategories.reduce((total, category) => total + (category.products?.length || 0), 0);
+    return this.products.filter((product) => product.isActive).length;
   }
 
   categoryCount(category: CustomerLandingCategory): number {
@@ -483,21 +657,28 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   pageSubtitle(): string {
-    if (this.viewMode === 'search' && this.searchQuery.trim()) {
-      return `Showing search results for "${this.searchQuery.trim()}".`;
-    }
-
-    if (this.selectedCategorySlug === 'all') {
-      return 'Browse featured products by category or search for a specific item.';
-    }
-
     const selectedCategory = this.catalogCategories.find(
       (category) => this.normalizeCategoryKey(category.slug || category.name) === this.normalizeCategoryKey(this.selectedCategorySlug)
     );
 
+    const query = this.searchQuery.trim();
+    const filters = this.buildFilterSummary();
+
+    if (query && filters) {
+      return `Searching "${query}" with ${filters}.`;
+    }
+
+    if (query) {
+      return `Showing results for "${query}".`;
+    }
+
+    if (filters) {
+      return `Browsing products with ${filters}.`;
+    }
+
     return selectedCategory?.name
       ? `Browsing ${selectedCategory.name}.`
-      : 'Browse featured products by category or search for a specific item.';
+      : 'Browse products by category, price, rating, or stock status.';
   }
 
   trackByCategoryId(_: number, category: CustomerLandingCategory): string {
@@ -506,6 +687,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   trackByProductId(_: number, product: CustomerCatalogProduct): string {
     return product._id;
+  }
+
+  trackBySuggestionId(_: number, suggestion: ProductSuggestion): string {
+    return suggestion._id;
   }
 
   trackByCategorySlug(_: number, category: CustomerLandingCategoryGroup): string {
@@ -518,18 +703,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private normalizeCategoryKey(value: string): string {
     return String(value || '').trim().toLowerCase();
-  }
-
-  private filterProductsByPrefix(products: CustomerCatalogProduct[], query: string): CustomerCatalogProduct[] {
-    const normalizedQuery = this.normalizeCategoryKey(query);
-
-    if (!normalizedQuery) {
-      return products;
-    }
-
-    return products.filter((product) =>
-      this.normalizeCategoryKey(product.productName || '').startsWith(normalizedQuery)
-    );
   }
 
   private buildCategoryTree(categories: CustomerLandingCategory[]): LandingCategoryNode[] {
@@ -614,34 +787,247 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private countProductsForNode(node: LandingCategoryNode): number {
-    const directCount = this.landingCategories.find(
-      (group) => this.normalizeCategoryKey(group.categorySlug || group.categoryName || '') === this.normalizeCategoryKey(node.slug || node.name)
-    )?.products?.length || 0;
+    const keys = new Set<string>();
 
-    if (!node.children.length) {
-      return directCount;
-    }
+    const collectKeys = (current: LandingCategoryNode): void => {
+      keys.add(this.normalizeCategoryKey(current.slug || current.name));
+      (current.children || []).forEach(collectKeys);
+    };
 
-    return node.children.reduce((total, child) => total + this.countProductsForNode(child), directCount);
+    collectKeys(node);
+
+    return this.products.filter((product) => {
+      if (!product.isActive) {
+        return false;
+      }
+
+      const categoryKey = this.normalizeCategoryKey(product.categoryDetails?.slug || product.categoryDetails?.name || '');
+      return keys.has(categoryKey);
+    }).length;
   }
 
   private refreshCatalogMessage(): void {
-    if (this.viewMode === 'search') {
+    const visibleCount = this.filteredProducts.length;
+    const filters = this.buildFilterSummary();
+    const query = this.searchQuery.trim();
+
+    if (!this.products.length && !this.loadingProducts) {
+      this.catalogMessage = 'No active products are available in the store yet.';
+      return;
+    }
+
+    if (query && filters) {
+      this.catalogMessage = `${visibleCount} product${visibleCount === 1 ? '' : 's'} match "${query}" and ${filters}.`;
+      return;
+    }
+
+    if (query) {
+      this.catalogMessage = `${visibleCount} product${visibleCount === 1 ? '' : 's'} found for "${query}".`;
+      return;
+    }
+
+    if (filters) {
+      this.catalogMessage = `${visibleCount} product${visibleCount === 1 ? '' : 's'} match ${filters}.`;
       return;
     }
 
     const selectedCategory = this.findCategoryNodeBySlug(this.selectedCategorySlug);
-
     if (this.selectedCategorySlug === 'all') {
-      this.catalogMessage = this.landingCategories.length
-        ? `Showing ${this.totalProductCount()} curated product${this.totalProductCount() === 1 ? '' : 's'} across ${this.landingCategories.length} categorie${this.landingCategories.length === 1 ? 'y' : 's'}.`
-        : 'No active product categories are available in the catalog yet.';
+      this.catalogMessage = `Showing ${visibleCount} product${visibleCount === 1 ? '' : 's'} across ${this.catalogCategories.length || 0} categories.`;
       return;
     }
 
-    const count = this.categoryCount(selectedCategory || { _id: '', name: '', slug: this.selectedCategorySlug });
     this.catalogMessage = selectedCategory?.name
-      ? `Browsing ${selectedCategory.name} with ${count} product${count === 1 ? '' : 's'}.`
-      : 'Browse featured products by category or search for a specific item.';
+      ? `Browsing ${selectedCategory.name} with ${visibleCount} product${visibleCount === 1 ? '' : 's'}.`
+      : `Showing ${visibleCount} product${visibleCount === 1 ? '' : 's'}.`;
+  }
+
+  private refreshFilteredProducts(): void {
+    const query = this.searchQuery.trim();
+    const minPrice = this.parsePrice(this.minPriceFilter);
+    const maxPrice = this.parsePrice(this.maxPriceFilter);
+
+    const filtered = this.products.filter((product) => {
+      if (!product.isActive) {
+        return false;
+      }
+
+      if (!this.productMatchesSelectedCategory(product)) {
+        return false;
+      }
+
+      if (query && !this.productMatchesQuery(product, query)) {
+        return false;
+      }
+
+      if (this.inStockOnly && !this.isProductInStock(product)) {
+        return false;
+      }
+
+      const price = this.productDisplayPrice(product);
+      if (minPrice !== null && price < minPrice) {
+        return false;
+      }
+      if (maxPrice !== null && price > maxPrice) {
+        return false;
+      }
+
+      return true;
+    });
+
+    this.filteredProducts = this.sortProducts(filtered);
+  }
+
+  private sortProducts(products: CustomerCatalogProduct[]): CustomerCatalogProduct[] {
+    const sorted = [...products];
+
+    switch (this.selectedSort) {
+      case 'rating-desc':
+        sorted.sort((a, b) => this.compareNumber(b.averageRating, a.averageRating) || this.compareNumber(b.numberOfReviews, a.numberOfReviews) || this.compareDate(b.createdAt, a.createdAt));
+        break;
+      case 'price-asc':
+        sorted.sort((a, b) => this.compareNumber(this.productDisplayPrice(a), this.productDisplayPrice(b)));
+        break;
+      case 'price-desc':
+        sorted.sort((a, b) => this.compareNumber(this.productDisplayPrice(b), this.productDisplayPrice(a)));
+        break;
+      case 'newest':
+        sorted.sort((a, b) => this.compareDate(b.createdAt, a.createdAt));
+        break;
+      default:
+        sorted.sort((a, b) => this.compareNumber(b.averageRating, a.averageRating) || this.compareDate(b.createdAt, a.createdAt));
+        break;
+    }
+
+    return sorted;
+  }
+
+  private compareNumber(a?: number, b?: number): number {
+    return Number(a || 0) - Number(b || 0);
+  }
+
+  private compareDate(a?: string, b?: string): number {
+    return new Date(String(a || 0)).getTime() - new Date(String(b || 0)).getTime();
+  }
+
+  private productDisplayPrice(product: CustomerCatalogProduct): number {
+    return Number(product.displayVariant?.finalPrice || product.basePrice || 0);
+  }
+
+  private isProductInStock(product: CustomerCatalogProduct): boolean {
+    return (product.variants || []).some((variant) => Number(variant.productStock || 0) > 0);
+  }
+
+  private productMatchesSelectedCategory(product: CustomerCatalogProduct): boolean {
+    if (this.selectedCategorySlug === 'all') {
+      return true;
+    }
+
+    const selectedNode = this.findCategoryNodeBySlug(this.selectedCategorySlug);
+    if (selectedNode) {
+      return this.productMatchesCategory(product, selectedNode);
+    }
+
+    const selectedKey = this.normalizeCategoryKey(this.selectedCategorySlug);
+    const categoryKey = this.normalizeCategoryKey(product.categoryDetails?.slug || product.categoryDetails?.name || '');
+    return categoryKey === selectedKey;
+  }
+
+  private productMatchesQuery(product: CustomerCatalogProduct, query: string): boolean {
+    const normalizedQuery = this.normalizeCategoryKey(query);
+    if (!normalizedQuery) {
+      return true;
+    }
+
+    const searchable = [
+      product.productName,
+      product.productDescription,
+      product.brand,
+      product.categoryDetails?.name,
+      product.categoryDetails?.slug,
+      product.displayVariant?.sku
+    ]
+      .filter(Boolean)
+      .map((value) => this.normalizeCategoryKey(String(value)))
+      .join(' ');
+
+    return searchable.includes(normalizedQuery);
+  }
+
+  private productMatchesCategory(product: CustomerCatalogProduct, node: LandingCategoryNode): boolean {
+    const categoryKey = this.normalizeCategoryKey(product.categoryDetails?.slug || product.categoryDetails?.name || '');
+    const nodeKey = this.normalizeCategoryKey(node.slug || node.name);
+
+    if (categoryKey === nodeKey) {
+      return true;
+    }
+
+    return (node.children || []).some((child) => this.productMatchesCategory(product, child));
+  }
+
+  private parsePrice(value: string): number | null {
+    const cleaned = String(value || '').trim();
+    if (!cleaned) {
+      return null;
+    }
+
+    const parsed = Number(cleaned);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private buildFilterSummary(): string {
+    const parts: string[] = [];
+
+    if (this.selectedCategorySlug !== 'all') {
+      const selectedCategory = this.catalogCategories.find(
+        (category) => this.normalizeCategoryKey(category.slug || category.name) === this.normalizeCategoryKey(this.selectedCategorySlug)
+      );
+      parts.push(selectedCategory?.name || 'selected category');
+    }
+
+    if (this.inStockOnly) {
+      parts.push('in-stock items only');
+    }
+
+    if (this.minPriceFilter || this.maxPriceFilter) {
+      const rangeStart = this.minPriceFilter ? this.formatCurrency(Number(this.minPriceFilter)) : 'any';
+      const rangeEnd = this.maxPriceFilter ? this.formatCurrency(Number(this.maxPriceFilter)) : 'any';
+      parts.push(`prices between ${rangeStart} and ${rangeEnd}`);
+    }
+
+    if (this.selectedSort === 'rating-desc') {
+      parts.push('highest rated first');
+    } else if (this.selectedSort === 'price-asc') {
+      parts.push('lowest price first');
+    } else if (this.selectedSort === 'price-desc') {
+      parts.push('highest price first');
+    } else if (this.selectedSort === 'newest') {
+      parts.push('newest first');
+    }
+
+    if (parts.length === 0) {
+      return '';
+    }
+
+    if (parts.length === 1) {
+      return parts[0];
+    }
+
+    const last = parts.pop();
+    return `${parts.join(', ')} and ${last}`;
+  }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.searchSuggestions = [];
+    this.showSuggestions = false;
+    this.loadingSuggestions = false;
+    this.selectedCategorySlug = 'all';
+    this.selectedSort = 'featured';
+    this.minPriceFilter = '';
+    this.maxPriceFilter = '';
+    this.inStockOnly = false;
+    this.refreshFilteredProducts();
+    this.refreshCatalogMessage();
   }
 }
