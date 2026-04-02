@@ -28,7 +28,7 @@ const userSchema = new Schema({
         trim: true,
         unique: true,
         sparse: true,
-        match: [/^\d{10}$/, "Phone number must be exactly 10 digits"]
+        match: [/^\d+$/, "Phone number must contain only digits"]
     },
 
     password: {
