@@ -8,7 +8,8 @@ const userSchema = new Schema({
         type: String,
         required: true,
         trim: true, 
-        index: true
+        index: true,
+        match: [/^[A-Za-z]+(?: [A-Za-z]+)*$/, "Name must contain only alphabets and spaces"]
     },
 
     email: {

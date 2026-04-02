@@ -31,10 +31,26 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                   👤
                 </div>
-                <input id="username" name="username" type="text" required [(ngModel)]="username"
-                  placeholder="Enter your username"
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  autocomplete="name"
+                  inputmode="text"
+                  pattern="[A-Za-z ]+"
+                  title="Use letters only"
+                  required
+                  [(ngModel)]="username"
+                  (ngModelChange)="validateUsername($event)"
+                  placeholder="Enter your full name"
+                  [class.ring-2]="!!usernameError"
+                  [class.ring-red-500]="!!usernameError"
+                  [class.focus:ring-red-500]="!!usernameError"
                   class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
               </div>
+              <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
+                {{ usernameError }}
+              </p>
             </div>
 
             <div class="space-y-2">
@@ -56,9 +72,16 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   📞
                 </div>
                 <input id="phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required [(ngModel)]="phone"
+                  (ngModelChange)="validatePhone($event)"
                   placeholder="Enter your phone number"
+                  [class.ring-2]="!!phoneError"
+                  [class.ring-red-500]="!!phoneError"
+                  [class.focus:ring-red-500]="!!phoneError"
                   class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
               </div>
+              <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
+                {{ phoneError }}
+              </p>
             </div>
 
             <div class="space-y-2">
@@ -111,6 +134,8 @@ export class RegisterComponent {
   password = '';
   isLoading = false;
   showPassword = false;
+  usernameError = '';
+  phoneError = '';
 
   constructor(
     private authService: AuthService,
@@ -120,9 +145,26 @@ export class RegisterComponent {
 
   onSubmit() {
     this.isLoading = true;
+    const normalizedUsername = this.username.trim().replace(/\s+/g, ' ');
+    const alphabetOnlyName = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+    const phoneOnlyDigits = /^\d{10}$/;
+
+    if (!alphabetOnlyName.test(normalizedUsername)) {
+      this.isLoading = false;
+      this.usernameError = 'Name must contain only letters and spaces.';
+      this.errorService.showToast(this.usernameError, 'error');
+      return;
+    }
+
+    if (!phoneOnlyDigits.test(this.phone.trim())) {
+      this.isLoading = false;
+      this.phoneError = 'Phone number must be exactly 10 digits.';
+      this.errorService.showToast(this.phoneError, 'error');
+      return;
+    }
 
     this.authService
-      .register({ username: this.username, email: this.email, phone: this.phone, password: this.password })
+      .register({ username: normalizedUsername, email: this.email, phone: this.phone, password: this.password })
       .pipe(
         catchError((error) => {
           this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
@@ -147,5 +189,36 @@ export class RegisterComponent {
     this.email = '';
     this.phone = '';
     this.password = '';
+    this.usernameError = '';
+    this.phoneError = '';
+  }
+
+  validateUsername(value: string): void {
+    this.username = value;
+
+    const normalized = value.trim();
+    if (!normalized) {
+      this.usernameError = '';
+      return;
+    }
+
+    const alphabetOnlyName = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+    this.usernameError = alphabetOnlyName.test(normalized)
+      ? ''
+      : 'Use letters only. Numbers and symbols are not allowed.';
+  }
+
+  validatePhone(value: string): void {
+    this.phone = value;
+
+    const normalized = value.trim();
+    if (!normalized) {
+      this.phoneError = '';
+      return;
+    }
+
+    this.phoneError = /^\d{10}$/.test(normalized)
+      ? ''
+      : 'Enter a 10-digit phone number.';
   }
 }

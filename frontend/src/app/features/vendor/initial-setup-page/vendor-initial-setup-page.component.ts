@@ -65,9 +65,14 @@ import { VendorService } from '../../../core/services/vendor.service';
                     required
                     name="username"
                     [(ngModel)]="form.username"
+                    (ngModelChange)="validateAlphabetic('username', $event)"
                     placeholder="Store owner name"
+                    [class.ring-2]="!!usernameError"
+                    [class.ring-red-500]="!!usernameError"
+                    [class.focus:ring-red-500]="!!usernameError"
                     class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
                   />
+                  <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">{{ usernameError }}</p>
                 </label>
 
                 <label class="space-y-2">
@@ -92,9 +97,14 @@ import { VendorService } from '../../../core/services/vendor.service';
                     required
                     name="phone"
                     [(ngModel)]="form.phone"
+                    (ngModelChange)="validatePhone($event)"
                     placeholder="9999999999"
+                    [class.ring-2]="!!phoneError"
+                    [class.ring-red-500]="!!phoneError"
+                    [class.focus:ring-red-500]="!!phoneError"
                     class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
                   />
+                  <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">{{ phoneError }}</p>
                 </label>
 
                 <label class="space-y-2">
@@ -178,9 +188,14 @@ import { VendorService } from '../../../core/services/vendor.service';
                     required
                     name="accountHolderName"
                     [(ngModel)]="form.accountHolderName"
+                    (ngModelChange)="validateAlphabetic('accountHolderName', $event)"
                     placeholder="Name on account"
+                    [class.ring-2]="!!accountHolderNameError"
+                    [class.ring-red-500]="!!accountHolderNameError"
+                    [class.focus:ring-red-500]="!!accountHolderNameError"
                     class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
                   />
+                  <p *ngIf="accountHolderNameError" class="ml-1 text-xs font-semibold text-red-500">{{ accountHolderNameError }}</p>
                 </label>
 
                 <label class="space-y-2">
@@ -330,6 +345,9 @@ export class VendorInitialSetupPageComponent {
   logoPreview = '';
   isLoading = false;
   submitted = false;
+  usernameError = '';
+  phoneError = '';
+  accountHolderNameError = '';
 
   constructor(
     private vendorService: VendorService,
@@ -355,6 +373,14 @@ export class VendorInitialSetupPageComponent {
   onSubmit(): void {
     if (!this.logoFile) {
       this.errorService.showToast('Please upload a store logo.', 'error');
+      return;
+    }
+
+    const usernameValid = this.validateAlphabetic('username', this.form.username);
+    const phoneValid = this.validatePhone(this.form.phone);
+    const accountHolderNameValid = this.validateAlphabetic('accountHolderName', this.form.accountHolderName);
+
+    if (!usernameValid || !phoneValid || !accountHolderNameValid) {
       return;
     }
 
@@ -416,5 +442,48 @@ export class VendorInitialSetupPageComponent {
     this.logoFile = null;
     this.logoPreview = '';
     this.submitted = false;
+    this.usernameError = '';
+    this.phoneError = '';
+    this.accountHolderNameError = '';
+  }
+
+  validateAlphabetic(field: 'username' | 'accountHolderName', value: string): boolean {
+    const normalized = String(value || '').trim();
+
+    if (!normalized) {
+      if (field === 'username') {
+        this.usernameError = 'Full name is required.';
+      } else {
+        this.accountHolderNameError = 'Account holder name is required.';
+      }
+      return false;
+    }
+
+    const alphabetOnlyName = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+    const errorMessage = alphabetOnlyName.test(normalized)
+      ? ''
+      : 'Use letters only. Numbers and symbols are not allowed.';
+
+    if (field === 'username') {
+      this.usernameError = errorMessage;
+      return !this.usernameError;
+    }
+
+    this.accountHolderNameError = errorMessage;
+    return !this.accountHolderNameError;
+  }
+
+  validatePhone(value: string): boolean {
+    const normalized = String(value || '').trim();
+
+    if (!normalized) {
+      this.phoneError = 'Phone number is required.';
+      return false;
+    }
+
+    this.phoneError = /^\d{10}$/.test(normalized)
+      ? ''
+      : 'Enter a 10-digit phone number.';
+    return !this.phoneError;
   }
 }

@@ -6,6 +6,7 @@ const addressSchema = new Schema({
         type: String,
         required: true,
         trim: true,
+        match: [/^[A-Za-z]+(?: [A-Za-z]+)*$/, "Full name must contain only alphabets and spaces"]
     },
     phone: {
         type: String,

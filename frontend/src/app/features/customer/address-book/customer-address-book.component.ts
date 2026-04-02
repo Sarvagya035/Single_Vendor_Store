@@ -54,9 +54,15 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <input
                 name="fullname"
                 [(ngModel)]="form.fullname"
+                (ngModelChange)="validateFullname($event)"
                 required
+                [class.border-red-300]="!!fullnameError"
+                [class.focus:border-red-400]="!!fullnameError"
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
               />
+              <p *ngIf="fullnameError" class="ml-1 text-xs font-semibold text-red-500">
+                {{ fullnameError }}
+              </p>
             </label>
 
             <label class="space-y-2">
@@ -68,9 +74,15 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 pattern="[0-9]{10}"
                 maxlength="10"
                 [(ngModel)]="form.phone"
+                (ngModelChange)="validatePhone($event)"
                 required
+                [class.border-red-300]="!!phoneError"
+                [class.focus:border-red-400]="!!phoneError"
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
               />
+              <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
+                {{ phoneError }}
+              </p>
             </label>
 
             <label class="space-y-2">
@@ -81,9 +93,15 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 pattern="[0-9]*"
                 maxlength="10"
                 [(ngModel)]="form.postalCode"
+                (ngModelChange)="validatePostalCode($event)"
                 required
+                [class.border-red-300]="!!postalCodeError"
+                [class.focus:border-red-400]="!!postalCodeError"
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
               />
+              <p *ngIf="postalCodeError" class="ml-1 text-xs font-semibold text-red-500">
+                {{ postalCodeError }}
+              </p>
             </label>
 
             <label class="space-y-2 sm:col-span-2">
@@ -220,6 +238,9 @@ export class CustomerAddressBookComponent implements OnInit {
   editingAddressId: string | null = null;
   successMessage = '';
   form: CustomerAddressForm = this.createEmptyForm();
+  fullnameError = '';
+  phoneError = '';
+  postalCodeError = '';
 
   constructor(private addressService: AddressService) {}
 
@@ -246,6 +267,9 @@ export class CustomerAddressBookComponent implements OnInit {
     this.editingAddressId = null;
     this.form = this.createEmptyForm();
     this.successMessage = '';
+    this.fullnameError = '';
+    this.phoneError = '';
+    this.postalCodeError = '';
   }
 
   startEdit(address: CustomerAddress): void {
@@ -262,15 +286,29 @@ export class CustomerAddressBookComponent implements OnInit {
       country: address.country
     };
     this.successMessage = '';
+    this.fullnameError = '';
+    this.phoneError = '';
+    this.postalCodeError = '';
   }
 
   cancelForm(): void {
     this.showForm = false;
     this.editingAddressId = null;
     this.form = this.createEmptyForm();
+    this.fullnameError = '';
+    this.phoneError = '';
+    this.postalCodeError = '';
   }
 
   saveAddress(): void {
+    const valid = this.validateFullname(this.form.fullname)
+      && this.validatePhone(this.form.phone)
+      && this.validatePostalCode(this.form.postalCode);
+
+    if (!valid) {
+      return;
+    }
+
     this.isSaving = true;
     this.successMessage = '';
 
@@ -330,6 +368,46 @@ export class CustomerAddressBookComponent implements OnInit {
 
   trackByAddress(_: number, address: CustomerAddress): string {
     return address._id || address.addressLine1;
+  }
+
+  validateFullname(value: string): boolean {
+    const normalized = String(value || '').trim();
+    if (!normalized) {
+      this.fullnameError = 'Full name is required.';
+      return false;
+    }
+
+    const alphabetOnlyName = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+    this.fullnameError = alphabetOnlyName.test(normalized)
+      ? ''
+      : 'Use letters only. Numbers and symbols are not allowed.';
+    return !this.fullnameError;
+  }
+
+  validatePhone(value: string): boolean {
+    const normalized = String(value || '').trim();
+    if (!normalized) {
+      this.phoneError = 'Phone number is required.';
+      return false;
+    }
+
+    this.phoneError = /^\d{10}$/.test(normalized)
+      ? ''
+      : 'Enter a 10-digit phone number.';
+    return !this.phoneError;
+  }
+
+  validatePostalCode(value: string): boolean {
+    const normalized = String(value || '').trim();
+    if (!normalized) {
+      this.postalCodeError = 'Postal code is required.';
+      return false;
+    }
+
+    this.postalCodeError = /^\d+$/.test(normalized)
+      ? ''
+      : 'Postal code must contain digits only.';
+    return !this.postalCodeError;
   }
 
   private createEmptyForm(): CustomerAddressForm {

@@ -40,7 +40,8 @@ const vendorSchema = new Schema(
             accountHolderName: {
                 type: String,
                 required: [true, "Account holder name is required"],
-                trim: true
+                trim: true,
+                match: [/^[A-Za-z]+(?: [A-Za-z]+)*$/, "Account holder name must contain only alphabets and spaces"]
             },
             accountNumber: {
                 type: String,
