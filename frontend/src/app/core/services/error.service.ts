@@ -74,15 +74,7 @@ export class ErrorService {
   }
 
   private extractStructuredMessage(error: ApiErrorResponse): string | null {
-    if (error.success === false && error.message) {
-      return error.message;
-    }
-
     const errors = error.errors;
-
-    if (!errors) {
-      return error.message || null;
-    }
 
     if (Array.isArray(errors)) {
       const firstError = errors.find((item) => {
@@ -107,6 +99,10 @@ export class ErrorService {
       if (values.length > 0) {
         return String(values[0]);
       }
+    }
+
+    if (error.success === false && error.message) {
+      return error.message;
     }
 
     return error.message || null;

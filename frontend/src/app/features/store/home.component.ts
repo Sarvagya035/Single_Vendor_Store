@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -61,13 +61,16 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   *ngFor="let category of visibleCatalogCategories; trackBy: trackByVisibleCategoryId"
                   type="button"
                   class="w-full rounded-[1.4rem] border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                  [class.scale-[0.98]]="(category.level || 0) > 0"
+                  [class.origin-left]="(category.level || 0) > 0"
+                  [class.opacity-95]="(category.level || 0) > 0"
                   [class.border-sky-300]="isSelectedCategory(category)"
                   [class.bg-sky-50]="isSelectedCategory(category)"
                   [class.text-slate-900]="!isSelectedCategory(category)"
                   [class.border-slate-200]="!isSelectedCategory(category)"
                   [class.bg-white]="!isSelectedCategory(category)"
                   (click)="handleCategoryClick(category)"
-                  [style.paddingLeft.px]="16 + ((category.level || 0) * 18)"
+                  [style.paddingLeft.px]="16 + ((category.level || 0) * 24)"
                 >
                   <div class="flex items-center justify-between gap-3">
                     <div class="flex min-w-0 items-center gap-3">
@@ -111,7 +114,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </p>
                 </div>
 
-                <form class="w-full md:max-w-xl" (ngSubmit)="searchProducts()">
+                <form class="relative w-full md:max-w-xl" (ngSubmit)="searchProducts()">
                   <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-sky-400 focus-within:bg-white">
                     <span class="text-slate-400">
                       <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -128,6 +131,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400"
                     />
                   </div>
+
                 </form>
               </div>
 
@@ -138,7 +142,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 {{ catalogMessage }}
               </div>
 
-              <div *ngIf="loadingProducts" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <div *ngIf="loadingProducts" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
                   <div class="mt-4 h-4 w-3/4 rounded-full bg-slate-200"></div>
@@ -155,9 +159,9 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </p>
                 </div>
 
-                <div *ngIf="displayProducts().length > 0" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                <div *ngIf="displayProducts().length > 0" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   <a
-                    *ngFor="let product of displayProducts(); trackBy: trackByProductId"
+                    *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
                     [routerLink]="['/products', product._id]"
                     class="group rounded-[1.8rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
                   >
@@ -208,6 +212,90 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                     </div>
                   </a>
                 </div>
+
+                <div *ngIf="displayProducts().length > pageSize" class="mt-6 flex flex-col gap-4 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p class="text-sm font-semibold text-slate-500">
+                    Showing {{ paginationStartIndex() }}-{{ paginationEndIndex() }} of {{ displayProducts().length }} products
+                  </p>
+
+                  <div class="flex items-center gap-2 sm:gap-3">
+                    <button
+                      type="button"
+                      class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
+                      [disabled]="currentPage === 1"
+                      (click)="changePage(currentPage - 1)"
+                    >
+                      Prev
+                    </button>
+
+                    <ng-container *ngIf="visiblePages().length <= 5; else compactPager">
+                      <button
+                        *ngFor="let page of visiblePages(); trackBy: trackByPage"
+                        type="button"
+                        class="min-w-9 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition sm:min-w-10 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
+                        [class.bg-sky-600]="page === currentPage"
+                        [class.text-white]="page === currentPage"
+                        [class.bg-white]="page !== currentPage"
+                        [class.text-slate-600]="page !== currentPage"
+                        [class.border]="page !== currentPage"
+                        [class.border-slate-200]="page !== currentPage"
+                        (click)="changePage(page)"
+                      >
+                        {{ page }}
+                      </button>
+                    </ng-container>
+
+                    <ng-template #compactPager>
+                      <button
+                        type="button"
+                        class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
+                        [class.border-sky-300]="currentPage > 2"
+                        [class.bg-sky-50]="currentPage > 2"
+                        [class.text-sky-700]="currentPage > 2"
+                        [disabled]="currentPage <= 2"
+                        (click)="changePage(currentPage - 2)"
+                      >
+                        ...
+                      </button>
+
+                      <button
+                        *ngFor="let page of visiblePages(); trackBy: trackByPage"
+                        type="button"
+                        class="min-w-9 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition sm:min-w-10 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
+                        [class.bg-sky-600]="page === currentPage"
+                        [class.text-white]="page === currentPage"
+                        [class.bg-white]="page !== currentPage"
+                        [class.text-slate-600]="page !== currentPage"
+                        [class.border]="page !== currentPage"
+                        [class.border-slate-200]="page !== currentPage"
+                        (click)="changePage(page)"
+                      >
+                        {{ page }}
+                      </button>
+
+                      <button
+                        type="button"
+                        class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
+                        [class.border-sky-300]="currentPage < totalPages - 1"
+                        [class.bg-sky-50]="currentPage < totalPages - 1"
+                        [class.text-sky-700]="currentPage < totalPages - 1"
+                        [disabled]="currentPage >= totalPages - 1"
+                        (click)="changePage(currentPage + 2)"
+                      >
+                        ...
+                      </button>
+                    </ng-template>
+
+                    <button
+                      type="button"
+                      class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
+                      [disabled]="currentPage === totalPages"
+                      (click)="changePage(currentPage + 1)"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
               </ng-container>
             </main>
           </div>
@@ -216,7 +304,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
     </div>
   `
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
   user: any = null;
   searchQuery = '';
   loadingProducts = false;
@@ -230,7 +318,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   viewMode: 'landing' | 'search' = 'landing';
   catalogMessage = '';
   loadingCategories = false;
-  private searchDebounceHandle: ReturnType<typeof setTimeout> | null = null;
+  currentPage = 1;
+  pageSize = 12;
   readonly skeletonCards = Array.from({ length: 6 });
 
   constructor(
@@ -252,13 +341,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.loadLandingProducts();
     this.loadLandingCategories();
-  }
-
-  ngOnDestroy(): void {
-    if (this.searchDebounceHandle) {
-      clearTimeout(this.searchDebounceHandle);
-      this.searchDebounceHandle = null;
-    }
   }
 
   isAdmin(): boolean {
@@ -293,13 +375,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.loadingProducts = true;
     this.viewMode = 'search';
-    this.selectedCategorySlug = 'all';
+    this.currentPage = 1;
     this.products = [];
-    this.catalogService.searchProducts(query).subscribe({
+    this.catalogService.searchProducts(query, 1, 1000).subscribe({
       next: (response) => {
         this.loadingProducts = false;
         const rawProducts = Array.isArray(response?.data) ? response.data : response?.data?.docs || [];
         this.products = this.filterProductsByPrefix(rawProducts, query);
+        this.currentPage = 1;
         this.catalogMessage = this.products.length
           ? `${this.products.length} product${this.products.length === 1 ? '' : 's'} found for "${query}".`
           : `No products matched "${query}".`;
@@ -313,26 +396,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onSearchQueryChange(value: string): void {
     this.searchQuery = value;
-
-    if (this.searchDebounceHandle) {
-      clearTimeout(this.searchDebounceHandle);
-      this.searchDebounceHandle = null;
-    }
+    this.catalogMessage = '';
 
     const query = value.trim();
     if (!query) {
       this.viewMode = 'landing';
       this.selectedCategorySlug = 'all';
       this.catalogMessage = '';
+      this.currentPage = 1;
       this.loadLandingProducts();
       return;
     }
-
-    this.searchDebounceHandle = setTimeout(() => {
-      if (this.searchQuery.trim() === query) {
-        this.searchProducts();
-      }
-    }, 200);
   }
 
   loadLandingProducts(): void {
@@ -340,6 +414,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.catalogMessage = '';
     this.products = [];
     this.landingCategories = [];
+    this.currentPage = 1;
 
     this.catalogService.getLandingPageProducts().subscribe({
       next: (response) => {
@@ -347,6 +422,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.landingCategories = Array.isArray(response?.data) ? response.data : [];
         this.products = [];
         this.viewMode = 'landing';
+        this.currentPage = 1;
         if (!this.landingCategories.some((category) => this.normalizeCategoryKey(category.categorySlug || category.categoryName || '') === this.normalizeCategoryKey(this.selectedCategorySlug))) {
           this.selectedCategorySlug = 'all';
         }
@@ -416,15 +492,23 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   selectCategory(slug: string): void {
     this.selectedCategorySlug = slug || 'all';
-    this.viewMode = 'landing';
-    this.searchQuery = '';
-    this.products = [];
+    this.currentPage = 1;
     this.refreshCatalogMessage();
   }
 
   handleCategoryClick(category: LandingCategoryNode): void {
     if (category.children.length > 0) {
-      this.toggleCategoryExpansion(category);
+      const isAlreadySelected = this.normalizeCategoryKey(this.selectedCategorySlug) === this.normalizeCategoryKey(category.slug || category.name);
+
+      if (this.expandedCategoryIds.has(category._id) && isAlreadySelected) {
+        this.expandedCategoryIds.delete(category._id);
+        this.visibleCatalogCategories = this.buildVisibleCategoryList();
+        return;
+      }
+
+      this.expandedCategoryIds.add(category._id);
+      this.visibleCatalogCategories = this.buildVisibleCategoryList();
+      this.selectCategory(category.slug);
       return;
     }
 
@@ -443,9 +527,57 @@ export class HomeComponent implements OnInit, OnDestroy {
       );
     }
 
+    const selectedNode = this.findCategoryNodeBySlug(this.selectedCategorySlug);
+    if (selectedNode) {
+      return this.collectProductsForNode(selectedNode);
+    }
+
     return this.landingCategories.find(
       (category) => this.normalizeCategoryKey(category.categorySlug || category.categoryName || '') === this.normalizeCategoryKey(this.selectedCategorySlug)
     )?.products || [];
+  }
+
+  paginatedProducts(): CustomerCatalogProduct[] {
+    const allProducts = this.displayProducts();
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return allProducts.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.displayProducts().length / this.pageSize));
+  }
+
+  visiblePages(): number[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+
+    if (total <= 5) {
+      return Array.from({ length: total }, (_, index) => index + 1);
+    }
+
+    return [1, current - 1, current, current + 1, total]
+      .filter((page) => page >= 1 && page <= total)
+      .filter((page, index, array) => array.indexOf(page) === index)
+      .sort((a, b) => a - b);
+  }
+
+  paginationStartIndex(): number {
+    const total = this.displayProducts().length;
+    if (!total) {
+      return 0;
+    }
+
+    return Math.min(total, (this.currentPage - 1) * this.pageSize + 1);
+  }
+
+  paginationEndIndex(): number {
+    const total = this.displayProducts().length;
+    return Math.min(total, this.currentPage * this.pageSize);
+  }
+
+  changePage(page: number): void {
+    const normalized = Math.min(Math.max(1, page), this.totalPages);
+    this.currentPage = normalized;
   }
 
   totalProductCount(): number {
@@ -507,6 +639,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   trackByVisibleCategoryId(_: number, category: LandingCategoryNode): string {
     return category._id;
+  }
+
+  trackByPage(_: number, page: number): number {
+    return page;
   }
 
   private normalizeCategoryKey(value: string): string {
@@ -607,9 +743,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private countProductsForNode(node: LandingCategoryNode): number {
-    const directCount = this.landingCategories.find(
-      (group) => this.normalizeCategoryKey(group.categorySlug || group.categoryName || '') === this.normalizeCategoryKey(node.slug || node.name)
-    )?.products?.length || 0;
+    const directCount = this.productsForNode(node).length;
 
     if (!node.children.length) {
       return directCount;
@@ -636,5 +770,28 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.catalogMessage = selectedCategory?.name
       ? `Browsing ${selectedCategory.name} with ${count} product${count === 1 ? '' : 's'}.`
       : 'Browse featured products by category or search for a specific item.';
+  }
+
+  private collectProductsForNode(node: LandingCategoryNode): CustomerCatalogProduct[] {
+    const products = new Map<string, CustomerCatalogProduct>();
+
+    const addProducts = (targetNode: LandingCategoryNode): void => {
+      this.productsForNode(targetNode).forEach((product) => {
+        if (product?._id) {
+          products.set(product._id, product);
+        }
+      });
+
+      targetNode.children.forEach(addProducts);
+    };
+
+    addProducts(node);
+    return Array.from(products.values());
+  }
+
+  private productsForNode(node: LandingCategoryNode): CustomerCatalogProduct[] {
+    return this.landingCategories.find(
+      (group) => this.normalizeCategoryKey(group.categorySlug || group.categoryName || '') === this.normalizeCategoryKey(node.slug || node.name)
+    )?.products || [];
   }
 }

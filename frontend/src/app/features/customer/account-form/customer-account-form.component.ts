@@ -36,9 +36,12 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
               type="text"
               id="phone"
               name="phone"
+              inputmode="numeric"
+              pattern="[0-9]{10}"
+              maxlength="10"
               [ngModel]="user.phone"
               (ngModelChange)="updateField('phone', $event)"
-              placeholder="+1 (555) 000-0000"
+              placeholder="Enter 10-digit number"
               class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-indigo-500"
             >
           </div>

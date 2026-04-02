@@ -86,6 +86,9 @@ import { VendorService } from '../../../core/services/vendor.service';
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Phone</span>
                   <input
                     type="tel"
+                    inputmode="numeric"
+                    pattern="[0-9]{10}"
+                    maxlength="10"
                     required
                     name="phone"
                     [(ngModel)]="form.phone"

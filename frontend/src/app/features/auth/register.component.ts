@@ -55,7 +55,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                   📞
                 </div>
-                <input id="phone" name="phone" type="tel" required [(ngModel)]="phone"
+                <input id="phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required [(ngModel)]="phone"
                   placeholder="Enter your phone number"
                   class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
               </div>

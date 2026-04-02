@@ -92,10 +92,11 @@ const notFoundHandler = (req, res, next) => {
 const errorHandler = (error, req, res, next) => {
     const friendlyError = getFriendlyError(error);
     const statusCode = friendlyError.statusCode || 500;
+    const isExpectedClientError = statusCode < 500;
 
-    if (!isProduction) {
+    if (statusCode >= 500) {
         console.error(error);
-    } else if (statusCode >= 500) {
+    } else if (!isProduction && !isExpectedClientError) {
         console.error(error);
     }
 

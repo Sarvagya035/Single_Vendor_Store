@@ -63,6 +63,10 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Phone</span>
               <input
                 name="phone"
+                type="tel"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                maxlength="10"
                 [(ngModel)]="form.phone"
                 required
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
@@ -73,6 +77,9 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Postal Code</span>
               <input
                 name="postalCode"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="10"
                 [(ngModel)]="form.postalCode"
                 required
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"

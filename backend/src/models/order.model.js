@@ -40,8 +40,16 @@ const orderSchema = new Schema({
     shippingAddress: {
         address: { type: String, required: true },
         city: { type: String, required: true },
-        pincode: { type: String, required: true },
-        phone: { type: String, required: true }
+        pincode: {
+            type: String,
+            required: true,
+            match: [/^\d+$/, "Postal code must contain only digits"]
+        },
+        phone: {
+            type: String,
+            required: true,
+            match: [/^\d{10}$/, "Phone number must be exactly 10 digits"]
+        }
     },
 
     paymentInfo: {

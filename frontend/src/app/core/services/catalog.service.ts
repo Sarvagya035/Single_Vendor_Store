@@ -43,7 +43,11 @@ export class CatalogService {
       );
   }
 
-  searchProducts(query: string, page = 1, limit = 12): Observable<any> {
+  searchProducts(
+    query: string,
+    page = 1,
+    limit = 12
+  ): Observable<any> {
     const params = new HttpParams()
       .set('q', query.trim())
       .set('page', page)
