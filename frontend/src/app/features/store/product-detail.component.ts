@@ -88,7 +88,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               <div class="mt-8 space-y-4">
                 <article
                   *ngFor="let review of reviews; trackBy: trackByReview"
-                  class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5"
+                  class="rounded-[1.75rem] border border-slate-200 bg-gradient-to-br from-white to-slate-50/80 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]"
                 >
                   <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
@@ -111,10 +111,21 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                       [href]="image"
                       target="_blank"
                       rel="noreferrer"
-                      class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                      class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
                     >
+                      <span class="h-2 w-2 rounded-full bg-amber-400"></span>
                       View image
                     </a>
+                  </div>
+
+                  <div *ngIf="isOwnReview(review)" class="mt-5 flex items-center gap-3">
+                    <button
+                      type="button"
+                      class="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
+                      (click)="editReview(review)"
+                    >
+                      Edit Review
+                    </button>
                   </div>
                 </article>
 
@@ -125,7 +136,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               </div>
             </div>
 
-            <aside class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <aside #reviewFormSection class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
               <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
                 <div class="border-b border-slate-100 pb-5">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Write A Review</p>
@@ -136,6 +147,22 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                 </div>
 
                 <form class="mt-6 space-y-4" (ngSubmit)="submitReview()">
+                  <div *ngIf="isEditingReview" class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3">
+                    <div class="flex items-center justify-between gap-3">
+                      <div>
+                        <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Edit mode</p>
+                        <p class="mt-1 text-sm font-semibold text-slate-700">You are updating your existing review.</p>
+                      </div>
+                      <button
+                        type="button"
+                        class="rounded-full border border-amber-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-700 transition hover:border-amber-300 hover:text-amber-800"
+                        (click)="cancelReviewEdit()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+
                   <label class="block">
                     <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Rating</span>
                     <select
@@ -191,6 +218,14 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                         {{ file.name }}
                       </span>
                     </div>
+                    <div *ngIf="reviewForm.reviewImages?.length" class="mt-3 flex flex-wrap gap-2">
+                      <span
+                        *ngFor="let image of reviewForm.reviewImages"
+                        class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600"
+                      >
+                        Existing image
+                      </span>
+                    </div>
                   </label>
 
                   <button
@@ -198,7 +233,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                     [disabled]="isSubmittingReview || !product"
                     class="btn-primary w-full !py-3 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {{ isSubmittingReview ? 'Saving Review...' : (existingReview ? 'Update Review' : 'Submit Review') }}
+                    {{ isSubmittingReview ? 'Saving Review...' : (isEditingReview ? 'Update Review' : 'Submit Review') }}
                   </button>
                 </form>
               </ng-container>
@@ -230,8 +265,8 @@ export class ProductDetailComponent implements OnInit {
   reviews: ProductReview[] = [];
   reviewStats: ProductReviewStat[] = [];
   isSubmittingReview = false;
+  isEditingReview = false;
   reviewImageFiles: File[] = [];
-  private clearReviewFormAfterReload = false;
   ratingOptions = [5, 4, 3, 2, 1];
   reviewForm: ProductReviewForm = {
     productId: '',
@@ -241,6 +276,7 @@ export class ProductDetailComponent implements OnInit {
     reviewImages: []
   };
   @ViewChild('reviewImagesInput') reviewImagesInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('reviewFormSection') reviewFormSection?: ElementRef<HTMLElement>;
 
   constructor(
     private authService: AuthService,
@@ -285,7 +321,7 @@ export class ProductDetailComponent implements OnInit {
     return !!this.user && !this.isAdmin() && !this.isVendor();
   }
 
-  loadProduct(): void {
+  loadProduct(preserveBlankReviewForm = false): void {
     const productId = this.route.snapshot.paramMap.get('productId');
     if (!productId) {
       this.errorService.showToast('Product not found.', 'error');
@@ -308,12 +344,7 @@ export class ProductDetailComponent implements OnInit {
         const initialVariant = this.product?.displayVariant || this.product?.variants?.[0];
         this.selectedVariantId = initialVariant?._id || '';
         this.selectedImage = this.activeImage();
-        if (this.clearReviewFormAfterReload) {
-          this.resetReviewForm();
-          this.clearReviewFormAfterReload = false;
-        } else {
-          this.syncReviewForm();
-        }
+        this.resetReviewForm();
       },
       error: (error) => {
         this.loading = false;
@@ -532,11 +563,10 @@ export class ProductDetailComponent implements OnInit {
     this.reviewService.addOrUpdateReview(formData).subscribe({
       next: () => {
         this.isSubmittingReview = false;
-        this.successMessage = this.existingReview ? 'Review updated successfully.' : 'Review submitted successfully.';
-        this.clearReviewFormAfterReload = true;
+        this.successMessage = this.isEditingReview ? 'Review updated successfully.' : 'Review submitted successfully.';
         this.resetReviewForm();
         this.errorService.showToast('Review submitted and form cleared.', 'success');
-        this.loadProduct();
+        this.loadProduct(true);
       },
       error: (error) => {
         this.isSubmittingReview = false;
@@ -562,6 +592,32 @@ export class ProductDetailComponent implements OnInit {
     this.reviewImageFiles = files.slice(0, 5);
   }
 
+  editReview(review: ProductReview): void {
+    this.isEditingReview = true;
+    this.successMessage = '';
+    this.reviewForm = {
+      productId: this.product?._id || '',
+      title: review.title || '',
+      commentBody: review.commentBody || '',
+      rating: Number(review.rating || 5),
+      reviewImages: review.reviewImages || []
+    };
+    this.reviewImageFiles = [];
+    if (this.reviewImagesInput?.nativeElement) {
+      this.reviewImagesInput.nativeElement.value = '';
+    }
+
+    setTimeout(() => {
+      this.reviewFormSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  cancelReviewEdit(): void {
+    this.resetReviewForm();
+    this.successMessage = '';
+    this.errorService.showToast('Edit cancelled.', 'success');
+  }
+
   private syncReviewForm(): void {
     const review = this.existingReview;
 
@@ -576,6 +632,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private resetReviewForm(): void {
+    this.isEditingReview = false;
     this.reviewForm = {
       productId: this.product?._id || '',
       title: '',

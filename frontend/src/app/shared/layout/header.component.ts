@@ -310,7 +310,11 @@ export class HeaderComponent implements OnInit {
   }
 
   logoRoute(): string {
-    return this.isCustomer() ? '/' : '/vendor/dashboard';
+    if (!this.user) {
+      return '/';
+    }
+
+    return this.isVendor() || this.isAdmin() ? '/vendor/dashboard' : '/';
   }
 
   onLogout() {
