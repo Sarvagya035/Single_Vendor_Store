@@ -13,28 +13,6 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
   template: `
     <aside>
       <div class="app-section flex flex-col p-4 lg:min-h-[calc(100vh-7rem)]">
-        <div class="rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-4">
-          <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Vendor workspace</p>
-          <h2 class="mt-2 text-xl font-black text-slate-900">Store control panel</h2>
-          <p class="mt-2 text-sm font-medium leading-6 text-slate-500">
-            Manage products, categories, customers, and orders from one place.
-          </p>
-          <a routerLink="/vendor/profile" class="mt-4 inline-flex app-tag hover:border-emerald-200 hover:text-emerald-700">
-            Open store profile
-          </a>
-        </div>
-
-        <div class="mt-4 grid grid-cols-2 gap-3">
-          <div class="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
-            <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Products</p>
-            <p class="mt-1 text-xl font-black text-slate-900">{{ productCount }}</p>
-          </div>
-          <div class="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
-            <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Orders</p>
-            <p class="mt-1 text-xl font-black text-slate-900">{{ orderCount }}</p>
-          </div>
-        </div>
-
         <nav class="mt-4 space-y-2">
           <a
             routerLink="/vendor/dashboard"

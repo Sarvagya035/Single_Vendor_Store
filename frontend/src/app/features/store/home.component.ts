@@ -105,62 +105,6 @@ interface LandingCategoryNode extends CustomerLandingCategory {
             </aside>
 
             <main class="bg-white px-3 py-4 sm:px-6 lg:px-6">
-              <div class="mb-6 grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-                <section class="overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(239,246,255,0.92),rgba(245,243,255,0.9))] px-4 py-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)] sm:px-6 sm:py-6">
-                  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div class="max-w-2xl">
-                      <p class="text-[11px] font-black uppercase tracking-[0.3em] text-indigo-500">Curated storefront</p>
-                      <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">
-                        Browse products that feel easy to trust and simple to buy.
-                      </h2>
-                      <p class="mt-3 max-w-xl text-sm font-medium leading-7 text-slate-500">
-                        Explore featured categories, search across the catalog, and move quickly from discovery to checkout.
-                      </p>
-                    </div>
-
-                    <div class="flex flex-wrap gap-2">
-                      <span class="app-tag">Fast search</span>
-                      <span class="app-tag">Secure payments</span>
-                      <span class="app-tag">Responsive shopping</span>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 grid gap-3 sm:grid-cols-3">
-                    <div class="rounded-[1.3rem] border border-white/70 bg-white/80 px-4 py-4 shadow-sm">
-                      <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Products</p>
-                      <p class="mt-1 text-2xl font-black text-slate-900">{{ totalProductCount() }}</p>
-                    </div>
-                    <div class="rounded-[1.3rem] border border-white/70 bg-white/80 px-4 py-4 shadow-sm">
-                      <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Categories</p>
-                      <p class="mt-1 text-2xl font-black text-slate-900">{{ landingCategories.length }}</p>
-                    </div>
-                    <div class="rounded-[1.3rem] border border-white/70 bg-white/80 px-4 py-4 shadow-sm">
-                      <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">View mode</p>
-                      <p class="mt-1 text-2xl font-black text-slate-900 capitalize">{{ viewMode }}</p>
-                    </div>
-                  </div>
-                </section>
-
-                <aside class="rounded-[2rem] border border-slate-200 bg-slate-900 px-4 py-5 text-white shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:px-6 sm:py-6">
-                  <p class="text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">Shopping guidance</p>
-                  <h3 class="mt-2 text-xl font-black text-white sm:text-2xl">Find what you need faster</h3>
-                  <p class="mt-3 text-sm font-medium leading-7 text-slate-300">
-                    Search by product name, browse by category, and use the quick page controls to move through the catalog.
-                  </p>
-
-                  <div class="mt-5 space-y-3">
-                    <div class="flex items-center justify-between rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3">
-                      <span class="text-sm font-semibold text-slate-300">Featured categories</span>
-                      <span class="text-lg font-black text-white">{{ visibleCatalogCategories.length }}</span>
-                    </div>
-                    <div class="flex items-center justify-between rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3">
-                      <span class="text-sm font-semibold text-slate-300">Products shown</span>
-                      <span class="text-lg font-black text-white">{{ displayProducts().length }}</span>
-                    </div>
-                  </div>
-                </aside>
-              </div>
-
               <div class="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Landing page</p>
