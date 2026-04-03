@@ -7,7 +7,7 @@ import { CustomerUser } from '../../../core/models/customer.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="glass-card overflow-hidden">
+    <div class="app-section overflow-hidden">
       <div class="rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.9))] p-8">
         <div class="flex flex-col items-center text-center">
           <div class="group relative">
@@ -24,10 +24,10 @@ import { CustomerUser } from '../../../core/models/customer.models';
             >
               {{ user?.username?.charAt(0)?.toUpperCase() || '?' }}
             </div>
-            <div class="absolute bottom-0 right-0 flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 bg-white shadow-lg">
-              ✨
-            </div>
+          <div class="absolute bottom-0 right-0 flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 bg-white shadow-lg">
+            ✨
           </div>
+        </div>
 
           <div class="mt-6">
             <h2 class="text-3xl font-black tracking-tight text-slate-900">{{ user?.username }}</h2>

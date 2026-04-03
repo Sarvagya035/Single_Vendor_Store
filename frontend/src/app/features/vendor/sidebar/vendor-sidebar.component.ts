@@ -12,12 +12,33 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
   },
   template: `
     <aside>
-      <div class="glass-card flex flex-col p-4 lg:min-h-[calc(100vh-7rem)]">
+      <div class="app-section flex flex-col p-4 lg:min-h-[calc(100vh-7rem)]">
+        <div class="rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-4">
+          <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Vendor workspace</p>
+          <h2 class="mt-2 text-xl font-black text-slate-900">Store control panel</h2>
+          <p class="mt-2 text-sm font-medium leading-6 text-slate-500">
+            Manage products, categories, customers, and orders from one place.
+          </p>
+          <a routerLink="/vendor/profile" class="mt-4 inline-flex app-tag hover:border-emerald-200 hover:text-emerald-700">
+            Open store profile
+          </a>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <div class="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
+            <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Products</p>
+            <p class="mt-1 text-xl font-black text-slate-900">{{ productCount }}</p>
+          </div>
+          <div class="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
+            <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Orders</p>
+            <p class="mt-1 text-xl font-black text-slate-900">{{ orderCount }}</p>
+          </div>
+        </div>
 
         <nav class="mt-4 space-y-2">
           <a
             routerLink="/vendor/dashboard"
-            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            class="block w-full rounded-2xl border px-4 py-3 text-left transition-all"
             [ngClass]="activeView === 'dashboard' ? 'border-cyan-200 bg-cyan-50 text-cyan-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
@@ -32,7 +53,7 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
 
           <a
             routerLink="/vendor/products"
-            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            class="block w-full rounded-2xl border px-4 py-3 text-left transition-all"
             [ngClass]="activeView === 'products' ? 'border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
@@ -47,7 +68,7 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
 
           <a
             routerLink="/vendor/categories"
-            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            class="block w-full rounded-2xl border px-4 py-3 text-left transition-all"
             [ngClass]="activeView === 'categories' ? 'border-sky-200 bg-sky-50 text-sky-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
@@ -62,7 +83,7 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
 
           <a
             routerLink="/vendor/customers"
-            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            class="block w-full rounded-2xl border px-4 py-3 text-left transition-all"
             [ngClass]="activeView === 'customers' ? 'border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
@@ -77,7 +98,7 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
 
           <a
             routerLink="/vendor/orders"
-            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            class="block w-full rounded-2xl border px-4 py-3 text-left transition-all"
             [ngClass]="activeView === 'orders' ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">

@@ -19,6 +19,25 @@ interface VendorProductsPagination {
   imports: [CommonModule, VendorProductsPanelComponent],
   template: `
     <section class="space-y-6">
+      <div class="app-section px-6 py-6 lg:px-8">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-2xl">
+            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-indigo-500">Catalog operations</p>
+            <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Manage products</h1>
+            <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+              Search, update, restock, and organize your listings from a cleaner workspace.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
+            <button type="button" (click)="loadVendorProducts(currentPage)" class="btn-secondary !px-6 !py-3">
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+
       <app-vendor-products-panel
         [products]="products"
         [isLoading]="isProductsLoading"
@@ -27,7 +46,7 @@ interface VendorProductsPagination {
 
       <div
         *ngIf="!isProductsLoading && totalPages > 1"
-        class="glass-card flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8"
+        class="app-section flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8"
       >
         <div class="text-sm font-semibold text-slate-600">
           Showing

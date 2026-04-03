@@ -22,12 +22,20 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../.
     VendorEmptyStateComponent
   ],
   template: `
-    <div *ngIf="isLoading" class="flex flex-col items-center gap-4 py-20">
+    <div *ngIf="isLoading" class="app-section flex flex-col items-center gap-4 py-20">
       <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600"></div>
       <p class="font-medium text-slate-500">Loading store data...</p>
     </div>
 
     <div *ngIf="!isLoading && vendor" class="space-y-10">
+      <div class="app-section px-6 py-6 sm:px-8">
+        <p class="text-[11px] font-black uppercase tracking-[0.28em] text-emerald-500">Store profile</p>
+        <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Manage your storefront identity</h1>
+        <p class="mt-3 max-w-3xl text-sm font-medium leading-7 text-slate-500">
+          Keep your brand details, payout information, and logo polished so your store feels trustworthy and complete.
+        </p>
+      </div>
+
       <app-vendor-profile-card
         [vendor]="vendor"
         [logoPreview]="logoPreview"

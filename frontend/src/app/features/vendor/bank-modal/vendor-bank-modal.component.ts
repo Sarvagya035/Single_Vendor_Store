@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
 
@@ -9,13 +9,20 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
   imports: [CommonModule, FormsModule],
   template: `
     <div *ngIf="open" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">
-      <div class="glass-card w-full max-w-2xl p-8 shadow-2xl">
+      <div
+        #dialogRoot
+        class="app-section w-full max-w-2xl p-8 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-labelledby]="titleId"
+        tabindex="-1"
+      >
         <div class="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
             <p class="text-xs font-black uppercase tracking-[0.28em] text-slate-400">Bank Details</p>
-            <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Update Payout Information</h3>
+            <h3 [id]="titleId" class="mt-2 text-2xl font-black tracking-tight text-slate-900">Update Payout Information</h3>
           </div>
-          <button type="button" (click)="close.emit()" class="btn-secondary !px-4 !py-2 text-xs">
+          <button type="button" (click)="close.emit()" class="btn-secondary !px-4 !py-2 text-xs" aria-label="Close payout details dialog">
             Close
           </button>
         </div>
@@ -103,6 +110,8 @@ export class VendorBankModalComponent {
   @Output() formChange = new EventEmitter<VendorBankDetailsForm>();
   @Output() close = new EventEmitter<void>();
   @Output() submit = new EventEmitter<void>();
+  readonly titleId = `vendor-bank-title-${Math.random().toString(36).slice(2, 9)}`;
+  @ViewChild('dialogRoot') dialogRoot?: ElementRef<HTMLElement>;
 
   updateField(field: keyof VendorBankDetailsForm, value: string) {
     this.formChange.emit({ ...this.form, [field]: value });
@@ -110,5 +119,62 @@ export class VendorBankModalComponent {
 
   normalizeIfsc(value: string): string {
     return String(value || '').toUpperCase();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['open'] && this.open) {
+      window.setTimeout(() => this.focusFirstElement());
+    }
+  }
+
+  @HostListener('keydown', ['$event'])
+  handleTabTrap(event: KeyboardEvent): void {
+    if (!this.open || event.key !== 'Tab') {
+      return;
+    }
+
+    const focusables = this.getFocusableElements();
+    if (focusables.length === 0) {
+      event.preventDefault();
+      this.dialogRoot?.nativeElement.focus();
+      return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape(): void {
+    if (this.open) {
+      this.close.emit();
+    }
+  }
+
+  private focusFirstElement(): void {
+    const focusables = this.getFocusableElements();
+    (focusables[0] || this.dialogRoot?.nativeElement)?.focus();
+  }
+
+  private getFocusableElements(): HTMLElement[] {
+    const root = this.dialogRoot?.nativeElement;
+    if (!root) {
+      return [];
+    }
+
+    return Array.from(
+      root.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((element) => !element.hasAttribute('aria-hidden'));
   }
 }

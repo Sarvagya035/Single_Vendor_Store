@@ -10,19 +10,26 @@ import { RouterModule } from '@angular/router';
     <footer class="mt-12 border-t border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]">
       <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
-          <div class="space-y-4">
+          <div class="space-y-5">
             <div class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-100">
+              <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-100">
                 E
               </div>
               <div>
                 <p class="text-lg font-black text-slate-900">E-Commerce</p>
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Smart vendor storefront</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Smart vendor storefront</p>
               </div>
             </div>
+
             <p class="max-w-xl text-sm font-medium leading-relaxed text-slate-500">
-              A clean shopping and vendor experience for browsing products, managing inventory, and keeping orders moving.
+              A cleaner shopping and store-management experience with consistent flows for customers, vendors, and admin users.
             </p>
+
+            <div class="flex flex-wrap gap-2">
+              <span class="app-tag">Secure checkout</span>
+              <span class="app-tag">Vendor tools</span>
+              <span class="app-tag">Responsive UI</span>
+            </div>
           </div>
 
           <div>

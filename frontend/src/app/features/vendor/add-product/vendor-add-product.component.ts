@@ -28,7 +28,11 @@ interface FlatCategoryOption {
       <main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
+            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-500">Catalog creator</p>
             <h1 class="mt-3 text-4xl font-black tracking-tight text-slate-900">Add Product</h1>
+            <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
+              Create a new listing with product details, media, and variant inventory in one flow.
+            </p>
           </div>
 
           <a routerLink="/vendor/dashboard" class="btn-secondary !py-3">
@@ -36,7 +40,7 @@ interface FlatCategoryOption {
           </a>
         </div>
 
-        <div *ngIf="isLoadingCategories" class="glass-card py-20">
+        <div *ngIf="isLoadingCategories" class="app-section py-20">
           <div class="flex flex-col items-center gap-4">
             <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-cyan-600"></div>
             <p class="font-medium text-slate-500">Loading categories...</p>
@@ -53,7 +57,7 @@ interface FlatCategoryOption {
                     type="text"
                     name="productName"
                     [(ngModel)]="form.productName"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="app-input"
                     placeholder="Wireless Headphones Pro"
                   >
                 </div>
@@ -64,7 +68,7 @@ interface FlatCategoryOption {
                     type="text"
                     name="brand"
                     [(ngModel)]="form.brand"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="app-input"
                     placeholder="SoundSphere"
                   >
                 </div>
@@ -74,7 +78,7 @@ interface FlatCategoryOption {
                   <select
                     name="category"
                     [(ngModel)]="form.category"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="app-input"
                   >
                     <option value="">Select category</option>
                     <option *ngFor="let option of flatCategories; trackBy: trackByFlatCategoryId" [value]="option._id">
@@ -89,7 +93,7 @@ interface FlatCategoryOption {
                     rows="5"
                     name="productDescription"
                     [(ngModel)]="form.productDescription"
-                    class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-medium text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="app-input"
                     placeholder="Describe the product, features, materials, and buying value."
                   ></textarea>
                 </div>
@@ -102,7 +106,7 @@ interface FlatCategoryOption {
                   type="file"
                   accept="image/*"
                   multiple
-                  class="block w-full rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-600"
+                  class="app-input-soft border-dashed"
                   (change)="onMainImagesSelected($event)"
                 >
                 <div class="grid gap-3">

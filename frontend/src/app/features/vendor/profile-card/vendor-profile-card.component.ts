@@ -7,7 +7,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="glass-card overflow-hidden">
+    <section class="app-section overflow-hidden">
       <div class="grid gap-8 p-6 sm:p-8 xl:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] xl:items-start">
         <div class="rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,0.88))] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
           <div class="flex flex-col items-center text-center xl:items-start xl:text-left">

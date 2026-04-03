@@ -37,7 +37,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
           <p class="font-medium tracking-wide text-slate-500">Syncing account data...</p>
         </div>
 
-        <div *ngIf="error" class="glass-card mb-8 border-rose-100 bg-rose-50/50 p-6 font-bold text-rose-700">
+        <div *ngIf="error" class="app-section mb-8 border-rose-100 bg-rose-50/50 p-6 font-bold text-rose-700">
           ⚠️ {{ error }}
         </div>
 

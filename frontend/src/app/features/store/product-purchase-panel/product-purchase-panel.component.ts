@@ -53,7 +53,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             Choose Variant
           </label>
           <select
-            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition focus:border-sky-400 focus:bg-white"
+            class="app-input-soft"
             [ngModel]="selectedVariantId"
             (ngModelChange)="variantChanged.emit($event)"
             [ngModelOptions]="{ standalone: true }"
@@ -64,7 +64,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
           </select>
         </div>
 
-        <div class="mt-6 rounded-2xl bg-slate-50 p-4">
+        <div class="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
           <div class="flex flex-wrap gap-2">
             <span
               *ngFor="let attribute of attributes"
@@ -87,11 +87,12 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
         </div>
 
         <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div class="flex w-full items-center rounded-xl border border-slate-200 bg-slate-50 sm:max-w-[140px]">
+          <div class="flex w-full items-center rounded-2xl border border-slate-200 bg-slate-50 sm:max-w-[140px]">
             <button
               type="button"
               class="px-4 py-3 text-lg font-black text-slate-600"
               (click)="quantityChanged.emit(quantity - 1)"
+              aria-label="Decrease quantity"
             >
               -
             </button>
@@ -107,6 +108,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
               type="button"
               class="px-4 py-3 text-lg font-black text-slate-600"
               (click)="quantityChanged.emit(quantity + 1)"
+              aria-label="Increase quantity"
             >
               +
             </button>
@@ -121,6 +123,10 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             {{ isAdding ? 'Adding...' : 'Add To Cart' }}
           </button>
         </div>
+
+        <p class="text-xs font-medium leading-6 text-slate-500">
+          You can adjust quantity before adding the selected variant to your cart.
+        </p>
       </div>
     </div>
   `

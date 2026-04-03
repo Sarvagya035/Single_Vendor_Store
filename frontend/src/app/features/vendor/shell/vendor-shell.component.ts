@@ -25,7 +25,7 @@ import { OrderService } from '../../../core/services/order.service';
   template: `
     <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ecfdf5_38%,#f8fafc_100%)] pt-4 pb-12">
       <main class="w-full px-4 sm:px-6 lg:px-8">
-        <div class="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+        <div class="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
           <app-vendor-sidebar
             [activeView]="activeView"
             [productCount]="productCount"
@@ -36,7 +36,7 @@ import { OrderService } from '../../../core/services/order.service';
 
           <section class="space-y-6">
             @if (isNavigating()) {
-              <div class="rounded-[1.5rem] border border-emerald-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
+              <div class="app-section px-4 py-3">
                 <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
                   <div class="route-progress h-full w-1/3 rounded-full bg-gradient-to-r from-emerald-500 via-cyan-500 to-indigo-500"></div>
                 </div>

@@ -32,11 +32,15 @@ interface DashboardProduct {
   imports: [CommonModule, RouterModule],
   template: `
     <section class="space-y-6">
-      <div class="glass-card overflow-hidden">
+      <div class="app-section overflow-hidden">
         <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
           <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Vendor Overview</h1>
+            <div class="max-w-2xl">
+              <p class="text-[11px] font-black uppercase tracking-[0.28em] text-emerald-500">Vendor dashboard</p>
+              <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Vendor Overview</h1>
+              <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                Monitor revenue, shipments, product health, and fast actions from one control center.
+              </p>
             </div>
 
             <div class="flex flex-wrap gap-3">
@@ -57,7 +61,7 @@ interface DashboardProduct {
       </div>
 
       <div class="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
-        <section class="glass-card overflow-hidden">
+        <section class="app-section overflow-hidden">
           <div class="border-b border-slate-200 px-6 py-5">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Recent Orders</p>
             <h2 class="mt-2 text-2xl font-black text-slate-900">Fulfillment Snapshot</h2>
@@ -88,7 +92,7 @@ interface DashboardProduct {
         </section>
 
         <section class="space-y-6">
-          <div class="glass-card overflow-hidden">
+          <div class="app-section overflow-hidden">
             <div class="border-b border-slate-200 px-6 py-5">
               <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Quick Actions</p>
               <h2 class="mt-2 text-2xl font-black text-slate-900">What Do You Want To Do?</h2>
@@ -102,7 +106,7 @@ interface DashboardProduct {
             </div>
           </div>
 
-          <div class="glass-card overflow-hidden">
+          <div class="app-section overflow-hidden">
             <div class="border-b border-slate-200 px-6 py-5">
               <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Top Performers</p>
               <h2 class="mt-2 text-2xl font-black text-slate-900">Best Selling Products</h2>

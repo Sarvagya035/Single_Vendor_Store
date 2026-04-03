@@ -7,7 +7,7 @@ import { CustomerUser } from '../../../core/models/customer.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="glass-card overflow-hidden">
+    <div class="app-section overflow-hidden">
       <div class="flex items-center justify-between border-b border-slate-100 bg-slate-50/60 px-6 py-6 sm:px-8">
         <h3 class="text-lg text-xs font-black uppercase tracking-widest text-slate-900">Personal Details</h3>
         <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"></span>

@@ -21,9 +21,10 @@ interface CategoryCreateForm {
   imports: [CommonModule, FormsModule],
   template: `
     <section class="space-y-6">
-      <div class="app-card overflow-hidden">
+      <div class="app-section overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 px-6 py-5">
           <div>
+            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-indigo-500">Category tree</p>
             <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Manage category tree</h3>
           </div>
           <div class="flex flex-wrap gap-3">

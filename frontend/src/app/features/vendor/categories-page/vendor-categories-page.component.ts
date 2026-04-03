@@ -17,6 +17,7 @@ import { ToastType } from '../../../core/models/vendor.models';
       <div class="app-surface p-6 sm:p-8">
         <app-page-header
           eyebrow="Vendor Category Management"
+          eyebrowClass="text-indigo-500"
           title="Manage your store categories"
           description="Add, edit, and remove categories that help organize your vendor catalog."
         />

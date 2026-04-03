@@ -40,14 +40,14 @@ interface FlatCategoryOption {
           </div>
         </div>
 
-        <div *ngIf="isLoading" class="glass-card py-20">
+        <div *ngIf="isLoading" class="app-section py-20">
           <div class="flex flex-col items-center gap-4">
             <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-cyan-600"></div>
             <p class="font-medium text-slate-500">Loading product details...</p>
           </div>
         </div>
 
-        <div *ngIf="!isLoading && !product" class="glass-card py-16 text-center">
+        <div *ngIf="!isLoading && !product" class="app-section py-16 text-center">
           <h2 class="text-2xl font-black text-slate-900">Product not found</h2>
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
             We couldn't load that product. It may have been deleted or the link may be outdated.
@@ -67,7 +67,7 @@ interface FlatCategoryOption {
                     type="text"
                     name="productName"
                     [(ngModel)]="form.productName"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="app-input"
                     placeholder="Wireless Headphones Pro"
                   >
                 </div>
@@ -78,7 +78,7 @@ interface FlatCategoryOption {
                     type="text"
                     name="brand"
                     [(ngModel)]="form.brand"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="app-input"
                     placeholder="SoundSphere"
                   >
                 </div>
@@ -88,7 +88,7 @@ interface FlatCategoryOption {
                   <select
                     name="category"
                     [(ngModel)]="form.category"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="app-input"
                   >
                     <option value="">Select category</option>
                     <option *ngFor="let option of flatCategories; trackBy: trackByFlatCategoryId" [value]="option._id">
@@ -103,7 +103,7 @@ interface FlatCategoryOption {
                     rows="5"
                     name="productDescription"
                     [(ngModel)]="form.productDescription"
-                    class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-medium text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="app-input"
                     placeholder="Describe the product, features, materials, and buying value."
                   ></textarea>
                 </div>

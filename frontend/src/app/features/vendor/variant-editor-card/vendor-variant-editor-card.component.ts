@@ -8,7 +8,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="rounded-[2rem] border border-slate-200 bg-slate-50/80 p-6">
+    <div class="app-card-soft p-6">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Variant {{ index + 1 }}</p>
@@ -26,7 +26,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="text"
             [(ngModel)]="variant.attributesText"
             [name]="'variant-attributes-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="app-input"
             placeholder="Color:Black, Size:XL"
           >
         </div>
@@ -37,7 +37,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="number"
             [(ngModel)]="variant.productPrice"
             [name]="'variant-price-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="app-input"
             min="0"
           >
         </div>
@@ -48,7 +48,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="number"
             [(ngModel)]="variant.discountPercentage"
             [name]="'variant-discount-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="app-input"
             min="0"
             max="100"
           >
@@ -60,7 +60,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="number"
             [(ngModel)]="variant.productStock"
             [name]="'variant-stock-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="app-input"
             min="0"
           >
         </div>
@@ -71,7 +71,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="text"
             [(ngModel)]="variant.sku"
             [name]="'variant-sku-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="app-input"
             placeholder="Optional"
           >
         </div>
@@ -81,7 +81,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
           <input
             type="file"
             accept="image/*"
-            class="block w-full rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-600"
+            class="app-input-soft border-dashed"
             (change)="imageSelected.emit({ event: $event, index })"
           >
           <p class="text-xs font-semibold text-slate-500">{{ variant.imageFile?.name || 'Optional image for this variant' }}</p>

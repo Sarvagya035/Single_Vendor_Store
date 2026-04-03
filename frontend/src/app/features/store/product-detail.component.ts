@@ -35,6 +35,37 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
         </div>
 
         <ng-container *ngIf="product && !loading">
+          <div class="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+              <div class="max-w-3xl">
+                <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">
+                  {{ product.categoryDetails?.name || 'Product details' }}
+                </p>
+                <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
+                  {{ product.productName }}
+                </h1>
+                <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                  {{ product.brand || 'Trusted brand' }} and curated product information for a smoother purchase decision.
+                </p>
+              </div>
+
+              <div class="rounded-[1.5rem] border border-amber-100 bg-amber-50 px-5 py-4">
+                <p class="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">Customer rating</p>
+                <p class="mt-2 text-3xl font-black text-slate-900">{{ formatRating(product.averageRating || 0) }}</p>
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                  {{ product.numberOfReviews || 0 }} reviews
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-5 flex flex-wrap gap-2">
+              <span class="app-tag">{{ product.brand || 'Generic brand' }}</span>
+              <span class="app-tag">Secure checkout</span>
+              <span class="app-tag">Easy returns</span>
+              <span class="app-tag">Verified reviews</span>
+            </div>
+          </div>
+
           <div class="mt-8 grid gap-8 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
             <app-product-gallery
               [productName]="product.productName"
@@ -44,22 +75,24 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               (imageSelected)="selectedImage = $event"
             />
 
-            <app-product-purchase-panel
-              [product]="product"
-              [variants]="product.variants || []"
-              [selectedVariant]="selectedVariant()"
-              [selectedVariantId]="selectedVariantId"
-              [priceLabel]="formatCurrency(selectedVariant()?.finalPrice || product.basePrice || 0)"
-              [originalPriceLabel]="originalPriceLabel()"
-              [discountedPriceLabel]="discountedPriceLabel()"
-              [quantity]="quantity"
-              [isAdding]="isAdding"
-              [variantLabels]="variantLabels()"
-              [attributes]="attributeEntries(selectedVariant()?.attributes)"
-              (variantChanged)="onVariantChange($event)"
-              (quantityChanged)="setQuantity($event)"
-              (addToCart)="addToCart()"
-            />
+            <div class="lg:sticky lg:top-24 h-fit">
+              <app-product-purchase-panel
+                [product]="product"
+                [variants]="product.variants || []"
+                [selectedVariant]="selectedVariant()"
+                [selectedVariantId]="selectedVariantId"
+                [priceLabel]="formatCurrency(selectedVariant()?.finalPrice || product.basePrice || 0)"
+                [originalPriceLabel]="originalPriceLabel()"
+                [discountedPriceLabel]="discountedPriceLabel()"
+                [quantity]="quantity"
+                [isAdding]="isAdding"
+                [variantLabels]="variantLabels()"
+                [attributes]="attributeEntries(selectedVariant()?.attributes)"
+                (variantChanged)="onVariantChange($event)"
+                (quantityChanged)="setQuantity($event)"
+                (addToCart)="addToCart()"
+              />
+            </div>
           </div>
 
           <section class="mt-10 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -137,6 +170,24 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </div>
 
             <aside #reviewFormSection class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+              <div class="mb-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4">
+                <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Buy with confidence</p>
+                <div class="mt-3 grid gap-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-semibold text-slate-600">Secure payment</span>
+                    <span class="text-sm font-black text-slate-900">Razorpay</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-semibold text-slate-600">Support</span>
+                    <span class="text-sm font-black text-slate-900">Fast responses</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-semibold text-slate-600">Review policy</span>
+                    <span class="text-sm font-black text-slate-900">Verified buyers</span>
+                  </div>
+                </div>
+              </div>
+
               <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
                 <div class="border-b border-slate-100 pb-5">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Write A Review</p>

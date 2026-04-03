@@ -31,13 +31,17 @@ interface ProductMessage {
   imports: [CommonModule, FormsModule, RouterModule, VendorProductCardComponent, VendorProductQuickActionsComponent],
   template: `
     <section class="space-y-6">
-      <div class="glass-card overflow-hidden">
+      <div class="app-section overflow-hidden">
         <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
           <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
+            <div class="max-w-2xl">
+              <p class="text-[11px] font-black uppercase tracking-[0.24em] text-indigo-500">Inventory workspace</p>
               <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
                 Product Management
               </h2>
+              <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                Search, update, restock, and publish listings without leaving the workspace.
+              </p>
             </div>
             <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
           </div>
@@ -49,7 +53,7 @@ interface ProductMessage {
               type="text"
               [(ngModel)]="searchQuery"
               placeholder="Search by product name, brand, or category"
-              class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100 xl:max-w-md"
+              class="app-input-soft xl:max-w-md"
             />
             <div class="flex flex-wrap gap-2">
               <button
@@ -82,14 +86,14 @@ interface ProductMessage {
 
           <div
             *ngIf="isLoading"
-            class="rounded-[1.75rem] border border-slate-200 bg-slate-50/70 py-20 text-center text-slate-500"
+            class="app-card-soft py-20 text-center text-slate-500"
           >
             Loading products...
           </div>
 
           <div
             *ngIf="!isLoading && filteredProducts.length === 0"
-            class="rounded-[1.75rem] border border-dashed border-slate-200 bg-slate-50/70 px-8 py-20 text-center"
+            class="app-card-soft border-dashed px-8 py-20 text-center"
           >
             <h3 class="text-2xl font-black text-slate-900">No Matching Products</h3>
             <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">

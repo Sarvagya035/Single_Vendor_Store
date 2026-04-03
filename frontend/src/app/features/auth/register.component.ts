@@ -11,18 +11,20 @@ import { catchError, finalize, EMPTY } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-screen bg-slate-50 flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
-      <!-- Background Glow Effects -->
-      <div class="absolute top-0 right-1/4 w-[500px] h-[500px] bg-indigo-500/10 blur-[130px] rounded-full animate-float"></div>
-      <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 blur-[130px] rounded-full animate-float" style="animation-delay: 2s"></div>
-
-      <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
-        <h2 class="text-4xl font-black text-slate-900 tracking-tight">Create Account</h2>
-        <p class="text-slate-500 font-medium tracking-wide">Join our marketplace community</p>
+    <div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div class="pointer-events-none absolute inset-0 overflow-hidden">
+        <div class="absolute -top-24 right-1/4 h-[500px] w-[500px] rounded-full bg-indigo-500/10 blur-[130px] animate-float"></div>
+        <div class="absolute bottom-0 left-1/4 h-[500px] w-[500px] rounded-full bg-emerald-500/10 blur-[130px] animate-float" style="animation-delay: 2s"></div>
       </div>
 
-      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div class="glass-card p-10">
+      <div class="relative z-10 mx-auto w-full max-w-md text-center space-y-3">
+        <p class="text-[11px] font-black uppercase tracking-[0.28em] text-indigo-500">Create account</p>
+        <h2 class="text-4xl font-black tracking-tight text-slate-900">Join the marketplace</h2>
+        <p class="text-slate-500 font-medium tracking-wide">Create your profile to browse, buy, and track orders.</p>
+      </div>
+
+      <div class="relative z-10 mt-10 mx-auto w-full max-w-md">
+        <div class="app-section p-8 sm:p-10">
           <form class="space-y-6" (ngSubmit)="onSubmit()">
             
             <div class="space-y-2">
@@ -46,7 +48,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   [class.ring-2]="!!usernameError"
                   [class.ring-red-500]="!!usernameError"
                   [class.focus:ring-red-500]="!!usernameError"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
+                  class="app-input-soft pl-12">
               </div>
               <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ usernameError }}
@@ -61,7 +63,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                 </div>
                 <input id="email" name="email" type="email" autocomplete="email" required [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
+                  class="app-input-soft pl-12">
               </div>
             </div>
 
@@ -77,7 +79,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   [class.ring-2]="!!phoneError"
                   [class.ring-red-500]="!!phoneError"
                   [class.focus:ring-red-500]="!!phoneError"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
+                  class="app-input-soft pl-12">
               </div>
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}

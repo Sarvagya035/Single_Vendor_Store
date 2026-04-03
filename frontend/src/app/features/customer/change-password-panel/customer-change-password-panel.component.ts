@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ErrorService } from '../../../core/services/error.service';
 import { UserService } from '../../../core/services/user.service';
@@ -12,16 +12,23 @@ import { UserService } from '../../../core/services/user.service';
     <div *ngIf="open" class="fixed inset-0 z-[100] flex items-center justify-center px-4 py-6">
       <button
         type="button"
-        class="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]"
+        class="absolute inset-0 bg-slate-950/45 backdrop-blur-sm"
         (click)="closeModal()"
         aria-label="Close password dialog"
       ></button>
 
-      <div class="relative z-[101] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.2)]">
+      <div
+        #dialogRoot
+        class="relative z-[101] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.2)]"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-labelledby]="titleId"
+        tabindex="-1"
+      >
         <div class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5 sm:px-8">
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.28em] text-indigo-500">Security</p>
-            <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Change Password</h3>
+            <h3 [id]="titleId" class="mt-2 text-2xl font-black tracking-tight text-slate-900">Change Password</h3>
             <p class="mt-2 text-sm font-medium text-slate-500">
               Update your account password to keep your profile secure.
             </p>
@@ -37,6 +44,9 @@ import { UserService } from '../../../core/services/user.service';
         </div>
 
         <div class="space-y-8 p-6 sm:p-8">
+          <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-medium leading-7 text-slate-600">
+            Choose a strong password you have not used elsewhere. The form will confirm your new password before submission.
+          </div>
           <form class="space-y-6" (ngSubmit)="onSubmit()">
             <div class="space-y-2">
               <label for="oldPassword" class="ml-1 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">
@@ -50,7 +60,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showOldPassword ? 'text' : 'password'"
                   autocomplete="current-password"
                   placeholder="Enter your current password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                  class="app-input-soft pr-16"
                 >
                 <button
                   type="button"
@@ -74,7 +84,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showNewPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Enter your new password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                  class="app-input-soft pr-16"
                 >
                 <button
                   type="button"
@@ -98,7 +108,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showConfirmPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Re-enter your new password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                  class="app-input-soft pr-16"
                 >
                 <button
                   type="button"
@@ -127,7 +137,7 @@ import { UserService } from '../../../core/services/user.service';
     </div>
   `
 })
-export class CustomerChangePasswordPanelComponent {
+export class CustomerChangePasswordPanelComponent implements OnChanges {
   oldPassword = '';
   newPassword = '';
   confirmPassword = '';
@@ -137,6 +147,8 @@ export class CustomerChangePasswordPanelComponent {
   isSubmitting = false;
   @Input() open = false;
   @Output() closed = new EventEmitter<void>();
+  readonly titleId = `password-title-${Math.random().toString(36).slice(2, 9)}`;
+  @ViewChild('dialogRoot') dialogRoot?: ElementRef<HTMLElement>;
 
   constructor(
     private userService: UserService,
@@ -182,6 +194,38 @@ export class CustomerChangePasswordPanelComponent {
     });
   }
 
+  @HostListener('keydown', ['$event'])
+  handleTabTrap(event: KeyboardEvent): void {
+    if (!this.open || event.key !== 'Tab') {
+      return;
+    }
+
+    const focusables = this.getFocusableElements();
+    if (focusables.length === 0) {
+      event.preventDefault();
+      this.dialogRoot?.nativeElement.focus();
+      return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['open'] && this.open) {
+      window.setTimeout(() => this.focusFirstElement());
+    }
+  }
+
   private resetForm(): void {
     this.oldPassword = '';
     this.newPassword = '';
@@ -194,5 +238,30 @@ export class CustomerChangePasswordPanelComponent {
   closeModal(): void {
     this.resetForm();
     this.closed.emit();
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape(): void {
+    if (this.open) {
+      this.closeModal();
+    }
+  }
+
+  private getFocusableElements(): HTMLElement[] {
+    const root = this.dialogRoot?.nativeElement;
+    if (!root) {
+      return [];
+    }
+
+    return Array.from(
+      root.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((element) => !element.hasAttribute('aria-hidden'));
+  }
+
+  private focusFirstElement(): void {
+    const focusables = this.getFocusableElements();
+    (focusables[0] || this.dialogRoot?.nativeElement)?.focus();
   }
 }

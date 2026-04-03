@@ -23,6 +23,8 @@ type HeaderDropdownTheme = 'customer' | 'vendor' | 'admin';
         (click)="toggle.emit($event)"
         [attr.aria-expanded]="open"
         aria-haspopup="menu"
+        [attr.aria-controls]="panelId"
+        [attr.aria-label]="desktop ? 'Open account menu' : 'Open account actions menu'"
       >
         <div class="relative">
           <img
@@ -57,7 +59,10 @@ type HeaderDropdownTheme = 'customer' | 'vendor' | 'admin';
       </button>
 
       <div
+        [id]="panelId"
         [class]="panelClasses()"
+        role="menu"
+        [attr.aria-label]="theme + ' account menu'"
         [ngClass]="open ? 'pointer-events-auto translate-y-0 scale-100 opacity-100' : 'pointer-events-none -translate-y-2 scale-95 opacity-0'"
       >
         <div [class]="heroClasses()">
@@ -83,6 +88,7 @@ type HeaderDropdownTheme = 'customer' | 'vendor' | 'admin';
             <a
               *ngIf="item.route; else actionButton"
               [routerLink]="item.route"
+              role="menuitem"
               [class]="desktop ? rowLinkClasses(item.tone || 'default') : mobileRowLinkClasses(item.tone || 'default')"
               (click)="itemSelected.emit(item)"
             >
@@ -92,6 +98,7 @@ type HeaderDropdownTheme = 'customer' | 'vendor' | 'admin';
             <ng-template #actionButton>
               <button
                 type="button"
+                role="menuitem"
                 [class]="desktop ? rowButtonClasses(item.tone || 'default') : mobileRowButtonClasses(item.tone || 'default')"
                 (click)="itemSelected.emit(item)"
               >
@@ -118,6 +125,7 @@ export class HeaderAccountDropdownComponent {
 
   @Output() toggle = new EventEmitter<Event>();
   @Output() itemSelected = new EventEmitter<HeaderDropdownItem>();
+  readonly panelId = `account-menu-${Math.random().toString(36).slice(2, 9)}`;
 
   desktopTriggerClasses(): string {
     const themeClasses: Record<HeaderDropdownTheme, string> = {

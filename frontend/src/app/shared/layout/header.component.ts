@@ -12,14 +12,19 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent],
   template: `
-    <nav class="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-lg">
+    <nav class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 backdrop-blur-xl">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-18 items-center justify-between">
+        <div class="flex h-18 items-center justify-between gap-4">
           <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
-            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 shadow-lg shadow-indigo-100 transition-transform group-hover:scale-110">
+            <div class="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-100 transition-transform group-hover:scale-110">
               <span class="text-lg font-bold text-white">E</span>
             </div>
-            <span class="text-lg font-bold tracking-tight text-slate-900">E-Commerce</span>
+            <div class="leading-tight">
+              <span class="block text-lg font-black tracking-tight text-slate-900">E-Commerce</span>
+              <span class="hidden text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 sm:block">
+                Multi-role marketplace
+              </span>
+            </div>
           </a>
 
           <div class="hidden items-center space-x-6 md:flex">
@@ -73,7 +78,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             <a
               *ngIf="isCustomer()"
               routerLink="/cart"
-              class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-black text-slate-700"
+              class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-black text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
             >
               Cart
               <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-xs text-white">{{ cartCount }}</span>
@@ -223,7 +228,14 @@ export class HeaderComponent implements OnInit {
 
   @HostListener('window:resize')
   handleResize(): void {
-    return;
+    if (window.innerWidth >= 768) {
+      this.isMenuOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape(): void {
+    this.closeAllMenus();
   }
 
   toggleMenu() {

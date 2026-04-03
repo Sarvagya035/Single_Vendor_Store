@@ -33,9 +33,24 @@ const EMPTY_CART: CustomerCart = {
             </p>
           </div>
 
-          <div class="flex gap-3">
+          <div class="flex flex-wrap gap-3">
             <a routerLink="/cart" class="btn-secondary !px-5 !py-3">Back To Cart</a>
             <a routerLink="/addresses" class="btn-secondary !px-5 !py-3">Manage Addresses</a>
+          </div>
+        </div>
+
+        <div class="mt-6 grid gap-3 md:grid-cols-3">
+          <div class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+            <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Step 1</p>
+            <p class="mt-1 text-base font-black text-slate-900">Confirm address</p>
+          </div>
+          <div class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+            <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Step 2</p>
+            <p class="mt-1 text-base font-black text-slate-900">Review order items</p>
+          </div>
+          <div class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+            <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Step 3</p>
+            <p class="mt-1 text-base font-black text-slate-900">Pay securely</p>
           </div>
         </div>
 
@@ -131,6 +146,21 @@ const EMPTY_CART: CustomerCart = {
           <aside class="h-fit rounded-[2rem] border border-slate-200 bg-slate-900 p-6 text-white shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
             <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Payment Summary</p>
             <h2 class="mt-3 text-2xl font-black">Secure checkout</h2>
+
+            <div class="mt-4 grid gap-2 rounded-[1.4rem] border border-white/10 bg-white/5 px-4 py-4 text-sm text-slate-300">
+              <div class="flex items-center justify-between">
+                <span>Payment gateway</span>
+                <span class="font-black text-white">Razorpay</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span>Shipping policy</span>
+                <span class="font-black text-white">Free above 1000</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span>Support</span>
+                <span class="font-black text-white">Order help available</span>
+              </div>
+            </div>
 
             <div class="mt-6 space-y-3 text-sm font-medium text-slate-300">
               <div class="flex items-center justify-between">

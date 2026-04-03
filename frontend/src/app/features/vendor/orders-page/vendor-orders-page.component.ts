@@ -12,11 +12,13 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   imports: [CommonModule, FormsModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="rounded-[2rem] border border-white/70 bg-white/80 px-6 py-7 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:px-8">
+      <div class="app-section px-6 py-7 sm:px-8">
         <app-page-header
+          eyebrow="Order operations"
           title="Manage incoming orders"
           eyebrowClass="text-emerald-500"
           titleClass="text-4xl"
+          description="Track fulfillment progress, update item statuses, and keep customers informed."
         >
           <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary !py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
@@ -30,15 +32,15 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
       </div>
 
       <div class="grid gap-4 md:grid-cols-3">
-        <article class="glass-card p-5">
+        <article class="app-card p-5">
           <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Processing</p>
           <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Processing') }}</p>
         </article>
-        <article class="glass-card p-5">
+        <article class="app-card p-5">
           <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Shipped</p>
           <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Shipped') }}</p>
         </article>
-        <article class="glass-card p-5">
+        <article class="app-card p-5">
           <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivered</p>
           <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Delivered') }}</p>
         </article>
