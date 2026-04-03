@@ -10,6 +10,7 @@ import { CustomerPersonalDetailsComponent } from '../personal-details/customer-p
 import { CustomerProfileHeaderComponent } from '../profile-header/customer-profile-header.component';
 import { CustomerProfileSidebarComponent } from '../profile-sidebar/customer-profile-sidebar.component';
 import { CustomerUser, CustomerVendorProfile } from '../../../core/models/customer.models';
+import { PageShellComponent } from '../../../shared/ui/page-shell.component';
 
 @Component({
   selector: 'app-profile',
@@ -20,11 +21,17 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
     CustomerProfileSidebarComponent,
     CustomerPersonalDetailsComponent,
     CustomerChangePasswordPanelComponent,
-    CustomerEditProfileModalComponent
+    CustomerEditProfileModalComponent,
+    PageShellComponent
   ],
   template: `
-    <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_24%,#f8fafc_100%)] pt-16 pb-24">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <app-page-shell
+      eyebrow="Account"
+      eyebrowClass="text-indigo-500"
+      title="Your profile"
+      description="Manage your account details, password, and vendor profile information from one place."
+    >
+      <div page-shell-content class="space-y-8">
         <app-customer-profile-header
           [isAdmin]="isAdmin()"
           [isVendor]="isVendor()"
@@ -32,16 +39,24 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
           (logout)="onLogout()"
         />
 
-        <div *ngIf="!user && !error" class="flex flex-col items-center gap-4 py-20">
+        <div *ngIf="!user && !error" class="app-section flex flex-col items-center gap-4 px-4 py-16 text-center sm:py-20">
           <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
-          <p class="font-medium tracking-wide text-slate-500">Syncing account data...</p>
+          <p class="max-w-sm font-medium tracking-wide text-slate-500">Syncing account data. Your profile will appear here in a moment.</p>
         </div>
 
-        <div *ngIf="error" class="app-section mb-8 border-rose-100 bg-rose-50/50 p-6 font-bold text-rose-700">
-          ⚠️ {{ error }}
+        <div *ngIf="error" class="app-section mb-8 border-rose-100 bg-rose-50/50 p-4 text-rose-700 sm:p-6">
+          <div class="flex items-start gap-3">
+            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-100 text-sm font-black text-rose-700">
+              !
+            </span>
+            <div>
+              <p class="text-lg font-black">We couldn’t load your profile</p>
+              <p class="mt-1 text-sm font-medium leading-7 text-rose-700/80">{{ error }}</p>
+            </div>
+          </div>
         </div>
 
-        <div *ngIf="user" class="grid grid-cols-1 gap-8 xl:grid-cols-[340px_minmax(0,1fr)] xl:items-start">
+        <div *ngIf="user" class="grid grid-cols-1 gap-6 xl:grid-cols-[340px_minmax(0,1fr)] xl:items-start">
           <div class="space-y-6 xl:sticky xl:top-24">
             <app-customer-profile-sidebar
               [user]="user"
@@ -69,7 +84,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
           (saved)="handleProfileSaved($event)"
         />
       </div>
-    </div>
+    </app-page-shell>
   `
 })
 export class ProfileComponent implements OnInit {

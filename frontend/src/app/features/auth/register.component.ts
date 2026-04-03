@@ -28,59 +28,58 @@ import { catchError, finalize, EMPTY } from 'rxjs';
           <form class="space-y-6" (ngSubmit)="onSubmit()">
             
             <div class="space-y-2">
-              <label for="username" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Full Name</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  👤
-                </div>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autocomplete="name"
-                  inputmode="text"
-                  pattern="[A-Za-z ]+"
-                  title="Use letters only"
-                  required
-                  [(ngModel)]="username"
-                  (ngModelChange)="validateUsername($event)"
-                  placeholder="Enter your full name"
-                  [class.ring-2]="!!usernameError"
-                  [class.ring-red-500]="!!usernameError"
-                  [class.focus:ring-red-500]="!!usernameError"
-                  class="app-input-soft pl-12">
-              </div>
+              <label for="username" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Full name</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autocomplete="name"
+                inputmode="text"
+                pattern="[A-Za-z ]+"
+                title="Use letters only"
+                required
+                [(ngModel)]="username"
+                (ngModelChange)="validateUsername($event)"
+                placeholder="Enter your full name"
+                [class.ring-2]="!!usernameError"
+                [class.ring-red-500]="!!usernameError"
+                [class.focus:ring-red-500]="!!usernameError"
+                class="app-input-soft">
               <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ usernameError }}
               </p>
             </div>
 
             <div class="space-y-2">
-              <label for="email" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Email Address</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  📧
-                </div>
-                <input id="email" name="email" type="email" autocomplete="email" required [(ngModel)]="email"
-                  placeholder="Enter your email"
-                  class="app-input-soft pl-12">
-              </div>
+              <label for="email" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Email address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                [(ngModel)]="email"
+                placeholder="Enter your email"
+                class="app-input-soft">
             </div>
 
             <div class="space-y-2">
-              <label for="phone" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Phone Number</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  📞
-                </div>
-                <input id="phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required [(ngModel)]="phone"
-                  (ngModelChange)="validatePhone($event)"
-                  placeholder="Enter your phone number"
-                  [class.ring-2]="!!phoneError"
-                  [class.ring-red-500]="!!phoneError"
-                  [class.focus:ring-red-500]="!!phoneError"
-                  class="app-input-soft pl-12">
-              </div>
+              <label for="phone" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Phone number</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                maxlength="10"
+                required
+                [(ngModel)]="phone"
+                (ngModelChange)="validatePhone($event)"
+                placeholder="Enter your phone number"
+                [class.ring-2]="!!phoneError"
+                [class.ring-red-500]="!!phoneError"
+                [class.focus:ring-red-500]="!!phoneError"
+                class="app-input-soft">
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}
               </p>
@@ -89,9 +88,6 @@ import { catchError, finalize, EMPTY } from 'rxjs';
             <div class="space-y-2">
               <label for="password" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Password</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  🔑
-                </div>
                 <input
                   id="password"
                   name="password"
@@ -100,11 +96,12 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   required
                   [(ngModel)]="password"
                   placeholder="Enter your password"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-16 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner"
+                  class="app-input-soft pr-16"
                 >
                 <button
                   type="button"
                   (click)="showPassword = !showPassword"
+                  [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
                   class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                 >
                   {{ showPassword ? 'Hide' : 'Show' }}
@@ -120,7 +117,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
           <div class="mt-8 pt-6 border-t border-slate-100 text-center">
             <p class="text-sm font-medium text-slate-500">
               Already have an account?
-              <a routerLink="/login" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Login here</a>
+              <a routerLink="/login" class="ml-1 font-black uppercase tracking-tighter text-indigo-600 transition-colors hover:text-indigo-700">Sign in</a>
             </p>
           </div>
         </div>

@@ -17,13 +17,15 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
       <div class="grid grid-cols-4 gap-3" *ngIf="images.length > 1">
         <button
-          *ngFor="let image of images; trackBy: trackByImage"
+          *ngFor="let image of images; let i = index; trackBy: trackByImage"
           type="button"
           class="overflow-hidden rounded-2xl border-2 transition"
           [ngClass]="selectedImage === image ? 'border-slate-900' : 'border-transparent'"
           (click)="imageSelected.emit(image)"
+          [attr.aria-label]="'View product image ' + (i + 1)"
+          [attr.aria-pressed]="selectedImage === image"
         >
-          <img [src]="image" alt="Product preview" class="aspect-square w-full object-cover" />
+          <img [src]="image" alt="" aria-hidden="true" class="aspect-square w-full object-cover" />
         </button>
       </div>
     </div>

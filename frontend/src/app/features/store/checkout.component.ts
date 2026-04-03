@@ -10,6 +10,7 @@ import { OrderService } from '../../core/services/order.service';
 import { CustomerAddress, CustomerCart } from '../../core/models/customer.models';
 import { OrderCheckoutPayload } from '../../core/models/order.models';
 import { environment } from '../../../environments/environment';
+import { PageShellComponent } from '../../shared/ui/page-shell.component';
 
 const EMPTY_CART: CustomerCart = {
   cartItems: [],
@@ -20,26 +21,21 @@ const EMPTY_CART: CustomerCart = {
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, PageShellComponent],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-slate-50">
-      <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Checkout</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">Review and place your order</h1>
-            <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
-              Confirm your delivery address, review your cart total, and complete payment securely.
-            </p>
-          </div>
+    <app-page-shell
+      eyebrow="Checkout"
+      eyebrowClass="text-indigo-500"
+      title="Review and place your order"
+      description="Confirm your delivery address, review your cart total, and complete payment securely."
+    >
+      <div page-shell-actions class="flex flex-wrap gap-3">
+        <a routerLink="/cart" class="btn-secondary !px-5 !py-3">Back To Cart</a>
+        <a routerLink="/addresses" class="btn-secondary !px-5 !py-3">Manage Addresses</a>
+      </div>
 
-          <div class="flex flex-wrap gap-3">
-            <a routerLink="/cart" class="btn-secondary !px-5 !py-3">Back To Cart</a>
-            <a routerLink="/addresses" class="btn-secondary !px-5 !py-3">Manage Addresses</a>
-          </div>
-        </div>
-
-        <div class="mt-6 grid gap-3 md:grid-cols-3">
+      <div page-shell-content class="space-y-6">
+        <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
             <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Step 1</p>
             <p class="mt-1 text-base font-black text-slate-900">Confirm address</p>
@@ -54,25 +50,25 @@ const EMPTY_CART: CustomerCart = {
           </div>
         </div>
 
-        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div *ngIf="successMessage" class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
           {{ successMessage }}
         </div>
 
-        <div *ngIf="isLoading" class="mt-10 text-sm font-semibold text-slate-500">Loading checkout details...</div>
+        <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading checkout details...</div>
 
-        <div *ngIf="!isLoading && cart.cartItems.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
+        <div *ngIf="!isLoading && cart.cartItems.length === 0" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
           <h2 class="text-2xl font-black text-slate-900">Your cart is empty</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">Add products to your cart before checking out.</p>
           <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
         </div>
 
-        <div *ngIf="!isLoading && cart.cartItems.length" class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div *ngIf="!isLoading && cart.cartItems.length" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
           <section class="space-y-6">
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
               <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivery Address</p>
-                  <h2 class="mt-2 text-2xl font-black text-slate-900">Choose where this order should arrive</h2>
+                  <h2 class="mt-2 text-xl font-black text-slate-900 sm:text-2xl">Choose where this order should arrive</h2>
                 </div>
                 <a routerLink="/addresses" class="text-sm font-black text-indigo-600">Edit addresses</a>
               </div>
@@ -84,7 +80,7 @@ const EMPTY_CART: CustomerCart = {
               <div *ngIf="addresses.length" class="mt-5 grid gap-4">
                 <label
                   *ngFor="let address of addresses; trackBy: trackByAddress"
-                  class="flex cursor-pointer gap-4 rounded-[1.5rem] border p-5 transition"
+                  class="flex cursor-pointer gap-4 rounded-[1.5rem] border p-4 transition sm:p-5"
                   [ngClass]="selectedAddressId === address._id ? 'border-indigo-200 bg-indigo-50/70' : 'border-slate-200 bg-slate-50/70 hover:border-slate-300'"
                 >
                   <input
@@ -111,18 +107,18 @@ const EMPTY_CART: CustomerCart = {
               </div>
             </div>
 
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
               <div class="border-b border-slate-100 pb-4">
                 <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Order Items</p>
-                <h2 class="mt-2 text-2xl font-black text-slate-900">Cart snapshot</h2>
+                <h2 class="mt-2 text-xl font-black text-slate-900 sm:text-2xl">Cart snapshot</h2>
               </div>
 
               <div class="mt-5 space-y-4">
                 <article
                   *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
-                  class="flex gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4"
+                  class="flex flex-col gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4 sm:flex-row"
                 >
-                  <img [src]="cartItemImage(item)" [alt]="item.product?.productName || 'Cart item'" class="h-20 w-20 rounded-2xl object-cover" />
+                  <img [src]="cartItemImage(item)" [alt]="item.product?.productName || 'Cart item'" class="h-24 w-full rounded-2xl object-cover sm:h-20 sm:w-20" />
 
                   <div class="min-w-0 flex-1">
                     <div class="flex items-start justify-between gap-4">
@@ -143,9 +139,9 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </section>
 
-          <aside class="h-fit rounded-[2rem] border border-slate-200 bg-slate-900 p-6 text-white shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
+          <aside class="h-fit rounded-[2rem] border border-slate-200 bg-slate-900 p-4 text-white shadow-[0_18px_50px_rgba(15,23,42,0.16)] sm:p-6 xl:sticky xl:top-24">
             <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Payment Summary</p>
-            <h2 class="mt-3 text-2xl font-black">Secure checkout</h2>
+            <h2 class="mt-3 text-xl font-black sm:text-2xl">Secure checkout</h2>
 
             <div class="mt-4 grid gap-2 rounded-[1.4rem] border border-white/10 bg-white/5 px-4 py-4 text-sm text-slate-300">
               <div class="flex items-center justify-between">
@@ -192,8 +188,8 @@ const EMPTY_CART: CustomerCart = {
             </p>
           </aside>
         </div>
-      </section>
-    </div>
+      </div>
+    </app-page-shell>
   `
 })
 export class CheckoutComponent implements OnInit {

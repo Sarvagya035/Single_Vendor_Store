@@ -6,7 +6,7 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="glass-card p-8">
+    <section class="app-section p-8">
       <div class="border-b border-slate-100 pb-4" [ngClass]="headerLayout">
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">{{ eyebrow }}</p>

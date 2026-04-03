@@ -10,6 +10,7 @@ import {
   VendorProductRecord
 } from '../../../core/models/vendor.models';
 import { VendorFormSectionComponent } from '../form-section/vendor-form-section.component';
+import { PageShellComponent } from '../../../shared/ui/page-shell.component';
 
 interface FlatCategoryOption {
   _id: string;
@@ -20,26 +21,21 @@ interface FlatCategoryOption {
 @Component({
   selector: 'app-vendor-edit-product-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageShellComponent],
   template: `
-    <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ecfeff_28%,#f8fafc_100%)] pt-8 pb-12">
-      <main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-500">Vendor Tools</p>
-            <h1 class="mt-3 text-4xl font-black tracking-tight text-slate-900">Edit Product</h1>
-            <p class="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-slate-500">
-              Update the product details on a dedicated page, then return to the products list when you're done.
-            </p>
-          </div>
+    <app-page-shell
+      eyebrow="Vendor tools"
+      eyebrowClass="text-cyan-500"
+      title="Edit product"
+      description="Update the product details on a dedicated page, then return to the products list when you're done."
+    >
+      <div page-shell-actions>
+        <a routerLink="/vendor/products" class="btn-secondary w-full !py-3 sm:w-auto">
+          Back to Products
+        </a>
+      </div>
 
-          <div class="flex flex-wrap gap-3">
-            <a routerLink="/vendor/products" class="btn-secondary !py-3">
-              Back to Products
-            </a>
-          </div>
-        </div>
-
+      <div page-shell-content class="space-y-8">
         <div *ngIf="isLoading" class="app-section py-20">
           <div class="flex flex-col items-center gap-4">
             <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-cyan-600"></div>
@@ -58,7 +54,7 @@ interface FlatCategoryOption {
         </div>
 
         <form *ngIf="!isLoading && product" class="space-y-8" (ngSubmit)="saveProduct()">
-          <div class="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
+          <div class="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
             <app-vendor-form-section eyebrow="Core Product" title="Edit basics">
               <div class="grid gap-5 md:grid-cols-2">
                 <div class="space-y-2 md:col-span-2">
@@ -162,8 +158,8 @@ interface FlatCategoryOption {
             </app-vendor-form-section>
           </div>
         </form>
-      </main>
-    </div>
+      </div>
+    </app-page-shell>
   `
 })
 export class VendorEditProductPageComponent implements OnInit {

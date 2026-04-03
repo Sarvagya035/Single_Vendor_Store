@@ -21,17 +21,17 @@ interface LandingCategoryNode extends CustomerLandingCategory {
         <div class="absolute top-32 right-0 h-96 w-96 rounded-full bg-amber-200/25 blur-3xl"></div>
       </div>
 
-      <section class="relative h-full w-full px-3 py-3 sm:px-4 lg:px-6 lg:py-6">
-        <div class="h-full min-h-[calc(100vh-88px)] overflow-hidden rounded-[2rem] border border-white/70 bg-white/90 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+      <section class="relative h-full w-full px-2 py-2 sm:px-4 lg:px-6 lg:py-6">
+        <div class="h-full min-h-[calc(100vh-88px)] overflow-hidden rounded-[1.6rem] border border-white/70 bg-white/90 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur sm:rounded-[2rem]">
 
           <div class="grid min-h-[calc(100vh-150px)] gap-0 lg:grid-cols-[320px_1fr]">
-            <aside class="border-b border-slate-200 bg-slate-50/80 px-4 py-5 lg:sticky lg:top-6 lg:h-[calc(100vh-120px)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:bg-slate-50/90">
+            <aside class="border-b border-slate-200 bg-slate-50/80 px-3 py-4 sm:px-4 lg:sticky lg:top-6 lg:h-[calc(100vh-120px)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:bg-slate-50/90">
               
 
-              <div class="mt-5 space-y-3">
+              <div class="mt-4 flex gap-3 overflow-x-auto pb-2 lg:mt-5 lg:block lg:space-y-3 lg:overflow-visible lg:pb-0">
                 <button
                   type="button"
-                  class="w-full rounded-[1.4rem] border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                  class="shrink-0 rounded-[1.4rem] border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md max-lg:min-w-[220px] lg:w-full"
                   [class.border-blue-600]="selectedCategorySlug === 'all'"
                   [class.bg-blue-50]="selectedCategorySlug === 'all'"
                   [class.text-blue-900]="selectedCategorySlug === 'all'"
@@ -53,14 +53,14 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </div>
                 </button>
 
-                <div *ngIf="loadingCategories" class="space-y-3">
-                  <div *ngFor="let _ of skeletonCards" class="h-20 rounded-[1.4rem] border border-slate-200 bg-white p-4 shadow-sm"></div>
+                <div *ngIf="loadingCategories" class="flex gap-3 overflow-x-auto pb-2 lg:block lg:space-y-3 lg:overflow-visible lg:pb-0">
+                  <div *ngFor="let _ of skeletonCards" class="h-20 shrink-0 rounded-[1.4rem] border border-slate-200 bg-white p-4 shadow-sm max-lg:min-w-[220px]"></div>
                 </div>
 
                 <button
                   *ngFor="let category of visibleCatalogCategories; trackBy: trackByVisibleCategoryId"
                   type="button"
-                  class="w-full rounded-[1.4rem] border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                  class="shrink-0 rounded-[1.4rem] border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md max-lg:min-w-[220px] lg:w-full"
                   [class.scale-[0.98]]="(category.level || 0) > 0"
                   [class.origin-left]="(category.level || 0) > 0"
                   [class.opacity-95]="(category.level || 0) > 0"
@@ -104,13 +104,13 @@ interface LandingCategoryNode extends CustomerLandingCategory {
               </div>
             </aside>
 
-            <main class="bg-white px-4 py-5 sm:px-6 lg:px-6">
+            <main class="bg-white px-3 py-4 sm:px-6 lg:px-6">
               <div class="mb-6 grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-                <section class="overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(239,246,255,0.92),rgba(245,243,255,0.9))] px-6 py-6 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-                  <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <section class="overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(239,246,255,0.92),rgba(245,243,255,0.9))] px-4 py-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)] sm:px-6 sm:py-6">
+                  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div class="max-w-2xl">
                       <p class="text-[11px] font-black uppercase tracking-[0.3em] text-indigo-500">Curated storefront</p>
-                      <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
+                      <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">
                         Browse products that feel easy to trust and simple to buy.
                       </h2>
                       <p class="mt-3 max-w-xl text-sm font-medium leading-7 text-slate-500">
@@ -141,9 +141,9 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </div>
                 </section>
 
-                <aside class="rounded-[2rem] border border-slate-200 bg-slate-900 px-6 py-6 text-white shadow-[0_18px_50px_rgba(15,23,42,0.14)]">
+                <aside class="rounded-[2rem] border border-slate-200 bg-slate-900 px-4 py-5 text-white shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:px-6 sm:py-6">
                   <p class="text-[11px] font-black uppercase tracking-[0.28em] text-slate-400">Shopping guidance</p>
-                  <h3 class="mt-2 text-2xl font-black text-white">Find what you need faster</h3>
+                  <h3 class="mt-2 text-xl font-black text-white sm:text-2xl">Find what you need faster</h3>
                   <p class="mt-3 text-sm font-medium leading-7 text-slate-300">
                     Search by product name, browse by category, and use the quick page controls to move through the catalog.
                   </p>
@@ -164,7 +164,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
               <div class="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Landing page</p>
-                  <h1 class="mt-1 text-3xl font-black tracking-tight text-slate-900">Products</h1>
+                  <h1 class="mt-1 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Products</h1>
                   <p class="mt-2 text-sm font-medium text-slate-500">
                     {{ pageSubtitle() }}
                   </p>

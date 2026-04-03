@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { VendorService } from '../../../core/services/vendor.service';
-import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { ToastBannerComponent } from '../../../shared/ui/toast-banner.component';
+import { PageShellComponent } from '../../../shared/ui/page-shell.component';
 import { VendorCategoriesPanelComponent } from '../categories-panel/vendor-categories-panel.component';
 import { CategoryRecord } from '../../../core/models/store.models';
 import { ToastType } from '../../../core/models/vendor.models';
@@ -11,36 +11,34 @@ import { ToastType } from '../../../core/models/vendor.models';
 @Component({
   selector: 'app-vendor-categories-page',
   standalone: true,
-  imports: [CommonModule, VendorCategoriesPanelComponent, PageHeaderComponent, ToastBannerComponent],
+  imports: [CommonModule, VendorCategoriesPanelComponent, ToastBannerComponent, PageShellComponent],
   template: `
-    <section class="space-y-6">
-      <div class="app-surface p-6 sm:p-8">
-        <app-page-header
-          eyebrow="Vendor Category Management"
-          eyebrowClass="text-indigo-500"
-          title="Manage your store categories"
-          description="Add, edit, and remove categories that help organize your vendor catalog."
+    <app-page-shell
+      eyebrow="Vendor category management"
+      eyebrowClass="text-indigo-500"
+      title="Manage your store categories"
+      description="Add, edit, and remove categories that help organize your vendor catalog."
+    >
+      <div page-shell-content class="space-y-6">
+        <app-vendor-categories-panel
+          [categories]="categories"
+          [isLoading]="isCategorySyncing"
+          [isCreating]="isCreatingCategory"
+          [isUpdating]="isUpdatingCategory"
+          [createForm]="categoryCreateForm"
+          [createError]="categoryCreateError"
+          [createImageName]="selectedCategoryImage?.name || ''"
+          (createFormChange)="updateCategoryCreateForm($event)"
+          (selectCreateImage)="onCategoryImageSelected($event)"
+          (submitCreate)="createCategory()"
+          (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
+          (deleteCategory)="deleteCategory($event)"
+          (refresh)="loadCategories()"
         />
       </div>
 
-      <app-vendor-categories-panel
-        [categories]="categories"
-        [isLoading]="isCategorySyncing"
-        [isCreating]="isCreatingCategory"
-        [isUpdating]="isUpdatingCategory"
-        [createForm]="categoryCreateForm"
-        [createError]="categoryCreateError"
-        [createImageName]="selectedCategoryImage?.name || ''"
-        (createFormChange)="updateCategoryCreateForm($event)"
-        (selectCreateImage)="onCategoryImageSelected($event)"
-        (submitCreate)="createCategory()"
-        (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
-        (deleteCategory)="deleteCategory($event)"
-        (refresh)="loadCategories()"
-      />
-
       <app-toast-banner [visible]="toast.visible" [message]="toast.message" [type]="toast.type" />
-    </section>
+    </app-page-shell>
   `,
 })
 export class VendorCategoriesPageComponent implements OnInit {

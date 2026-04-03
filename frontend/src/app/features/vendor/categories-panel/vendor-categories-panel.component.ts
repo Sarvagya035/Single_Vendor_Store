@@ -102,17 +102,29 @@ interface CategoryCreateForm {
         </div>
 
         <div *ngIf="isLoading" class="px-6 py-16">
-          <div class="flex flex-col items-center gap-4">
+          <div class="mx-auto flex max-w-sm flex-col items-center gap-4 text-center">
             <div class="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
-            <p class="font-medium text-slate-500">Loading categories...</p>
+            <div>
+              <p class="text-lg font-black text-slate-900">Loading categories</p>
+              <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
+                Fetching your category tree and preparing the editor.
+              </p>
+            </div>
           </div>
         </div>
 
-        <div *ngIf="!isLoading && categories.length === 0" class="app-card-soft mx-6 my-6 px-8 py-20 text-center">
-          <h3 class="text-2xl font-black text-slate-900">No Categories Yet</h3>
-          <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
-            Categories from your backend will appear here once they are created.
-          </p>
+        <div *ngIf="!isLoading && categories.length === 0" class="app-card-soft mx-6 my-6 px-6 py-20 text-center sm:px-8">
+          <div class="mx-auto flex max-w-md flex-col items-center gap-4">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500">
+              +
+            </div>
+            <div>
+              <h3 class="text-2xl font-black text-slate-900">No categories yet</h3>
+              <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
+                Categories from your backend will appear here once they are created.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div *ngIf="!isLoading && categories.length > 0" class="divide-y divide-slate-200">

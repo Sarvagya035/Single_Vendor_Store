@@ -17,32 +17,30 @@ import { catchError, finalize, EMPTY } from 'rxjs';
       <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-violet-500/10 blur-[120px] rounded-full animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
-        <h2 class="text-4xl font-black text-slate-900 tracking-tight">Login</h2>
-        <p class="text-slate-500 font-medium tracking-wide">Enter your credentials to access your account</p>
+        <h2 class="text-4xl font-black text-slate-900 tracking-tight">Welcome back</h2>
+        <p class="text-slate-500 font-medium tracking-wide">Sign in to continue to your account</p>
       </div>
 
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div class="glass-card p-10">
+        <div class="app-section p-8 sm:p-10">
           <form class="space-y-8" (ngSubmit)="onSubmit()">
-            
             <div class="space-y-2">
-              <label for="email" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Email Address</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  📧
-                </div>
-                <input id="email" name="email" type="email" autocomplete="email" required [(ngModel)]="email"
-                  placeholder="Enter your email"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
-              </div>
+              <label for="email" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Email address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                [(ngModel)]="email"
+                placeholder="Enter your email"
+                class="app-input"
+              >
             </div>
 
             <div class="space-y-2">
               <label for="password" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Password</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  🔑
-                </div>
                 <input
                   id="password"
                   name="password"
@@ -51,11 +49,12 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   required
                   [(ngModel)]="password"
                   placeholder="Enter your password"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-16 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner"
+                  class="app-input pr-16"
                 >
-                <button
+              <button
                   type="button"
                   (click)="showPassword = !showPassword"
+                  [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
                   class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                 >
                   {{ showPassword ? 'Hide' : 'Show' }}
@@ -71,9 +70,8 @@ import { catchError, finalize, EMPTY } from 'rxjs';
           <div class="mt-10 pt-8 border-t border-slate-100 text-center">
             <p class="text-sm font-medium text-slate-500">
               Don't have an account?
-              <a routerLink="/register" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Register Now</a>
+              <a routerLink="/register" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Create an account</a>
             </p>
-            
           </div>
         </div>
       </div>

@@ -31,7 +31,7 @@ import { VendorService } from '../../../core/services/vendor.service';
           </a>
         </div>
 
-        <div *ngIf="submitted" class="glass-card mx-auto max-w-3xl p-10 text-center sm:p-14">
+        <div *ngIf="submitted" class="app-section mx-auto max-w-3xl p-10 text-center sm:p-14">
           <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-500/10 text-4xl font-black text-emerald-600">
             ✓
           </div>
@@ -53,7 +53,7 @@ import { VendorService } from '../../../core/services/vendor.service';
 
         <form *ngIf="!submitted" (ngSubmit)="onSubmit()" class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <section class="space-y-6">
-            <div class="glass-card p-6 sm:p-8">
+            <div class="app-section p-6 sm:p-8">
               <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                 Account Details
               </h2>
@@ -70,7 +70,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     [class.ring-2]="!!usernameError"
                     [class.ring-red-500]="!!usernameError"
                     [class.focus:ring-red-500]="!!usernameError"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                   <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">{{ usernameError }}</p>
                 </label>
@@ -83,7 +83,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="email"
                     [(ngModel)]="form.email"
                     placeholder="owner@example.com"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                 </label>
 
@@ -102,7 +102,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     [class.ring-2]="!!phoneError"
                     [class.ring-red-500]="!!phoneError"
                     [class.focus:ring-red-500]="!!phoneError"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                   <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">{{ phoneError }}</p>
                 </label>
@@ -115,7 +115,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="password"
                     [(ngModel)]="form.password"
                     placeholder="Create a secure password"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                 </label>
 
@@ -133,7 +133,7 @@ import { VendorService } from '../../../core/services/vendor.service';
               </div>
             </div>
 
-            <div class="glass-card p-6 sm:p-8">
+            <div class="app-section p-6 sm:p-8">
               <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                 Store Details
               </h2>
@@ -146,7 +146,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="shopName"
                     [(ngModel)]="form.shopName"
                     placeholder="Store name"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                 </label>
 
@@ -158,7 +158,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="vendorDescription"
                     [(ngModel)]="form.vendorDescription"
                     placeholder="Describe the store"
-                    class="block w-full resize-none rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input min-h-[120px]"
                   ></textarea>
                 </label>
 
@@ -170,13 +170,13 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="vendorAddress"
                     [(ngModel)]="form.vendorAddress"
                     placeholder="Business address"
-                    class="block w-full resize-none rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input min-h-[96px]"
                   ></textarea>
                 </label>
               </div>
             </div>
 
-            <div class="glass-card p-6 sm:p-8">
+            <div class="app-section p-6 sm:p-8">
               <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                 Bank Details
               </h2>
@@ -193,7 +193,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     [class.ring-2]="!!accountHolderNameError"
                     [class.ring-red-500]="!!accountHolderNameError"
                     [class.focus:ring-red-500]="!!accountHolderNameError"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                   <p *ngIf="accountHolderNameError" class="ml-1 text-xs font-semibold text-red-500">{{ accountHolderNameError }}</p>
                 </label>
@@ -206,7 +206,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="accountNumber"
                     [(ngModel)]="form.accountNumber"
                     placeholder="Account number"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                 </label>
 
@@ -218,7 +218,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="ifscCode"
                     [(ngModel)]="form.ifscCode"
                     placeholder="HDFC0001234"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold uppercase text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input uppercase"
                   />
                 </label>
 
@@ -230,7 +230,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="bankName"
                     [(ngModel)]="form.bankName"
                     placeholder="Bank name"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                 </label>
 
@@ -242,7 +242,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="gstNumber"
                     [(ngModel)]="form.gstNumber"
                     placeholder="GST number"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold uppercase text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input uppercase"
                   />
                 </label>
 
@@ -253,7 +253,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                     name="upiId"
                     [(ngModel)]="form.upiId"
                     placeholder="Optional"
-                    class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-indigo-500"
+                    class="app-input"
                   />
                 </label>
               </div>
@@ -261,7 +261,7 @@ import { VendorService } from '../../../core/services/vendor.service';
           </section>
 
           <aside class="space-y-6 lg:sticky lg:top-8 lg:self-start">
-            <div class="glass-card p-6 sm:p-8">
+            <div class="app-section p-6 sm:p-8">
               <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                 Store Logo
               </h2>
@@ -301,7 +301,7 @@ import { VendorService } from '../../../core/services/vendor.service';
               </div>
             </div>
 
-            <div class="glass-card space-y-4 p-6 sm:p-8">
+            <div class="app-section space-y-4 p-6 sm:p-8">
               <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                 Setup Secret
               </h2>

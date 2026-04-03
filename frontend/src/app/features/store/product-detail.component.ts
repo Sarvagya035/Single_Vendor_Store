@@ -15,33 +15,41 @@ import {
 import { ProductReview, ProductReviewForm, ProductReviewStat } from '../../core/models/review.models';
 import { ProductGalleryComponent } from './product-gallery/product-gallery.component';
 import { ProductPurchasePanelComponent } from './product-purchase-panel/product-purchase-panel.component';
+import { PageShellComponent } from '../../shared/ui/page-shell.component';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent, PageShellComponent],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-slate-50">
-      <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <app-page-shell
+      eyebrow="Product details"
+      eyebrowClass="text-indigo-500"
+      title="Product page"
+      description="Review the item, compare variants, and read customer feedback before adding it to cart."
+    >
+      <div page-shell-actions>
         <a routerLink="/" class="inline-flex items-center gap-2 text-sm font-black text-slate-500 transition hover:text-slate-900">
           <span>&larr;</span>
           Back to catalog
         </a>
+      </div>
 
-        <div *ngIf="loading" class="mt-8 text-sm font-semibold text-slate-500">Loading product...</div>
+      <div page-shell-content class="space-y-6">
+        <div *ngIf="loading" class="text-sm font-semibold text-slate-500">Loading product...</div>
 
-        <div *ngIf="successMessage" class="mt-8 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div *ngIf="successMessage" class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
           {{ successMessage }}
         </div>
 
         <ng-container *ngIf="product && !loading">
-          <div class="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+          <div class="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div class="max-w-3xl">
                 <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">
                   {{ product.categoryDetails?.name || 'Product details' }}
                 </p>
-                <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
+                <h1 class="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">
                   {{ product.productName }}
                 </h1>
                 <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
@@ -49,7 +57,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                 </p>
               </div>
 
-              <div class="rounded-[1.5rem] border border-amber-100 bg-amber-50 px-5 py-4">
+              <div class="w-full rounded-[1.5rem] border border-amber-100 bg-amber-50 px-5 py-4 lg:w-auto">
                 <p class="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">Customer rating</p>
                 <p class="mt-2 text-3xl font-black text-slate-900">{{ formatRating(product.averageRating || 0) }}</p>
                 <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
@@ -66,7 +74,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </div>
           </div>
 
-          <div class="mt-8 grid gap-8 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
+          <div class="mt-8 grid gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
             <app-product-gallery
               [productName]="product.productName"
               [activeImage]="activeImage()"
@@ -75,7 +83,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               (imageSelected)="selectedImage = $event"
             />
 
-            <div class="lg:sticky lg:top-24 h-fit">
+            <div class="h-fit lg:sticky lg:top-24">
               <app-product-purchase-panel
                 [product]="product"
                 [variants]="product.variants || []"
@@ -96,7 +104,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
           </div>
 
           <section class="mt-10 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
               <div class="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Ratings & Reviews</p>
@@ -169,7 +177,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               </div>
             </div>
 
-            <aside #reviewFormSection class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <aside #reviewFormSection class="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
               <div class="mb-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4">
                 <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Buy with confidence</p>
                 <div class="mt-3 grid gap-2">
@@ -300,8 +308,8 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </aside>
           </section>
         </ng-container>
-      </section>
-    </div>
+      </div>
+    </app-page-shell>
   `
 })
 export class ProductDetailComponent implements OnInit {

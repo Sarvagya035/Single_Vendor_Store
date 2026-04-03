@@ -3,31 +3,30 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AddressService } from '../../../core/services/address.service';
 import { CustomerAddress, CustomerAddressForm } from '../../../core/models/customer.models';
+import { PageShellComponent } from '../../../shared/ui/page-shell.component';
 
 @Component({
   selector: 'app-customer-address-book',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageShellComponent],
   template: `
-    <div class="app-section overflow-hidden">
-      <div class="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50 px-8 py-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 class="text-lg text-xs font-black uppercase tracking-widest text-slate-900">Saved Addresses</h3>
-          <p class="mt-2 text-sm font-medium text-slate-500">
-            Manage delivery addresses and choose your default destination.
-          </p>
-        </div>
-
+    <app-page-shell
+      eyebrow="Addresses"
+      eyebrowClass="text-indigo-500"
+      title="Saved addresses"
+      description="Manage delivery addresses and choose your default destination."
+    >
+      <div page-shell-actions>
         <button
           type="button"
-          class="btn-primary !py-3 !px-5"
+          class="btn-primary w-full !py-3 !px-5 sm:w-auto"
           (click)="startCreate()"
         >
           {{ showForm && !editingAddressId ? 'Adding Address' : 'Add Address' }}
         </button>
       </div>
 
-      <div class="space-y-4 p-8">
+      <div page-shell-content class="space-y-4">
         <div
           *ngIf="successMessage"
           class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
@@ -35,13 +34,13 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           {{ successMessage }}
         </div>
 
-        <div *ngIf="showForm" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
-          <div class="flex items-center justify-between gap-4">
+        <div *ngIf="showForm" class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.06)] sm:p-6">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
                 {{ editingAddressId ? 'Edit Address' : 'New Address' }}
               </p>
-              <h4 class="mt-1 text-xl font-black text-slate-900">
+              <h4 class="mt-1 text-lg font-black text-slate-900 sm:text-xl">
                 {{ editingAddressId ? 'Update this address' : 'Add a delivery address' }}
               </h4>
             </div>
@@ -153,11 +152,11 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               />
             </label>
 
-            <div class="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-              <button type="submit" class="btn-primary !px-6 !py-3" [disabled]="isSaving">
+            <div class="sm:col-span-2 flex flex-col gap-3 pt-2 sm:flex-row">
+              <button type="submit" class="btn-primary w-full !px-6 !py-3 sm:w-auto" [disabled]="isSaving">
                 {{ isSaving ? 'Saving...' : editingAddressId ? 'Update Address' : 'Save Address' }}
               </button>
-              <button type="button" class="btn-secondary !px-6 !py-3" (click)="cancelForm()">Cancel</button>
+              <button type="button" class="btn-secondary w-full !px-6 !py-3 sm:w-auto" (click)="cancelForm()">Cancel</button>
             </div>
           </form>
         </div>
@@ -176,7 +175,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
         <div *ngIf="addresses.length" class="grid gap-4">
           <article
             *ngFor="let address of addresses; trackBy: trackByAddress"
-            class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]"
+            class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.06)] sm:p-6"
           >
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="space-y-3">
@@ -199,10 +198,10 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 </div>
               </div>
 
-              <div class="flex flex-wrap gap-3">
+              <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <button
                   type="button"
-                  class="btn-secondary !px-4 !py-2"
+                  class="btn-secondary w-full !px-4 !py-2 sm:w-auto"
                   (click)="startEdit(address)"
                 >
                   Edit
@@ -210,14 +209,14 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 <button
                   *ngIf="!address.isDefault"
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-indigo-100 bg-indigo-50/60 text-indigo-700"
+                  class="btn-secondary w-full !px-4 !py-2 border-indigo-100 bg-indigo-50/60 text-indigo-700 sm:w-auto"
                   (click)="setDefault(address)"
                 >
                   Make Default
                 </button>
                 <button
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-rose-100 bg-rose-50/60 text-rose-600"
+                  class="btn-secondary w-full !px-4 !py-2 border-rose-100 bg-rose-50/60 text-rose-600 sm:w-auto"
                   (click)="deleteAddress(address)"
                 >
                   Delete
@@ -227,7 +226,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           </article>
         </div>
       </div>
-    </div>
+    </app-page-shell>
   `
 })
 export class CustomerAddressBookComponent implements OnInit {

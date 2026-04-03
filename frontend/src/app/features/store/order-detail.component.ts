@@ -5,49 +5,45 @@ import { OrderItemRecord, OrderRecord, OrderStatus } from '../../core/models/ord
 import { AuthService } from '../../core/services/auth.service';
 import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
+import { PageShellComponent } from '../../shared/ui/page-shell.component';
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageShellComponent],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-slate-50">
-      <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Order Details</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">Order #{{ shortOrderId(order?._id) }}</h1>
-            <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-              Review items, shipping details, and payment status for this order.
-            </p>
-          </div>
+    <app-page-shell
+      eyebrow="Order details"
+      eyebrowClass="text-indigo-500"
+      title="Order #{{ shortOrderId(order?._id) }}"
+      description="Review items, shipping details, and payment status for this order."
+    >
+      <div page-shell-actions class="flex flex-col gap-3 sm:flex-row">
+        <a [routerLink]="backLink" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">Back To Orders</a>
+        <button
+          *ngIf="canCancel()"
+          type="button"
+          class="w-full rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-black text-rose-600 transition hover:bg-rose-100 sm:w-auto"
+          (click)="cancelOrder()"
+        >
+          Cancel Order
+        </button>
+      </div>
 
-          <div class="flex gap-3">
-            <a [routerLink]="backLink" class="btn-secondary !px-5 !py-3">Back To Orders</a>
-            <button
-              *ngIf="canCancel()"
-              type="button"
-              class="rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-black text-rose-600 transition hover:bg-rose-100"
-              (click)="cancelOrder()"
-            >
-              Cancel Order
-            </button>
-          </div>
-        </div>
-
-        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+      <div page-shell-content class="space-y-6">
+        <div *ngIf="successMessage" class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
           {{ successMessage }}
         </div>
 
-        <div *ngIf="isLoading" class="mt-10 text-sm font-semibold text-slate-500">Loading order details...</div>
+        <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading order details...</div>
 
-        <div *ngIf="!isLoading && order" class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div *ngIf="!isLoading && order" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section class="space-y-6">
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
               <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Status</p>
-                  <h2 class="mt-2 text-2xl font-black text-slate-900">Order progress</h2>
+                  <h2 class="mt-2 text-xl font-black text-slate-900 sm:text-2xl">Order progress</h2>
                 </div>
                 <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(displayStatus)">
                   {{ displayStatus }}
@@ -67,18 +63,18 @@ import { OrderService } from '../../core/services/order.service';
               </div>
             </div>
 
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
               <div class="border-b border-slate-100 pb-4">
                 <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Items</p>
-                <h2 class="mt-2 text-2xl font-black text-slate-900">Purchased products</h2>
+                <h2 class="mt-2 text-xl font-black text-slate-900 sm:text-2xl">Purchased products</h2>
               </div>
 
               <div class="mt-5 space-y-4">
                 <article
                   *ngFor="let item of visibleItems; trackBy: trackByItem"
-                  class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5"
+                  class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4 sm:p-5"
                 >
-                  <div class="flex items-start justify-between gap-4">
+                  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p class="text-lg font-black text-slate-900">{{ item.name || 'Order item' }}</p>
                       <p class="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
@@ -98,9 +94,9 @@ import { OrderService } from '../../core/services/order.service';
           </section>
 
           <aside class="space-y-6">
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div class="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
               <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivery</p>
-              <h2 class="mt-2 text-2xl font-black text-slate-900">Shipping address</h2>
+              <h2 class="mt-2 text-xl font-black text-slate-900 sm:text-2xl">Shipping address</h2>
               <p class="mt-4 text-sm font-medium leading-7 text-slate-600">
                 {{ order.shippingAddress?.address || 'Address unavailable' }}
               </p>
@@ -110,7 +106,7 @@ import { OrderService } from '../../core/services/order.service';
               <p class="mt-2 text-sm font-semibold text-slate-700">{{ order.shippingAddress?.phone || '-' }}</p>
             </div>
 
-            <div class="rounded-[2rem] border border-slate-200 bg-slate-900 p-6 text-white shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
+            <div class="rounded-[2rem] border border-slate-200 bg-slate-900 p-4 text-white shadow-[0_18px_50px_rgba(15,23,42,0.16)] sm:p-6">
               <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
                 {{ isVendorView() ? 'Vendor Summary' : 'Bill Summary' }}
               </p>
@@ -132,8 +128,8 @@ import { OrderService } from '../../core/services/order.service';
             </div>
           </aside>
         </div>
-      </section>
-    </div>
+      </div>
+    </app-page-shell>
   `
 })
 export class OrderDetailComponent implements OnInit {

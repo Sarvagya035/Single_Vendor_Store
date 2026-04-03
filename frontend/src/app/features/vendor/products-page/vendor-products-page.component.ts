@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorProductsPanelComponent } from '../products-panel/vendor-products-panel.component';
 import { VendorProductRecord } from '../../../core/models/vendor.models';
+import { PageShellComponent } from '../../../shared/ui/page-shell.component';
 
 interface VendorProductsPagination {
   totalDocs: number;
@@ -16,87 +18,82 @@ interface VendorProductsPagination {
 @Component({
   selector: 'app-vendor-products-page',
   standalone: true,
-  imports: [CommonModule, VendorProductsPanelComponent],
+  imports: [CommonModule, RouterModule, VendorProductsPanelComponent, PageShellComponent],
   template: `
-    <section class="space-y-6">
-      <div class="app-section px-6 py-6 lg:px-8">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-2xl">
-            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-indigo-500">Catalog operations</p>
-            <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Manage products</h1>
-            <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-              Search, update, restock, and organize your listings from a cleaner workspace.
-            </p>
+    <app-page-shell
+      eyebrow="Catalog operations"
+      eyebrowClass="text-indigo-500"
+      title="Manage products"
+      description="Search, update, restock, and organize your listings from a cleaner workspace."
+    >
+      <div page-shell-actions class="flex flex-wrap gap-3">
+        <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
+        <button type="button" (click)="loadVendorProducts(currentPage)" class="btn-secondary !px-6 !py-3">
+          Refresh
+        </button>
+      </div>
+
+      <div page-shell-content class="space-y-6">
+        <app-vendor-products-panel
+          [products]="products"
+          [isLoading]="isProductsLoading"
+          (refreshRequested)="loadVendorProducts(currentPage)"
+        />
+
+        <div
+          *ngIf="!isProductsLoading && totalPages > 1"
+          class="app-section flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8"
+        >
+          <div class="text-sm font-semibold text-slate-600">
+            Showing
+            <span class="font-black text-slate-900">{{ products.length }}</span>
+            of
+            <span class="font-black text-slate-900">{{ totalDocs }}</span>
+            products
+            <span class="text-slate-400">|</span>
+            Page
+            <span class="font-black text-slate-900">{{ currentPage }}</span>
+            of
+            <span class="font-black text-slate-900">{{ totalPages }}</span>
           </div>
 
-          <div class="flex flex-wrap gap-3">
-            <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
-            <button type="button" (click)="loadVendorProducts(currentPage)" class="btn-secondary !px-6 !py-3">
-              Refresh
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              (click)="loadVendorProducts(currentPage - 1)"
+              [disabled]="!hasPrevPage || isProductsLoading"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            <button
+              *ngFor="let page of visiblePages; trackBy: trackByPage"
+              type="button"
+              (click)="loadVendorProducts(page)"
+              [disabled]="isProductsLoading"
+              class="rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-50"
+              [ngClass]="
+                page === currentPage
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+              "
+            >
+              {{ page }}
+            </button>
+
+            <button
+              type="button"
+              (click)="loadVendorProducts(currentPage + 1)"
+              [disabled]="!hasNextPage || isProductsLoading"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
             </button>
           </div>
         </div>
       </div>
-
-      <app-vendor-products-panel
-        [products]="products"
-        [isLoading]="isProductsLoading"
-        (refreshRequested)="loadVendorProducts(currentPage)"
-      />
-
-      <div
-        *ngIf="!isProductsLoading && totalPages > 1"
-        class="app-section flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8"
-      >
-        <div class="text-sm font-semibold text-slate-600">
-          Showing
-          <span class="font-black text-slate-900">{{ products.length }}</span>
-          of
-          <span class="font-black text-slate-900">{{ totalDocs }}</span>
-          products
-          <span class="text-slate-400">|</span>
-          Page
-          <span class="font-black text-slate-900">{{ currentPage }}</span>
-          of
-          <span class="font-black text-slate-900">{{ totalPages }}</span>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            (click)="loadVendorProducts(currentPage - 1)"
-            [disabled]="!hasPrevPage || isProductsLoading"
-            class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Previous
-          </button>
-
-          <button
-            *ngFor="let page of visiblePages; trackBy: trackByPage"
-            type="button"
-            (click)="loadVendorProducts(page)"
-            [disabled]="isProductsLoading"
-            class="rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-50"
-            [ngClass]="
-              page === currentPage
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-            "
-          >
-            {{ page }}
-          </button>
-
-          <button
-            type="button"
-            (click)="loadVendorProducts(currentPage + 1)"
-            [disabled]="!hasNextPage || isProductsLoading"
-            class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      </div>
-    </section>
+    </app-page-shell>
   `
 })
 export class VendorProductsPageComponent implements OnInit {

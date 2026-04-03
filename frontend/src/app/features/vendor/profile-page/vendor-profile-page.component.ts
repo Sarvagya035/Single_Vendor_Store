@@ -9,6 +9,7 @@ import { VendorEmptyStateComponent } from '../empty-state/vendor-empty-state.com
 import { VendorLogoModalComponent } from '../logo-modal/vendor-logo-modal.component';
 import { VendorProfileCardComponent } from '../profile-card/vendor-profile-card.component';
 import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../../core/models/vendor.models';
+import { PageShellComponent } from '../../../shared/ui/page-shell.component';
 
 @Component({
   selector: 'app-vendor-profile-page',
@@ -19,36 +20,38 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../.
     VendorProfileCardComponent,
     VendorDetailsModalComponent,
     VendorLogoModalComponent,
-    VendorEmptyStateComponent
+    VendorEmptyStateComponent,
+    PageShellComponent
   ],
   template: `
-    <div *ngIf="isLoading" class="app-section flex flex-col items-center gap-4 py-20">
-      <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600"></div>
-      <p class="font-medium text-slate-500">Loading store data...</p>
-    </div>
+    <app-page-shell
+      eyebrow="Store profile"
+      eyebrowClass="text-emerald-500"
+      title="Manage your storefront identity"
+      description="Keep your brand details, payout information, and logo polished so your store feels trustworthy and complete."
+    >
+      <div page-shell-content class="space-y-10">
+        <div *ngIf="isLoading" class="app-section flex flex-col items-center gap-4 px-4 py-16 sm:py-20">
+          <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600"></div>
+          <p class="max-w-sm text-center font-medium text-slate-500">Loading store data. Your profile and branding details will appear shortly.</p>
+        </div>
 
-    <div *ngIf="!isLoading && vendor" class="space-y-10">
-      <div class="app-section px-6 py-6 sm:px-8">
-        <p class="text-[11px] font-black uppercase tracking-[0.28em] text-emerald-500">Store profile</p>
-        <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Manage your storefront identity</h1>
-        <p class="mt-3 max-w-3xl text-sm font-medium leading-7 text-slate-500">
-          Keep your brand details, payout information, and logo polished so your store feels trustworthy and complete.
-        </p>
+        <div *ngIf="!isLoading && vendor" class="space-y-10">
+          <app-vendor-profile-card
+            [vendor]="vendor"
+            [logoPreview]="logoPreview"
+            [isEditDetailsOpen]="isEditDetailsOpen"
+            [isEditBankOpen]="isEditBankOpen"
+            [isEditLogoOpen]="isEditLogoOpen"
+            (editDetails)="toggleDetailsEditor()"
+            (editBank)="toggleBankEditor()"
+            (editLogo)="toggleLogoEditor()"
+          />
+        </div>
+
+        <app-vendor-empty-state *ngIf="!isLoading && !vendor" />
       </div>
-
-      <app-vendor-profile-card
-        [vendor]="vendor"
-        [logoPreview]="logoPreview"
-        [isEditDetailsOpen]="isEditDetailsOpen"
-        [isEditBankOpen]="isEditBankOpen"
-        [isEditLogoOpen]="isEditLogoOpen"
-        (editDetails)="toggleDetailsEditor()"
-        (editBank)="toggleBankEditor()"
-        (editLogo)="toggleLogoEditor()"
-      />
-    </div>
-
-    <app-vendor-empty-state *ngIf="!isLoading && !vendor" />
+    </app-page-shell>
 
     <app-vendor-details-modal
       [open]="isEditDetailsOpen"

@@ -88,17 +88,32 @@ interface ProductMessage {
             *ngIf="isLoading"
             class="app-card-soft py-20 text-center text-slate-500"
           >
-            Loading products...
+            <div class="mx-auto flex max-w-sm flex-col items-center gap-4 px-4">
+              <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-cyan-600"></div>
+              <div>
+                <p class="text-lg font-black text-slate-900">Loading products</p>
+                <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
+                  Pulling your catalog into the workspace. This usually takes just a moment.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div
             *ngIf="!isLoading && filteredProducts.length === 0"
-            class="app-card-soft border-dashed px-8 py-20 text-center"
+            class="app-card-soft border-dashed px-6 py-20 text-center sm:px-8"
           >
-            <h3 class="text-2xl font-black text-slate-900">No Matching Products</h3>
-            <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
-              Try another category filter or search term.
-            </p>
+            <div class="mx-auto flex max-w-md flex-col items-center gap-4">
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500">
+                0
+              </div>
+              <div>
+                <h3 class="text-2xl font-black text-slate-900">No matching products</h3>
+                <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
+                  Try another search term or switch to a different category to keep browsing.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div *ngIf="!isLoading && filteredProducts.length > 0" class="space-y-4">
@@ -127,7 +142,7 @@ interface ProductMessage {
           >
             <div
               (click)="$event.stopPropagation()"
-              class="w-full max-w-5xl rounded-[2rem] border border-slate-200 bg-slate-50 p-5 shadow-2xl sm:p-6 max-h-[calc(100vh-5rem)] overflow-y-auto"
+              class="w-full max-w-5xl rounded-[2rem] border border-slate-200 bg-slate-50 p-4 shadow-2xl sm:max-h-[calc(100vh-5rem)] sm:p-6 overflow-y-auto"
             >
               <div class="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div>

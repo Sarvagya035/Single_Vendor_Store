@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { VendorAnalyticsPayload, VendorProductRecord, VendorSoldOrderRecord } from '../../../core/models/vendor.models';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageShellComponent } from '../../../shared/ui/page-shell.component';
 
 interface DashboardMetric {
   label: string;
@@ -29,113 +30,105 @@ interface DashboardProduct {
 @Component({
   selector: 'app-vendor-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageShellComponent],
   template: `
-    <section class="space-y-6">
-      <div class="app-section overflow-hidden">
-        <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-2xl">
-              <p class="text-[11px] font-black uppercase tracking-[0.28em] text-emerald-500">Vendor dashboard</p>
-              <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Vendor Overview</h1>
-              <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-                Monitor revenue, shipments, product health, and fast actions from one control center.
-              </p>
-            </div>
+    <app-page-shell
+      eyebrow="Vendor dashboard"
+      eyebrowClass="text-emerald-500"
+      title="Vendor Overview"
+      description="Monitor revenue, shipments, product health, and fast actions from one control center."
+    >
+      <div page-shell-actions class="flex flex-wrap gap-3">
+        <a routerLink="/vendor/products/add" class="btn-primary w-full !px-6 !py-3 sm:w-auto">+ Add Product</a>
+        <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Products</a>
+      </div>
 
-            <div class="flex flex-wrap gap-3">
-              <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
-              <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Manage Products</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid gap-4 px-6 py-6 md:grid-cols-2 xl:grid-cols-4 lg:px-8">
-          <article *ngFor="let metric of metrics" class="rounded-[1.75rem] border p-5"
-            [ngClass]="metricCardClass(metric.tone)">
+      <div page-shell-content class="space-y-6">
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <article *ngFor="let metric of metrics" class="rounded-[1.75rem] border p-5" [ngClass]="metricCardClass(metric.tone)">
             <p class="text-[11px] font-black uppercase tracking-[0.18em]">{{ metric.label }}</p>
             <p class="mt-4 text-3xl font-black tracking-tight text-slate-900">{{ metric.value }}</p>
             <p class="mt-3 text-sm font-bold">{{ metric.change }}</p>
           </article>
         </div>
-      </div>
 
-      <div class="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
-        <section class="app-section overflow-hidden">
-          <div class="border-b border-slate-200 px-6 py-5">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Recent Orders</p>
-            <h2 class="mt-2 text-2xl font-black text-slate-900">Fulfillment Snapshot</h2>
-          </div>
-
-          <div *ngIf="isLoading" class="px-6 py-8 text-sm font-semibold text-slate-500">
-            Loading live order activity...
-          </div>
-
-          <div *ngIf="!isLoading && recentOrders.length === 0" class="px-6 py-10 text-sm font-semibold text-slate-500">
-            Orders for your store will appear here once customers start checking out.
-          </div>
-
-          <div *ngIf="recentOrders.length" class="divide-y divide-slate-100">
-            <article *ngFor="let order of recentOrders" class="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p class="text-sm font-black text-slate-900">{{ order.id }} • {{ order.itemCount }} item(s)</p>
-                <p class="mt-1 text-sm font-medium text-slate-500">{{ order.item }}</p>
-              </div>
-              <div class="flex items-center gap-4">
-                <p class="text-sm font-black text-slate-900">{{ order.total }}</p>
-                <span class="rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="orderStatusClass(order.status)">
-                  {{ order.status }}
-                </span>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="space-y-6">
-          <div class="app-section overflow-hidden">
-            <div class="border-b border-slate-200 px-6 py-5">
-              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Quick Actions</p>
-              <h2 class="mt-2 text-2xl font-black text-slate-900">What Do You Want To Do?</h2>
-            </div>
-
-            <div class="grid gap-3 px-6 py-6">
-              <a *ngFor="let action of quickActions" [routerLink]="action.link" class="rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 transition hover:border-slate-300 hover:bg-slate-50">
-                <p class="text-sm font-black text-slate-900">{{ action.title }}</p>
-                <p class="mt-1 text-sm font-medium text-slate-500">{{ action.description }}</p>
-              </a>
-            </div>
-          </div>
-
-          <div class="app-section overflow-hidden">
-            <div class="border-b border-slate-200 px-6 py-5">
-              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Top Performers</p>
-              <h2 class="mt-2 text-2xl font-black text-slate-900">Best Selling Products</h2>
+        <div class="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
+          <section class="app-section overflow-hidden">
+            <div class="border-b border-slate-200 px-4 py-5 sm:px-6">
+              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Recent Orders</p>
+              <h2 class="mt-2 text-2xl font-black text-slate-900">Fulfillment Snapshot</h2>
             </div>
 
             <div *ngIf="isLoading" class="px-6 py-8 text-sm font-semibold text-slate-500">
-              Loading product activity...
+              Loading live order activity...
             </div>
 
-            <div *ngIf="!isLoading && topProducts.length === 0" class="px-6 py-10 text-sm font-semibold text-slate-500">
-              Product sales will show up here once paid orders are available.
+            <div *ngIf="!isLoading && recentOrders.length === 0" class="px-6 py-10 text-sm font-semibold text-slate-500">
+              Orders for your store will appear here once customers start checking out.
             </div>
 
-            <div *ngIf="topProducts.length" class="space-y-3 px-6 py-6">
-              <article *ngFor="let product of topProducts" class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
-                <div class="flex items-start justify-between gap-4">
-                  <div>
-                    <p class="text-sm font-black text-slate-900">{{ product.name }}</p>
-                    <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Sold {{ product.units }} unit(s)</p>
-                  </div>
-                  <p class="text-sm font-black text-emerald-700">{{ product.value }}</p>
+            <div *ngIf="recentOrders.length" class="divide-y divide-slate-100">
+              <article *ngFor="let order of recentOrders" class="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p class="text-sm font-black text-slate-900">{{ order.id }} • {{ order.itemCount }} item(s)</p>
+                  <p class="mt-1 text-sm font-medium text-slate-500">{{ order.item }}</p>
                 </div>
-                <p class="mt-3 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
+                <div class="flex items-center gap-4">
+                  <p class="text-sm font-black text-slate-900">{{ order.total }}</p>
+                  <span class="rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="orderStatusClass(order.status)">
+                    {{ order.status }}
+                  </span>
+                </div>
               </article>
             </div>
-          </div>
-        </section>
+          </section>
+
+          <section class="space-y-6">
+            <div class="app-section overflow-hidden">
+              <div class="border-b border-slate-200 px-4 py-5 sm:px-6">
+                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Quick Actions</p>
+                <h2 class="mt-2 text-2xl font-black text-slate-900">What Do You Want To Do?</h2>
+              </div>
+
+              <div class="grid gap-3 px-4 py-6 sm:px-6">
+                <a *ngFor="let action of quickActions" [routerLink]="action.link" class="rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 transition hover:border-slate-300 hover:bg-slate-50">
+                  <p class="text-sm font-black text-slate-900">{{ action.title }}</p>
+                  <p class="mt-1 text-sm font-medium text-slate-500">{{ action.description }}</p>
+                </a>
+              </div>
+            </div>
+
+            <div class="app-section overflow-hidden">
+              <div class="border-b border-slate-200 px-4 py-5 sm:px-6">
+                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Top Performers</p>
+                <h2 class="mt-2 text-2xl font-black text-slate-900">Best Selling Products</h2>
+              </div>
+
+              <div *ngIf="isLoading" class="px-6 py-8 text-sm font-semibold text-slate-500">
+                Loading product activity...
+              </div>
+
+              <div *ngIf="!isLoading && topProducts.length === 0" class="px-6 py-10 text-sm font-semibold text-slate-500">
+                Product sales will show up here once paid orders are available.
+              </div>
+
+              <div *ngIf="topProducts.length" class="space-y-3 px-4 py-6 sm:px-6">
+                <article *ngFor="let product of topProducts" class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class="text-sm font-black text-slate-900">{{ product.name }}</p>
+                      <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Sold {{ product.units }} unit(s)</p>
+                    </div>
+                    <p class="text-sm font-black text-emerald-700">{{ product.value }}</p>
+                  </div>
+                  <p class="mt-3 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
+                </article>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
-    </section>
+    </app-page-shell>
   `
 })
 export class VendorDashboardComponent implements OnInit {

@@ -11,6 +11,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
       <div
         role="button"
         tabindex="0"
+        [attr.aria-label]="'Open product ' + product.productName"
         (click)="open.emit()"
         (keydown.enter)="open.emit()"
         (keydown.space)="open.emit(); $event.preventDefault()"
