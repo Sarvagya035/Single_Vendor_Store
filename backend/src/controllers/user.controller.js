@@ -286,44 +286,46 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
     const normalizedEmail = email.trim().toLowerCase();
     const user = await User.findOne({ email: normalizedEmail });
 
-    if (user) {
-        const resetToken = crypto.randomBytes(32).toString("hex");
-        const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-
-        user.resetPasswordToken = hashedToken;
-        user.resetPasswordExpire = Date.now() + 60 * 60 * 1000;
-        await user.save({ validateBeforeSave: false });
-
-        const frontendBaseUrl = (process.env.FRONTEND_URL ).replace(/\/$/, "");
-        const resetUrl = `${frontendBaseUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
-        const emailSubject = "Reset your password";
-        const emailText = `We received a request to reset your password.\n\nReset it here: ${resetUrl}\n\nThis link will expire in 1 hour. If you did not request this, you can ignore this email.`;
-        const emailHtml = `
-            <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
-                <h2 style="margin:0 0 16px">Reset your password</h2>
-                <p>We received a request to reset your password for your account.</p>
-                <p>
-                    <a href="${resetUrl}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:12px 18px;border-radius:999px;font-weight:700">
-                        Reset Password
-                    </a>
-                </p>
-                <p>If the button does not work, copy and paste this link into your browser:</p>
-                <p>${resetUrl}</p>
-                <p>This link will expire in 1 hour.</p>
-                <p>If you did not request this, you can ignore this email.</p>
-            </div>
-        `;
-
-        await sendMail({
-            to: user.email,
-            subject: emailSubject,
-            text: emailText,
-            html: emailHtml
-        });
+    if (!user) {
+        throw new ApiError(404, "No account found with this email");
     }
 
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpire = Date.now() + 60 * 60 * 1000;
+    await user.save({ validateBeforeSave: false });
+
+    const frontendBaseUrl = (process.env.FRONTEND_URL ).replace(/\/$/, "");
+    const resetUrl = `${frontendBaseUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
+    const emailSubject = "Reset your password";
+    const emailText = `We received a request to reset your password.\n\nReset it here: ${resetUrl}\n\nThis link will expire in 1 hour. If you did not request this, you can ignore this email.`;
+    const emailHtml = `
+        <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
+            <h2 style="margin:0 0 16px">Reset your password</h2>
+            <p>We received a request to reset your password for your account.</p>
+            <p>
+                <a href="${resetUrl}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:12px 18px;border-radius:999px;font-weight:700">
+                    Reset Password
+                </a>
+            </p>
+            <p>If the button does not work, copy and paste this link into your browser:</p>
+            <p>${resetUrl}</p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you did not request this, you can ignore this email.</p>
+        </div>
+    `;
+
+    await sendMail({
+        to: user.email,
+        subject: emailSubject,
+        text: emailText,
+        html: emailHtml
+    });
+
     return res.status(200).json(
-        new ApiResponse(200, {}, "If an account exists for that email, a password reset link has been sent.")
+        new ApiResponse(200, {}, "Password reset link has been sent to your email.")
     );
 });
 
