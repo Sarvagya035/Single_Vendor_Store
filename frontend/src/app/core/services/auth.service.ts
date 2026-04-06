@@ -32,6 +32,14 @@ export class AuthService {
     );
   }
 
+  requestPasswordReset(payload: { email: string }): Observable<any> {
+    return this.api.post(`${this.apiUrl}/forgot-password`, payload, { withCredentials: false });
+  }
+
+  resetPassword(payload: { token: string; newPassword: string }): Observable<any> {
+    return this.api.post(`${this.apiUrl}/reset-password`, payload, { withCredentials: false });
+  }
+
   logout(): Observable<any> {
     return this.api.post(`${this.apiUrl}/logout`, {}).pipe(
       tap((res: any) => {

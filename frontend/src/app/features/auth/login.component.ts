@@ -73,6 +73,10 @@ import { catchError, finalize, EMPTY } from 'rxjs';
               Don't have an account?
               <a routerLink="/register" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Register Now</a>
             </p>
+            <p class="mt-3 text-sm font-medium text-slate-500">
+              Forgot your password?
+              <a routerLink="/forgot-password" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Reset it here</a>
+            </p>
             
           </div>
         </div>
