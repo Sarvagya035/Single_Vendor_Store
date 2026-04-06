@@ -82,6 +82,9 @@ export interface CustomerCatalogProduct {
     slug?: string;
   };
   availableVariants?: CustomerCatalogVariant[];
+  catalogCategorySlug?: string;
+  catalogCategoryName?: string;
+  createdAt?: string;
 }
 
 export interface CustomerLandingCategoryGroup {
