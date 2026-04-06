@@ -294,7 +294,7 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
         user.resetPasswordExpire = Date.now() + 60 * 60 * 1000;
         await user.save({ validateBeforeSave: false });
 
-        const frontendBaseUrl = (process.env.FRONTEND_URL || "http://localhost:4200").replace(/\/$/, "");
+        const frontendBaseUrl = (process.env.FRONTEND_URL ).replace(/\/$/, "");
         const resetUrl = `${frontendBaseUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
         const emailSubject = "Reset your password";
         const emailText = `We received a request to reset your password.\n\nReset it here: ${resetUrl}\n\nThis link will expire in 1 hour. If you did not request this, you can ignore this email.`;
