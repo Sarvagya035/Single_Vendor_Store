@@ -12,6 +12,7 @@ import {
 } from "../controllers/vendor.controller.js"
 import {  
     deleteProductByAdmin, 
+    downloadOrderReports,
     deleteUser, 
     getAllUsers, 
     toggleProductStatusByAdmin 
@@ -55,33 +56,34 @@ router.route("/delete/:vendorId").delete(
 */
 router.route("/delete-user/:userId").delete(
     verifyJWT,
-    authorizeRoles("vendor"),
+    authorizeRoles("vendor", "admin"),
     deleteUser
 ) //workin nicely
 router.route("/get-all-users").get(
     verifyJWT,
-    authorizeRoles("vendor"),
+    authorizeRoles("vendor", "admin"),
     getAllUsers
 ) //working nicely
 
 router.route("/products/:productId").delete(
     verifyJWT,
-    authorizeRoles("vendor"),
+    authorizeRoles("vendor", "admin"),
     deleteProductByAdmin
 )
 
 router.route("/products/:productId/status").patch(
     verifyJWT,
-    authorizeRoles("vendor"),
+    authorizeRoles("vendor", "admin"),
     toggleProductStatusByAdmin
 )
-router.route("/update-details").patch(verifyJWT, authorizeRoles("vendor"), updateVendorDetails)
-router.route("/update-bank-details").patch(verifyJWT, authorizeRoles("vendor"), updateBankDetails)
-router.route("/update-logo").patch(verifyJWT, authorizeRoles("vendor"), upload.single("vendorLogo"), updateVendorlogo)
+router.route("/update-details").patch(verifyJWT, authorizeRoles("vendor", "admin"), updateVendorDetails)
+router.route("/update-bank-details").patch(verifyJWT, authorizeRoles("vendor", "admin"), updateBankDetails)
+router.route("/update-logo").patch(verifyJWT, authorizeRoles("vendor", "admin"), upload.single("vendorLogo"), updateVendorlogo)
 
-router.route("/profile").get(verifyJWT, authorizeRoles("vendor"), getVendorDetails) //working nicely
-router.route("/analytics").get(verifyJWT, authorizeRoles("vendor"), getVendorAnalytics); //partially tested without products working
-router.route("/sold-items").get(verifyJWT, authorizeRoles("vendor"), getVendorSoldProducts); //partially tested without products working
+router.route("/profile").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorDetails) //working nicely
+router.route("/analytics").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorAnalytics); //partially tested without products working
+router.route("/sold-items").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorSoldProducts); //partially tested without products working
+router.route("/reports/orders").get(verifyJWT, authorizeRoles("vendor", "admin"), downloadOrderReports);
 
 router.route("/initial-setup-129986").post(upload.single("vendorLogo"), setupInitialAdminAndStore) //working nicely
 

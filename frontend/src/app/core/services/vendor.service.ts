@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { CustomerUser } from '../models/customer.models';
-import { VendorAnalyticsPayload, VendorCustomersResponse, VendorSoldOrderRecord } from '../models/vendor.models';
+import {
+  OrderReportRequest,
+  VendorAnalyticsPayload,
+  VendorCustomersResponse,
+  VendorSoldOrderRecord
+} from '../models/vendor.models';
 
 @Injectable({
   providedIn: 'root'
@@ -180,6 +185,27 @@ export class VendorService {
     return this.http
       .get<any>(`${this.adminUrl}/sold-items`, { withCredentials: true })
       .pipe(map((response) => (Array.isArray(response?.data) ? response.data : [])));
+  }
+
+  downloadOrdersReport(request: OrderReportRequest): Observable<HttpResponse<Blob>> {
+    let params = new HttpParams()
+      .set('range', request.range)
+      .set('format', request.format);
+
+    if (request.startDate) {
+      params = params.set('startDate', request.startDate);
+    }
+
+    if (request.endDate) {
+      params = params.set('endDate', request.endDate);
+    }
+
+    return this.http.get(`${this.adminUrl}/reports/orders`, {
+      withCredentials: true,
+      params,
+      observe: 'response',
+      responseType: 'blob'
+    });
   }
 
   private isRegisteredCustomer(user: CustomerUser): boolean {

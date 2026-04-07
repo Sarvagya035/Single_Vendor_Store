@@ -1,8 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { forkJoin } from 'rxjs';
-import { VendorAnalyticsPayload, VendorProductRecord, VendorSoldOrderRecord } from '../../../core/models/vendor.models';
+import { finalize, forkJoin } from 'rxjs';
+import {
+  OrderReportRequest,
+  VendorAnalyticsPayload,
+  VendorProductRecord,
+  VendorSoldOrderRecord
+} from '../../../core/models/vendor.models';
+import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 
 interface DashboardMetric {
@@ -29,7 +36,7 @@ interface DashboardProduct {
 @Component({
   selector: 'app-vendor-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="space-y-6">
       <div class="glass-card overflow-hidden">
@@ -53,6 +60,121 @@ interface DashboardProduct {
             <p class="mt-4 text-3xl font-black tracking-tight text-slate-900">{{ metric.value }}</p>
             <p class="mt-3 text-sm font-bold">{{ metric.change }}</p>
           </article>
+        </div>
+      </div>
+
+      <div class="glass-card overflow-hidden">
+        <div class="border-b border-slate-200 px-6 py-5 lg:px-8">
+          <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Reports</p>
+          <h2 class="mt-2 text-2xl font-black text-slate-900">Download Sales Reports</h2>
+          <p class="mt-2 text-sm font-medium text-slate-500">
+            Export weekly, monthly, or custom order reports as CSV or PDF.
+          </p>
+        </div>
+
+        <div class="grid gap-6 px-6 py-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+          <div class="space-y-4">
+            <div>
+              <p class="text-sm font-black uppercase tracking-[0.18em] text-slate-400">Quick exports</p>
+              <p class="mt-2 text-sm font-medium text-slate-500">
+                One-click downloads for the most common report ranges.
+              </p>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50/60"
+                [disabled]="isDownloadingReport"
+                (click)="downloadPresetReport('weekly', 'csv')"
+              >
+                <span class="block text-sm font-black text-slate-900">Weekly CSV</span>
+                <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Spreadsheet</span>
+              </button>
+
+              <button
+                type="button"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                [disabled]="isDownloadingReport"
+                (click)="downloadPresetReport('weekly', 'pdf')"
+              >
+                <span class="block text-sm font-black text-slate-900">Weekly PDF</span>
+                <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Printable</span>
+              </button>
+
+              <button
+                type="button"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50/60"
+                [disabled]="isDownloadingReport"
+                (click)="downloadPresetReport('monthly', 'csv')"
+              >
+                <span class="block text-sm font-black text-slate-900">Monthly CSV</span>
+                <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Spreadsheet</span>
+              </button>
+
+              <button
+                type="button"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                [disabled]="isDownloadingReport"
+                (click)="downloadPresetReport('monthly', 'pdf')"
+              >
+                <span class="block text-sm font-black text-slate-900">Monthly PDF</span>
+                <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Printable</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-black uppercase tracking-[0.18em] text-slate-400">Custom range</p>
+                <h3 class="mt-1 text-xl font-black text-slate-900">Choose your dates</h3>
+              </div>
+              <span class="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                CSV / PDF
+              </span>
+            </div>
+
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <label class="space-y-2">
+                <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Start date</span>
+                <input
+                  type="date"
+                  [(ngModel)]="customReportStartDate"
+                  class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-500/30"
+                >
+              </label>
+
+              <label class="space-y-2">
+                <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">End date</span>
+                <input
+                  type="date"
+                  [(ngModel)]="customReportEndDate"
+                  class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-500/30"
+                >
+              </label>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3">
+              <button
+                type="button"
+                class="btn-secondary !px-5 !py-3"
+                [disabled]="isDownloadingReport"
+                (click)="downloadCustomReport('csv')"
+              >
+                {{ isDownloadingReport ? 'Preparing report...' : 'Download CSV' }}
+              </button>
+
+              <button
+                type="button"
+                class="btn-primary !px-5 !py-3"
+                [disabled]="isDownloadingReport"
+                (click)="downloadCustomReport('pdf')"
+              >
+                {{ isDownloadingReport ? 'Preparing report...' : 'Download PDF' }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -146,6 +268,9 @@ export class VendorDashboardComponent implements OnInit {
     productWiseSales: []
   };
   isLoading = true;
+  isDownloadingReport = false;
+  customReportStartDate = '';
+  customReportEndDate = '';
 
   quickActions = [
     { title: 'Review Product Catalog', description: 'Open the products page and update stock, discounts, and visibility.', link: '/vendor/products' },
@@ -154,7 +279,10 @@ export class VendorDashboardComponent implements OnInit {
     { title: 'View Customers', description: 'See customer profiles, contact details, and signup info.', link: '/vendor/customers' }
   ];
 
-  constructor(private vendorService: VendorService) {}
+  constructor(
+    private vendorService: VendorService,
+    private errorService: ErrorService
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboard();
@@ -250,6 +378,29 @@ export class VendorDashboardComponent implements OnInit {
     });
   }
 
+  downloadPresetReport(range: 'weekly' | 'monthly', format: 'csv' | 'pdf'): void {
+    this.downloadReport({ range, format });
+  }
+
+  downloadCustomReport(format: 'csv' | 'pdf'): void {
+    if (!this.customReportStartDate || !this.customReportEndDate) {
+      this.errorService.showToast('Please choose both start and end dates for a custom report.', 'error');
+      return;
+    }
+
+    if (new Date(this.customReportStartDate) > new Date(this.customReportEndDate)) {
+      this.errorService.showToast('Start date must be before end date.', 'error');
+      return;
+    }
+
+    this.downloadReport({
+      range: 'custom',
+      format,
+      startDate: this.customReportStartDate,
+      endDate: this.customReportEndDate
+    });
+  }
+
   metricCardClass(tone: DashboardMetric['tone']): string {
     const classes: Record<DashboardMetric['tone'], string> = {
       cyan: 'border-cyan-100 bg-cyan-50/70 text-cyan-700',
@@ -328,5 +479,57 @@ export class VendorDashboardComponent implements OnInit {
       currency: 'INR',
       maximumFractionDigits: 0
     }).format(amount || 0);
+  }
+
+  private downloadReport(request: OrderReportRequest): void {
+    this.isDownloadingReport = true;
+
+    this.vendorService
+      .downloadOrdersReport(request)
+      .pipe(
+        finalize(() => {
+          this.isDownloadingReport = false;
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          const blob = response.body;
+
+          if (!blob) {
+            this.errorService.showToast('Report download failed. Empty file received.', 'error');
+            return;
+          }
+
+          const filename = this.resolveFilename(response, request);
+          this.triggerDownload(blob, filename);
+          this.errorService.showToast('Report downloaded successfully.', 'success');
+        },
+        error: (error) => {
+          this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
+        }
+      });
+  }
+
+  private resolveFilename(response: { headers: { get(name: string): string | null } }, request: OrderReportRequest): string {
+    const header = response.headers.get('content-disposition') || '';
+    const match = /filename="?([^"]+)"?/i.exec(header);
+
+    if (match?.[1]) {
+      return match[1];
+    }
+
+    return `order-report-${request.range}.${request.format}`;
+  }
+
+  private triggerDownload(blob: Blob, filename: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.URL.revokeObjectURL(url);
   }
 }

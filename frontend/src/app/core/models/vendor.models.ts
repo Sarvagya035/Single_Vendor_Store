@@ -14,6 +14,8 @@ export interface VendorProfile {
 export type ToastType = 'success' | 'error';
 
 export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories' | 'customers';
+export type ReportRange = 'weekly' | 'monthly' | 'custom';
+export type ReportFormat = 'csv' | 'pdf';
 
 export interface VendorDetailsForm {
   vendorAddress: string;
@@ -158,4 +160,11 @@ export interface VendorSoldOrderRecord {
   date?: string;
   items?: VendorSoldItemRecord[];
   orderStatus?: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled' | string;
+}
+
+export interface OrderReportRequest {
+  range: ReportRange;
+  format: ReportFormat;
+  startDate?: string;
+  endDate?: string;
 }

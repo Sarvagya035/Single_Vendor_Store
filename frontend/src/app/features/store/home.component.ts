@@ -51,7 +51,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
                     >
                       <option value="all">All categories</option>
-                      <option *ngFor="let category of catalogCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
+                      <option *ngFor="let category of sidebarCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
                         {{ categoryLabel(category) }}
                       </option>
                     </select>
@@ -407,6 +407,7 @@ export class HomeComponent implements OnInit {
   products: CustomerCatalogProduct[] = [];
   landingCategories: CustomerLandingCategoryGroup[] = [];
   catalogCategories: CustomerLandingCategory[] = [];
+  sidebarCategories: CustomerLandingCategory[] = [];
   catalogCategoryTree: LandingCategoryNode[] = [];
   visibleCatalogCategories: LandingCategoryNode[] = [];
   expandedCategoryIds = new Set<string>();
@@ -535,6 +536,7 @@ export class HomeComponent implements OnInit {
     this.catalogMessage = '';
     this.products = [];
     this.landingCategories = [];
+    this.sidebarCategories = [];
     this.currentPage = 1;
 
     this.catalogService.getLandingPageProducts().subscribe({
@@ -547,11 +549,13 @@ export class HomeComponent implements OnInit {
         if (!this.landingCategories.some((category) => this.normalizeCategoryKey(category.categorySlug || category.categoryName || '') === this.normalizeCategoryKey(this.selectedCategorySlug))) {
           this.selectedCategorySlug = 'all';
         }
+        this.refreshSidebarCategories();
         this.refreshCatalogMessage();
       },
       error: (error) => {
         this.loadingProducts = false;
         this.landingCategories = [];
+        this.sidebarCategories = [];
       }
     });
   }
@@ -572,11 +576,13 @@ export class HomeComponent implements OnInit {
           if (levelDiff !== 0) return levelDiff;
           return String(a.name || '').localeCompare(String(b.name || ''));
         });
+        this.refreshSidebarCategories();
         this.refreshCatalogMessage();
       },
       error: (error) => {
         this.loadingCategories = false;
         this.catalogCategories = [];
+        this.sidebarCategories = [];
       }
     });
   }
@@ -1103,6 +1109,15 @@ export class HomeComponent implements OnInit {
     }
 
     return node.children.reduce((total, child) => total + this.countProductsForNode(child), directCount);
+  }
+
+  private refreshSidebarCategories(): void {
+    if (!this.catalogCategories.length || !this.catalogCategoryTree.length) {
+      this.sidebarCategories = [];
+      return;
+    }
+
+    this.sidebarCategories = this.catalogCategories.filter((category) => this.categoryCount(category) > 0);
   }
 
   private refreshCatalogMessage(): void {

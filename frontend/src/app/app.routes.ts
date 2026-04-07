@@ -85,7 +85,7 @@ export const routes: Routes = [
   {
     path: 'vendor',
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['vendor', 'Vendor'] },
+    data: { roles: ['vendor', 'Vendor', 'admin', 'Admin'] },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
