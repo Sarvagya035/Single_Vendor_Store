@@ -2,16 +2,16 @@
 
 @layer base {
   :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --secondary: #475569;
-    --accent: #0f766e;
-    --background: #f8fafc;
+    --primary: #6f4e37;
+    --primary-hover: #5c3e2f;
+    --secondary: #f5e6d3;
+    --accent: #d4a017;
+    --background: #fff9f2;
     --surface: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.3);
+    --text-main: #2f1b14;
+    --text-muted: #7a6556;
+    --glass-bg: rgba(255, 249, 242, 0.78);
+    --glass-border: rgba(111, 78, 55, 0.12);
   }
 
   html {
@@ -21,6 +21,10 @@
   body {
     @apply bg-slate-50 text-slate-900 font-sans antialiased;
     background-color: var(--background);
+    background-image:
+      radial-gradient(circle at top left, rgba(212, 160, 23, 0.12), transparent 30%),
+      radial-gradient(circle at top right, rgba(111, 78, 55, 0.12), transparent 26%),
+      radial-gradient(circle at bottom center, rgba(245, 230, 211, 0.24), transparent 34%);
     color: var(--text-main);
   }
 
@@ -85,24 +89,24 @@
   }
 
   .app-surface {
-    @apply rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)];
+    @apply rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)];
   }
 
   .app-card {
-    @apply rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.06)];
+    @apply rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_18px_40px_rgba(47,27,20,0.06)];
   }
 
   .app-card-soft {
-    @apply rounded-[1.75rem] border border-slate-200 bg-slate-50/80 shadow-[0_18px_40px_rgba(15,23,42,0.04)];
+    @apply rounded-[1.75rem] border border-slate-200 bg-[#fef6eb]/80 shadow-[0_18px_40px_rgba(47,27,20,0.04)];
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-6 py-3 font-black tracking-tight text-white shadow-[0_16px_40px_rgba(79,70,229,0.18)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-[0_20px_46px_rgba(79,70,229,0.22)] focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:pointer-events-none disabled:opacity-60;
-    background: linear-gradient(135deg, var(--primary), #6366f1);
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-6 py-3 font-black tracking-tight text-white shadow-[0_16px_40px_rgba(111,78,55,0.18)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_20px_46px_rgba(111,78,55,0.22)] focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60;
+    background: linear-gradient(135deg, var(--primary), #8b5e3c);
   }
   
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 font-black tracking-tight text-slate-700 shadow-[0_10px_28px_rgba(15,23,42,0.06)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-100 disabled:pointer-events-none disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 font-black tracking-tight text-slate-700 shadow-[0_10px_28px_rgba(47,27,20,0.06)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60;
   }
 
   .glass-card {
@@ -110,11 +114,11 @@
   }
 
   .nav-link {
-    @apply relative px-1 py-2 font-bold text-slate-600 transition-colors duration-200 hover:text-indigo-600;
+    @apply relative px-1 py-2 font-bold text-slate-600 transition-colors duration-200 hover:text-amber-700;
   }
 
   .nav-link::after {
-    @apply content-[''] absolute bottom-0 left-0 h-0.5 w-0 bg-indigo-600 transition-all duration-300;
+    @apply content-[''] absolute bottom-0 left-0 h-0.5 w-0 bg-amber-600 transition-all duration-300;
   }
 
   .nav-link:hover::after {
