@@ -55,6 +55,21 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                       </button>
                     </div>
                   </form>
+
+                  <div class="mt-5 flex flex-wrap gap-3">
+                    <a
+                      routerLink="/products"
+                      class="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-slate-900 transition hover:-translate-y-0.5 hover:bg-amber-50"
+                    >
+                      Shop Now
+                    </a>
+                    <a
+                      href="#categories"
+                      class="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:bg-white/15"
+                    >
+                      View Categories
+                    </a>
+                  </div>
                 </div>
 
                 <div class="grid gap-4 sm:grid-cols-2 lg:justify-self-end">
@@ -73,7 +88,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
         </div>
       </div>
 
-      <section class="mx-auto w-full max-w-7xl px-3 py-4 sm:px-4 lg:px-6 lg:py-6">
+      <section id="categories" class="mx-auto w-full max-w-7xl px-3 py-4 sm:px-4 lg:px-6 lg:py-6 scroll-mt-6">
         <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)] mt-6">
           <div class="px-3 pb-6 pt-5 sm:px-4">
             <div class="mt-6">

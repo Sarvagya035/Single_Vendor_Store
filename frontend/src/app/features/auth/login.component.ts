@@ -13,8 +13,8 @@ import { catchError, finalize, EMPTY } from 'rxjs';
   template: `
     <div class="min-h-screen bg-slate-50 flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
       <!-- Background Glow Effects -->
-      <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/10 blur-[120px] rounded-full animate-float"></div>
-      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-violet-500/10 blur-[120px] rounded-full animate-float" style="animation-delay: 2s"></div>
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-amber-600/10 blur-[120px] rounded-full animate-float"></div>
+      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-600/10 blur-[120px] rounded-full animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
         <h2 class="text-4xl font-black text-slate-900 tracking-tight">Login</h2>
@@ -33,7 +33,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                 </div>
                 <input id="email" name="email" type="email" autocomplete="email" required [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
+                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner">
               </div>
             </div>
 
@@ -51,7 +51,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   required
                   [(ngModel)]="password"
                   placeholder="Enter your password"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-16 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner"
+                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-16 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner"
                 >
                 <button
                   type="button"
@@ -71,11 +71,11 @@ import { catchError, finalize, EMPTY } from 'rxjs';
           <div class="mt-10 pt-8 border-t border-slate-100 text-center">
             <p class="text-sm font-medium text-slate-500">
               Don't have an account?
-              <a routerLink="/register" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Register Now</a>
+              <a routerLink="/register" class="text-amber-700 font-black hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Register Now</a>
             </p>
             <p class="mt-3 text-sm font-medium text-slate-500">
               Forgot your password?
-              <a routerLink="/forgot-password" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Reset it here</a>
+              <a routerLink="/forgot-password" class="text-amber-700 font-black hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Reset it here</a>
             </p>
             
           </div>
@@ -140,3 +140,4 @@ export class LoginComponent {
       });
   }
 }
+

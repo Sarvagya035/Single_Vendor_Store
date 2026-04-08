@@ -26,7 +26,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
             />
             <div
               *ngIf="!imageUrl"
-              class="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 text-xl font-black text-white"
+              class="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-600 to-amber-700 text-xl font-black text-white"
             >
               {{ product.productName.charAt(0) }}
             </div>
@@ -56,7 +56,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
         <div>
           <span
             class="inline-flex rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em]"
-            [ngClass]="product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'"
+            [ngClass]="product.isActive ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-700'"
           >
             {{ product.isActive ? 'Active' : 'Inactive' }}
           </span>
@@ -77,7 +77,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
             [ngClass]="
               product.isActive
                 ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                : 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100'
             "
           >
             {{ statusBusy ? 'Updating...' : product.isActive ? 'Deactivate' : 'Activate' }}
@@ -112,3 +112,4 @@ export class VendorProductCardComponent {
   @Output() toggleStatus = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
 }
+

@@ -29,7 +29,7 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
                 name="accountHolderName"
                 [ngModel]="form.accountHolderName"
                 (ngModelChange)="updateField('accountHolderName', $event)"
-                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-emerald-300 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="Name as registered with the bank"
               >
             </div>
@@ -41,7 +41,7 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
                 name="accountNumber"
                 [ngModel]="form.accountNumber"
                 (ngModelChange)="updateField('accountNumber', $event)"
-                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-emerald-300 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="Primary payout account"
               >
             </div>
@@ -53,7 +53,7 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
                 name="ifscCode"
                 [ngModel]="form.ifscCode"
                 (ngModelChange)="updateField('ifscCode', normalizeIfsc($event))"
-                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold uppercase text-slate-900 shadow-inner transition-all focus:border-emerald-300 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold uppercase text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="e.g. SBIN0000123"
               >
             </div>
@@ -65,7 +65,7 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
                 name="bankName"
                 [ngModel]="form.bankName"
                 (ngModelChange)="updateField('bankName', $event)"
-                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-emerald-300 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="Bank issuing payouts"
               >
             </div>
@@ -77,7 +77,7 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
                 name="upiId"
                 [ngModel]="form.upiId"
                 (ngModelChange)="updateField('upiId', $event)"
-                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-emerald-300 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="Optional"
               >
             </div>
@@ -112,3 +112,4 @@ export class VendorBankModalComponent {
     return String(value || '').toUpperCase();
   }
 }
+

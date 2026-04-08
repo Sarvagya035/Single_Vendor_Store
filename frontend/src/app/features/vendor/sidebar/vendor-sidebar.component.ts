@@ -18,13 +18,13 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           <a
             routerLink="/vendor/dashboard"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
-            [ngClass]="activeView === 'dashboard' ? 'border-cyan-200 bg-cyan-50 text-cyan-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+            [ngClass]="activeView === 'dashboard' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="mt-1 text-base font-black">Dashboard</p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'dashboard' ? 'bg-cyan-600 text-white' : 'bg-slate-100 text-slate-700'">
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'dashboard' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
                 4
               </span>
             </div>
@@ -33,13 +33,13 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           <a
             routerLink="/vendor/products"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
-            [ngClass]="activeView === 'products' ? 'border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+            [ngClass]="activeView === 'products' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="mt-1 text-base font-black">Products</p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'products' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'">
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'products' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
                 {{ productCount }}
               </span>
             </div>
@@ -48,13 +48,13 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           <a
             routerLink="/vendor/categories"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
-            [ngClass]="activeView === 'categories' ? 'border-sky-200 bg-sky-50 text-sky-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+            [ngClass]="activeView === 'categories' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="mt-1 text-base font-black">Categories</p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'categories' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700'">
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'categories' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
                 {{ categoryCount }}
               </span>
             </div>
@@ -63,13 +63,13 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           <a
             routerLink="/vendor/customers"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
-            [ngClass]="activeView === 'customers' ? 'border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+            [ngClass]="activeView === 'customers' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="mt-1 text-base font-black">Customers</p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'customers' ? 'bg-fuchsia-600 text-white' : 'bg-slate-100 text-slate-700'">
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'customers' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
                 {{ customerCount }}
               </span>
             </div>
@@ -78,13 +78,13 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           <a
             routerLink="/vendor/orders"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
-            [ngClass]="activeView === 'orders' ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+            [ngClass]="activeView === 'orders' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="mt-1 text-base font-black">Orders</p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'orders' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700'">
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'orders' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
                 {{ orderCount }}
               </span>
             </div>
@@ -101,3 +101,4 @@ export class VendorSidebarComponent {
   @Input() customerCount = 0;
   @Input() orderCount = 0;
 }
+

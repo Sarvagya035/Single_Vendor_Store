@@ -16,14 +16,14 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-18 items-center justify-between">
           <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
-            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 shadow-lg shadow-indigo-100 transition-transform group-hover:scale-110">
+            <div class="flex h-8 w-8 items-center justify-center rounded-lg shadow-lg transition-transform group-hover:scale-110" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c); box-shadow: 0 10px 24px rgba(111,78,55,0.18);">
               <span class="text-lg font-bold text-white">E</span>
             </div>
             <span class="text-lg font-bold tracking-tight text-slate-900">E-Commerce</span>
           </a>
 
           <div class="hidden items-center space-x-6 md:flex">
-            <a *ngIf="showHomeLink()" routerLink="/" class="nav-link" routerLinkActive="text-indigo-600 after:w-full">Home</a>
+            <a *ngIf="showHomeLink()" routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
 
             <ng-container *ngIf="user && !isCustomer()">
               <app-header-account-dropdown
@@ -43,10 +43,10 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             <ng-container *ngIf="isCustomer()">
               <a
                 routerLink="/cart"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
               >
                 Cart
-                <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-xs text-white">{{ cartCount }}</span>
+                <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
               </a>
 
               <app-header-account-dropdown
@@ -76,7 +76,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-black text-slate-700"
             >
               Cart
-              <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-xs text-white">{{ cartCount }}</span>
+              <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
             </a>
 
             <app-header-account-dropdown

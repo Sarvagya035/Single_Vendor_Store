@@ -36,7 +36,7 @@ type HeaderDropdownTheme = 'customer' | 'vendor' | 'admin';
           </div>
           <span
             *ngIf="theme === 'customer' && desktop"
-            class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400"
+            class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-amber-400"
           ></span>
         </div>
 
@@ -122,8 +122,8 @@ export class HeaderAccountDropdownComponent {
   desktopTriggerClasses(): string {
     const themeClasses: Record<HeaderDropdownTheme, string> = {
       customer: 'group inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 text-left shadow-sm transition hover:border-slate-300 hover:bg-slate-50',
-      vendor: 'group inline-flex items-center gap-3 rounded-full border border-emerald-100 bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_16px_40px_rgba(16,185,129,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-[0_20px_44px_rgba(16,185,129,0.18)]',
-      admin: 'group inline-flex items-center gap-3 rounded-full border border-indigo-100 bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_16px_40px_rgba(79,70,229,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-[0_20px_44px_rgba(79,70,229,0.18)]'
+      vendor: 'group inline-flex items-center gap-3 rounded-full border border-[#e7dac9] bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_16px_40px_rgba(111,78,55,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_20px_44px_rgba(111,78,55,0.18)]',
+      admin: 'group inline-flex items-center gap-3 rounded-full border border-[#e7dac9] bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_16px_40px_rgba(111,78,55,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_20px_44px_rgba(111,78,55,0.18)]'
     };
     return themeClasses[this.theme];
   }
@@ -131,8 +131,8 @@ export class HeaderAccountDropdownComponent {
   mobileTriggerClasses(): string {
     const themeClasses: Record<HeaderDropdownTheme, string> = {
       customer: 'inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-2 shadow-sm transition hover:border-slate-300',
-      vendor: 'inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-2.5 py-2 shadow-[0_16px_32px_rgba(16,185,129,0.12)] transition-all duration-200 hover:border-emerald-200',
-      admin: 'inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-2.5 py-2 shadow-[0_16px_32px_rgba(79,70,229,0.12)] transition-all duration-200 hover:border-indigo-200'
+      vendor: 'inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-2.5 py-2 shadow-[0_16px_32px_rgba(111,78,55,0.12)] transition-all duration-200 hover:border-[#d4a017]',
+      admin: 'inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-2.5 py-2 shadow-[0_16px_32px_rgba(111,78,55,0.12)] transition-all duration-200 hover:border-[#d4a017]'
     };
     return themeClasses[this.theme];
   }
@@ -140,17 +140,17 @@ export class HeaderAccountDropdownComponent {
   avatarClasses(): string {
     if (this.desktop) {
       const desktopClasses: Record<HeaderDropdownTheme, string> = {
-        customer: 'flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 via-sky-500 to-cyan-400 text-sm font-black uppercase text-white ring-2 ring-white',
-        vendor: 'flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#059669_0%,#10b981_55%,#34d399_100%)] text-sm font-black uppercase tracking-[0.12em] text-white ring-2 ring-white',
-        admin: 'flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#4338ca_0%,#6366f1_55%,#818cf8_100%)] text-sm font-black uppercase tracking-[0.12em] text-white ring-2 ring-white'
+        customer: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase text-white ring-2 ring-white',
+        vendor: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white ring-2 ring-white',
+        admin: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white ring-2 ring-white'
       };
       return desktopClasses[this.theme];
     }
 
     const mobileClasses: Record<HeaderDropdownTheme, string> = {
-      customer: 'flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 via-sky-500 to-cyan-400 text-sm font-black uppercase text-white',
-      vendor: 'flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,#059669_0%,#10b981_55%,#34d399_100%)] text-sm font-black uppercase tracking-[0.12em] text-white',
-      admin: 'flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,#4338ca_0%,#6366f1_55%,#818cf8_100%)] text-sm font-black uppercase tracking-[0.12em] text-white'
+      customer: 'flex h-10 w-10 items-center justify-center rounded-full text-sm font-black uppercase text-white',
+      vendor: 'flex h-10 w-10 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white',
+      admin: 'flex h-10 w-10 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white'
     };
     return mobileClasses[this.theme];
   }
@@ -158,8 +158,8 @@ export class HeaderAccountDropdownComponent {
   heroClasses(): string {
     const tone: Record<HeaderDropdownTheme, string> = {
       customer: 'rounded-[1.25rem] bg-slate-50 p-4',
-      vendor: 'rounded-[1.25rem] bg-[linear-gradient(135deg,rgba(236,253,245,0.95),rgba(240,253,250,0.95))] p-4',
-      admin: 'rounded-[1.25rem] bg-[linear-gradient(135deg,rgba(238,242,255,0.95),rgba(245,243,255,0.95))] p-4'
+      vendor: 'rounded-[1.25rem] bg-[linear-gradient(135deg,rgba(255,249,242,0.95),rgba(245,230,211,0.95))] p-4',
+      admin: 'rounded-[1.25rem] bg-[linear-gradient(135deg,rgba(255,249,242,0.95),rgba(245,230,211,0.95))] p-4'
     };
     return tone[this.theme];
   }
@@ -167,9 +167,9 @@ export class HeaderAccountDropdownComponent {
   heroAvatarClasses(): string {
     const size = this.desktop ? 'h-12 w-12' : 'h-11 w-11';
     const tone: Record<HeaderDropdownTheme, string> = {
-      customer: `flex ${size} items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 via-sky-500 to-cyan-400 text-sm font-black uppercase text-white`,
-      vendor: `flex ${size} items-center justify-center rounded-full bg-[linear-gradient(135deg,#059669_0%,#10b981_55%,#34d399_100%)] text-sm font-black uppercase tracking-[0.12em] text-white`,
-      admin: `flex ${size} items-center justify-center rounded-full bg-[linear-gradient(135deg,#4338ca_0%,#6366f1_55%,#818cf8_100%)] text-sm font-black uppercase tracking-[0.12em] text-white`
+      customer: `flex ${size} items-center justify-center rounded-full text-sm font-black uppercase text-white`,
+      vendor: `flex ${size} items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white`,
+      admin: `flex ${size} items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white`
     };
     return tone[this.theme];
   }
@@ -177,8 +177,8 @@ export class HeaderAccountDropdownComponent {
   subtitleClass(): string {
     const tone: Record<HeaderDropdownTheme, string> = {
       customer: 'text-slate-400',
-      vendor: 'uppercase tracking-[0.18em] text-emerald-600',
-      admin: 'uppercase tracking-[0.18em] text-indigo-600'
+      vendor: 'uppercase tracking-[0.18em] text-amber-700',
+      admin: 'uppercase tracking-[0.18em] text-amber-700'
     };
     return tone[this.theme];
   }
@@ -186,8 +186,8 @@ export class HeaderAccountDropdownComponent {
   chevronOpenClass(): string {
     const tone: Record<HeaderDropdownTheme, string> = {
       customer: 'rotate-180 text-slate-700',
-      vendor: 'rotate-180 text-emerald-700',
-      admin: 'rotate-180 text-indigo-700'
+      vendor: 'rotate-180 text-amber-700',
+      admin: 'rotate-180 text-amber-700'
     };
     return tone[this.theme];
   }
@@ -196,8 +196,8 @@ export class HeaderAccountDropdownComponent {
     const width = this.desktop ? 'w-[320px]' : 'w-[290px]';
     const tone: Record<HeaderDropdownTheme, string> = {
       customer: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-slate-200 bg-white p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] transition-all duration-200`,
-      vendor: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-emerald-100 bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`,
-      admin: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-indigo-100 bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`
+      vendor: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`,
+      admin: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`
     };
     return tone[this.theme];
   }
@@ -206,8 +206,8 @@ export class HeaderAccountDropdownComponent {
     const classes: Record<string, string> = {
       default: 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900',
       accent: this.theme === 'vendor'
-        ? 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50 hover:text-emerald-800'
-        : 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-indigo-700 transition hover:bg-indigo-50 hover:text-indigo-800',
+        ? 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50 hover:text-amber-800'
+        : 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50 hover:text-amber-800',
       danger: 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-rose-600 transition hover:bg-rose-50'
     };
     return classes[tone];
@@ -221,8 +221,8 @@ export class HeaderAccountDropdownComponent {
     const classes: Record<string, string> = {
       default: 'block rounded-xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50',
       accent: this.theme === 'vendor'
-        ? 'block rounded-xl px-4 py-3 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50'
-        : 'block rounded-xl px-4 py-3 text-sm font-bold text-indigo-700 transition hover:bg-indigo-50',
+        ? 'block rounded-xl px-4 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50'
+        : 'block rounded-xl px-4 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50',
       danger: 'block rounded-xl px-4 py-3 text-sm font-bold text-rose-600 transition hover:bg-rose-50'
     };
     return classes[tone];
@@ -235,7 +235,7 @@ export class HeaderAccountDropdownComponent {
   arrowClass(tone: 'default' | 'accent' | 'danger'): string {
     const classes: Record<string, string> = {
       default: 'text-slate-300',
-      accent: this.theme === 'vendor' ? 'text-emerald-300' : 'text-indigo-300',
+      accent: this.theme === 'vendor' ? 'text-amber-300' : 'text-amber-300',
       danger: 'text-rose-300'
     };
     return classes[tone];

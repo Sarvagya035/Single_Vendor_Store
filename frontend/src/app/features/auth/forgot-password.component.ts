@@ -12,8 +12,8 @@ import { ErrorService } from '../../core/services/error.service';
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <div class="min-h-screen bg-slate-50 flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
-      <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/10 blur-[120px] rounded-full animate-float"></div>
-      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 blur-[120px] rounded-full animate-float" style="animation-delay: 2s"></div>
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-amber-600/10 blur-[120px] rounded-full animate-float"></div>
+      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-600/10 blur-[120px] rounded-full animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
         <h2 class="text-4xl font-black text-slate-900 tracking-tight">Forgot Password</h2>
@@ -37,7 +37,7 @@ import { ErrorService } from '../../core/services/error.service';
                   required
                   [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner"
+                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner"
                 >
               </div>
             </div>
@@ -50,7 +50,7 @@ import { ErrorService } from '../../core/services/error.service';
           <div class="mt-8 pt-6 border-t border-slate-100 text-center">
             <p class="text-sm font-medium text-slate-500">
               Remember your password?
-              <a routerLink="/login" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Back to Login</a>
+              <a routerLink="/login" class="text-amber-700 font-black hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Back to Login</a>
             </p>
           </div>
         </div>
@@ -92,3 +92,4 @@ export class ForgotPasswordComponent {
       });
   }
 }
+

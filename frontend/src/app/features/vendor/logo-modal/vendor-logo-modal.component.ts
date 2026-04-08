@@ -21,7 +21,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
 
         <div class="mt-8 space-y-6">
           <div class="rounded-[2rem] border border-dashed border-slate-200 bg-slate-50/70 p-6 text-center">
-            <div class="mx-auto mb-5 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.75rem] border-4 border-white bg-emerald-600 text-4xl font-black text-white shadow-xl shadow-emerald-100">
+            <div class="mx-auto mb-5 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[1.75rem] border-4 border-white bg-amber-700 text-4xl font-black text-white shadow-xl shadow-amber-100">
               <img *ngIf="logoPreview || vendor?.vendorLogo" [src]="logoPreview || vendor?.vendorLogo" alt="Logo preview" class="h-full w-full object-cover">
               <span *ngIf="!logoPreview && !vendor?.vendorLogo">{{ vendor?.shopName?.charAt(0) }}</span>
             </div>
@@ -57,3 +57,4 @@ export class VendorLogoModalComponent {
   @Output() selectLogo = new EventEmitter<Event>();
   @Output() submit = new EventEmitter<void>();
 }
+

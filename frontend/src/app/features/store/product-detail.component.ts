@@ -31,7 +31,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
 
         <div *ngIf="loading" class="mt-8 text-sm font-semibold text-slate-500">Loading product...</div>
 
-        <div *ngIf="successMessage" class="mt-8 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div *ngIf="successMessage" class="mt-8 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
@@ -797,3 +797,4 @@ export class ProductDetailComponent implements OnInit {
     return String(value || '').trim().toLowerCase();
   }
 }
+

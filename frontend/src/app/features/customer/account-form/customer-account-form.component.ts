@@ -26,7 +26,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
               [class.ring-2]="!!usernameError"
               [class.ring-red-500]="!!usernameError"
               [class.focus:ring-red-500]="!!usernameError"
-              class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-indigo-500"
+              class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
             >
           </div>
           <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
@@ -51,7 +51,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
               [class.ring-2]="!!phoneError"
               [class.ring-red-500]="!!phoneError"
               [class.focus:ring-red-500]="!!phoneError"
-              class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-indigo-500"
+              class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
             >
           </div>
           <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
@@ -124,3 +124,4 @@ export class CustomerAccountFormComponent {
     return !this.phoneError;
   }
 }
+

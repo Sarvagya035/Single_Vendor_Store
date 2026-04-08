@@ -13,7 +13,7 @@ import { LoadingService } from '../../core/services/loading.service';
     >
       <div class="rounded-3xl border border-white/70 bg-white px-6 py-5 shadow-2xl">
         <div class="flex items-center gap-3">
-          <div class="h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent"></div>
+          <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#6f4e37] border-t-transparent"></div>
           <div>
             <p class="text-sm font-black text-slate-900">Loading</p>
             <p class="text-xs font-medium text-slate-500">Please wait while we fetch the latest data.</p>

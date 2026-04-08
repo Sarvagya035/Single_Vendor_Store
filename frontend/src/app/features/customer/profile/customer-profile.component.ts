@@ -33,7 +33,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
         />
 
         <div *ngIf="!user && !error" class="flex flex-col items-center gap-4 py-20">
-          <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
+          <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="font-medium tracking-wide text-slate-500">Syncing account data...</p>
         </div>
 
@@ -186,3 +186,4 @@ export class ProfileComponent implements OnInit {
     this.user = updatedUser;
   }
 }
+

@@ -15,7 +15,7 @@ import { VendorProductOptionForm } from '../../../core/models/vendor.models';
           type="text"
           [(ngModel)]="option.name"
           [name]="'option-name-' + index"
-          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
           placeholder="Color"
         >
       </div>
@@ -26,7 +26,7 @@ import { VendorProductOptionForm } from '../../../core/models/vendor.models';
           type="text"
           [(ngModel)]="option.valuesText"
           [name]="'option-values-' + index"
-          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
           placeholder="Red, Blue, Black"
         >
       </div>
@@ -43,3 +43,4 @@ export class VendorVariantOptionRowComponent {
 
   @Output() remove = new EventEmitter<number>();
 }
+

@@ -38,7 +38,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
           </div>
           <span
             class="rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.16em]"
-            [ngClass]="selectedVariantStock > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'"
+            [ngClass]="selectedVariantStock > 0 ? 'bg-amber-50 text-amber-800' : 'bg-rose-50 text-rose-700'"
           >
             {{ selectedVariantStock > 0 ? 'In stock' : 'Out of stock' }}
           </span>
@@ -53,7 +53,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             Choose Variant
           </label>
           <select
-            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition focus:border-sky-400 focus:bg-white"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition focus:border-amber-500 focus:bg-white"
             [ngModel]="selectedVariantId"
             (ngModelChange)="variantChanged.emit($event)"
             [ngModelOptions]="{ standalone: true }"
@@ -150,3 +150,4 @@ export class ProductPurchasePanelComponent {
     return this.selectedVariant?.productStock || 0;
   }
 }
+

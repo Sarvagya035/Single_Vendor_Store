@@ -7,12 +7,12 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <footer class="mt-12 border-t border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]">
+    <footer class="mt-12 border-t border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#fff9f2_100%)]">
       <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
           <div class="space-y-4">
             <div class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-100">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl text-lg font-black text-white shadow-lg" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c); box-shadow: 0 10px 24px rgba(111,78,55,0.18);">
                 E
               </div>
               <div>
@@ -28,20 +28,20 @@ import { RouterModule } from '@angular/router';
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Explore</p>
             <div class="mt-4 space-y-3 text-sm font-semibold">
-              <a routerLink="/" class="block text-slate-700 transition hover:text-indigo-600">Home</a>
-              <a routerLink="/" class="block text-slate-700 transition hover:text-indigo-600">Browse Products</a>
-              <a routerLink="/cart" class="block text-slate-700 transition hover:text-indigo-600">Cart</a>
-              <a routerLink="/profile" class="block text-slate-700 transition hover:text-indigo-600">Profile</a>
+              <a routerLink="/" class="block text-slate-700 transition hover:text-amber-700">Home</a>
+              <a routerLink="/" class="block text-slate-700 transition hover:text-amber-700">Browse Products</a>
+              <a routerLink="/cart" class="block text-slate-700 transition hover:text-amber-700">Cart</a>
+              <a routerLink="/profile" class="block text-slate-700 transition hover:text-amber-700">Profile</a>
             </div>
           </div>
 
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">For Sellers</p>
             <div class="mt-4 space-y-3 text-sm font-semibold">
-              <a routerLink="/vendor/dashboard" class="block text-slate-700 transition hover:text-emerald-600">Dashboard</a>
-              <a routerLink="/vendor/products" class="block text-slate-700 transition hover:text-emerald-600">Manage Products</a>
-              <a routerLink="/vendor/orders" class="block text-slate-700 transition hover:text-emerald-600">Orders</a>
-              <a routerLink="/vendor/profile" class="block text-slate-700 transition hover:text-emerald-600">Store Profile</a>
+              <a routerLink="/vendor/dashboard" class="block text-slate-700 transition hover:text-amber-700">Dashboard</a>
+              <a routerLink="/vendor/products" class="block text-slate-700 transition hover:text-amber-700">Manage Products</a>
+              <a routerLink="/vendor/orders" class="block text-slate-700 transition hover:text-amber-700">Orders</a>
+              <a routerLink="/vendor/profile" class="block text-slate-700 transition hover:text-amber-700">Store Profile</a>
             </div>
           </div>
         </div>

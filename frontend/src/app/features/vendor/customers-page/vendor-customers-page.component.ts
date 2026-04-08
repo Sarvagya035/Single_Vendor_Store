@@ -30,7 +30,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                   [(ngModel)]="searchTerm"
                   (ngModelChange)="applyFilters()"
                   placeholder="Search by name, email, or phone"
-                  class="w-full min-w-[260px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+                  class="w-full min-w-[260px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
                 />
               </label>
               <button type="button" (click)="reloadCustomers()" class="btn-secondary !px-6 !py-3">
@@ -41,12 +41,12 @@ import { VendorService } from '../../../core/services/vendor.service';
         </div>
 
         <div class="grid gap-4 px-6 py-6 md:grid-cols-3 lg:px-8">
-          <article class="rounded-[1.5rem] border border-sky-100 bg-sky-50/70 p-5">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-sky-600">Total Customers</p>
+          <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
+            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Total Customers</p>
             <p class="mt-3 text-3xl font-black text-slate-900">{{ customers.length }}</p>
           </article>
-          <article class="rounded-[1.5rem] border border-emerald-100 bg-emerald-50/70 p-5">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-600">Visible Now</p>
+          <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
+            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Visible Now</p>
             <p class="mt-3 text-3xl font-black text-slate-900">{{ filteredCustomers.length }}</p>
           </article>
         <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
@@ -89,7 +89,7 @@ import { VendorService } from '../../../core/services/vendor.service';
               </div>
 
               <div class="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.18em]">
-                <span class="rounded-full bg-indigo-50 px-3 py-1 text-indigo-700">{{ formatRole(customer.role) }}</span>
+                <span class="rounded-full bg-amber-50 px-3 py-1 text-amber-800">{{ formatRole(customer.role) }}</span>
                 <span *ngIf="customer.createdAt" class="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
                   Joined {{ formatDate(customer.createdAt) }}
                 </span>
@@ -208,3 +208,4 @@ export class VendorCustomersPageComponent implements OnInit {
     return user._id || user.email || `${user.username || 'customer'}`;
   }
 }
+

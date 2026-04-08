@@ -26,7 +26,7 @@ interface FlatCategoryOption {
       <main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-500">Vendor Tools</p>
+            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-amber-500">Vendor Tools</p>
             <h1 class="mt-3 text-4xl font-black tracking-tight text-slate-900">Edit Product</h1>
             <p class="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-slate-500">
               Update the product details on a dedicated page, then return to the products list when you're done.
@@ -42,7 +42,7 @@ interface FlatCategoryOption {
 
         <div *ngIf="isLoading" class="glass-card py-20">
           <div class="flex flex-col items-center gap-4">
-            <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-cyan-600"></div>
+            <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
             <p class="font-medium text-slate-500">Loading product details...</p>
           </div>
         </div>
@@ -67,7 +67,7 @@ interface FlatCategoryOption {
                     type="text"
                     name="productName"
                     [(ngModel)]="form.productName"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                     placeholder="Wireless Headphones Pro"
                   >
                 </div>
@@ -78,7 +78,7 @@ interface FlatCategoryOption {
                     type="text"
                     name="brand"
                     [(ngModel)]="form.brand"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                     placeholder="SoundSphere"
                   >
                 </div>
@@ -88,7 +88,7 @@ interface FlatCategoryOption {
                   <select
                     name="category"
                     [(ngModel)]="form.category"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                   >
                     <option value="">Select category</option>
                     <option *ngFor="let option of flatCategories; trackBy: trackByFlatCategoryId" [value]="option._id">
@@ -103,7 +103,7 @@ interface FlatCategoryOption {
                     rows="5"
                     name="productDescription"
                     [(ngModel)]="form.productDescription"
-                    class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-medium text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-medium text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                     placeholder="Describe the product, features, materials, and buying value."
                   ></textarea>
                 </div>
@@ -113,7 +113,7 @@ interface FlatCategoryOption {
                     type="checkbox"
                     [(ngModel)]="form.isActive"
                     name="isActive"
-                    class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
+                    class="h-4 w-4 rounded border-slate-300 text-amber-700 focus:ring-amber-500"
                   />
                   <span class="text-sm font-bold text-slate-700">Product is active.</span>
                 </label>
@@ -141,7 +141,7 @@ interface FlatCategoryOption {
                     />
                     <div
                       *ngIf="!primaryImageUrl"
-                      class="flex h-full items-center justify-center bg-gradient-to-br from-cyan-100 to-slate-50 text-4xl font-black text-slate-400"
+                      class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-slate-50 text-4xl font-black text-slate-400"
                     >
                       {{ product.productName.charAt(0) || 'P' }}
                     </div>
@@ -323,3 +323,4 @@ export class VendorEditProductPageComponent implements OnInit {
     }
   }
 }
+

@@ -22,13 +22,13 @@ export class StatCardComponent {
   @Input() value: string | number = '';
   @Input() hint = '';
   @Input() compact = false;
-  @Input() tone: 'indigo' | 'emerald' | 'rose' | 'sky' | 'amber' = 'indigo';
+  @Input() tone: 'primary' | 'accent' | 'rose' | 'cream' | 'amber' = 'primary';
 
   readonly toneClasses: Record<string, string> = {
-    indigo: 'border-l-indigo-500',
-    emerald: 'border-l-emerald-500',
+    primary: 'border-l-[#6f4e37]',
+    accent: 'border-l-[#d4a017]',
     rose: 'border-l-rose-500',
-    sky: 'border-l-sky-500',
+    cream: 'border-l-[#f5e6d3]',
     amber: 'border-l-amber-500'
   };
 }

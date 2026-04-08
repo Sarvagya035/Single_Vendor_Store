@@ -60,7 +60,7 @@ interface VendorProductsPagination {
             class="rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-50"
             [ngClass]="
               page === currentPage
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-amber-700 text-white shadow-sm'
                 : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
             "
           >
@@ -146,3 +146,4 @@ export class VendorProductsPageComponent implements OnInit {
       .sort((a, b) => a - b);
   }
 }
+

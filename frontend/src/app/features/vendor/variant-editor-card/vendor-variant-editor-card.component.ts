@@ -26,7 +26,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="text"
             [(ngModel)]="variant.attributesText"
             [name]="'variant-attributes-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
             placeholder="Color:Black, Size:XL"
           >
         </div>
@@ -37,7 +37,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="number"
             [(ngModel)]="variant.productPrice"
             [name]="'variant-price-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
             min="0"
           >
         </div>
@@ -48,7 +48,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="number"
             [(ngModel)]="variant.discountPercentage"
             [name]="'variant-discount-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
             min="0"
             max="100"
           >
@@ -60,7 +60,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="number"
             [(ngModel)]="variant.productStock"
             [name]="'variant-stock-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
             min="0"
           >
         </div>
@@ -71,7 +71,7 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
             type="text"
             [(ngModel)]="variant.sku"
             [name]="'variant-sku-' + index"
-            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+            class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
             placeholder="Optional"
           >
         </div>
@@ -97,3 +97,4 @@ export class VendorVariantEditorCardComponent {
   @Output() remove = new EventEmitter<number>();
   @Output() imageSelected = new EventEmitter<{ event: Event; index: number }>();
 }
+

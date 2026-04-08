@@ -20,12 +20,12 @@ import { RouterModule } from '@angular/router';
 
         <ng-container *ngIf="loggedIn; else guestLinks">
           <a
-            routerLink="/profile"
-            (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Profile
-          </a>
+          routerLink="/profile"
+          (click)="close.emit()"
+          class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50"
+        >
+          Profile
+        </a>
           <a
             *ngIf="!isAdmin && !isVendor"
             routerLink="/orders"
@@ -38,7 +38,7 @@ import { RouterModule } from '@angular/router';
             *ngIf="isVendor"
             routerLink="/vendor/dashboard"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-emerald-600 hover:bg-emerald-50"
+            class="block rounded-lg px-3 py-2 text-base font-bold text-amber-700 hover:bg-amber-50"
           >
             Vendor Dashboard
           </a>
@@ -73,7 +73,7 @@ import { RouterModule } from '@angular/router';
           <a
             routerLink="/register"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-indigo-600 hover:bg-indigo-50"
+            class="block rounded-lg px-3 py-2 text-base font-bold text-amber-700 hover:bg-amber-50"
           >
             Register
           </a>

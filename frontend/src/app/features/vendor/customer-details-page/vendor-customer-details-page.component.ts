@@ -87,12 +87,12 @@ import { VendorService } from '../../../core/services/vendor.service';
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
-              <article class="rounded-[1.5rem] border border-sky-100 bg-sky-50/70 p-5">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-sky-600">Display Name</p>
+              <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
+                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Display Name</p>
                 <p class="mt-3 text-lg font-black text-slate-900">{{ customer.username || customer.fullName || 'Customer' }}</p>
               </article>
-              <article class="rounded-[1.5rem] border border-emerald-100 bg-emerald-50/70 p-5">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-600">Reference</p>
+              <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
+                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Reference</p>
                 <p class="mt-3 text-lg font-black text-slate-900">{{ shortId(customer._id) }}</p>
               </article>
             </div>
@@ -183,3 +183,4 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
     return id.length > 10 ? `${id.slice(0, 6)}…${id.slice(-4)}` : id;
   }
 }
+

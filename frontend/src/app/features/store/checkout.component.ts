@@ -39,7 +39,7 @@ const EMPTY_CART: CustomerCart = {
           </div>
         </div>
 
-        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
@@ -59,7 +59,7 @@ const EMPTY_CART: CustomerCart = {
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivery Address</p>
                   <h2 class="mt-2 text-2xl font-black text-slate-900">Choose where this order should arrive</h2>
                 </div>
-                <a routerLink="/addresses" class="text-sm font-black text-indigo-600">Edit addresses</a>
+                <a routerLink="/addresses" class="text-sm font-black text-amber-700">Edit addresses</a>
               </div>
 
               <div *ngIf="addresses.length === 0" class="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-6 text-sm font-semibold text-slate-500">
@@ -70,12 +70,12 @@ const EMPTY_CART: CustomerCart = {
                 <label
                   *ngFor="let address of addresses; trackBy: trackByAddress"
                   class="flex cursor-pointer gap-4 rounded-[1.5rem] border p-5 transition"
-                  [ngClass]="selectedAddressId === address._id ? 'border-indigo-200 bg-indigo-50/70' : 'border-slate-200 bg-slate-50/70 hover:border-slate-300'"
+                  [ngClass]="selectedAddressId === address._id ? 'border-amber-200 bg-amber-50/70' : 'border-slate-200 bg-slate-50/70 hover:border-slate-300'"
                 >
                   <input
                     type="radio"
                     name="shippingAddress"
-                    class="mt-1 h-4 w-4 border-slate-300 text-indigo-600"
+                    class="mt-1 h-4 w-4 border-slate-300 text-amber-700"
                     [value]="address._id"
                     [(ngModel)]="selectedAddressId"
                   />
@@ -83,7 +83,7 @@ const EMPTY_CART: CustomerCart = {
                   <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
                       <p class="text-base font-black text-slate-900">{{ address.fullname }}</p>
-                      <span *ngIf="address.isDefault" class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700">
+                      <span *ngIf="address.isDefault" class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-amber-800">
                         Default
                       </span>
                     </div>
@@ -373,3 +373,4 @@ export class CheckoutComponent implements OnInit {
     return item.variantId || item.product?._id || String(index);
   }
 }
+

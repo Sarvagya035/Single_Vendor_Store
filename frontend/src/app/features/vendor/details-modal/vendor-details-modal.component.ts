@@ -28,7 +28,7 @@ import { VendorDetailsForm } from '../../../core/models/vendor.models';
               name="vendorAddress"
               [ngModel]="form.vendorAddress"
               (ngModelChange)="updateField('vendorAddress', $event)"
-              class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-emerald-300 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+              class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
               placeholder="Your store address"
             >
           </div>
@@ -40,7 +40,7 @@ import { VendorDetailsForm } from '../../../core/models/vendor.models';
               name="vendorDescription"
               [ngModel]="form.vendorDescription"
               (ngModelChange)="updateField('vendorDescription', $event)"
-              class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-emerald-300 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+              class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
               placeholder="Describe your store and what makes it special"
             ></textarea>
           </div>
@@ -70,3 +70,4 @@ export class VendorDetailsModalComponent {
     this.formChange.emit({ ...this.form, [field]: value });
   }
 }
+

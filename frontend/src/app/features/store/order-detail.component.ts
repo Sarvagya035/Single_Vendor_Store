@@ -35,7 +35,7 @@ import { OrderService } from '../../core/services/order.service';
           </div>
         </div>
 
-        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
@@ -281,9 +281,9 @@ export class OrderDetailComponent implements OnInit {
   statusClass(status?: string): string {
     switch (status) {
       case 'Delivered':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-amber-100 text-amber-800';
       case 'Shipped':
-        return 'bg-sky-100 text-sky-700';
+        return 'bg-amber-100 text-amber-800';
       case 'Cancelled':
         return 'bg-rose-100 text-rose-700';
       default:
@@ -315,3 +315,4 @@ export class OrderDetailComponent implements OnInit {
     return [];
   }
 }
+

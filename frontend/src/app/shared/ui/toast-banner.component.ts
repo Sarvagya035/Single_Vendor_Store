@@ -12,11 +12,11 @@ import { ToastKind } from '../../core/services/error.service';
       [class]="
         'fixed right-6 top-16 z-[220] w-[min(92vw,28rem)] rounded-2xl border px-5 py-4 text-sm font-bold leading-6 shadow-[0_20px_45px_rgba(15,23,42,0.28)] transition-all ' +
         (type === 'success'
-          ? 'border-emerald-200 bg-emerald-600 text-white'
+          ? 'border-[#8b5e3c] bg-[#6f4e37] text-white'
           : type === 'warning'
-            ? 'border-amber-200 bg-amber-500 text-white'
+            ? 'border-[#f5e6d3] bg-[#d4a017] text-slate-900'
             : type === 'info'
-              ? 'border-sky-200 bg-sky-600 text-white'
+              ? 'border-[#e7dac9] bg-[#f5e6d3] text-[#2f1b14]'
               : 'border-rose-200 bg-rose-600 text-white')
       "
       style="word-break: break-word;"

@@ -17,7 +17,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
   template: `
     <div class="relative min-h-[calc(100vh-72px)] w-full overflow-hidden bg-slate-50">
       <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -top-24 left-8 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl"></div>
+        <div class="absolute -top-24 left-8 h-72 w-72 rounded-full bg-amber-300/25 blur-3xl"></div>
         <div class="absolute top-32 right-0 h-96 w-96 rounded-full bg-amber-200/25 blur-3xl"></div>
       </div>
 
@@ -48,7 +48,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       [(ngModel)]="selectedCategorySlug"
                       name="selectedCategorySlug"
                       (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                     >
                       <option value="all">All categories</option>
                       <option *ngFor="let category of sidebarCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
@@ -67,7 +67,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       [(ngModel)]="selectedBrand"
                       name="selectedBrand"
                       (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                     >
                       <option value="all">All brands</option>
                       <option *ngFor="let brand of brandOptions(); trackBy: trackByValue" [value]="brand">
@@ -82,7 +82,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       [(ngModel)]="sortBy"
                       name="sidebarSortBy"
                       (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                     >
                       <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
                         {{ option.label }}
@@ -100,7 +100,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       type="number"
                         min="0"
                         placeholder="0"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                       />
                     </label>
 
@@ -113,7 +113,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       type="number"
                         min="0"
                         placeholder="Any"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                       />
                     </label>
                   </div>
@@ -124,7 +124,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       [(ngModel)]="availabilityFilter"
                       name="availabilityFilter"
                       (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                     >
                       <option *ngFor="let option of availabilityOptions; trackBy: trackByFilterOption" [value]="option.value">
                         {{ option.label }}
@@ -138,7 +138,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       [(ngModel)]="ratingFilter"
                       name="ratingFilter"
                       (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-sky-300 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                     >
                       <option *ngFor="let option of ratingOptions; trackBy: trackByFilterOption" [value]="option.value">
                         {{ option.label }}
@@ -160,7 +160,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 </div>
 
                 <form class="relative w-full md:max-w-xl" (ngSubmit)="searchProducts()">
-                  <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-sky-400 focus-within:bg-white">
+                  <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-amber-500 focus-within:bg-white">
                     <span class="text-slate-400">
                       <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="11" cy="11" r="7"></circle>
@@ -198,7 +198,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 <div class="flex flex-wrap items-center gap-2">
                   <span
                     *ngIf="selectedBrand !== 'all'"
-                    class="rounded-full bg-sky-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-sky-700"
+                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
                   >
                     Brand: {{ selectedBrand }}
                   </span>
@@ -211,13 +211,13 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </span>
                   <span
                     *ngIf="availabilityFilter !== 'all'"
-                    class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-emerald-700"
+                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
                   >
                     {{ availabilityFilter === 'in-stock' ? 'In stock only' : 'Out of stock only' }}
                   </span>
                   <span
                     *ngIf="ratingFilter !== 'all'"
-                    class="rounded-full bg-violet-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-violet-700"
+                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
                   >
                     {{ ratingFilter }}+ rating
                   </span>
@@ -226,7 +226,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
 
               <div
                 *ngIf="catalogMessage"
-                class="mb-4 rounded-[1.1rem] border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900"
+                class="mb-4 rounded-[1.1rem] border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-slate-900"
               >
                 {{ catalogMessage }}
               </div>
@@ -301,7 +301,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                         <span class="text-slate-500">
                           {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
                         </span>
-                        <span class="text-sky-700 transition group-hover:translate-x-1 group-hover:text-sky-800">
+                        <span class="text-amber-800 transition group-hover:translate-x-1 group-hover:text-amber-900">
                           View Product
                         </span>
                       </div>
@@ -329,7 +329,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                         *ngFor="let page of visiblePages(); trackBy: trackByPage"
                         type="button"
                         class="min-w-9 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition sm:min-w-10 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.bg-sky-600]="page === currentPage"
+                        [class.bg-amber-700]="page === currentPage"
                         [class.text-white]="page === currentPage"
                         [class.bg-white]="page !== currentPage"
                         [class.text-slate-600]="page !== currentPage"
@@ -345,9 +345,9 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       <button
                         type="button"
                         class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.border-sky-300]="currentPage > 2"
-                        [class.bg-sky-50]="currentPage > 2"
-                        [class.text-sky-700]="currentPage > 2"
+                        [class.border-amber-300]="currentPage > 2"
+                        [class.bg-amber-50]="currentPage > 2"
+                        [class.text-amber-800]="currentPage > 2"
                         [disabled]="currentPage <= 2"
                         (click)="changePage(currentPage - 2)"
                       >
@@ -358,7 +358,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                         *ngFor="let page of visiblePages(); trackBy: trackByPage"
                         type="button"
                         class="min-w-9 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition sm:min-w-10 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.bg-sky-600]="page === currentPage"
+                        [class.bg-amber-700]="page === currentPage"
                         [class.text-white]="page === currentPage"
                         [class.bg-white]="page !== currentPage"
                         [class.text-slate-600]="page !== currentPage"
@@ -372,9 +372,9 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       <button
                         type="button"
                         class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.border-sky-300]="currentPage < totalPages - 1"
-                        [class.bg-sky-50]="currentPage < totalPages - 1"
-                        [class.text-sky-700]="currentPage < totalPages - 1"
+                        [class.border-amber-300]="currentPage < totalPages - 1"
+                        [class.bg-amber-50]="currentPage < totalPages - 1"
+                        [class.text-amber-800]="currentPage < totalPages - 1"
                         [disabled]="currentPage >= totalPages - 1"
                         (click)="changePage(currentPage + 2)"
                       >
@@ -1195,4 +1195,5 @@ export class ProductsPageComponent implements OnInit {
     )?.products || [];
   }
 }
+
 

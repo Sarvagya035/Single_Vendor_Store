@@ -30,6 +30,6 @@ export class SidebarNavItemComponent {
   @Input() count: string | number = '';
   @Input() active = false;
   @Input() exact = false;
-  @Input() activeClasses = 'border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm';
-  @Input() activeCountClasses = 'bg-indigo-600 text-white';
+  @Input() activeClasses = 'border-[#e7dac9] bg-[#fef6eb] text-[#6f4e37] shadow-sm';
+  @Input() activeCountClasses = 'bg-[#6f4e37] text-white';
 }

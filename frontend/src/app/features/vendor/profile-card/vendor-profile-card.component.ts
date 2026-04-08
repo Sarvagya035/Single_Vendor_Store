@@ -20,7 +20,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
               >
               <div
                 *ngIf="!logoPreview && !vendor.vendorLogo"
-                class="flex h-32 w-32 items-center justify-center rounded-[1.75rem] border-4 border-white bg-emerald-600 text-5xl font-black text-white shadow-2xl shadow-emerald-200 sm:h-36 sm:w-36 sm:text-6xl"
+                class="flex h-32 w-32 items-center justify-center rounded-[1.75rem] border-4 border-white bg-amber-700 text-5xl font-black text-white shadow-2xl shadow-amber-200 sm:h-36 sm:w-36 sm:text-6xl"
               >
                 {{ vendor.shopName?.charAt(0) }}
               </div>
@@ -32,7 +32,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
             <div class="mt-6 w-full space-y-3">
               <div class="space-y-3">
                 <h2 class="text-3xl font-black tracking-tight text-slate-900">{{ vendor.shopName }}</h2>
-                <div class="inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-emerald-700">
+                <div class="inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-amber-800">
                   {{ vendor.verificationStatus }}
                 </div>
               </div>
@@ -102,3 +102,4 @@ export class VendorProfileCardComponent {
     return `Account ending ${lastDigits.padStart(4, '0')}`;
   }
 }
+

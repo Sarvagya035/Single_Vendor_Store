@@ -30,7 +30,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
       <div class="space-y-4 p-8">
         <div
           *ngIf="successMessage"
-          class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
+          class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800"
         >
           {{ successMessage }}
         </div>
@@ -58,7 +58,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!fullnameError"
                 [class.focus:border-red-400]="!!fullnameError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
               <p *ngIf="fullnameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ fullnameError }}
@@ -78,7 +78,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!phoneError"
                 [class.focus:border-red-400]="!!phoneError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}
@@ -97,7 +97,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!postalCodeError"
                 [class.focus:border-red-400]="!!postalCodeError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
               <p *ngIf="postalCodeError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ postalCodeError }}
@@ -110,7 +110,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="addressLine1"
                 [(ngModel)]="form.addressLine1"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -119,7 +119,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <input
                 name="addressLine2"
                 [(ngModel)]="form.addressLine2"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -129,7 +129,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="city"
                 [(ngModel)]="form.city"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -139,7 +139,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="state"
                 [(ngModel)]="form.state"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -149,7 +149,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="country"
                 [(ngModel)]="form.country"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -184,7 +184,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                   <h4 class="text-lg font-black text-slate-900">{{ address.fullname }}</h4>
                   <span
                     *ngIf="address.isDefault"
-                    class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-emerald-700"
+                    class="rounded-full bg-amber-50 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
                   >
                     Default
                   </span>
@@ -210,7 +210,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 <button
                   *ngIf="!address.isDefault"
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-indigo-100 bg-indigo-50/60 text-indigo-700"
+                  class="btn-secondary !px-4 !py-2 border-amber-100 bg-amber-50/60 text-amber-800"
                   (click)="setDefault(address)"
                 >
                   Make Default
@@ -423,3 +423,4 @@ export class CustomerAddressBookComponent implements OnInit {
     };
   }
 }
+

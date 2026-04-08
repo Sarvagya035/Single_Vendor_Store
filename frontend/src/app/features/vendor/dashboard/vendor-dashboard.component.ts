@@ -16,7 +16,7 @@ interface DashboardMetric {
   label: string;
   value: string;
   change: string;
-  tone: 'cyan' | 'emerald' | 'amber' | 'rose';
+  tone: 'primary' | 'accent' | 'amber' | 'rose';
 }
 
 interface DashboardOrder {
@@ -84,7 +84,7 @@ interface DashboardProduct {
             <div class="grid gap-3 sm:grid-cols-2">
               <button
                 type="button"
-                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50/60"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50/60"
                 [disabled]="isDownloadingReport"
                 (click)="downloadPresetReport('weekly', 'csv')"
               >
@@ -104,7 +104,7 @@ interface DashboardProduct {
 
               <button
                 type="button"
-                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50/60"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50/60"
                 [disabled]="isDownloadingReport"
                 (click)="downloadPresetReport('monthly', 'csv')"
               >
@@ -141,7 +141,7 @@ interface DashboardProduct {
                 <input
                   type="date"
                   [(ngModel)]="customReportStartDate"
-                  class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-500/30"
+                  class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:ring-2 focus:ring-amber-600/30"
                 >
               </label>
 
@@ -150,7 +150,7 @@ interface DashboardProduct {
                 <input
                   type="date"
                   [(ngModel)]="customReportEndDate"
-                  class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-500/30"
+                  class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:ring-2 focus:ring-amber-600/30"
                 >
               </label>
             </div>
@@ -245,7 +245,7 @@ interface DashboardProduct {
                     <p class="text-sm font-black text-slate-900">{{ product.name }}</p>
                     <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Sold {{ product.units }} unit(s)</p>
                   </div>
-                  <p class="text-sm font-black text-emerald-700">{{ product.value }}</p>
+                  <p class="text-sm font-black text-amber-800">{{ product.value }}</p>
                 </div>
                 <p class="mt-3 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
               </article>
@@ -298,13 +298,13 @@ export class VendorDashboardComponent implements OnInit {
         label: 'Paid Revenue',
         value: this.formatCurrency(this.analytics.summary.totalRevenue),
         change: `${this.analytics.summary.totalOrdersCount} paid order(s) recorded`,
-        tone: 'emerald'
+        tone: 'primary'
       },
       {
         label: 'Items Sold',
         value: this.analytics.summary.totalItemsSold.toString(),
         change: `${this.countOrdersByStatus('Delivered')} item(s) delivered so far`,
-        tone: 'cyan'
+        tone: 'accent'
       },
       {
         label: 'Active Products',
@@ -403,8 +403,8 @@ export class VendorDashboardComponent implements OnInit {
 
   metricCardClass(tone: DashboardMetric['tone']): string {
     const classes: Record<DashboardMetric['tone'], string> = {
-      cyan: 'border-cyan-100 bg-cyan-50/70 text-cyan-700',
-      emerald: 'border-emerald-100 bg-emerald-50/70 text-emerald-700',
+      primary: 'border-amber-100 bg-amber-50/70 text-amber-900',
+      accent: 'border-amber-100 bg-[#f5e6d3]/70 text-[#6f4e37]',
       amber: 'border-amber-100 bg-amber-50/70 text-amber-700',
       rose: 'border-rose-100 bg-rose-50/70 text-rose-700'
     };
@@ -415,8 +415,8 @@ export class VendorDashboardComponent implements OnInit {
   orderStatusClass(status: DashboardOrder['status']): string {
     const classes: Record<DashboardOrder['status'], string> = {
       Processing: 'bg-amber-100 text-amber-700',
-      Shipped: 'bg-sky-100 text-sky-700',
-      Delivered: 'bg-emerald-100 text-emerald-700',
+      Shipped: 'bg-amber-100 text-amber-800',
+      Delivered: 'bg-amber-100 text-amber-800',
       Cancelled: 'bg-rose-100 text-rose-700'
     };
 
@@ -533,3 +533,4 @@ export class VendorDashboardComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 }
+

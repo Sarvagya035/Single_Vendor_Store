@@ -13,8 +13,8 @@ import { catchError, finalize, EMPTY } from 'rxjs';
   template: `
     <div class="min-h-screen bg-slate-50 flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
       <!-- Background Glow Effects -->
-      <div class="absolute top-0 right-1/4 w-[500px] h-[500px] bg-indigo-500/10 blur-[130px] rounded-full animate-float"></div>
-      <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 blur-[130px] rounded-full animate-float" style="animation-delay: 2s"></div>
+      <div class="absolute top-0 right-1/4 w-[500px] h-[500px] bg-amber-600/10 blur-[130px] rounded-full animate-float"></div>
+      <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-amber-600/10 blur-[130px] rounded-full animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
         <h2 class="text-4xl font-black text-slate-900 tracking-tight">Create Account</h2>
@@ -46,7 +46,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   [class.ring-2]="!!usernameError"
                   [class.ring-red-500]="!!usernameError"
                   [class.focus:ring-red-500]="!!usernameError"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
+                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner">
               </div>
               <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ usernameError }}
@@ -61,7 +61,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                 </div>
                 <input id="email" name="email" type="email" autocomplete="email" required [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
+                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner">
               </div>
             </div>
 
@@ -77,7 +77,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   [class.ring-2]="!!phoneError"
                   [class.ring-red-500]="!!phoneError"
                   [class.focus:ring-red-500]="!!phoneError"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
+                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner">
               </div>
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}
@@ -98,7 +98,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   required
                   [(ngModel)]="password"
                   placeholder="Enter your password"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-16 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner"
+                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-16 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner"
                 >
                 <button
                   type="button"
@@ -118,7 +118,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
           <div class="mt-8 pt-6 border-t border-slate-100 text-center">
             <p class="text-sm font-medium text-slate-500">
               Already have an account?
-              <a routerLink="/login" class="text-indigo-600 font-black hover:text-indigo-700 transition-colors ml-1 uppercase tracking-tighter">Login here</a>
+              <a routerLink="/login" class="text-amber-700 font-black hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Login here</a>
             </p>
           </div>
         </div>
@@ -222,3 +222,4 @@ export class RegisterComponent {
       : 'Enter a 10-digit phone number.';
   }
 }
+

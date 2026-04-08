@@ -31,7 +31,7 @@ const EMPTY_CART: CustomerCart = {
 
           <div
             *ngIf="cartMessage"
-            class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
+            class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800"
           >
             {{ cartMessage }}
           </div>
@@ -315,3 +315,4 @@ export class CartComponent implements OnInit {
     return item.variantId || item.product?._id || String(index);
   }
 }
+

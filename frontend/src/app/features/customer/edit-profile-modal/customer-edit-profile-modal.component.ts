@@ -23,7 +23,7 @@ import { UserService } from '../../../core/services/user.service';
       <div class="relative z-[101] w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.2)]">
         <div class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5 sm:px-8">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-indigo-500">Account</p>
+            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-amber-600">Account</p>
             <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Edit Profile</h3>
             <p class="mt-2 text-sm font-medium text-slate-500">
               Update your name, phone number, or avatar from one place.
@@ -207,3 +207,4 @@ export class CustomerEditProfileModalComponent implements OnChanges {
     this.isUpdatingAvatar = false;
   }
 }
+

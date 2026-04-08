@@ -45,7 +45,7 @@ interface CategoryCreateForm {
                 name="name"
                 [ngModel]="createForm.name"
                 (ngModelChange)="updateCreateField('name', $event)"
-                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-indigo-300 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="Electronics"
               >
             </div>
@@ -57,7 +57,7 @@ interface CategoryCreateForm {
                 name="description"
                 [ngModel]="createForm.description"
                 (ngModelChange)="updateCreateField('description', $event)"
-                class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-indigo-300 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="Short category description"
               ></textarea>
             </div>
@@ -68,7 +68,7 @@ interface CategoryCreateForm {
                 name="parentCategory"
                 [ngModel]="createForm.parentCategory"
                 (ngModelChange)="updateCreateField('parentCategory', $event)"
-                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-indigo-300 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
               >
                 <option value="">Root Category</option>
                 <option *ngFor="let option of flattenedCategories" [value]="option._id">
@@ -102,7 +102,7 @@ interface CategoryCreateForm {
 
         <div *ngIf="isLoading" class="px-6 py-16">
           <div class="flex flex-col items-center gap-4">
-            <div class="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
+            <div class="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
             <p class="font-medium text-slate-500">Loading categories...</p>
           </div>
         </div>
@@ -165,7 +165,7 @@ interface CategoryCreateForm {
                   type="text"
                   [ngModel]="editForm.name"
                   (ngModelChange)="updateEditField('name', $event)"
-                  class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-indigo-300 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                  class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 >
               </div>
 
@@ -174,7 +174,7 @@ interface CategoryCreateForm {
                 <select
                   [ngModel]="editForm.parentCategory"
                   (ngModelChange)="updateEditField('parentCategory', $event)"
-                  class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-indigo-300 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                  class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 >
                   <option value="">Root Category</option>
                   <option *ngFor="let option of flattenedCategories" [value]="option._id" [disabled]="option._id === category._id">
@@ -189,14 +189,14 @@ interface CategoryCreateForm {
                   rows="3"
                   [ngModel]="editForm.description"
                   (ngModelChange)="updateEditField('description', $event)"
-                  class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-indigo-300 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                  class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 ></textarea>
               </div>
             </div>
 
             <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <label class="inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <input type="checkbox" [ngModel]="editForm.isActive" (ngModelChange)="updateEditField('isActive', $event)" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                <input type="checkbox" [ngModel]="editForm.isActive" (ngModelChange)="updateEditField('isActive', $event)" class="h-4 w-4 rounded border-slate-300 text-amber-700 focus:ring-amber-600">
                 Active category
               </label>
               <button type="button" (click)="submitUpdate.emit({ categoryId: category._id, payload: editForm })" [disabled]="isUpdating" class="btn-primary !px-5 !py-2.5">
@@ -308,3 +308,4 @@ export class VendorCategoriesPanelComponent {
     }
   }
 }
+

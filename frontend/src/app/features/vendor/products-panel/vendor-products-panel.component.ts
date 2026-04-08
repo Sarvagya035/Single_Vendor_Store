@@ -49,7 +49,7 @@ interface ProductMessage {
               type="text"
               [(ngModel)]="searchQuery"
               placeholder="Search by product name, brand, or category"
-              class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100 xl:max-w-md"
+              class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 xl:max-w-md"
             />
             <div class="flex flex-wrap gap-2">
               <button
@@ -58,7 +58,7 @@ interface ProductMessage {
                 class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition"
                 [ngClass]="
                   selectedCategory === 'all'
-                    ? 'border border-cyan-300 bg-cyan-50 text-slate-900 ring-2 ring-cyan-200'
+                    ? 'border border-amber-300 bg-amber-50 text-slate-900 ring-2 ring-amber-200'
                     : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                 "
               >
@@ -71,7 +71,7 @@ interface ProductMessage {
                 class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition"
                 [ngClass]="
                   selectedCategory === category
-                    ? 'border border-cyan-300 bg-cyan-50 text-slate-900 ring-2 ring-cyan-200'
+                    ? 'border border-amber-300 bg-amber-50 text-slate-900 ring-2 ring-amber-200'
                     : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                 "
               >
@@ -151,7 +151,7 @@ interface ProductMessage {
                 class="mb-5 rounded-3xl border px-5 py-4 text-sm font-bold"
                 [ngClass]="
                   messageFor(product._id)?.type === 'success'
-                    ? 'border-emerald-100 bg-emerald-50 text-emerald-700'
+                    ? 'border-amber-100 bg-amber-50 text-amber-800'
                     : 'border-rose-100 bg-rose-50 text-rose-700'
                 "
               >
@@ -217,7 +217,7 @@ interface ProductMessage {
                     [(ngModel)]="variantCreateForms[product._id].attributesText"
                     [name]="'new-attributes-' + product._id"
                     placeholder="Color:Black, Size:XL"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100 md:col-span-2 xl:col-span-2"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 md:col-span-2 xl:col-span-2"
                   />
                   <input
                     type="number"
@@ -225,7 +225,7 @@ interface ProductMessage {
                     [name]="'new-price-' + product._id"
                     min="0"
                     placeholder="Price"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                   />
                   <input
                     type="number"
@@ -234,7 +234,7 @@ interface ProductMessage {
                     min="0"
                     max="100"
                     placeholder="Discount %"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                   />
                   <input
                     type="number"
@@ -242,7 +242,7 @@ interface ProductMessage {
                     [name]="'new-stock-' + product._id"
                     min="0"
                     placeholder="Stock"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                   />
                   <div class="md:col-span-2 xl:col-span-5">
                     <input
@@ -303,7 +303,7 @@ interface ProductMessage {
                             <p
                               class="mt-1 text-xs font-semibold uppercase tracking-[0.16em]"
                               [ngClass]="
-                                variant.isAvailable ? 'text-emerald-600' : 'text-rose-600'
+                                variant.isAvailable ? 'text-amber-700' : 'text-rose-600'
                               "
                             >
                               {{ variant.isAvailable ? 'In Stock' : 'Out of Stock' }}
@@ -331,7 +331,7 @@ interface ProductMessage {
                           [(ngModel)]="restockDrafts[variant._id || '']"
                           [name]="'restock-' + (variant._id || '')"
                           min="1"
-                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                         />
                         <button
                           type="button"
@@ -353,7 +353,7 @@ interface ProductMessage {
                           [name]="'discount-' + (variant._id || '')"
                           min="0"
                           max="100"
-                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-cyan-300 focus:outline-none focus:ring-4 focus:ring-cyan-100"
+                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                         />
                         <button
                           type="button"
@@ -931,3 +931,4 @@ export class VendorProductsPanelComponent implements OnInit, OnChanges {
     return flat;
   }
 }
+

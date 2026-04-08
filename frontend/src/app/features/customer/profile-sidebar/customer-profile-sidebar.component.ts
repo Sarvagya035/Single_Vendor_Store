@@ -11,7 +11,7 @@ import { CustomerUser } from '../../../core/models/customer.models';
       <div class="rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.9))] p-8">
         <div class="flex flex-col items-center text-center">
           <div class="group relative">
-            <div class="absolute inset-0 rounded-full bg-indigo-500 opacity-20 blur-2xl transition-opacity group-hover:opacity-40"></div>
+            <div class="absolute inset-0 rounded-full bg-amber-600 opacity-20 blur-2xl transition-opacity group-hover:opacity-40"></div>
             <img
               *ngIf="isValidUrl(user?.avatar)"
               [src]="user?.avatar"
@@ -20,7 +20,7 @@ import { CustomerUser } from '../../../core/models/customer.models';
             >
             <div
               *ngIf="!isValidUrl(user?.avatar)"
-              class="relative flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-indigo-600 text-5xl font-black text-white shadow-2xl"
+              class="relative flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-amber-700 text-5xl font-black text-white shadow-2xl"
             >
               {{ user?.username?.charAt(0)?.toUpperCase() || '?' }}
             </div>
@@ -31,7 +31,7 @@ import { CustomerUser } from '../../../core/models/customer.models';
 
           <div class="mt-6">
             <h2 class="text-3xl font-black tracking-tight text-slate-900">{{ user?.username }}</h2>
-            <p class="mt-2 text-xs font-black uppercase tracking-[0.24em] text-indigo-600">{{ roles }}</p>
+            <p class="mt-2 text-xs font-black uppercase tracking-[0.24em] text-amber-700">{{ roles }}</p>
           </div>
         </div>
 
@@ -74,3 +74,4 @@ export class CustomerProfileSidebarComponent {
     return typeof url === 'string' && url.startsWith('http');
   }
 }
+

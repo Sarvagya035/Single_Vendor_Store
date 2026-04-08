@@ -173,5 +173,5 @@
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#6f4e37] to-[#d4a017];
 }

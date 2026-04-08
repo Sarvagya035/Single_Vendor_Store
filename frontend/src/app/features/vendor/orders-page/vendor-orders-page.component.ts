@@ -15,7 +15,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
       <div class="rounded-[2rem] border border-white/70 bg-white/80 px-6 py-7 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:px-8">
         <app-page-header
           title="Manage incoming orders"
-          eyebrowClass="text-emerald-500"
+          eyebrowClass="text-amber-600"
           titleClass="text-4xl"
         >
           <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary !py-3">
@@ -25,7 +25,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
       </div>
 
-      <div *ngIf="successMessage" class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+      <div *ngIf="successMessage" class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
         {{ successMessage }}
       </div>
 
@@ -56,7 +56,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
       <div *ngIf="orders.length" class="grid gap-5">
         <article
           *ngFor="let order of orders; trackBy: trackByOrder"
-          class="cursor-pointer rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-[0_24px_60px_rgba(16,185,129,0.12)]"
+          class="cursor-pointer rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-amber-200 hover:shadow-[0_24px_60px_rgba(16,185,129,0.12)]"
           (click)="openOrder(order)"
         >
           <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
@@ -100,7 +100,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                       <p class="text-sm font-black text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
                       <select
-                        class="min-w-[180px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+                        class="min-w-[180px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                         [ngModel]="item.orderItemStatus || 'Processing'"
                         (ngModelChange)="updateItemStatus(order, item, $event)"
                         (click)="$event.stopPropagation()"
@@ -256,9 +256,9 @@ export class VendorOrdersPageComponent implements OnInit {
   statusClass(status?: string): string {
     switch (status) {
       case 'Delivered':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-amber-100 text-amber-800';
       case 'Shipped':
-        return 'bg-sky-100 text-sky-700';
+        return 'bg-amber-100 text-amber-800';
       case 'Cancelled':
         return 'bg-rose-100 text-rose-700';
       default:
@@ -274,3 +274,4 @@ export class VendorOrdersPageComponent implements OnInit {
     return item._id || item.variantId || item.product || String(index);
   }
 }
+
