@@ -10,7 +10,8 @@ import { ErrorService } from '../../core/services/error.service';
 import { ReviewService } from '../../core/services/review.service';
 import {
   CustomerCatalogProduct,
-  CustomerCatalogVariant
+  CustomerCatalogVariant,
+  CustomerLandingCategoryGroup
 } from '../../core/models/customer.models';
 import { ProductReview, ProductReviewForm, ProductReviewStat } from '../../core/models/review.models';
 import { ProductGalleryComponent } from './product-gallery/product-gallery.component';
@@ -61,6 +62,62 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               (addToCart)="addToCart()"
             />
           </div>
+
+          <section class="mt-10 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <div class="flex flex-col gap-2 border-b border-slate-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Similar products</p>
+                <h2 class="mt-2 text-2xl font-black text-slate-900">You may also like</h2>
+              </div>
+              <p class="text-sm font-medium text-slate-500">
+                Handpicked from the same dry fruit family and flavor profile.
+              </p>
+            </div>
+
+            <div *ngIf="relatedProducts.length; else noRelatedProducts" class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <a
+                *ngFor="let related of relatedProducts; trackBy: trackByProductId"
+                [routerLink]="['/products', related._id]"
+                class="group rounded-[1.6rem] border border-slate-200 bg-slate-50 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
+              >
+                <div class="aspect-square overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white">
+                  <img
+                    [src]="productImage(related)"
+                    [alt]="related.productName"
+                    class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                </div>
+
+                <div class="mt-4 space-y-3">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <p class="truncate text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                        {{ related.brand || 'Dry fruit pack' }}
+                      </p>
+                      <h3 class="mt-1 line-clamp-2 text-lg font-black text-slate-900">
+                        {{ related.productName }}
+                      </h3>
+                    </div>
+                    <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-slate-900 shadow-sm ring-1 ring-amber-200">
+                      {{ formatCurrency(related.displayVariant?.finalPrice || related.basePrice || 0) }}
+                    </span>
+                  </div>
+
+                  <p class="text-sm font-semibold text-slate-500">
+                    {{ related.categoryDetails?.name || 'Dry fruits & nuts' }}
+                  </p>
+                </div>
+              </a>
+            </div>
+            <ng-template #noRelatedProducts>
+              <div class="mt-6 rounded-[1.4rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+                <h3 class="text-xl font-black text-slate-900">More dry fruits coming soon</h3>
+                <p class="mt-3 text-sm font-medium text-slate-500">
+                  We’re still building out similar item suggestions for this product.
+                </p>
+              </div>
+            </ng-template>
+          </section>
 
           <section class="mt-10 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
             <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
@@ -256,6 +313,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
 export class ProductDetailComponent implements OnInit {
   user: any = null;
   product: CustomerCatalogProduct | null = null;
+  relatedProducts: CustomerCatalogProduct[] = [];
   loading = false;
   successMessage = '';
   selectedVariantId = '';
@@ -332,14 +390,19 @@ export class ProductDetailComponent implements OnInit {
 
     forkJoin({
       productResponse: this.catalogService.getProductDetails(productId),
+      catalogProducts: this.catalogService.getCatalogProducts(1, 1000),
+      landingProducts: this.catalogService.getLandingPageProducts(),
       reviews: this.reviewService.getProductReviews(productId),
       reviewStats: this.reviewService.getReviewStats(productId)
     }).subscribe({
-      next: ({ productResponse, reviews, reviewStats }) => {
+      next: ({ productResponse, catalogProducts, landingProducts, reviews, reviewStats }) => {
         this.loading = false;
         this.product = productResponse?.data || null;
         this.reviews = reviews;
         this.reviewStats = reviewStats;
+        this.relatedProducts = this.product
+          ? this.findSimilarProducts(this.product, catalogProducts?.data || [], landingProducts?.data || [])
+          : [];
 
         const initialVariant = this.product?.displayVariant || this.product?.variants?.[0];
         this.selectedVariantId = initialVariant?._id || '';
@@ -372,6 +435,14 @@ export class ProductDetailComponent implements OnInit {
     ];
 
     return [...new Set(images)];
+  }
+
+  productImage(product: CustomerCatalogProduct): string {
+    return (
+      product.displayVariant?.variantImage ||
+      product.mainImages?.[0] ||
+      'https://via.placeholder.com/640x480?text=Product'
+    );
   }
 
   activeImage(): string {
@@ -586,6 +657,10 @@ export class ProductDetailComponent implements OnInit {
     return `${file.name}-${file.size}-${file.lastModified}`;
   }
 
+  trackByProductId(_: number, product: CustomerCatalogProduct): string {
+    return product._id;
+  }
+
   onReviewImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files || []);
@@ -644,5 +719,81 @@ export class ProductDetailComponent implements OnInit {
     if (this.reviewImagesInput?.nativeElement) {
       this.reviewImagesInput.nativeElement.value = '';
     }
+  }
+
+  private findSimilarProducts(
+    currentProduct: CustomerCatalogProduct,
+    catalogProducts: CustomerCatalogProduct[],
+    groups: CustomerLandingCategoryGroup[]
+  ): CustomerCatalogProduct[] {
+    const landingProducts = this.flattenLandingProducts(groups);
+    const combinedProducts = [...catalogProducts, ...landingProducts];
+    const uniqueProducts = Array.from(
+      new Map(
+        combinedProducts
+          .filter((product) => product?._id && product._id !== currentProduct._id)
+          .map((product) => [product._id, product] as const)
+      ).values()
+    );
+    const allProducts = uniqueProducts;
+    const currentCategoryKey = this.normalizeKey(
+      currentProduct.catalogCategorySlug || currentProduct.categoryDetails?.slug || currentProduct.categoryDetails?.name || ''
+    );
+    const currentBrandKey = this.normalizeKey(currentProduct.brand || '');
+
+    const scoredProducts = allProducts
+      .map((product) => {
+        let score = 0;
+        const productCategoryKey = this.normalizeKey(
+          product.catalogCategorySlug || product.categoryDetails?.slug || product.categoryDetails?.name || ''
+        );
+        const productBrandKey = this.normalizeKey(product.brand || '');
+
+        if (currentCategoryKey && productCategoryKey === currentCategoryKey) {
+          score += 3;
+        }
+
+        if (currentBrandKey && productBrandKey === currentBrandKey) {
+          score += 2;
+        }
+
+        if (
+          currentProduct.categoryDetails?.name &&
+          product.categoryDetails?.name &&
+          this.normalizeKey(product.categoryDetails.name) === this.normalizeKey(currentProduct.categoryDetails.name)
+        ) {
+          score += 1;
+        }
+
+        return { product, score };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(({ product }) => product);
+
+    const fallbackProducts = allProducts.slice(0, 4);
+    const selectedProducts = scoredProducts.length ? scoredProducts : fallbackProducts;
+
+    return selectedProducts.slice(0, 4);
+  }
+
+  private flattenLandingProducts(groups: CustomerLandingCategoryGroup[]): CustomerCatalogProduct[] {
+    const products: CustomerCatalogProduct[] = [];
+
+    groups.forEach((group) => {
+      (group.products || []).forEach((product) => {
+        products.push({
+          ...product,
+          catalogCategorySlug: group.categorySlug || product.categoryDetails?.slug || '',
+          catalogCategoryName: group.categoryName || product.categoryDetails?.name || ''
+        });
+      });
+    });
+
+    return products;
+  }
+
+  private normalizeKey(value: string): string {
+    return String(value || '').trim().toLowerCase();
   }
 }

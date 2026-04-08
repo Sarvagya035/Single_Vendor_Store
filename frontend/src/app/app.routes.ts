@@ -44,6 +44,11 @@ export const routes: Routes = [
       import('./features/store/product-detail.component').then((m) => m.ProductDetailComponent),
   },
   {
+    path: 'products',
+    loadComponent: () =>
+      import('./features/store/products-page.component').then((m) => m.ProductsPageComponent)
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login.component').then((m) => m.LoginComponent)
