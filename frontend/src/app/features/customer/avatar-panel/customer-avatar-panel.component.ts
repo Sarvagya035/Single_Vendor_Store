@@ -7,12 +7,12 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="glass-card space-y-10 p-10">
-      <h3 class="border-b border-slate-100 pb-4 text-lg text-xs font-black uppercase tracking-widest text-slate-900">Profile Picture</h3>
+    <div class="app-surface space-y-10 p-10">
+      <h3 class="border-b border-[#f1e4d4] pb-4 text-lg text-xs font-black uppercase tracking-widest text-slate-900">Profile Picture</h3>
 
       <div class="flex flex-col items-center space-y-8">
         <div class="group relative">
-          <div class="absolute inset-0 rounded-full bg-amber-600 opacity-10 blur-2xl transition-opacity group-hover:opacity-20"></div>
+          <div class="absolute inset-0 rounded-full bg-[#6f4e37] opacity-10 blur-2xl transition-opacity group-hover:opacity-20"></div>
           <img
             *ngIf="previewUrl || user.avatar"
             [src]="previewUrl || user.avatar"
@@ -21,12 +21,12 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
           >
           <div
             *ngIf="!previewUrl && !user.avatar"
-            class="relative flex h-44 w-44 items-center justify-center rounded-full border-4 border-white bg-amber-700 text-6xl font-black text-white shadow-2xl"
+            class="relative flex h-44 w-44 items-center justify-center rounded-full border-4 border-white bg-[#6f4e37] text-6xl font-black text-white shadow-2xl"
           >
             {{ user.username.charAt(0).toUpperCase() }}
           </div>
 
-          <div class="absolute inset-0 rounded-full border-4 border-dashed border-amber-200 opacity-0 transition-opacity group-hover:opacity-100 animate-[spin_10s_linear_infinite]"></div>
+          <div class="absolute inset-0 rounded-full border-4 border-dashed border-[#e7dac9] opacity-0 transition-opacity group-hover:opacity-100 animate-[spin_10s_linear_infinite]"></div>
         </div>
 
         <div class="w-full space-y-6">

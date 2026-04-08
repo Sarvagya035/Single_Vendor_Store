@@ -23,7 +23,7 @@ import { OrderService } from '../../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule, VendorSidebarComponent],
   template: `
-    <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ecfdf5_38%,#f8fafc_100%)] pt-4 pb-12">
+    <div class="min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_38%,#fff9f2_100%)] pt-4 pb-12">
       <main class="w-full px-4 sm:px-6 lg:px-8">
         <div class="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
           <app-vendor-sidebar
@@ -38,7 +38,7 @@ import { OrderService } from '../../../core/services/order.service';
             @if (isNavigating()) {
               <div class="rounded-[1.5rem] border border-amber-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
                 <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
-                  <div class="route-progress h-full w-1/3 rounded-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600"></div>
+                  <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
                 </div>
               </div>
             }

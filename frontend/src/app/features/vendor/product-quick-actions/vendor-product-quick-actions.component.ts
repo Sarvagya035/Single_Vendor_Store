@@ -7,8 +7,8 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="rounded-[1.5rem] border border-slate-200 bg-white p-5">
-      <div class="border-b border-slate-100 pb-4">
+    <section class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5">
+      <div class="border-b border-[#f1e4d4] pb-4">
         <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Quick Actions</p>
         <h3 class="mt-2 text-xl font-black text-slate-900">Status and removal</h3>
       </div>
@@ -17,7 +17,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
           type="button"
           (click)="toggleStatus.emit()"
           [disabled]="statusBusy"
-          class="flex w-full items-center justify-between rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-left transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-70"
+          class="flex w-full items-center justify-between rounded-3xl border border-[#e7dac9] bg-[#fff7ed] px-5 py-4 text-left transition hover:bg-[#fef6eb] disabled:cursor-not-allowed disabled:opacity-70"
         >
           <span>
             <span class="block text-sm font-black text-slate-900">Product visibility</span>
@@ -29,13 +29,13 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
           <span class="flex items-center gap-3">
             <span
               class="text-xs font-black uppercase tracking-[0.18em]"
-              [ngClass]="product.isActive ? 'text-amber-700' : 'text-slate-500'"
+              [ngClass]="product.isActive ? 'text-[#6f4e37]' : 'text-slate-500'"
             >
               {{ statusBusy ? 'Updating...' : product.isActive ? 'Active' : 'Inactive' }}
             </span>
             <span
               class="relative inline-flex h-8 w-14 items-center rounded-full transition"
-              [ngClass]="product.isActive ? 'bg-amber-600' : 'bg-slate-300'"
+              [ngClass]="product.isActive ? 'bg-[#6f4e37]' : 'bg-slate-300'"
             >
               <span
                 class="inline-block h-6 w-6 rounded-full bg-white shadow transition-transform"

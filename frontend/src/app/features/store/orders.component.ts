@@ -9,11 +9,11 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-slate-50">
+    <div class="min-h-[calc(100vh-64px)] bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
       <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Order History</p>
+            <p class="text-xs font-black uppercase tracking-[0.22em] text-amber-700">Order History</p>
             <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">My orders</h1>
             <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
               Track order status, review delivery details, and open any order for a full breakdown.
@@ -32,7 +32,7 @@ import { OrderService } from '../../core/services/order.service';
 
         <div *ngIf="isLoading" class="mt-10 text-sm font-semibold text-slate-500">Loading your orders...</div>
 
-        <div *ngIf="!isLoading && orders.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
+        <div *ngIf="!isLoading && orders.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center">
           <h2 class="text-2xl font-black text-slate-900">No orders yet</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">Your completed checkouts will appear here.</p>
           <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Start Shopping</a>
@@ -41,7 +41,7 @@ import { OrderService } from '../../core/services/order.service';
         <div *ngIf="orders.length" class="mt-8 grid gap-5">
           <article
             *ngFor="let order of orders; trackBy: trackByOrder"
-            class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+            class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]"
           >
             <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div class="min-w-0">
@@ -172,13 +172,13 @@ export class OrdersComponent implements OnInit {
   statusClass(status?: string): string {
     switch (status) {
       case 'Delivered':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-[#f5e6d3] text-[#6f4e37]';
       case 'Shipped':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-[#fff7ed] text-[#6f4e37]';
       case 'Cancelled':
         return 'bg-rose-100 text-rose-700';
       default:
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-[#fff7ed] text-[#6f4e37]';
     }
   }
 

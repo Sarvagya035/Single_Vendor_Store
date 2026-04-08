@@ -11,8 +11,8 @@ import { VendorService } from '../../../core/services/vendor.service';
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="space-y-6">
-      <div class="glass-card overflow-hidden">
-        <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
+      <div class="app-surface overflow-hidden">
+        <div class="border-b border-[#f1e4d4] px-6 py-6 lg:px-8">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Customer Directory</p>
@@ -41,22 +41,22 @@ import { VendorService } from '../../../core/services/vendor.service';
         </div>
 
         <div class="grid gap-4 px-6 py-6 md:grid-cols-3 lg:px-8">
-          <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
+          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Total Customers</p>
             <p class="mt-3 text-3xl font-black text-slate-900">{{ customers.length }}</p>
           </article>
-          <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
+          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Visible Now</p>
             <p class="mt-3 text-3xl font-black text-slate-900">{{ filteredCustomers.length }}</p>
           </article>
-        <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
+          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600">Latest Signup</p>
             <p class="mt-3 text-sm font-black text-slate-900">{{ newestCustomerLabel }}</p>
           </article>
         </div>
       </div>
 
-      <section class="glass-card overflow-hidden">
+      <section class="app-surface overflow-hidden">
         <div *ngIf="isLoading" class="px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
           Loading customer accounts...
         </div>
@@ -73,7 +73,7 @@ import { VendorService } from '../../../core/services/vendor.service';
             type="button"
             *ngFor="let customer of filteredCustomers; trackBy: trackByUserId"
             (click)="openCustomer(customer)"
-            class="flex w-full flex-col gap-4 px-6 py-5 text-left transition hover:bg-slate-50/80 lg:px-8"
+            class="flex w-full flex-col gap-4 px-6 py-5 text-left transition hover:bg-[#fff7ed]/60 lg:px-8"
           >
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div class="flex min-w-0 items-center gap-4">
@@ -89,7 +89,7 @@ import { VendorService } from '../../../core/services/vendor.service';
               </div>
 
               <div class="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.18em]">
-                <span class="rounded-full bg-amber-50 px-3 py-1 text-amber-800">{{ formatRole(customer.role) }}</span>
+                <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ formatRole(customer.role) }}</span>
                 <span *ngIf="customer.createdAt" class="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
                   Joined {{ formatDate(customer.createdAt) }}
                 </span>

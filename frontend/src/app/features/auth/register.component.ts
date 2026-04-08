@@ -11,10 +11,10 @@ import { catchError, finalize, EMPTY } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-screen bg-slate-50 flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
       <!-- Background Glow Effects -->
-      <div class="absolute top-0 right-1/4 w-[500px] h-[500px] bg-amber-600/10 blur-[130px] rounded-full animate-float"></div>
-      <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-amber-600/10 blur-[130px] rounded-full animate-float" style="animation-delay: 2s"></div>
+      <div class="absolute top-0 right-1/4 h-[500px] w-[500px] rounded-full bg-[#f5e6d3]/40 blur-[130px] animate-float"></div>
+      <div class="absolute bottom-0 left-1/4 h-[500px] w-[500px] rounded-full bg-[#d4a017]/20 blur-[130px] animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
         <h2 class="text-4xl font-black text-slate-900 tracking-tight">Create Account</h2>
@@ -22,13 +22,13 @@ import { catchError, finalize, EMPTY } from 'rxjs';
       </div>
 
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div class="glass-card p-10">
+        <div class="app-surface p-10">
           <form class="space-y-6" (ngSubmit)="onSubmit()">
             
             <div class="space-y-2">
               <label for="username" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Full Name</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   👤
                 </div>
                 <input
@@ -46,7 +46,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   [class.ring-2]="!!usernameError"
                   [class.ring-red-500]="!!usernameError"
                   [class.focus:ring-red-500]="!!usernameError"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner">
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
               </div>
               <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ usernameError }}
@@ -56,19 +56,19 @@ import { catchError, finalize, EMPTY } from 'rxjs';
             <div class="space-y-2">
               <label for="email" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Email Address</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   📧
                 </div>
                 <input id="email" name="email" type="email" autocomplete="email" required [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner">
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
               </div>
             </div>
 
             <div class="space-y-2">
               <label for="phone" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Phone Number</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   📞
                 </div>
                 <input id="phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required [(ngModel)]="phone"
@@ -77,7 +77,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   [class.ring-2]="!!phoneError"
                   [class.ring-red-500]="!!phoneError"
                   [class.focus:ring-red-500]="!!phoneError"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner">
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
               </div>
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}
@@ -87,7 +87,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
             <div class="space-y-2">
               <label for="password" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Password</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   🔑
                 </div>
                 <input
@@ -98,7 +98,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   required
                   [(ngModel)]="password"
                   placeholder="Enter your password"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-16 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner"
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
                 >
                 <button
                   type="button"
@@ -115,7 +115,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
             </button>
           </form>
 
-          <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+          <div class="mt-8 border-t border-[#f1e4d4] pt-6 text-center">
             <p class="text-sm font-medium text-slate-500">
               Already have an account?
               <a routerLink="/login" class="text-amber-700 font-black hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Login here</a>

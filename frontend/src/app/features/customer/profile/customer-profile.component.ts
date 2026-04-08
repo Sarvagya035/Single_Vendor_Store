@@ -23,7 +23,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
     CustomerEditProfileModalComponent
   ],
   template: `
-    <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_24%,#f8fafc_100%)] pt-16 pb-24">
+    <div class="min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_24%,#fff9f2_100%)] pt-16 pb-24">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <app-customer-profile-header
           [isAdmin]="isAdmin()"
@@ -37,7 +37,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
           <p class="font-medium tracking-wide text-slate-500">Syncing account data...</p>
         </div>
 
-        <div *ngIf="error" class="glass-card mb-8 border-rose-100 bg-rose-50/50 p-6 font-bold text-rose-700">
+        <div *ngIf="error" class="app-surface mb-8 border-rose-100 bg-rose-50/50 p-6 font-bold text-rose-700">
           ⚠️ {{ error }}
         </div>
 

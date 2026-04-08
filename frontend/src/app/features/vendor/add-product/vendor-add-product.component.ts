@@ -24,7 +24,7 @@ interface FlatCategoryOption {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, VendorVariantEditorCardComponent, VendorVariantOptionRowComponent],
   template: `
-    <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ecfeff_28%,#f8fafc_100%)] pt-8 pb-12">
+    <div class="min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_28%,#fff9f2_100%)] pt-8 pb-12">
       <main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>

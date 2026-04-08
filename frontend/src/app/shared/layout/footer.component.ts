@@ -17,11 +17,11 @@ import { RouterModule } from '@angular/router';
               </div>
               <div>
                 <p class="text-lg font-black text-slate-900">E-Commerce</p>
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Smart vendor storefront</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Warm dry fruits marketplace</p>
               </div>
             </div>
             <p class="max-w-xl text-sm font-medium leading-relaxed text-slate-500">
-              A clean shopping and vendor experience for browsing products, managing inventory, and keeping orders moving.
+              A clean shopping and vendor experience for browsing dry fruits, managing inventory, and keeping orders moving.
             </p>
           </div>
 
@@ -29,7 +29,7 @@ import { RouterModule } from '@angular/router';
             <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Explore</p>
             <div class="mt-4 space-y-3 text-sm font-semibold">
               <a routerLink="/" class="block text-slate-700 transition hover:text-amber-700">Home</a>
-              <a routerLink="/" class="block text-slate-700 transition hover:text-amber-700">Browse Products</a>
+              <a routerLink="/products" class="block text-slate-700 transition hover:text-amber-700">Browse Products</a>
               <a routerLink="/cart" class="block text-slate-700 transition hover:text-amber-700">Cart</a>
               <a routerLink="/profile" class="block text-slate-700 transition hover:text-amber-700">Profile</a>
             </div>
@@ -47,7 +47,7 @@ import { RouterModule } from '@angular/router';
         </div>
 
         <div class="mt-10 flex flex-col gap-3 border-t border-slate-200 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>Built for a smoother shopping and store management flow.</p>
+          <p>Built for a smoother dry fruit shopping and store management flow.</p>
           <p class="font-semibold text-slate-400">Copyright {{ currentYear }} E-Commerce</p>
         </div>
       </div>

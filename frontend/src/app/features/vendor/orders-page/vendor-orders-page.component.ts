@@ -12,7 +12,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   imports: [CommonModule, FormsModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="rounded-[2rem] border border-white/70 bg-white/80 px-6 py-7 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:px-8">
+      <div class="app-surface px-6 py-7 sm:px-8">
         <app-page-header
           title="Manage incoming orders"
           eyebrowClass="text-amber-600"
@@ -30,15 +30,15 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
       </div>
 
       <div class="grid gap-4 md:grid-cols-3">
-        <article class="glass-card p-5">
+        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
           <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Processing</p>
           <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Processing') }}</p>
         </article>
-        <article class="glass-card p-5">
+        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
           <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Shipped</p>
           <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Shipped') }}</p>
         </article>
-        <article class="glass-card p-5">
+        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
           <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivered</p>
           <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Delivered') }}</p>
         </article>
@@ -56,7 +56,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
       <div *ngIf="orders.length" class="grid gap-5">
         <article
           *ngFor="let order of orders; trackBy: trackByOrder"
-          class="cursor-pointer rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-amber-200 hover:shadow-[0_24px_60px_rgba(16,185,129,0.12)]"
+          class="cursor-pointer rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)]"
           (click)="openOrder(order)"
         >
           <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
@@ -256,13 +256,13 @@ export class VendorOrdersPageComponent implements OnInit {
   statusClass(status?: string): string {
     switch (status) {
       case 'Delivered':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-[#f5e6d3] text-[#6f4e37]';
       case 'Shipped':
-        return 'bg-amber-100 text-amber-800';
+        return 'bg-[#fff7ed] text-[#6f4e37]';
       case 'Cancelled':
         return 'bg-rose-100 text-rose-700';
       default:
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-[#fff7ed] text-[#6f4e37]';
     }
   }
 

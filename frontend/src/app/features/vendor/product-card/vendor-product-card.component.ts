@@ -7,7 +7,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <article class="overflow-visible rounded-[1.75rem] border border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-sm">
+    <article class="overflow-visible rounded-[1.75rem] border border-[#e7dac9] bg-white transition hover:border-[#d4a017] hover:shadow-[0_20px_45px_rgba(111,78,55,0.08)]">
       <div
         role="button"
         tabindex="0"
@@ -26,7 +26,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
             />
             <div
               *ngIf="!imageUrl"
-              class="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-600 to-amber-700 text-xl font-black text-white"
+              class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#6f4e37] to-[#d4a017] text-xl font-black text-white"
             >
               {{ product.productName.charAt(0) }}
             </div>
@@ -65,7 +65,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
           <button
             type="button"
             (click)="$event.stopPropagation(); edit.emit()"
-            class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50"
+            class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:border-[#e7dac9] hover:bg-[#fff7ed]"
           >
             Edit
           </button>
@@ -76,8 +76,8 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
             class="rounded-2xl border px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-70"
             [ngClass]="
               product.isActive
-                ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                : 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100'
+                ? 'border-[#e7dac9] bg-[#fff7ed] text-[#6f4e37] hover:bg-[#fef6eb]'
+                : 'border-[#e7dac9] bg-[#fff7ed] text-[#6f4e37] hover:bg-[#fef6eb]'
             "
           >
             {{ statusBusy ? 'Updating...' : product.isActive ? 'Deactivate' : 'Activate' }}

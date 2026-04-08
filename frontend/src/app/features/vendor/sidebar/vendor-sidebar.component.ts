@@ -18,13 +18,13 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           <a
             routerLink="/vendor/dashboard"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
-            [ngClass]="activeView === 'dashboard' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+            [ngClass]="activeView === 'dashboard' ? 'border-[#e7dac9] bg-[#fef6eb] text-[#6f4e37] shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="mt-1 text-base font-black">Dashboard</p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'dashboard' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'dashboard' ? 'bg-[#6f4e37] text-white' : 'bg-slate-100 text-slate-700'">
                 4
               </span>
             </div>
@@ -63,13 +63,13 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           <a
             routerLink="/vendor/customers"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
-            [ngClass]="activeView === 'customers' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+            [ngClass]="activeView === 'customers' ? 'border-[#e7dac9] bg-[#fff7ed] text-[#6f4e37] shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
           >
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="mt-1 text-base font-black">Customers</p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'customers' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'customers' ? 'bg-[#6f4e37] text-white' : 'bg-slate-100 text-slate-700'">
                 {{ customerCount }}
               </span>
             </div>

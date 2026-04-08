@@ -12,15 +12,15 @@ import { UserService } from '../../../core/services/user.service';
     <div *ngIf="open" class="fixed inset-0 z-[100] flex items-center justify-center px-4 py-6">
       <button
         type="button"
-        class="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]"
+        class="absolute inset-0 bg-[#2f1b14]/40 backdrop-blur-[2px]"
         (click)="closeModal()"
         aria-label="Close password dialog"
       ></button>
 
-      <div class="relative z-[101] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.2)]">
-        <div class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5 sm:px-8">
+      <div class="relative z-[101] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_30px_80px_rgba(111,78,55,0.2)]">
+        <div class="flex items-start justify-between gap-4 border-b border-[#f1e4d4] px-6 py-5 sm:px-8">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-amber-600">Security</p>
+            <p class="text-[11px] font-black uppercase tracking-[0.28em] text-amber-700">Security</p>
             <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Change Password</h3>
             <p class="mt-2 text-sm font-medium text-slate-500">
               Update your account password to keep your profile secure.
@@ -50,7 +50,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showOldPassword ? 'text' : 'password'"
                   autocomplete="current-password"
                   placeholder="Enter your current password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
+                  class="block w-full rounded-2xl border border-slate-200 bg-[#fff7ed] px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
                 >
                 <button
                   type="button"
@@ -74,7 +74,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showNewPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Enter your new password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
+                  class="block w-full rounded-2xl border border-slate-200 bg-[#fff7ed] px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
                 >
                 <button
                   type="button"
@@ -98,7 +98,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showConfirmPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Re-enter your new password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
+                  class="block w-full rounded-2xl border border-slate-200 bg-[#fff7ed] px-4 py-4 pr-16 font-bold text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
                 >
                 <button
                   type="button"

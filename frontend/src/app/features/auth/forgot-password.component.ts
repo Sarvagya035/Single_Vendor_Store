@@ -11,9 +11,9 @@ import { ErrorService } from '../../core/services/error.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-screen bg-slate-50 flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
-      <div class="absolute top-0 left-1/4 w-96 h-96 bg-amber-600/10 blur-[120px] rounded-full animate-float"></div>
-      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-600/10 blur-[120px] rounded-full animate-float" style="animation-delay: 2s"></div>
+    <div class="min-h-screen flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
+      <div class="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-[#f5e6d3]/40 blur-[120px] animate-float"></div>
+      <div class="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[#d4a017]/20 blur-[120px] animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
         <h2 class="text-4xl font-black text-slate-900 tracking-tight">Forgot Password</h2>
@@ -21,12 +21,12 @@ import { ErrorService } from '../../core/services/error.service';
       </div>
 
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div class="glass-card p-10">
+        <div class="app-surface p-10">
           <form class="space-y-8" (ngSubmit)="onSubmit()">
             <div class="space-y-2">
               <label for="email" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Email Address</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   📧
                 </div>
                 <input
@@ -37,7 +37,7 @@ import { ErrorService } from '../../core/services/error.service';
                   required
                   [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="block w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 text-slate-900 font-bold focus:ring-2 focus:ring-amber-600 transition-all shadow-inner"
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
                 >
               </div>
             </div>
@@ -47,7 +47,7 @@ import { ErrorService } from '../../core/services/error.service';
             </button>
           </form>
 
-          <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+          <div class="mt-8 border-t border-[#f1e4d4] pt-6 text-center">
             <p class="text-sm font-medium text-slate-500">
               Remember your password?
               <a routerLink="/login" class="text-amber-700 font-black hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Back to Login</a>

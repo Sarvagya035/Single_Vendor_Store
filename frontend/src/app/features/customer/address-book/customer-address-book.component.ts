@@ -9,8 +9,8 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="glass-card overflow-hidden">
-      <div class="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50 px-8 py-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="app-surface overflow-hidden">
+      <div class="flex flex-col gap-4 border-b border-[#f1e4d4] bg-[#fff7ed]/50 px-8 py-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 class="text-lg text-xs font-black uppercase tracking-widest text-slate-900">Saved Addresses</h3>
           <p class="mt-2 text-sm font-medium text-slate-500">
@@ -35,7 +35,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           {{ successMessage }}
         </div>
 
-        <div *ngIf="showForm" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
+        <div *ngIf="showForm" class="rounded-[1.75rem] border border-[#f1e4d4] bg-white p-6 shadow-[0_18px_40px_rgba(111,78,55,0.06)]">
           <div class="flex items-center justify-between gap-4">
             <div>
               <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
@@ -166,7 +166,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           Loading addresses...
         </div>
 
-        <div *ngIf="!loading && addresses.length === 0" class="rounded-[1.75rem] border border-dashed border-slate-300 bg-white/70 px-6 py-12 text-center">
+        <div *ngIf="!loading && addresses.length === 0" class="rounded-[1.75rem] border border-dashed border-[#e7dac9] bg-white/70 px-6 py-12 text-center">
           <p class="text-lg font-black text-slate-900">No saved addresses yet</p>
           <p class="mt-2 text-sm font-medium text-slate-500">
             Add your first delivery address to get started.
@@ -176,7 +176,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
         <div *ngIf="addresses.length" class="grid gap-4">
           <article
             *ngFor="let address of addresses; trackBy: trackByAddress"
-            class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]"
+            class="rounded-[1.75rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_40px_rgba(111,78,55,0.06)]"
           >
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="space-y-3">
@@ -184,7 +184,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                   <h4 class="text-lg font-black text-slate-900">{{ address.fullname }}</h4>
                   <span
                     *ngIf="address.isDefault"
-                    class="rounded-full bg-amber-50 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
+                    class="rounded-full bg-[#fff7ed] px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
                   >
                     Default
                   </span>
@@ -210,7 +210,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 <button
                   *ngIf="!address.isDefault"
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-amber-100 bg-amber-50/60 text-amber-800"
+                  class="btn-secondary !px-4 !py-2 border-amber-100 bg-[#fff7ed]/60 text-amber-800"
                   (click)="setDefault(address)"
                 >
                   Make Default

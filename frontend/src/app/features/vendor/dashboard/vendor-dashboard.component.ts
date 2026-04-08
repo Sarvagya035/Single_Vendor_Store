@@ -39,7 +39,7 @@ interface DashboardProduct {
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="space-y-6">
-      <div class="glass-card overflow-hidden">
+      <div class="app-surface overflow-hidden">
         <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
           <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -54,7 +54,7 @@ interface DashboardProduct {
         </div>
 
         <div class="grid gap-4 px-6 py-6 md:grid-cols-2 xl:grid-cols-4 lg:px-8">
-          <article *ngFor="let metric of metrics" class="rounded-[1.75rem] border p-5"
+          <article *ngFor="let metric of metrics" class="rounded-[1.75rem] border p-5 shadow-sm transition hover:-translate-y-0.5"
             [ngClass]="metricCardClass(metric.tone)">
             <p class="text-[11px] font-black uppercase tracking-[0.18em]">{{ metric.label }}</p>
             <p class="mt-4 text-3xl font-black tracking-tight text-slate-900">{{ metric.value }}</p>
@@ -63,7 +63,7 @@ interface DashboardProduct {
         </div>
       </div>
 
-      <div class="glass-card overflow-hidden">
+      <div class="app-surface overflow-hidden">
         <div class="border-b border-slate-200 px-6 py-5 lg:px-8">
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Reports</p>
           <h2 class="mt-2 text-2xl font-black text-slate-900">Download Sales Reports</h2>
@@ -84,7 +84,7 @@ interface DashboardProduct {
             <div class="grid gap-3 sm:grid-cols-2">
               <button
                 type="button"
-                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50/60"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-amber-200 hover:bg-[#fff7ed]"
                 [disabled]="isDownloadingReport"
                 (click)="downloadPresetReport('weekly', 'csv')"
               >
@@ -94,7 +94,7 @@ interface DashboardProduct {
 
               <button
                 type="button"
-                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-[#e7dac9] hover:bg-[#fef6eb]"
                 [disabled]="isDownloadingReport"
                 (click)="downloadPresetReport('weekly', 'pdf')"
               >
@@ -104,7 +104,7 @@ interface DashboardProduct {
 
               <button
                 type="button"
-                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50/60"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-amber-200 hover:bg-[#fff7ed]"
                 [disabled]="isDownloadingReport"
                 (click)="downloadPresetReport('monthly', 'csv')"
               >
@@ -114,7 +114,7 @@ interface DashboardProduct {
 
               <button
                 type="button"
-                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:-translate-y-0.5 hover:border-[#e7dac9] hover:bg-[#fef6eb]"
                 [disabled]="isDownloadingReport"
                 (click)="downloadPresetReport('monthly', 'pdf')"
               >
@@ -124,13 +124,13 @@ interface DashboardProduct {
             </div>
           </div>
 
-          <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
+          <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-4 shadow-sm sm:p-5">
             <div class="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p class="text-sm font-black uppercase tracking-[0.18em] text-slate-400">Custom range</p>
+                <p class="text-sm font-black uppercase tracking-[0.18em] text-amber-700">Custom range</p>
                 <h3 class="mt-1 text-xl font-black text-slate-900">Choose your dates</h3>
               </div>
-              <span class="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+              <span class="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-amber-700">
                 CSV / PDF
               </span>
             </div>
@@ -210,7 +210,7 @@ interface DashboardProduct {
         </section>
 
         <section class="space-y-6">
-          <div class="glass-card overflow-hidden">
+          <div class="app-surface overflow-hidden">
             <div class="border-b border-slate-200 px-6 py-5">
               <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Quick Actions</p>
               <h2 class="mt-2 text-2xl font-black text-slate-900">What Do You Want To Do?</h2>
@@ -239,7 +239,7 @@ interface DashboardProduct {
             </div>
 
             <div *ngIf="topProducts.length" class="space-y-3 px-6 py-6">
-              <article *ngFor="let product of topProducts" class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+              <article *ngFor="let product of topProducts" class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-4 shadow-sm">
                 <div class="flex items-start justify-between gap-4">
                   <div>
                     <p class="text-sm font-black text-slate-900">{{ product.name }}</p>
@@ -403,9 +403,9 @@ export class VendorDashboardComponent implements OnInit {
 
   metricCardClass(tone: DashboardMetric['tone']): string {
     const classes: Record<DashboardMetric['tone'], string> = {
-      primary: 'border-amber-100 bg-amber-50/70 text-amber-900',
+      primary: 'border-amber-100 bg-[#fff7ed]/70 text-[#6f4e37]',
       accent: 'border-amber-100 bg-[#f5e6d3]/70 text-[#6f4e37]',
-      amber: 'border-amber-100 bg-amber-50/70 text-amber-700',
+      amber: 'border-amber-100 bg-amber-50/70 text-amber-800',
       rose: 'border-rose-100 bg-rose-50/70 text-rose-700'
     };
 

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { AppRefreshService } from '../../core/services/app-refresh.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
@@ -167,6 +168,14 @@ export class HeaderComponent implements OnInit {
     private appRefreshService: AppRefreshService
   ) {}
 
+  private readonly apiOrigin = (() => {
+    try {
+      return new URL(environment.apiUrl).origin;
+    } catch {
+      return '';
+    }
+  })();
+
   ngOnInit() {
     this.authService.currentUser$.subscribe((user) => {
       this.user = user;
@@ -264,11 +273,11 @@ export class HeaderComponent implements OnInit {
   }
 
   hasAvatar(): boolean {
-    return typeof this.user?.avatar === 'string' && this.user.avatar.startsWith('http');
+    return !!this.normalizeAvatarUrl(this.user?.avatar);
   }
 
   avatarUrl(): string {
-    return this.hasAvatar() ? this.user.avatar : '';
+    return this.normalizeAvatarUrl(this.user?.avatar);
   }
 
   displayName(): string {
@@ -277,6 +286,27 @@ export class HeaderComponent implements OnInit {
 
   customerDisplayName(): string {
     return String(this.user?.username || this.user?.fullname || this.user?.email || 'Customer').trim();
+  }
+
+  private normalizeAvatarUrl(value: unknown): string {
+    if (typeof value !== 'string') {
+      return '';
+    }
+
+    const avatar = value.trim();
+    if (!avatar) {
+      return '';
+    }
+
+    if (/^(https?:)?\/\//i.test(avatar) || avatar.startsWith('data:')) {
+      return avatar;
+    }
+
+    if (!this.apiOrigin) {
+      return avatar;
+    }
+
+    return `${this.apiOrigin}${avatar.startsWith('/') ? '' : '/'}${avatar}`;
   }
 
   userInitials(): string {

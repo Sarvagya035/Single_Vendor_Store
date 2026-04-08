@@ -71,17 +71,6 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                     </a>
                   </div>
                 </div>
-
-                <div class="grid gap-4 sm:grid-cols-2 lg:justify-self-end">
-                  <div class="rounded-[1.4rem] border border-white/15 bg-white/12 p-5 backdrop-blur-md">
-                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-white/65">Dry fruit categories</p>
-                    <p class="mt-3 text-3xl font-black text-white">{{ catalogCategories.length }}</p>
-                  </div>
-                  <div class="rounded-[1.4rem] border border-white/15 bg-white/12 p-5 backdrop-blur-md">
-                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-white/65">Featured items</p>
-                    <p class="mt-3 text-3xl font-black text-white">12</p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

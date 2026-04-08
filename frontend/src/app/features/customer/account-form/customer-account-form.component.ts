@@ -8,14 +8,14 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="glass-card space-y-8 p-10">
-      <h3 class="border-b border-slate-100 pb-4 text-lg text-xs font-black uppercase tracking-widest text-slate-900">Account Details</h3>
+    <div class="app-surface space-y-8 p-10">
+      <h3 class="border-b border-[#f1e4d4] pb-4 text-lg text-xs font-black uppercase tracking-widest text-slate-900">Account Details</h3>
 
       <form (ngSubmit)="onSubmit()" class="space-y-6">
         <div class="space-y-2">
           <label for="username" class="ml-1 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Full Name</label>
           <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">👤</div>
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">👤</div>
             <input
               type="text"
               id="username"
@@ -37,7 +37,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
         <div class="space-y-2">
           <label for="phone" class="ml-1 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Phone Number</label>
           <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">📞</div>
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">📞</div>
             <input
               type="text"
               id="phone"

@@ -11,7 +11,7 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-slate-50">
+    <div class="min-h-[calc(100vh-64px)] bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
       <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -43,10 +43,10 @@ import { OrderService } from '../../core/services/order.service';
 
         <div *ngIf="!isLoading && order" class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section class="space-y-6">
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-              <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
                 <div>
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Status</p>
+                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Status</p>
                   <h2 class="mt-2 text-2xl font-black text-slate-900">Order progress</h2>
                 </div>
                 <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(displayStatus)">
@@ -55,28 +55,28 @@ import { OrderService } from '../../core/services/order.service';
               </div>
 
               <div class="mt-5 grid gap-4 md:grid-cols-2">
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Placed On</p>
+                <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
+                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Placed On</p>
                   <p class="mt-3 text-base font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
                 </div>
 
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Payment</p>
+                <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
+                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Payment</p>
                   <p class="mt-3 text-base font-black text-slate-900">{{ isVendorView() ? 'Handled by marketplace' : (order.paymentInfo?.status || 'Pending') }}</p>
                 </div>
               </div>
             </div>
 
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-              <div class="border-b border-slate-100 pb-4">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Items</p>
+            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <div class="border-b border-[#f1e4d4] pb-4">
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Items</p>
                 <h2 class="mt-2 text-2xl font-black text-slate-900">Purchased products</h2>
               </div>
 
               <div class="mt-5 space-y-4">
                 <article
                   *ngFor="let item of visibleItems; trackBy: trackByItem"
-                  class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5"
+                  class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5"
                 >
                   <div class="flex items-start justify-between gap-4">
                     <div>
@@ -98,8 +98,8 @@ import { OrderService } from '../../core/services/order.service';
           </section>
 
           <aside class="space-y-6">
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-              <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivery</p>
+            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Delivery</p>
               <h2 class="mt-2 text-2xl font-black text-slate-900">Shipping address</h2>
               <p class="mt-4 text-sm font-medium leading-7 text-slate-600">
                 {{ order.shippingAddress?.address || 'Address unavailable' }}
@@ -110,7 +110,7 @@ import { OrderService } from '../../core/services/order.service';
               <p class="mt-2 text-sm font-semibold text-slate-700">{{ order.shippingAddress?.phone || '-' }}</p>
             </div>
 
-            <div class="rounded-[2rem] border border-slate-200 bg-slate-900 p-6 text-white shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
+            <div class="rounded-[2rem] border border-[#e7dac9] bg-[#2f1b14] p-6 text-white shadow-[0_18px_50px_rgba(111,78,55,0.16)]">
               <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
                 {{ isVendorView() ? 'Vendor Summary' : 'Bill Summary' }}
               </p>

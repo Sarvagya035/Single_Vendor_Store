@@ -9,7 +9,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
   template: `
     <section class="glass-card overflow-hidden">
       <div class="grid gap-8 p-6 sm:p-8 xl:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] xl:items-start">
-        <div class="rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,0.88))] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
+        <div class="rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,249,242,0.98),rgba(245,230,211,0.9))] p-6 shadow-[0_24px_60px_rgba(111,78,55,0.08)]">
           <div class="flex flex-col items-center text-center xl:items-start xl:text-left">
             <div class="relative">
               <img
@@ -24,7 +24,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
               >
                 {{ vendor.shopName?.charAt(0) }}
               </div>
-              <div class="absolute -bottom-3 -right-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white text-2xl shadow-lg">
+              <div class="absolute -bottom-3 -right-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-[#e7dac9] bg-white text-2xl shadow-lg">
                 🛍️
               </div>
             </div>
@@ -57,20 +57,20 @@ import { VendorProfile } from '../../../core/models/vendor.models';
         </div>
 
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-[1.75rem] border border-slate-100 bg-slate-50/80 p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">GST</p>
+          <div class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-700">GST</p>
             <p class="mt-3 break-words text-lg font-black text-slate-900">{{ vendor.gstNumber }}</p>
           </div>
-          <div class="rounded-[1.75rem] border border-slate-100 bg-slate-50/80 p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Address</p>
+          <div class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-700">Address</p>
             <p class="mt-3 text-sm font-bold leading-relaxed text-slate-900">{{ vendor.vendorAddress }}</p>
           </div>
-          <div class="rounded-[1.75rem] border border-slate-100 bg-slate-50/80 p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Brand Summary</p>
+          <div class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-700">Brand Summary</p>
             <p class="mt-3 text-sm font-bold leading-7 text-slate-900">{{ vendor.vendorDescription }}</p>
           </div>
-          <div class="rounded-[1.75rem] border border-slate-100 bg-slate-50/80 p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Banking</p>
+          <div class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-700">Banking</p>
             <div class="mt-3 space-y-2 text-sm font-bold text-slate-900">
               <p>{{ vendor.bankDetails?.bankName || 'Bank details missing' }}</p>
               <p class="text-slate-600">{{ maskedAccountNumber() }}</p>
