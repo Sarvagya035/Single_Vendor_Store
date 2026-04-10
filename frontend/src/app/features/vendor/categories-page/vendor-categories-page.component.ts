@@ -30,9 +30,8 @@ import { ToastType } from '../../../core/models/vendor.models';
         [createForm]="categoryCreateForm"
         [createError]="categoryCreateError"
         [createImageName]="selectedCategoryImage?.name || ''"
-        (createFormChange)="updateCategoryCreateForm($event)"
         (selectCreateImage)="onCategoryImageSelected($event)"
-        (submitCreate)="createCategory()"
+        (submitCreate)="createCategory($event)"
         (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
         (deleteCategory)="deleteCategory($event)"
         (refresh)="loadCategories()"
@@ -88,19 +87,14 @@ export class VendorCategoriesPageComponent implements OnInit {
     });
   }
 
-  updateCategoryCreateForm(form: { name: string; description: string; parentCategory: string }): void {
-    this.categoryCreateForm = form;
-    this.categoryCreateError = '';
-  }
-
   onCategoryImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.selectedCategoryImage = input.files?.[0] || null;
     this.categoryCreateError = '';
   }
 
-  createCategory(): void {
-    if (!this.categoryCreateForm.name.trim()) {
+  createCategory(form: { name: string; description: string; parentCategory: string }): void {
+    if (!form.name.trim()) {
       this.categoryCreateError = 'Category name is required.';
       return;
     }
@@ -111,11 +105,11 @@ export class VendorCategoriesPageComponent implements OnInit {
     }
 
     const payload = new FormData();
-    payload.append('name', this.categoryCreateForm.name.trim());
-    payload.append('description', this.categoryCreateForm.description.trim());
+    payload.append('name', form.name.trim());
+    payload.append('description', form.description.trim());
     payload.append('image', this.selectedCategoryImage);
-    if (this.categoryCreateForm.parentCategory) {
-      payload.append('parentCategory', this.categoryCreateForm.parentCategory);
+    if (form.parentCategory) {
+      payload.append('parentCategory', form.parentCategory);
     }
 
     this.isCreatingCategory = true;

@@ -22,11 +22,11 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-slate-50">
-      <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <a routerLink="/" class="inline-flex items-center gap-2 text-sm font-black text-slate-500 transition hover:text-slate-900">
+    <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
+      <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <a routerLink="/products" class="inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 transition hover:text-slate-900">
           <span>&larr;</span>
-          Back to catalog
+          Back to products
         </a>
 
         <div *ngIf="loading" class="mt-8 text-sm font-semibold text-slate-500">Loading product...</div>
@@ -36,38 +36,42 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
         </div>
 
         <ng-container *ngIf="product && !loading">
-          <div class="mt-8 grid gap-8 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
-            <app-product-gallery
-              [productName]="product.productName"
-              [activeImage]="activeImage()"
-              [selectedImage]="selectedImage"
-              [images]="galleryImages()"
-              (imageSelected)="selectedImage = $event"
-            />
+          <div class="mt-8 rounded-[2rem] border border-[#eadcc9] bg-white/90 p-4 shadow-[0_24px_60px_rgba(47,27,20,0.08)] sm:p-6 lg:p-7">
+            <div class="grid gap-8 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
+              <app-product-gallery
+                [productName]="product.productName"
+                [activeImage]="activeImage()"
+                [selectedImage]="selectedImage"
+                [images]="galleryImages()"
+                (imageSelected)="selectedImage = $event"
+              />
 
-            <app-product-purchase-panel
-              [product]="product"
-              [variants]="product.variants || []"
-              [selectedVariant]="selectedVariant()"
-              [selectedVariantId]="selectedVariantId"
-              [priceLabel]="formatCurrency(selectedVariant()?.finalPrice || product.basePrice || 0)"
-              [originalPriceLabel]="originalPriceLabel()"
-              [discountedPriceLabel]="discountedPriceLabel()"
+              <app-product-purchase-panel
+                [product]="product"
+                [variants]="product.variants || []"
+                [selectedVariant]="selectedVariant()"
+                [selectedVariantId]="selectedVariantId"
+                [priceLabel]="formatCurrency(selectedVariant()?.finalPrice || product.basePrice || 0)"
+                [originalPriceLabel]="originalPriceLabel()"
+                [discountedPriceLabel]="discountedPriceLabel()"
               [quantity]="quantity"
               [isAdding]="isAdding"
+              [isBuying]="isBuying"
               [variantLabels]="variantLabels()"
               [attributes]="attributeEntries(selectedVariant()?.attributes)"
               (variantChanged)="onVariantChange($event)"
               (quantityChanged)="setQuantity($event)"
               (addToCart)="addToCart()"
+              (buyNow)="buyNow()"
             />
+            </div>
           </div>
 
           <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
             <div class="flex flex-col gap-2 border-b border-[#f1e4d4] pb-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Similar products</p>
-                <h2 class="mt-2 text-2xl font-black text-slate-900">You may also like</h2>
+                <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Similar products</p>
+                <h2 class="mt-2 text-2xl font-extrabold text-slate-900">You may also like</h2>
               </div>
               <p class="text-sm font-medium text-slate-500">
                 Handpicked from the same dry fruit family and flavor profile.
@@ -91,14 +95,14 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                 <div class="mt-4 space-y-3">
                   <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                      <p class="truncate text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                      <p class="truncate text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-400">
                         {{ related.brand || 'Dry fruit pack' }}
                       </p>
-                      <h3 class="mt-1 line-clamp-2 text-lg font-black text-slate-900">
+                      <h3 class="mt-1 line-clamp-2 text-lg font-extrabold text-slate-900">
                         {{ related.productName }}
                       </h3>
                     </div>
-                    <span class="shrink-0 rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-black text-[#6f4e37] shadow-sm ring-1 ring-[#e7dac9]">
+                    <span class="shrink-0 rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-extrabold text-[#6f4e37] shadow-sm ring-1 ring-[#e7dac9]">
                       {{ formatCurrency(related.displayVariant?.finalPrice || related.basePrice || 0) }}
                     </span>
                   </div>
@@ -111,7 +115,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </div>
             <ng-template #noRelatedProducts>
               <div class="mt-6 rounded-[1.4rem] border border-dashed border-[#e7dac9] bg-[#fff7ed] px-6 py-10 text-center">
-                <h3 class="text-xl font-black text-slate-900">More dry fruits coming soon</h3>
+                <h3 class="text-xl font-extrabold text-slate-900">More dry fruits coming soon</h3>
                 <p class="mt-3 text-sm font-medium text-slate-500">
                   We’re still building out similar item suggestions for this product.
                 </p>
@@ -123,18 +127,18 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
               <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Ratings & Reviews</p>
-                  <h2 class="mt-2 text-2xl font-black text-slate-900">What customers are saying</h2>
+                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Ratings & Reviews</p>
+                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">What customers are saying</h2>
                 </div>
                 <div class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed] px-4 py-3 text-right">
-                  <p class="text-3xl font-black text-slate-900">{{ formatRating(product.averageRating || 0) }}</p>
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">{{ product.numberOfReviews || 0 }} reviews</p>
+                  <p class="text-3xl font-extrabold text-slate-900">{{ formatRating(product.averageRating || 0) }}</p>
+                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">{{ product.numberOfReviews || 0 }} reviews</p>
                 </div>
               </div>
 
               <div class="mt-5 grid gap-3">
                 <div *ngFor="let row of ratingBreakdown()" class="flex items-center gap-4">
-                  <p class="w-12 text-sm font-black text-slate-700">{{ row.star }} star</p>
+                  <p class="w-12 text-sm font-extrabold text-slate-700">{{ row.star }} star</p>
                   <div class="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
                     <div class="h-full rounded-full bg-amber-400 transition-all" [style.width.%]="row.percentage"></div>
                   </div>
@@ -150,8 +154,8 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <div class="flex flex-wrap items-center gap-3">
-                        <p class="text-base font-black text-slate-900">{{ review.title || 'Customer review' }}</p>
-                        <span class="rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-[#6f4e37]">
+                        <p class="text-base font-extrabold text-slate-900">{{ review.title || 'Customer review' }}</p>
+                        <span class="rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-extrabold uppercase tracking-[0.18em] text-[#6f4e37]">
                           {{ formatRating(review.rating || 0) }}/5
                         </span>
                       </div>
@@ -168,7 +172,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                       [href]="image"
                       target="_blank"
                       rel="noreferrer"
-                      class="inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600 transition hover:border-[#d4a017] hover:text-slate-900"
+                      class="inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-600 transition hover:border-[#d4a017] hover:text-slate-900"
                     >
                       <span class="h-2 w-2 rounded-full bg-[#d4a017]"></span>
                       View image
@@ -178,7 +182,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   <div *ngIf="isOwnReview(review)" class="mt-5 flex items-center gap-3">
                     <button
                       type="button"
-                      class="rounded-full border border-[#e7dac9] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:border-[#d4a017] hover:text-slate-900"
+                      class="rounded-full border border-[#e7dac9] bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-700 transition hover:border-[#d4a017] hover:text-slate-900"
                       (click)="editReview(review)"
                     >
                       Edit Review
@@ -187,7 +191,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                 </article>
 
                 <div *ngIf="!reviews.length" class="rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fff7ed] px-6 py-10 text-center">
-                  <h3 class="text-xl font-black text-slate-900">No reviews yet</h3>
+                  <h3 class="text-xl font-extrabold text-slate-900">No reviews yet</h3>
                   <p class="mt-3 text-sm font-medium text-slate-500">Be the first customer to share feedback for this product.</p>
                 </div>
               </div>
@@ -196,8 +200,8 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             <aside #reviewFormSection class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
               <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
                 <div class="border-b border-[#f1e4d4] pb-5">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Write A Review</p>
-                  <h2 class="mt-2 text-2xl font-black text-slate-900">Share your experience</h2>
+                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Write A Review</p>
+                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Share your experience</h2>
                   <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                     Reviews are allowed only after this product has been delivered to you.
                   </p>
@@ -207,12 +211,12 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   <div *ngIf="isEditingReview" class="rounded-2xl border border-amber-100 bg-[#fff7ed] px-4 py-3">
                     <div class="flex items-center justify-between gap-3">
                       <div>
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Edit mode</p>
+                        <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Edit mode</p>
                         <p class="mt-1 text-sm font-semibold text-slate-700">You are updating your existing review.</p>
                       </div>
                       <button
                         type="button"
-                        class="rounded-full border border-amber-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-700 transition hover:border-amber-300 hover:text-amber-800"
+                        class="rounded-full border border-amber-200 bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700 transition hover:border-amber-300 hover:text-amber-800"
                         (click)="cancelReviewEdit()"
                       >
                         Cancel
@@ -221,7 +225,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   </div>
 
                   <label class="block">
-                    <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Rating</span>
+                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Rating</span>
                     <select
                       [(ngModel)]="reviewForm.rating"
                       name="rating"
@@ -232,7 +236,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   </label>
 
                   <label class="block">
-                    <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Title</span>
+                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Title</span>
                     <input
                       [(ngModel)]="reviewForm.title"
                       name="title"
@@ -244,7 +248,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   </label>
 
                   <label class="block">
-                    <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Review</span>
+                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review</span>
                     <textarea
                       [(ngModel)]="reviewForm.commentBody"
                       name="commentBody"
@@ -255,7 +259,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   </label>
 
                   <label class="block">
-                    <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Review images</span>
+                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review images</span>
                     <input
                       #reviewImagesInput
                       type="file"
@@ -296,8 +300,8 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               </ng-container>
 
               <ng-template #guestReviewPrompt>
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Review access</p>
-                <h2 class="mt-2 text-2xl font-black text-slate-900">Sign in to leave a review</h2>
+                <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review access</p>
+                <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Sign in to leave a review</h2>
                 <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                   Guest visitors can read product details and reviews, but only signed-in customers can write one.
                 </p>
@@ -320,6 +324,7 @@ export class ProductDetailComponent implements OnInit {
   selectedImage = '';
   quantity = 1;
   isAdding = false;
+  isBuying = false;
   reviews: ProductReview[] = [];
   reviewStats: ProductReviewStat[] = [];
   isSubmittingReview = false;
@@ -356,7 +361,15 @@ export class ProductDetailComponent implements OnInit {
       error: () => this.authService.clearCurrentUser()
     });
 
-    this.loadProduct();
+    this.route.paramMap.subscribe((params) => {
+      const productId = params.get('productId');
+      if (!productId) {
+        this.errorService.showToast('Product not found.', 'error');
+        return;
+      }
+
+      this.loadProduct(productId);
+    });
   }
 
   isAdmin(): boolean {
@@ -379,13 +392,7 @@ export class ProductDetailComponent implements OnInit {
     return !!this.user && !this.isAdmin() && !this.isVendor();
   }
 
-  loadProduct(preserveBlankReviewForm = false): void {
-    const productId = this.route.snapshot.paramMap.get('productId');
-    if (!productId) {
-      this.errorService.showToast('Product not found.', 'error');
-      return;
-    }
-
+  loadProduct(productId: string, preserveBlankReviewForm = false): void {
     this.loading = true;
 
     forkJoin({
@@ -489,6 +496,37 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (error) => {
         this.isAdding = false;
+      }
+    });
+  }
+
+  buyNow(): void {
+    const variant = this.selectedVariant();
+    if (!this.product?._id || !variant?._id) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    this.isBuying = true;
+    this.successMessage = '';
+
+    this.cartService.addToCart(this.product._id, variant._id, this.quantity).subscribe({
+      next: () => {
+        this.isBuying = false;
+        this.quantity = 1;
+        this.router.navigate(['/checkout']);
+      },
+      error: () => {
+        this.isBuying = false;
       }
     });
   }
@@ -637,7 +675,9 @@ export class ProductDetailComponent implements OnInit {
         this.successMessage = this.isEditingReview ? 'Review updated successfully.' : 'Review submitted successfully.';
         this.resetReviewForm();
         this.errorService.showToast('Review submitted and form cleared.', 'success');
-        this.loadProduct(true);
+        if (this.product?._id) {
+          this.loadProduct(this.product._id, true);
+        }
       },
       error: (error) => {
         this.isSubmittingReview = false;

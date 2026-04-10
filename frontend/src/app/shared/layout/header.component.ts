@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AppRefreshService } from '../../core/services/app-refresh.service';
@@ -13,18 +13,42 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent],
   template: `
-    <nav class="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-lg">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-18 items-center justify-between">
-          <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
-            <div class="flex h-8 w-8 items-center justify-center rounded-lg shadow-lg transition-transform group-hover:scale-110" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c); box-shadow: 0 10px 24px rgba(111,78,55,0.18);">
-              <span class="text-lg font-bold text-white">E</span>
+    <div class="sticky top-0 z-50">
+      <div *ngIf="showAnnouncementBar()" class="overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] text-white">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-11 items-center overflow-hidden">
+            <div class="flex w-max items-center gap-4 whitespace-nowrap animate-announcement-marquee hover:[animation-play-state:paused]">
+              <ng-container *ngFor="let message of announcementTicker; let last = last">
+                <span class="text-[11px] font-extrabold uppercase tracking-[0.18em] sm:text-xs">
+                  {{ message }}
+                </span>
+                <span *ngIf="!last" class="text-[#d7b48d]">|</span>
+              </ng-container>
             </div>
-            <span class="text-lg font-bold tracking-tight text-slate-900">E-Commerce</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-lg">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-20 items-center justify-between">
+          <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
+            <img
+              src="/assets/divya%20logo.webp"
+              alt="Divya logo"
+              class="h-17 w-auto object-contain transition-transform group-hover:scale-110"
+            />
           </a>
 
           <div class="hidden items-center space-x-6 md:flex">
-            <a *ngIf="showHomeLink()" routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
+            <ng-container *ngIf="showPublicNavLinks()">
+              <a routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
+              <a routerLink="/products" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Products</a>
+              <a routerLink="/products" [queryParams]="{ category: 'combos' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Combos</a>
+              <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
+              <a routerLink="/products" [queryParams]="{ category: 'career' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Career</a>
+              <a routerLink="/" fragment="contact" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Contact</a>
+            </ng-container>
 
             <ng-container *ngIf="user && !isCustomer()">
               <app-header-account-dropdown
@@ -126,22 +150,31 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             </button>
           </div>
         </div>
-      </div>
+        </div>
+      </nav>
 
       <app-header-mobile-menu
         [open]="isMenuOpen"
         [loggedIn]="!!user"
         [isAdmin]="isAdmin()"
         [isVendor]="isVendor() || isAdmin()"
-        [showHomeLink]="showHomeLink()"
+        [showPublicNavLinks]="showPublicNavLinks()"
         (close)="closeMobileMenu()"
         (logout)="onMobileLogout()"
       />
-    </nav>
+      <div *ngIf="isNavigating" class="pointer-events-none border-b border-[#e7dac9] bg-white/75 px-4 py-3 backdrop-blur">
+        <div class="mx-auto max-w-7xl">
+          <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
+            <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   `
 })
 export class HeaderComponent implements OnInit {
   user: any = null;
+  @Input() isNavigating = false;
   isMenuOpen = false;
   cartCount = 0;
   isDropdownOpen = false;
@@ -160,6 +193,15 @@ export class HeaderComponent implements OnInit {
     { label: 'Store profile', route: '/vendor/profile', tone: 'accent' },
     { label: 'Logout', action: 'logout', tone: 'danger' }
   ];
+
+  readonly announcementMessages = [
+    'Free delivery on orders above ₹999',
+    'Get 10% off on orders above ₹1999 with code WELC10',
+    'Gift boxes excluded from select offers',
+    'Freshly packed dry fruits delivered with care'
+  ];
+
+  readonly announcementTicker = [...this.announcementMessages, ...this.announcementMessages];
 
   constructor(
     private authService: AuthService,
@@ -335,8 +377,12 @@ export class HeaderComponent implements OnInit {
     return !!this.user && !this.isAdmin() && !this.isVendor();
   }
 
-  showHomeLink(): boolean {
+  showPublicNavLinks(): boolean {
     return !this.isAdmin() && !this.isVendor();
+  }
+
+  showAnnouncementBar(): boolean {
+    return this.showPublicNavLinks();
   }
 
   logoRoute(): string {

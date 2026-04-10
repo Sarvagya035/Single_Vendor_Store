@@ -7,22 +7,21 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div *ngIf="open" class="border-t border-slate-100 bg-white animate-in slide-in-from-top duration-200 md:hidden" data-mobile-menu-panel>
+    <div *ngIf="open" class="border-t border-[#eadcc9] bg-[#fffaf5] animate-in slide-in-from-top duration-200 md:hidden" data-mobile-menu-panel>
       <div class="space-y-2 px-4 pt-2 pb-6">
-        <a
-          *ngIf="showHomeLink"
-          routerLink="/"
-          (click)="close.emit()"
-          class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50"
-        >
-          Home
-        </a>
+        <ng-container *ngIf="showPublicNavLinks">
+          <a routerLink="/" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Home</a>
+          <a routerLink="/products" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Products</a>
+          <a routerLink="/products" [queryParams]="{ category: 'combos' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Combos</a>
+          <a routerLink="/products" [queryParams]="{ category: 'gifting' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Gifting Collection</a>
+          <a routerLink="/" fragment="contact" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Contact</a>
+        </ng-container>
 
         <ng-container *ngIf="loggedIn; else guestLinks">
           <a
           routerLink="/profile"
           (click)="close.emit()"
-          class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50"
+          class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
         >
           Profile
         </a>
@@ -30,7 +29,7 @@ import { RouterModule } from '@angular/router';
             *ngIf="!isAdmin && !isVendor"
             routerLink="/orders"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50"
+            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
           >
             My Orders
           </a>
@@ -38,7 +37,7 @@ import { RouterModule } from '@angular/router';
             *ngIf="isVendor"
             routerLink="/vendor/dashboard"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-amber-700 hover:bg-amber-50"
+            class="block rounded-lg px-3 py-2 text-base font-bold text-[#6f4e37] hover:bg-[#fff3e4]"
           >
             Vendor Dashboard
           </a>
@@ -46,12 +45,12 @@ import { RouterModule } from '@angular/router';
             *ngIf="isVendor"
             routerLink="/vendor/orders"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50"
+            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
           >
             Orders
           </a>
 
-          <div class="border-t border-slate-100 pt-4">
+          <div class="border-t border-[#eadcc9] pt-4">
             <button
               type="button"
               (click)="logout.emit()"
@@ -66,14 +65,14 @@ import { RouterModule } from '@angular/router';
           <a
             routerLink="/login"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50"
+            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
           >
             Login
           </a>
           <a
             routerLink="/register"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-amber-700 hover:bg-amber-50"
+            class="block rounded-lg px-3 py-2 text-base font-bold text-[#6f4e37] hover:bg-[#fff3e4]"
           >
             Register
           </a>
@@ -87,7 +86,7 @@ export class HeaderMobileMenuComponent {
   @Input() loggedIn = false;
   @Input() isAdmin = false;
   @Input() isVendor = false;
-  @Input() showHomeLink = false;
+  @Input() showPublicNavLinks = true;
 
   @Output() close = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();

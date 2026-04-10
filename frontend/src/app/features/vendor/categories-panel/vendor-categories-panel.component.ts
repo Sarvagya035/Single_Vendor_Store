@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CategoryRecord } from '../../../core/models/store.models';
 
@@ -37,14 +37,13 @@ interface CategoryCreateForm {
         </div>
 
         <div *ngIf="showCreateForm" class="border-b border-slate-200 bg-slate-50/70 px-6 py-5">
-          <form class="grid gap-4 lg:grid-cols-2" (ngSubmit)="submitCreate.emit()">
+          <form class="grid gap-4 lg:grid-cols-2" (ngSubmit)="submitCreateForm()">
             <div class="space-y-2">
               <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category Name</label>
               <input
                 type="text"
                 name="name"
-                [ngModel]="createForm.name"
-                (ngModelChange)="updateCreateField('name', $event)"
+                [(ngModel)]="localCreateForm.name"
                 class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="Electronics"
               >
@@ -55,8 +54,7 @@ interface CategoryCreateForm {
               <textarea
                 rows="3"
                 name="description"
-                [ngModel]="createForm.description"
-                (ngModelChange)="updateCreateField('description', $event)"
+                [(ngModel)]="localCreateForm.description"
                 class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                 placeholder="Short category description"
               ></textarea>
@@ -66,12 +64,11 @@ interface CategoryCreateForm {
               <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Parent Category</label>
               <select
                 name="parentCategory"
-                [ngModel]="createForm.parentCategory"
-                (ngModelChange)="updateCreateField('parentCategory', $event)"
+                [(ngModel)]="localCreateForm.parentCategory"
                 class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner transition-all focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
               >
                 <option value="">Root Category</option>
-                <option *ngFor="let option of flattenedCategories" [value]="option._id">
+                <option *ngFor="let option of flattenedCategories; trackBy: trackByOptionId" [value]="option._id">
                   {{ optionLabel(option) }}
                 </option>
               </select>
@@ -115,7 +112,7 @@ interface CategoryCreateForm {
         </div>
 
         <div *ngIf="!isLoading && categories.length > 0" class="divide-y divide-slate-200">
-          <ng-container *ngFor="let category of categories">
+          <ng-container *ngFor="let category of categories; trackBy: trackByCategoryId">
             <ng-container *ngTemplateOutlet="categoryNode; context: { $implicit: category }"></ng-container>
           </ng-container>
         </div>
@@ -206,7 +203,7 @@ interface CategoryCreateForm {
           </div>
 
           <div *ngIf="isExpanded(category._id) && category.children?.length" class="app-card-soft border-t border-slate-200 bg-slate-50/40">
-            <ng-container *ngFor="let child of category.children">
+            <ng-container *ngFor="let child of category.children; trackBy: trackByCategoryId">
               <ng-container *ngTemplateOutlet="categoryNode; context: { $implicit: child }"></ng-container>
             </ng-container>
           </div>
@@ -223,9 +220,8 @@ export class VendorCategoriesPanelComponent {
   @Input() createError = '';
   @Input() createImageName = '';
   @Input() createForm: CategoryCreateForm = { name: '', description: '', parentCategory: '' };
-  @Output() createFormChange = new EventEmitter<CategoryCreateForm>();
   @Output() selectCreateImage = new EventEmitter<Event>();
-  @Output() submitCreate = new EventEmitter<void>();
+  @Output() submitCreate = new EventEmitter<CategoryCreateForm>();
   @Output() submitUpdate = new EventEmitter<{ categoryId: string; payload: { name: string; description: string; parentCategory: string; isActive: boolean } }>();
   @Output() deleteCategory = new EventEmitter<CategoryRecord>();
   @Output() refresh = new EventEmitter<void>();
@@ -233,29 +229,41 @@ export class VendorCategoriesPanelComponent {
   showCreateForm = false;
   editingId: string | null = null;
   expandedCategoryIds = new Set<string>();
+  localCreateForm: CategoryCreateForm = { name: '', description: '', parentCategory: '' };
   editForm = {
     name: '',
     description: '',
     parentCategory: '',
     isActive: true
   };
+  private cachedFlattenedCategories: CategoryFlatOption[] = [];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['createForm']) {
+      this.localCreateForm = { ...(this.createForm || { name: '', description: '', parentCategory: '' }) };
+    }
+
+    if (changes['categories']) {
+      const flat: CategoryFlatOption[] = [];
+      this.flattenTree(this.categories, flat);
+      this.cachedFlattenedCategories = flat;
+    }
+  }
 
   get flattenedCategories(): CategoryFlatOption[] {
-    const flat: CategoryFlatOption[] = [];
-    this.flattenTree(this.categories, flat);
-    return flat;
+    return this.cachedFlattenedCategories;
   }
 
   toggleCreateForm() {
     this.showCreateForm = !this.showCreateForm;
   }
 
-  updateCreateField(field: keyof CategoryCreateForm, value: string) {
-    this.createFormChange.emit({ ...this.createForm, [field]: value });
-  }
-
   updateEditField(field: 'name' | 'description' | 'parentCategory' | 'isActive', value: string | boolean) {
     this.editForm = { ...this.editForm, [field]: value };
+  }
+
+  submitCreateForm(): void {
+    this.submitCreate.emit({ ...this.localCreateForm });
   }
 
   toggleEdit(category: CategoryRecord) {
@@ -292,6 +300,14 @@ export class VendorCategoriesPanelComponent {
 
   optionLabel(option: CategoryFlatOption): string {
     return `${'-- '.repeat(option.level)}${option.name}`;
+  }
+
+  trackByCategoryId(_: number, category: CategoryRecord): string {
+    return category._id;
+  }
+
+  trackByOptionId(_: number, option: CategoryFlatOption): string {
+    return option._id;
   }
 
   private flattenTree(nodes: CategoryRecord[], target: CategoryFlatOption[]) {

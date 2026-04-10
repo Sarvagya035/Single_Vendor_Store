@@ -121,7 +121,7 @@ export class HeaderAccountDropdownComponent {
 
   desktopTriggerClasses(): string {
     const themeClasses: Record<HeaderDropdownTheme, string> = {
-      customer: 'group inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 text-left shadow-sm transition hover:border-slate-300 hover:bg-slate-50',
+      customer: 'group inline-flex items-center gap-3 rounded-full border border-[#eadcc9] bg-white/95 px-3 py-2 text-left shadow-[0_16px_40px_rgba(47,27,20,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_20px_44px_rgba(47,27,20,0.12)]',
       vendor: 'group inline-flex items-center gap-3 rounded-full border border-[#e7dac9] bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_16px_40px_rgba(111,78,55,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_20px_44px_rgba(111,78,55,0.18)]',
       admin: 'group inline-flex items-center gap-3 rounded-full border border-[#e7dac9] bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_16px_40px_rgba(111,78,55,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_20px_44px_rgba(111,78,55,0.18)]'
     };
@@ -130,7 +130,7 @@ export class HeaderAccountDropdownComponent {
 
   mobileTriggerClasses(): string {
     const themeClasses: Record<HeaderDropdownTheme, string> = {
-      customer: 'inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-2 shadow-sm transition hover:border-slate-300',
+      customer: 'inline-flex items-center gap-2 rounded-full border border-[#eadcc9] bg-white px-2.5 py-2 shadow-[0_12px_28px_rgba(47,27,20,0.08)] transition hover:border-[#d4a017]',
       vendor: 'inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-2.5 py-2 shadow-[0_16px_32px_rgba(111,78,55,0.12)] transition-all duration-200 hover:border-[#d4a017]',
       admin: 'inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-2.5 py-2 shadow-[0_16px_32px_rgba(111,78,55,0.12)] transition-all duration-200 hover:border-[#d4a017]'
     };
@@ -140,7 +140,7 @@ export class HeaderAccountDropdownComponent {
   avatarClasses(): string {
     if (this.desktop) {
       const desktopClasses: Record<HeaderDropdownTheme, string> = {
-        customer: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase text-white ring-2 ring-white',
+        customer: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase text-white ring-2 ring-[#fff4e6]',
         vendor: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white ring-2 ring-white',
         admin: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white ring-2 ring-white'
       };
@@ -157,7 +157,7 @@ export class HeaderAccountDropdownComponent {
 
   heroClasses(): string {
     const tone: Record<HeaderDropdownTheme, string> = {
-      customer: 'rounded-[1.25rem] bg-slate-50 p-4',
+      customer: 'rounded-[1.25rem] bg-[#fffaf3] p-4',
       vendor: 'rounded-[1.25rem] bg-[linear-gradient(135deg,rgba(255,249,242,0.95),rgba(245,230,211,0.95))] p-4',
       admin: 'rounded-[1.25rem] bg-[linear-gradient(135deg,rgba(255,249,242,0.95),rgba(245,230,211,0.95))] p-4'
     };
@@ -195,7 +195,7 @@ export class HeaderAccountDropdownComponent {
   panelClasses(): string {
     const width = this.desktop ? 'w-[320px]' : 'w-[290px]';
     const tone: Record<HeaderDropdownTheme, string> = {
-      customer: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-slate-200 bg-white p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] transition-all duration-200`,
+      customer: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#eadcc9] bg-white p-3 shadow-[0_24px_60px_rgba(47,27,20,0.16)] transition-all duration-200`,
       vendor: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`,
       admin: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`
     };
@@ -204,7 +204,7 @@ export class HeaderAccountDropdownComponent {
 
   rowLinkClasses(tone: 'default' | 'accent' | 'danger'): string {
     const classes: Record<string, string> = {
-      default: 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900',
+      default: 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-[#fffaf3] hover:text-slate-900',
       accent: this.theme === 'vendor'
         ? 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50 hover:text-amber-800'
         : 'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50 hover:text-amber-800',
@@ -219,7 +219,7 @@ export class HeaderAccountDropdownComponent {
 
   mobileRowLinkClasses(tone: 'default' | 'accent' | 'danger'): string {
     const classes: Record<string, string> = {
-      default: 'block rounded-xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50',
+      default: 'block rounded-xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-[#fffaf3]',
       accent: this.theme === 'vendor'
         ? 'block rounded-xl px-4 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50'
         : 'block rounded-xl px-4 py-3 text-sm font-bold text-amber-700 transition hover:bg-amber-50',

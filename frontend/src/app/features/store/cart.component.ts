@@ -21,12 +21,15 @@ const EMPTY_CART: CustomerCart = {
   imports: [CommonModule, RouterModule],
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
-      <div class="min-h-[calc(100vh-64px)] bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
-        <section class="max-w-5xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+      <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
+        <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
           <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="text-xs font-black uppercase tracking-[0.22em] text-amber-700">Shopping Bag</p>
-              <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Your cart</h1>
+              <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Your cart</h1>
+              <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
+                Review the dry fruit packs you’ve added, adjust quantities, and continue to checkout when you’re ready.
+              </p>
             </div>
           </div>
 
@@ -48,7 +51,7 @@ const EMPTY_CART: CustomerCart = {
             Loading cart...
           </div>
 
-          <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center">
+          <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(47,27,20,0.05)]">
             <h2 class="text-2xl font-black text-slate-900">Your cart is empty</h2>
             <p class="mt-3 text-sm font-medium text-slate-500">
               Browse products and add a variant to start building your order.
@@ -60,7 +63,7 @@ const EMPTY_CART: CustomerCart = {
             <div class="space-y-4">
               <article
                 *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
-                class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.06)]"
+                class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(47,27,20,0.06)]"
               >
                 <div class="flex flex-col gap-4 sm:flex-row">
                   <img
@@ -152,7 +155,7 @@ const EMPTY_CART: CustomerCart = {
     </ng-container>
 
     <ng-template #guestState>
-      <div class="min-h-[calc(100vh-64px)] bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
+      <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
         <section class="max-w-3xl mx-auto px-4 py-20 text-center sm:px-6 lg:px-8">
           <h1 class="text-4xl font-black tracking-tight text-slate-900">Sign in to view your cart</h1>
           <p class="mt-4 text-base font-medium text-slate-500">

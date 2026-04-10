@@ -112,14 +112,25 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             </button>
           </div>
 
-          <button
-            type="button"
-            class="btn-primary !w-full !justify-center !py-3.5"
-            [disabled]="!selectedVariant?._id || isAdding"
-            (click)="addToCart.emit()"
-          >
-            {{ isAdding ? 'Adding...' : 'Add To Cart' }}
-          </button>
+          <div class="flex w-full flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              class="btn-secondary !w-full !justify-center !py-3.5"
+              [disabled]="!selectedVariant?._id || isBuying"
+              (click)="buyNow.emit()"
+            >
+              {{ isBuying ? 'Processing...' : 'Buy Now' }}
+            </button>
+
+            <button
+              type="button"
+              class="btn-primary !w-full !justify-center !py-3.5"
+              [disabled]="!selectedVariant?._id || isAdding"
+              (click)="addToCart.emit()"
+            >
+              {{ isAdding ? 'Adding...' : 'Add To Cart' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -135,12 +146,14 @@ export class ProductPurchasePanelComponent {
   @Input() discountedPriceLabel = '';
   @Input() quantity = 1;
   @Input() isAdding = false;
+  @Input() isBuying = false;
   @Input() variantLabels: Record<string, string> = {};
   @Input() attributes: Array<{ key: string; value: string }> = [];
 
   @Output() variantChanged = new EventEmitter<string>();
   @Output() quantityChanged = new EventEmitter<number | string>();
   @Output() addToCart = new EventEmitter<void>();
+  @Output() buyNow = new EventEmitter<void>();
 
   get showVariantSelector(): boolean {
     return this.variants.length > 1;
