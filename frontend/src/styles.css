@@ -20,7 +20,7 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 font-medium antialiased;
+    @apply bg-slate-50 text-slate-900 font-normal antialiased;
     font-family: 'Poppins', sans-serif;
     background-color: var(--background);
     background-image:
@@ -54,15 +54,15 @@
   }
 
   h1 {
-    @apply text-4xl font-extrabold sm:text-5xl;
+    @apply text-4xl font-bold sm:text-5xl;
   }
 
   h2 {
-    @apply text-3xl font-extrabold sm:text-4xl;
+    @apply text-3xl font-bold sm:text-4xl;
   }
 
   h3 {
-    @apply text-2xl font-extrabold sm:text-3xl;
+    @apply text-2xl font-bold sm:text-3xl;
   }
 
   p {
@@ -80,11 +80,11 @@
 
 @layer components {
   .app-page-eyebrow {
-    @apply text-[11px] font-extrabold uppercase tracking-[0.34em] text-slate-400;
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400;
   }
 
   .app-page-title {
-    @apply mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl;
+    @apply mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl;
   }
 
   .app-page-description {
@@ -104,12 +104,12 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-6 py-3 font-extrabold tracking-[0.08em] text-white shadow-[0_16px_40px_rgba(111,78,55,0.18)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_20px_46px_rgba(111,78,55,0.22)] focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-6 py-3 font-semibold tracking-[0.04em] text-white shadow-[0_16px_40px_rgba(111,78,55,0.18)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_20px_46px_rgba(111,78,55,0.22)] focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60;
     background: linear-gradient(135deg, var(--primary), #8b5e3c);
   }
   
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 font-extrabold tracking-[0.08em] text-slate-700 shadow-[0_10px_28px_rgba(47,27,20,0.06)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 font-semibold tracking-[0.04em] text-slate-700 shadow-[0_10px_28px_rgba(47,27,20,0.06)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60;
   }
 
   .glass-card {
@@ -117,7 +117,7 @@
   }
 
   .nav-link {
-    @apply relative px-1 py-2 font-extrabold uppercase tracking-[0.08em] text-slate-600 transition-colors duration-200 hover:text-amber-700;
+    @apply relative px-1 py-2 font-semibold uppercase tracking-[0.04em] text-slate-600 transition-colors duration-200 hover:text-amber-700;
   }
 
   .nav-link::after {
@@ -142,6 +142,25 @@
 
   .theme-muted-panel {
     @apply border-[#eadcc9] bg-[#fffaf3];
+  }
+}
+
+@layer utilities {
+  /* Reduce the overall visual heaviness while keeping emphasis hierarchy intact. */
+  .font-black {
+    font-weight: 700;
+  }
+
+  .font-extrabold {
+    font-weight: 700;
+  }
+
+  .font-bold {
+    font-weight: 600;
+  }
+
+  .font-semibold {
+    font-weight: 500;
   }
 }
 

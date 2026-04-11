@@ -36,13 +36,13 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
               <div class="flex flex-wrap items-center gap-3">
                 <a
                   routerLink="/products"
-                  class="inline-flex items-center justify-center rounded-full bg-[#3f2418] px-6 py-3 text-sm font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_14px_30px_rgba(63,36,24,0.25)] transition hover:-translate-y-0.5 hover:bg-[#2f1b14]"
+                  class="inline-flex items-center justify-center rounded-full bg-[#3f2418] px-6 py-3 text-sm font-semibold tracking-[0.04em] text-white shadow-[0_14px_30px_rgba(63,36,24,0.25)] transition hover:-translate-y-0.5 hover:bg-[#2f1b14]"
                 >
                   Shop Now
                 </a>
                 <a
                   href="#categories"
-                  class="inline-flex items-center justify-center rounded-full border border-[#3f2418] bg-white/90 px-6 py-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#3f2418] shadow-[0_12px_28px_rgba(63,36,24,0.12)] transition hover:-translate-y-0.5 hover:bg-white"
+                  class="inline-flex items-center justify-center rounded-full border border-[#3f2418] bg-white/90 px-6 py-3 text-sm font-semibold tracking-[0.04em] text-[#3f2418] shadow-[0_12px_28px_rgba(63,36,24,0.12)] transition hover:-translate-y-0.5 hover:bg-white"
                 >
                   View Categories
                 </a>
@@ -87,8 +87,8 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
           <div class="px-4 pb-6 pt-8 sm:px-6 lg:px-8">
             <div>
               <div class="mb-4 text-center">
-                <p class="text-[11px] font-extrabold uppercase tracking-[0.34em] text-slate-400">Collections</p>
-                <h3 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900">Shop by collection</h3>
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Categories</p>
+                <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Shop by category</h3>
               </div>
 
               <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -108,7 +108,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                     />
                   </div>
                   <div class="space-y-1 p-4">
-                    <h4 class="truncate text-lg font-extrabold text-slate-900">{{ category.name }}</h4>
+                    <h4 class="truncate text-lg font-semibold text-slate-900">{{ category.name }}</h4>
                     <p class="text-sm font-medium text-slate-500">{{ categoryCount(category) }} item{{ categoryCount(category) === 1 ? '' : 's' }}</p>
                   </div>
                 </a>
@@ -117,8 +117,8 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
 
             <div class="mt-8">
               <div class="mb-4 text-center">
-                <p class="text-[11px] font-extrabold uppercase tracking-[0.34em] text-slate-400">Products</p>
-                <h3 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900">Best selling dry fruits</h3>
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Products</p>
+                <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
               </div>
 
               <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -138,10 +138,10 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                   <div class="mt-4 space-y-3">
                     <div class="flex items-start justify-between gap-3">
                       <div class="min-w-0">
-                        <p class="truncate text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-400">{{ product.brand || 'Premium Pack' }}</p>
-                        <h4 class="mt-1 line-clamp-2 text-lg font-extrabold text-slate-900">{{ product.productName }}</h4>
+                        <p class="truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{{ product.brand || 'Premium Pack' }}</p>
+                        <h4 class="mt-1 line-clamp-2 text-lg font-semibold text-slate-900">{{ product.productName }}</h4>
                       </div>
-                      <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-extrabold text-slate-900 shadow-sm ring-1 ring-amber-200">
+                      <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-amber-200">
                         {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
                       </span>
                     </div>
@@ -154,7 +154,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
               <div class="mt-6 text-center">
                 <a
                   routerLink="/products"
-                  class="btn-primary inline-flex items-center justify-center !px-6 !py-3 text-sm uppercase tracking-[0.14em]"
+                  class="btn-primary inline-flex items-center justify-center !px-6 !py-3 text-sm tracking-[0.04em]"
                 >
                   All Products
                 </a>
@@ -168,8 +168,8 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
       <section class="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
         <div class="rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-8 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:px-6 lg:px-8">
           <div class="text-center">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.34em] text-slate-400">Customer reviews</p>
-            <h3 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900">What our customers say</h3>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Customer reviews</p>
+            <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">What our customers say</h3>
             <p class="mt-3 text-sm font-medium text-slate-500">
               A quick look at the kind of feedback your shoppers could see on the home page.
             </p>
@@ -191,10 +191,10 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                   <div class="min-w-0 flex-1">
                     <div class="flex items-start justify-between gap-3">
                       <div class="min-w-0">
-                        <p class="truncate text-base font-extrabold text-slate-900">{{ review.name }}</p>
-                        <p class="mt-1 truncate text-xs font-extrabold uppercase tracking-[0.22em] text-[#8b5e3c]">{{ review.product }}</p>
+                        <p class="truncate text-base font-semibold text-slate-900">{{ review.name }}</p>
+                        <p class="mt-1 truncate text-xs font-semibold uppercase tracking-[0.12em] text-[#8b5e3c]">{{ review.product }}</p>
                       </div>
-                      <div class="rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-extrabold text-[#6f4e37]">
+                      <div class="rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-semibold text-[#6f4e37]">
                         {{ review.rating }}/5
                       </div>
                     </div>
@@ -227,8 +227,8 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
       <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
         <div class="grid gap-6 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_0.95fr]">
           <div class="flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-10">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.34em] text-[#8b5e3c]">About Us</p>
-            <h3 class="mt-2 text-2xl font-extrabold tracking-tight text-slate-900">About Divya Dryfruit House</h3>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">About Us</p>
+            <h3 class="mt-2 text-2xl font-bold tracking-tight text-slate-900">About Divya Dryfruit House</h3>
             <p class="mt-4 max-w-2xl text-sm font-medium leading-8 text-slate-500">
               We believe better wellness starts with what you bring home. Our focus is on premium dry fruits, spices, herbs, and fresh bakery items, all selected with care for quality, freshness, and family-friendly everyday use.
             </p>
@@ -237,27 +237,27 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
             </p>
 
             <div class="mt-6 flex flex-wrap gap-3">
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[#6f4e37]">Fresh selection</span>
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[#6f4e37]">Wide variety</span>
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[#6f4e37]">Customer focused</span>
+              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Fresh selection</span>
+              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Wide variety</span>
+              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Customer focused</span>
             </div>
           </div>
 
           <div class="grid gap-4 bg-[#fffaf5] px-6 py-8 sm:grid-cols-2 sm:px-8 lg:px-10">
             <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)]">
-              <p class="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-400">Quality first</p>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Quality first</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                 Carefully chosen products that support a healthy lifestyle and reliable everyday shopping.
               </p>
             </div>
             <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)]">
-              <p class="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-400">One roof</p>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">One roof</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                 Dry fruits, spices, herbs, and bakery essentials brought together for simple, convenient buying.
               </p>
             </div>
             <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)] sm:col-span-2">
-              <p class="text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-400">Trusted by customers</p>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Trusted by customers</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                 Friendly service, fair pricing, and a focus on freshness help us build trust with every order.
               </p>
