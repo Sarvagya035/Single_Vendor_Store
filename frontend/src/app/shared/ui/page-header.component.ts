@@ -29,6 +29,6 @@ export class PageHeaderComponent {
   @Input() eyebrow = '';
   @Input() title = '';
   @Input() description = '';
-  @Input() eyebrowClass = 'text-slate-400';
+  @Input() eyebrowClass = 'text-amber-700';
   @Input() titleClass = '';
 }

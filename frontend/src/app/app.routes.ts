@@ -44,14 +44,46 @@ export const routes: Routes = [
       import('./features/store/product-detail.component').then((m) => m.ProductDetailComponent),
   },
   {
+    path: 'products',
+    loadComponent: () =>
+      import('./features/store/products-page.component').then((m) => m.ProductsPageComponent)
+  },
+  {
+    path: 'about-us',
+    loadComponent: () =>
+      import('./features/store/about.component').then((m) => m.AboutComponent)
+  },
+  {
+    path: 'contact',
+    loadComponent: () =>
+      import('./features/store/contact.component').then((m) => m.ContactComponent)
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login.component').then((m) => m.LoginComponent)
   },
   {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/auth/forgot-password.component').then((m) => m.ForgotPasswordComponent)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/auth/reset-password.component').then((m) => m.ResetPasswordComponent)
+  },
+  {
     path: 'register',
     loadComponent: () =>
       import('./features/auth/register.component').then((m) => m.RegisterComponent)
+  },
+  {
+    path: 'vendor/initial-setup',
+    loadComponent: () =>
+      import('./features/vendor/initial-setup-page/vendor-initial-setup-page.component').then(
+        (m) => m.VendorInitialSetupPageComponent
+      )
   },
   {
     path: 'profile',
@@ -66,42 +98,124 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'admin',
-    loadComponent: () =>
-      import('./features/admin/shell/admin-shell.component').then((m) => m.AdminShellComponent),
+    path: 'vendor',
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin', 'Admin'] },
+    data: { roles: ['vendor', 'Vendor', 'admin', 'Admin'] },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/admin/dashboard/admin-dashboard.component').then((m) => m.AdminDashboardComponent)
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/dashboard/vendor-dashboard.component').then((m) => m.VendorDashboardComponent)
+          }
+        ]
       },
       {
-        path: 'users',
+        path: 'products/add',
         loadComponent: () =>
-          import('./features/admin/users-page/admin-users-page.component').then((m) => m.AdminUsersPageComponent)
+          import('./features/vendor/add-product/vendor-add-product.component').then((m) => m.VendorAddProductComponent)
       },
       {
-        path: 'categories',
+        path: 'products/:productId/edit',
         loadComponent: () =>
-          import('./features/admin/categories-page/admin-categories-page.component').then((m) => m.AdminCategoriesPageComponent)
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/edit-product-page/vendor-edit-product-page.component').then(
+                (m) => m.VendorEditProductPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/profile-page/vendor-profile-page.component').then((m) => m.VendorProfilePageComponent)
+          }
+        ]
       },
       {
         path: 'products',
         loadComponent: () =>
-          import('./features/admin/products-page/admin-products-page.component').then((m) => m.AdminProductsPageComponent)
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/products-page/vendor-products-page.component').then((m) => m.VendorProductsPageComponent)
+          }
+        ]
       },
       {
-        path: 'products/:productId',
+        path: 'categories',
         loadComponent: () =>
-          import('./features/admin/product-detail-page/admin-product-detail-page.component').then((m) => m.AdminProductDetailPageComponent)
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/categories-page/vendor-categories-page.component').then(
+                (m) => m.VendorCategoriesPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'customers',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/customers-page/vendor-customers-page.component').then(
+                (m) => m.VendorCustomersPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'customers/:userId',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/customer-details-page/vendor-customer-details-page.component').then(
+                (m) => m.VendorCustomerDetailsPageComponent
+              )
+          }
+        ]
       },
       {
         path: 'orders',
         loadComponent: () =>
-          import('./features/admin/orders-page/admin-orders-page.component').then((m) => m.AdminOrdersPageComponent)
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/orders-page/vendor-orders-page.component').then((m) => m.VendorOrdersPageComponent)
+          },
+          {
+            path: ':orderId',
+            loadComponent: () =>
+              import('./features/store/order-detail.component').then((m) => m.OrderDetailComponent)
+          }
+        ]
       }
     ]
   },

@@ -6,6 +6,8 @@ import {User} from "../models/user.model.js"
 import mongoose from "mongoose"
 import jwt from "jsonwebtoken"
 import fs from "fs"
+import crypto from "crypto"
+import { sendMail } from "../utils/mailer.js"
 
 const options = {
     httpOnly: true
@@ -16,6 +18,10 @@ const generateAccessandRefreshToken = async function(userId){
     try {
 
         const user = await User.findById(userId)
+        if (!user) {
+            throw new ApiError(404, "User not found")
+        }
+
         const accessToken = await user.generateAccessToken()
         const refreshToken = await user.generateRefreshToken()
         user.refreshToken = refreshToken
@@ -82,19 +88,19 @@ const loginUser = asyncHandler(async (req, res) =>{
     const {email, password} = req.body
 
     if(!email || !password){
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, "Email and password are required")
     }
 
     const existingUser = await User.findOne({email})
 
     if(!existingUser){
-        throw new ApiError(404, "User with given email not found")
+        throw new ApiError(401, "Invalid email or password")
     }
 
     const isPasswordValid = await existingUser.isPasswordCorrect(password)
 
     if(!isPasswordValid){
-        throw new ApiError(401, "Incorrect Password")
+        throw new ApiError(401, "Invalid email or password")
     }
 
     const {accessToken, refreshToken} = await generateAccessandRefreshToken(existingUser._id)
@@ -250,17 +256,106 @@ const changeCurrentPassword = asyncHandler(async (req, res) =>{
 
     const {oldPassword, newPassword} = req.body
 
+    if (!oldPassword || !newPassword) {
+        throw new ApiError(400, "Current password and new password are required")
+    }
+
     const user = await User.findById(req.user?._id)
-    const isPasswordCorrect = user.isPasswordCorrect(oldPassword)
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
     if(!isPasswordCorrect){
-        throw new ApiError(400, "Invalid old Password")
+        throw new ApiError(400, "The current password you entered is incorrect")
     }
 
     user.password = newPassword
-    user.save({validateBeforeSave:false})
+    await user.save({validateBeforeSave:false})
 
     return res.status(200).json(new ApiResponse(200,{}, "Password Changed Successfully"))
 })
+
+const requestPasswordReset = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email || email.trim() === "") {
+        throw new ApiError(400, "Email is required");
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+        throw new ApiError(404, "No account found with this email");
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpire = Date.now() + 60 * 60 * 1000;
+    await user.save({ validateBeforeSave: false });
+
+    const frontendBaseUrl = (process.env.FRONTEND_URL ).replace(/\/$/, "");
+    const resetUrl = `${frontendBaseUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
+    const emailSubject = "Reset your password";
+    const emailText = `We received a request to reset your password.\n\nReset it here: ${resetUrl}\n\nThis link will expire in 1 hour. If you did not request this, you can ignore this email.`;
+    const emailHtml = `
+        <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
+            <h2 style="margin:0 0 16px">Reset your password</h2>
+            <p>We received a request to reset your password for your account.</p>
+            <p>
+                <a href="${resetUrl}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:12px 18px;border-radius:999px;font-weight:700">
+                    Reset Password
+                </a>
+            </p>
+            <p>If the button does not work, copy and paste this link into your browser:</p>
+            <p>${resetUrl}</p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you did not request this, you can ignore this email.</p>
+        </div>
+    `;
+
+    await sendMail({
+        to: user.email,
+        subject: emailSubject,
+        text: emailText,
+        html: emailHtml
+    });
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Password reset link has been sent to your email.")
+    );
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        throw new ApiError(400, "Reset token and new password are required");
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({
+        resetPasswordToken: hashedToken,
+        resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Reset link is invalid or has expired");
+    }
+
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    user.refreshToken = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Password reset successfully. Please log in again.")
+    );
+});
 
 const uploadAvatarImage = asyncHandler(async (req, res) =>{
 
@@ -315,5 +410,7 @@ export {
     updateUserDetails,
     updateUserAvatar,
     changeCurrentPassword,
-    uploadAvatarImage
+    uploadAvatarImage,
+    requestPasswordReset,
+    resetPassword
 }

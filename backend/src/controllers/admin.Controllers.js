@@ -4,7 +4,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import {User} from "../models/user.model.js"
 import {Vendor} from "../models/vendor.model.js"
 import {Product} from "../models/product.model.js"
+import { Order } from "../models/order.model.js";
 import { createProductRecord } from "../services/productCreation.service.js";
+import { buildCsvReport, buildPdfStream, formatDateForReport, formatDateOnly, formatDisplayOrderId } from "../utils/reportExport.js";
 
 const normalizeBoolean = (value, fallback = true) => {
     if (typeof value === "undefined") {
@@ -151,11 +153,197 @@ const toggleProductStatusByAdmin = asyncHandler(async (req, res) => {
     );
 });
 
+const toStartOfDay = (date) => {
+    const result = new Date(date);
+    result.setHours(0, 0, 0, 0);
+    return result;
+};
+
+const toEndOfDay = (date) => {
+    const result = new Date(date);
+    result.setHours(23, 59, 59, 999);
+    return result;
+};
+
+const resolveReportWindow = (range, startDate, endDate) => {
+    const normalizedRange = String(range || "weekly").toLowerCase();
+    const now = new Date();
+
+    if (normalizedRange === "weekly") {
+        const start = new Date(now);
+        start.setDate(start.getDate() - 6);
+        return {
+            rangeLabel: "weekly",
+            startDate: toStartOfDay(start),
+            endDate: toEndOfDay(now)
+        };
+    }
+
+    if (normalizedRange === "monthly") {
+        const start = new Date(now);
+        start.setDate(start.getDate() - 29);
+        return {
+            rangeLabel: "monthly",
+            startDate: toStartOfDay(start),
+            endDate: toEndOfDay(now)
+        };
+    }
+
+    if (normalizedRange === "custom") {
+        if (!startDate || !endDate) {
+            throw new ApiError(400, "Start date and end date are required for custom reports");
+        }
+
+        const parsedStart = new Date(startDate);
+        const parsedEnd = new Date(endDate);
+
+        if (Number.isNaN(parsedStart.getTime()) || Number.isNaN(parsedEnd.getTime())) {
+            throw new ApiError(400, "Invalid custom report dates");
+        }
+
+        if (parsedStart > parsedEnd) {
+            throw new ApiError(400, "Start date must be before end date");
+        }
+
+        return {
+            rangeLabel: `custom-${formatDateOnly(parsedStart)}-to-${formatDateOnly(parsedEnd)}`,
+            startDate: toStartOfDay(parsedStart),
+            endDate: toEndOfDay(parsedEnd)
+        };
+    }
+
+    throw new ApiError(400, "Invalid report range. Use weekly, monthly, or custom");
+};
+
+const downloadOrderReports = asyncHandler(async (req, res) => {
+    const { range, format, startDate, endDate } = req.query;
+    const normalizedFormat = String(format || "csv").toLowerCase();
+
+    if (!["csv", "pdf"].includes(normalizedFormat)) {
+        throw new ApiError(400, "Invalid report format. Use csv or pdf");
+    }
+
+    const reportWindow = resolveReportWindow(range, startDate, endDate);
+    const paidOrders = await Order.find({ "paymentInfo.status": "Paid" })
+        .populate("user", "fullName username email")
+        .sort("-createdAt");
+
+    const filteredOrders = paidOrders.filter((order) => {
+        const effectiveDate = order.paidAt || order.createdAt;
+        return effectiveDate >= reportWindow.startDate && effectiveDate <= reportWindow.endDate;
+    });
+
+    const summary = {
+        totalOrders: filteredOrders.length,
+        totalItems: 0,
+        totalRevenue: 0,
+        statusCounts: {
+            Processing: 0,
+            Shipped: 0,
+            Delivered: 0,
+            Cancelled: 0
+        }
+    };
+
+    const headers = [
+        "Order ID",
+        "Order Date",
+        "Customer",
+        "Customer Email",
+        "Order Status",
+        "Item Name",
+        "Quantity",
+        "Unit Price",
+        "Line Total"
+    ];
+
+    const rows = [];
+
+    filteredOrders.forEach((order) => {
+        const orderStatus = order.orderStatus || "Processing";
+        summary.statusCounts[orderStatus] = (summary.statusCounts[orderStatus] || 0) + 1;
+
+        const customerName = order.user?.fullName || order.user?.username || order.user?.email || "Unknown";
+        const customerEmail = order.user?.email || "-";
+        const orderDate = formatDateForReport(order.paidAt || order.createdAt);
+
+        order.orderItems.forEach((item) => {
+            const quantity = Number(item.quantity || 0);
+            const unitPrice = Number(item.price || 0);
+            const lineTotal = unitPrice * quantity;
+
+            summary.totalItems += quantity;
+            summary.totalRevenue += lineTotal;
+
+            rows.push([
+                formatDisplayOrderId(order._id),
+                orderDate,
+                customerName,
+                customerEmail,
+                orderStatus,
+                item.name || "Item",
+                quantity,
+                unitPrice,
+                lineTotal
+            ]);
+        });
+    });
+
+    const summaryRows = [
+        ["Report Range", reportWindow.rangeLabel],
+        ["Start Date", formatDateOnly(reportWindow.startDate)],
+        ["End Date", formatDateOnly(reportWindow.endDate)],
+        ["Paid Orders", summary.totalOrders],
+        ["Items Sold", summary.totalItems],
+        ["Revenue", `INR ${summary.totalRevenue.toFixed(2)}`],
+        ["Processing Orders", summary.statusCounts.Processing],
+        ["Shipped Orders", summary.statusCounts.Shipped],
+        ["Delivered Orders", summary.statusCounts.Delivered],
+        ["Cancelled Orders", summary.statusCounts.Cancelled]
+    ];
+
+    const fileStamp = `${reportWindow.rangeLabel}-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}`;
+
+    if (normalizedFormat === "pdf") {
+        const pdfBuffer = buildPdfStream({
+            title: "Order Report",
+            subtitle: `Range: ${reportWindow.rangeLabel}`,
+            summaryRows,
+            headers,
+            rows
+        });
+
+        return res
+            .status(200)
+            .set({
+                "Content-Type": "application/pdf",
+                "Content-Disposition": `attachment; filename="order-report-${fileStamp}.pdf"`
+            })
+            .send(pdfBuffer);
+    }
+
+    const csv = buildCsvReport({
+        title: "Order Report",
+        summaryRows,
+        headers,
+        rows
+    });
+
+    return res
+        .status(200)
+        .set({
+            "Content-Type": "text/csv; charset=utf-8",
+            "Content-Disposition": `attachment; filename="order-report-${fileStamp}.csv"`
+        })
+        .send(csv);
+});
+
 export {
     deleteUser,
     deleteVendorAndProducts,
     getAllUsers,
     createProductForVendor,
     deleteProductByAdmin,
-    toggleProductStatusByAdmin
+    toggleProductStatusByAdmin,
+    downloadOrderReports
 }

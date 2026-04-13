@@ -34,22 +34,14 @@ const vendorSchema = new Schema(
         },
         isVerified: {
             type: Boolean,
-            default: false
-        },
-        verificationStatus: {
-            type: String,
-            enum: ["pending", "approved", "rejected"],
-            default: "pending"
-        },
-        adminRemarks: {
-            type: String,
-            default: ""
+            default: true
         },
         bankDetails: {
             accountHolderName: {
                 type: String,
                 required: [true, "Account holder name is required"],
-                trim: true
+                trim: true,
+                match: [/^[A-Za-z]+(?: [A-Za-z]+)*$/, "Account holder name must contain only alphabets and spaces"]
             },
             accountNumber: {
                 type: String,

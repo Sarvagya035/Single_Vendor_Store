@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { AppRefreshService } from '../../core/services/app-refresh.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
@@ -12,41 +13,65 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent],
   template: `
-    <nav class="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-lg">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-18 items-center justify-between">
-          <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
-            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 shadow-lg shadow-indigo-100 transition-transform group-hover:scale-110">
-              <span class="text-lg font-bold text-white">N</span>
+    <div class="sticky top-0 z-50">
+      <div *ngIf="showAnnouncementBar()" class="overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] text-white">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-11 items-center overflow-hidden">
+            <div class="flex w-max items-center gap-4 whitespace-nowrap animate-announcement-marquee hover:[animation-play-state:paused]">
+              <ng-container *ngFor="let message of announcementTicker; let last = last">
+                <span class="text-[11px] font-extrabold uppercase tracking-[0.18em] sm:text-xs">
+                  {{ message }}
+                </span>
+                <span *ngIf="!last" class="text-[#d7b48d]">|</span>
+              </ng-container>
             </div>
-            <span class="text-lg font-bold tracking-tight text-slate-900">NutriFoods</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-lg">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-20 items-center justify-between">
+          <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
+            <img
+              src="/assets/divya%20logo.webp"
+              alt="Divya logo"
+              class="h-17 w-auto object-contain transition-transform group-hover:scale-110"
+            />
           </a>
 
           <div class="hidden items-center space-x-6 md:flex">
-            <a *ngIf="showHomeLink()" routerLink="/" class="nav-link" routerLinkActive="text-indigo-600 after:w-full">Home</a>
+            <ng-container *ngIf="showPublicNavLinks()">
+              <a routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
+              <a routerLink="/products" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Products</a>
+              <a routerLink="/products" [queryParams]="{ category: 'combos' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Combos</a>
+              <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
+              <a routerLink="/about-us" class="nav-link" routerLinkActive="text-amber-700 after:w-full">About Us</a>
+              <a routerLink="/contact" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Contact Us</a>
+            </ng-container>
 
-            <ng-container *ngIf="user && isAdmin()">
+            <ng-container *ngIf="user && !isCustomer()">
               <app-header-account-dropdown
-                theme="admin"
-                subtitle="Admin account"
-                [open]="isAdminDropdownOpen"
+                theme="vendor"
+                subtitle="Store account"
+                [open]="isVendorDropdownOpen"
                 [avatarUrl]="avatarUrl()"
                 [initials]="userInitials()"
                 [displayName]="displayName()"
                 [email]="user?.email || ''"
-                [items]="adminMenuItems"
-                (toggle)="toggleAdminDropdown($event)"
-                (itemSelected)="handleAdminItem($event)"
+                [items]="vendorMenuItems"
+                (toggle)="toggleVendorDropdown($event)"
+                (itemSelected)="handleVendorItem($event)"
               />
             </ng-container>
 
             <ng-container *ngIf="isCustomer()">
               <a
                 routerLink="/cart"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
               >
                 Cart
-                <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-xs text-white">{{ cartCount }}</span>
+                <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
               </a>
 
               <app-header-account-dropdown
@@ -76,7 +101,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-black text-slate-700"
             >
               Cart
-              <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-xs text-white">{{ cartCount }}</span>
+              <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
             </a>
 
             <app-header-account-dropdown
@@ -94,17 +119,17 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             />
 
             <app-header-account-dropdown
-              *ngIf="user && isAdmin()"
-              theme="admin"
+              *ngIf="user && isVendor()"
+              theme="vendor"
               [desktop]="false"
-              [open]="isAdminDropdownOpen"
+              [open]="isVendorDropdownOpen"
               [avatarUrl]="avatarUrl()"
               [initials]="userInitials()"
               [displayName]="displayName()"
               [email]="user?.email || ''"
-              [items]="adminMenuItems"
-              (toggle)="toggleAdminDropdown($event)"
-              (itemSelected)="handleAdminItem($event)"
+              [items]="vendorMenuItems"
+              (toggle)="toggleVendorDropdown($event)"
+              (itemSelected)="handleVendorItem($event)"
             />
 
             <button
@@ -125,25 +150,35 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             </button>
           </div>
         </div>
-      </div>
+        </div>
+      </nav>
 
       <app-header-mobile-menu
         [open]="isMenuOpen"
         [loggedIn]="!!user"
         [isAdmin]="isAdmin()"
-        [showHomeLink]="showHomeLink()"
+        [isVendor]="isVendor() || isAdmin()"
+        [showPublicNavLinks]="showPublicNavLinks()"
         (close)="closeMobileMenu()"
         (logout)="onMobileLogout()"
       />
-    </nav>
+      <div *ngIf="isNavigating" class="pointer-events-none border-b border-[#e7dac9] bg-white/75 px-4 py-3 backdrop-blur">
+        <div class="mx-auto max-w-7xl">
+          <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
+            <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   `
 })
 export class HeaderComponent implements OnInit {
   user: any = null;
+  @Input() isNavigating = false;
   isMenuOpen = false;
   cartCount = 0;
   isDropdownOpen = false;
-  isAdminDropdownOpen = false;
+  isVendorDropdownOpen = false;
 
   readonly customerMenuItems: HeaderDropdownItem[] = [
     { label: 'Profile', route: '/profile' },
@@ -152,11 +187,21 @@ export class HeaderComponent implements OnInit {
     { label: 'Logout', action: 'logout', tone: 'danger' }
   ];
 
-  readonly adminMenuItems: HeaderDropdownItem[] = [
+  readonly vendorMenuItems: HeaderDropdownItem[] = [
     { label: 'Profile', route: '/profile' },
-    { label: 'Orders', route: '/admin/orders' },
+    { label: 'Orders', route: '/vendor/orders' },
+    { label: 'Store profile', route: '/vendor/profile', tone: 'accent' },
     { label: 'Logout', action: 'logout', tone: 'danger' }
   ];
+
+  readonly announcementMessages = [
+    'Free delivery on orders above ₹999',
+    'Get 10% off on orders above ₹1999 with code WELC10',
+    'Gift boxes excluded from select offers',
+    'Freshly packed dry fruits delivered with care'
+  ];
+
+  readonly announcementTicker = [...this.announcementMessages, ...this.announcementMessages];
 
   constructor(
     private authService: AuthService,
@@ -164,6 +209,14 @@ export class HeaderComponent implements OnInit {
     private router: Router,
     private appRefreshService: AppRefreshService
   ) {}
+
+  private readonly apiOrigin = (() => {
+    try {
+      return new URL(environment.apiUrl).origin;
+    } catch {
+      return '';
+    }
+  })();
 
   ngOnInit() {
     this.authService.currentUser$.subscribe((user) => {
@@ -186,7 +239,7 @@ export class HeaderComponent implements OnInit {
       );
     });
 
-    this.authService.getCurrentUser().subscribe({
+    this.authService.ensureCurrentUser().subscribe({
       error: () => this.authService.clearCurrentUser()
     });
 
@@ -211,7 +264,7 @@ export class HeaderComponent implements OnInit {
 
     if (!clickedInsideAccountDropdown) {
       this.closeDropdown();
-      this.closeAdminDropdown();
+      this.closeVendorDropdown();
     }
 
     if (!clickedInsideMobileMenu) {
@@ -226,7 +279,7 @@ export class HeaderComponent implements OnInit {
 
   toggleMenu() {
     this.closeDropdown();
-    this.closeAdminDropdown();
+    this.closeVendorDropdown();
     this.isMenuOpen = !this.isMenuOpen;
   }
 
@@ -236,7 +289,7 @@ export class HeaderComponent implements OnInit {
 
   toggleDropdown(event?: Event): void {
     event?.stopPropagation();
-    this.closeAdminDropdown();
+    this.closeVendorDropdown();
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
@@ -244,37 +297,58 @@ export class HeaderComponent implements OnInit {
     this.isDropdownOpen = false;
   }
 
-  toggleAdminDropdown(event?: Event): void {
+  toggleVendorDropdown(event?: Event): void {
     event?.stopPropagation();
     this.isMenuOpen = false;
     this.closeDropdown();
-    this.isAdminDropdownOpen = !this.isAdminDropdownOpen;
+    this.isVendorDropdownOpen = !this.isVendorDropdownOpen;
   }
 
-  closeAdminDropdown(): void {
-    this.isAdminDropdownOpen = false;
+  closeVendorDropdown(): void {
+    this.isVendorDropdownOpen = false;
   }
 
   closeAllMenus(): void {
     this.isMenuOpen = false;
     this.closeDropdown();
-    this.closeAdminDropdown();
+    this.closeVendorDropdown();
   }
 
   hasAvatar(): boolean {
-    return typeof this.user?.avatar === 'string' && this.user.avatar.startsWith('http');
+    return !!this.normalizeAvatarUrl(this.user?.avatar);
   }
 
   avatarUrl(): string {
-    return this.hasAvatar() ? this.user.avatar : '';
+    return this.normalizeAvatarUrl(this.user?.avatar);
   }
 
   displayName(): string {
-    return String(this.user?.username || this.user?.fullname || this.user?.email || 'Account').trim();
+    return String(this.user?.username || this.user?.fullname || this.user?.email || 'Vendor').trim();
   }
 
   customerDisplayName(): string {
     return String(this.user?.username || this.user?.fullname || this.user?.email || 'Customer').trim();
+  }
+
+  private normalizeAvatarUrl(value: unknown): string {
+    if (typeof value !== 'string') {
+      return '';
+    }
+
+    const avatar = value.trim();
+    if (!avatar) {
+      return '';
+    }
+
+    if (/^(https?:)?\/\//i.test(avatar) || avatar.startsWith('data:')) {
+      return avatar;
+    }
+
+    if (!this.apiOrigin) {
+      return avatar;
+    }
+
+    return `${this.apiOrigin}${avatar.startsWith('/') ? '' : '/'}${avatar}`;
   }
 
   userInitials(): string {
@@ -291,20 +365,32 @@ export class HeaderComponent implements OnInit {
     return String(this.user.role).toLowerCase() === 'admin';
   }
 
-  isCustomer(): boolean {
-    return !!this.user && !this.isAdmin();
+  isVendor(): boolean {
+    if (!this.user?.role) return false;
+    if (Array.isArray(this.user.role)) {
+      return this.user.role.some((r: string) => r.toLowerCase() === 'vendor');
+    }
+    return String(this.user.role).toLowerCase() === 'vendor';
   }
 
-  showHomeLink(): boolean {
-    return !this.isAdmin();
+  isCustomer(): boolean {
+    return !!this.user && !this.isAdmin() && !this.isVendor();
+  }
+
+  showPublicNavLinks(): boolean {
+    return !this.isAdmin() && !this.isVendor();
+  }
+
+  showAnnouncementBar(): boolean {
+    return this.showPublicNavLinks();
   }
 
   logoRoute(): string {
-    if (this.isAdmin()) {
-      return '/admin/dashboard';
+    if (!this.user) {
+      return '/';
     }
 
-    return '/';
+    return this.isVendor() || this.isAdmin() ? '/vendor/dashboard' : '/';
   }
 
   onLogout() {
@@ -336,10 +422,11 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  handleAdminItem(item: HeaderDropdownItem): void {
-    this.closeAdminDropdown();
+  handleVendorItem(item: HeaderDropdownItem): void {
+    this.closeVendorDropdown();
     if (item.action === 'logout') {
       this.onLogout();
     }
   }
+
 }

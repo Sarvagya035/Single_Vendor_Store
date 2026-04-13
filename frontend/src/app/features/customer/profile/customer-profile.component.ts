@@ -3,10 +3,13 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { VendorService } from '../../../core/services/vendor.service';
+import { CustomerEditProfileModalComponent } from '../edit-profile-modal/customer-edit-profile-modal.component';
+import { CustomerChangePasswordPanelComponent } from '../change-password-panel/customer-change-password-panel.component';
 import { CustomerPersonalDetailsComponent } from '../personal-details/customer-personal-details.component';
 import { CustomerProfileHeaderComponent } from '../profile-header/customer-profile-header.component';
 import { CustomerProfileSidebarComponent } from '../profile-sidebar/customer-profile-sidebar.component';
-import { CustomerUser } from '../../../core/models/customer.models';
+import { CustomerUser, CustomerVendorProfile } from '../../../core/models/customer.models';
 
 @Component({
   selector: 'app-profile',
@@ -15,22 +18,26 @@ import { CustomerUser } from '../../../core/models/customer.models';
     CommonModule,
     CustomerProfileHeaderComponent,
     CustomerProfileSidebarComponent,
-    CustomerPersonalDetailsComponent
+    CustomerPersonalDetailsComponent,
+    CustomerChangePasswordPanelComponent,
+    CustomerEditProfileModalComponent
   ],
   template: `
-    <div class="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_24%,#f8fafc_100%)] pt-16 pb-24">
+    <div class="min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_24%,#fff9f2_100%)] pt-16 pb-24">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <app-customer-profile-header
           [isAdmin]="isAdmin()"
+          [isVendor]="isVendor()"
+          [vendorProfile]="vendorProfile"
           (logout)="onLogout()"
         />
 
         <div *ngIf="!user && !error" class="flex flex-col items-center gap-4 py-20">
-          <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
+          <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="font-medium tracking-wide text-slate-500">Syncing account data...</p>
         </div>
 
-        <div *ngIf="error" class="glass-card mb-8 border-rose-100 bg-rose-50/50 p-6 font-bold text-rose-700">
+        <div *ngIf="error" class="app-surface mb-8 border-rose-100 bg-rose-50/50 p-6 font-bold text-rose-700">
           ⚠️ {{ error }}
         </div>
 
@@ -40,6 +47,8 @@ import { CustomerUser } from '../../../core/models/customer.models';
               [user]="user"
               [roles]="getRoles()"
               [memberYear]="getYear()"
+              (editProfile)="openEditProfileModal()"
+              (changePassword)="openPasswordModal()"
             />
           </div>
 
@@ -47,16 +56,32 @@ import { CustomerUser } from '../../../core/models/customer.models';
             <app-customer-personal-details [user]="user" />
           </div>
         </div>
+
+        <app-customer-change-password-panel
+          [open]="isPasswordModalOpen"
+          (closed)="closePasswordModal()"
+        />
+
+        <app-customer-edit-profile-modal
+          [open]="isEditProfileModalOpen"
+          [user]="user"
+          (closed)="closeEditProfileModal()"
+          (saved)="handleProfileSaved($event)"
+        />
       </div>
     </div>
   `
 })
 export class ProfileComponent implements OnInit {
   user: CustomerUser | null = null;
+  vendorProfile: CustomerVendorProfile | null = null;
   error = '';
+  isEditProfileModalOpen = false;
+  isPasswordModalOpen = false;
 
   constructor(
     private authService: AuthService,
+    private vendorService: VendorService,
     private router: Router,
     private appRefreshService: AppRefreshService
   ) {}
@@ -85,6 +110,16 @@ export class ProfileComponent implements OnInit {
     return String(this.user.role).toLowerCase() === 'admin';
   }
 
+  isVendor(): boolean {
+    if (!this.user?.role) {
+      return false;
+    }
+    if (Array.isArray(this.user.role)) {
+      return this.user.role.some((role: string) => role.toLowerCase() === 'vendor');
+    }
+    return String(this.user.role).toLowerCase() === 'vendor';
+  }
+
   getYear(): string {
     if (!this.user?.createdAt) {
       return 'N/A';
@@ -98,6 +133,9 @@ export class ProfileComponent implements OnInit {
         if (res?.success) {
           this.user = res.data;
           this.appRefreshService.notify('auth');
+          if (this.isAdmin() || this.isVendor()) {
+            this.fetchVendorProfile();
+          }
         } else {
           this.error = 'Failed to load profile data.';
         }
@@ -108,10 +146,44 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  onLogout() {
-    this.authService.logout().subscribe({
-      next: () => this.router.navigate(['/login']),
-      error: () => this.router.navigate(['/login'])
+  fetchVendorProfile() {
+    this.vendorService.getProfile().subscribe({
+      next: (res) => {
+        if (res?.success) {
+          this.vendorProfile = res.data;
+        }
+      },
+      error: () => {
+        this.vendorProfile = null;
+      }
     });
   }
+
+  onLogout() {
+    this.authService.logout().subscribe({
+      next: () => this.router.navigate(['/']),
+      error: () => this.router.navigate(['/'])
+    });
+  }
+
+  openPasswordModal(): void {
+    this.isPasswordModalOpen = true;
+  }
+
+  closePasswordModal(): void {
+    this.isPasswordModalOpen = false;
+  }
+
+  openEditProfileModal(): void {
+    this.isEditProfileModalOpen = true;
+  }
+
+  closeEditProfileModal(): void {
+    this.isEditProfileModalOpen = false;
+  }
+
+  handleProfileSaved(updatedUser: CustomerUser): void {
+    this.user = updatedUser;
+  }
 }
+

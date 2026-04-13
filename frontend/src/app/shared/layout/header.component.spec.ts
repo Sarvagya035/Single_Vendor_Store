@@ -37,11 +37,18 @@ describe('HeaderComponent', () => {
     };
   });
 
-  it('routes the logo to admin dashboard for admin users', () => {
+  it('routes the logo to vendor dashboard for vendor users', () => {
+    const component = createComponent();
+    component.user = { role: ['vendor'] };
+
+    expect(component.logoRoute()).toBe('/vendor/dashboard');
+  });
+
+  it('routes the logo to vendor dashboard for admin users', () => {
     const component = createComponent();
     component.user = { role: 'admin' };
 
-    expect(component.logoRoute()).toBe('/admin/dashboard');
+    expect(component.logoRoute()).toBe('/vendor/dashboard');
   });
 
   it('falls back to home for customer users', () => {
@@ -51,23 +58,58 @@ describe('HeaderComponent', () => {
     expect(component.logoRoute()).toBe('/');
   });
 
+  it('shows the public nav links for customers', () => {
+    const component = createComponent();
+    component.user = { role: ['customer'] };
+
+    expect(component.showPublicNavLinks()).toBe(true);
+  });
+
+  it('hides the public nav links for vendor users', () => {
+    const component = createComponent();
+    component.user = { role: ['vendor'] };
+
+    expect(component.showPublicNavLinks()).toBe(false);
+  });
+
+  it('hides the public nav links for admin users', () => {
+    const component = createComponent();
+    component.user = { role: 'admin' };
+
+    expect(component.showPublicNavLinks()).toBe(false);
+  });
+
+  it('shows the announcement bar for public users', () => {
+    const component = createComponent();
+    component.user = { role: ['customer'] };
+
+    expect(component.showAnnouncementBar()).toBe(true);
+  });
+
+  it('hides the announcement bar for vendor users', () => {
+    const component = createComponent();
+    component.user = { role: ['vendor'] };
+
+    expect(component.showAnnouncementBar()).toBe(false);
+  });
+
   it('closes other menus before opening the mobile menu', () => {
     const component = createComponent();
     component.isDropdownOpen = true;
-    component.isAdminDropdownOpen = true;
+    component.isVendorDropdownOpen = true;
 
     component.toggleMenu();
 
     expect(component.isMenuOpen).toBe(true);
     expect(component.isDropdownOpen).toBe(false);
-    expect(component.isAdminDropdownOpen).toBe(false);
+    expect(component.isVendorDropdownOpen).toBe(false);
   });
 
   it('logs out and navigates home when a logout menu item is handled', () => {
     const component = createComponent();
-    component.user = { role: ['customer'] };
+    component.user = { role: ['vendor'] };
 
-    component.handleCustomerItem({ label: 'Logout', action: 'logout', tone: 'danger' });
+    component.handleVendorItem({ label: 'Logout', action: 'logout', tone: 'danger' });
 
     expect(authService.logout).toHaveBeenCalled();
     expect(cartService.resetCart).toHaveBeenCalled();

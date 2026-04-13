@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AddressService } from '../../core/services/address.service';
 import { CartService } from '../../core/services/cart.service';
+import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
 import { CustomerAddress, CustomerCart } from '../../core/models/customer.models';
 import { OrderCheckoutPayload } from '../../core/models/order.models';
@@ -21,12 +22,12 @@ const EMPTY_CART: CustomerCart = {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-slate-50">
-      <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
+      <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Checkout</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">Review and place your order</h1>
+            <p class="text-xs font-black uppercase tracking-[0.22em] text-amber-700">Checkout</p>
+            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">Review and place your order</h1>
             <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
               Confirm your delivery address, review your cart total, and complete payment securely.
             </p>
@@ -38,17 +39,13 @@ const EMPTY_CART: CustomerCart = {
           </div>
         </div>
 
-        <div *ngIf="errorMessage" class="mt-6 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-          {{ errorMessage }}
-        </div>
-
-        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
         <div *ngIf="isLoading" class="mt-10 text-sm font-semibold text-slate-500">Loading checkout details...</div>
 
-        <div *ngIf="!isLoading && cart.cartItems.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
+        <div *ngIf="!isLoading && cart.cartItems.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(47,27,20,0.05)]">
           <h2 class="text-2xl font-black text-slate-900">Your cart is empty</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">Add products to your cart before checking out.</p>
           <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
@@ -56,16 +53,16 @@ const EMPTY_CART: CustomerCart = {
 
         <div *ngIf="!isLoading && cart.cartItems.length" class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
           <section class="space-y-6">
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-              <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(47,27,20,0.06)]">
+              <div class="flex items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
                 <div>
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivery Address</p>
+                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Delivery Address</p>
                   <h2 class="mt-2 text-2xl font-black text-slate-900">Choose where this order should arrive</h2>
                 </div>
-                <a routerLink="/addresses" class="text-sm font-black text-indigo-600">Edit addresses</a>
+                <a routerLink="/addresses" class="text-sm font-black text-amber-700">Edit addresses</a>
               </div>
 
-              <div *ngIf="addresses.length === 0" class="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-6 text-sm font-semibold text-slate-500">
+              <div *ngIf="addresses.length === 0" class="mt-5 rounded-2xl border border-dashed border-[#e7dac9] bg-[#fff7ed] px-5 py-6 text-sm font-semibold text-slate-500">
                 No saved addresses found. Add a delivery address before placing this order.
               </div>
 
@@ -73,12 +70,12 @@ const EMPTY_CART: CustomerCart = {
                 <label
                   *ngFor="let address of addresses; trackBy: trackByAddress"
                   class="flex cursor-pointer gap-4 rounded-[1.5rem] border p-5 transition"
-                  [ngClass]="selectedAddressId === address._id ? 'border-indigo-200 bg-indigo-50/70' : 'border-slate-200 bg-slate-50/70 hover:border-slate-300'"
+                  [ngClass]="selectedAddressId === address._id ? 'border-[#d4a017] bg-[#fff7ed]' : 'border-[#e7dac9] bg-white hover:border-[#d4a017]'"
                 >
                   <input
                     type="radio"
                     name="shippingAddress"
-                    class="mt-1 h-4 w-4 border-slate-300 text-indigo-600"
+                    class="mt-1 h-4 w-4 border-slate-300 text-amber-700"
                     [value]="address._id"
                     [(ngModel)]="selectedAddressId"
                   />
@@ -86,7 +83,7 @@ const EMPTY_CART: CustomerCart = {
                   <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
                       <p class="text-base font-black text-slate-900">{{ address.fullname }}</p>
-                      <span *ngIf="address.isDefault" class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700">
+                      <span *ngIf="address.isDefault" class="rounded-full bg-[#f5e6d3] px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#6f4e37]">
                         Default
                       </span>
                     </div>
@@ -99,16 +96,16 @@ const EMPTY_CART: CustomerCart = {
               </div>
             </div>
 
-            <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-              <div class="border-b border-slate-100 pb-4">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Order Items</p>
+            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(47,27,20,0.06)]">
+              <div class="border-b border-[#f1e4d4] pb-4">
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Order Items</p>
                 <h2 class="mt-2 text-2xl font-black text-slate-900">Cart snapshot</h2>
               </div>
 
               <div class="mt-5 space-y-4">
                 <article
                   *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
-                  class="flex gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4"
+                  class="flex gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-4"
                 >
                   <img [src]="cartItemImage(item)" [alt]="item.product?.productName || 'Cart item'" class="h-20 w-20 rounded-2xl object-cover" />
 
@@ -131,18 +128,14 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </section>
 
-          <aside class="h-fit rounded-[2rem] border border-slate-200 bg-slate-900 p-6 text-white shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Payment Summary</p>
+          <aside class="h-fit rounded-[2rem] border border-[#e7dac9] bg-[#2f1b14] p-6 text-white shadow-[0_18px_50px_rgba(47,27,20,0.16)]">
+            <p class="text-xs font-black uppercase tracking-[0.22em] text-[#f5e6d3]">Payment Summary</p>
             <h2 class="mt-3 text-2xl font-black">Secure checkout</h2>
 
-            <div class="mt-6 space-y-3 text-sm font-medium text-slate-300">
+            <div class="mt-6 space-y-3 text-sm font-medium text-[#f5e6d3]">
               <div class="flex items-center justify-between">
                 <span>Items total</span>
                 <span>{{ formatCurrency(itemsSubtotal()) }}</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span>Estimated tax</span>
-                <span>{{ formatCurrency(taxAmount()) }}</span>
               </div>
               <div class="flex items-center justify-between">
                 <span>Shipping</span>
@@ -151,7 +144,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
 
             <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-              <span class="text-sm font-bold text-slate-300">Total payable</span>
+              <span class="text-sm font-bold text-[#f5e6d3]">Total payable</span>
               <span class="text-2xl font-black">{{ formatCurrency(grandTotal()) }}</span>
             </div>
 
@@ -179,13 +172,13 @@ export class CheckoutComponent implements OnInit {
   selectedAddressId = '';
   isLoading = false;
   isSubmitting = false;
-  errorMessage = '';
   successMessage = '';
 
   constructor(
     private cartService: CartService,
     private addressService: AddressService,
     private orderService: OrderService,
+    private errorService: ErrorService,
     private router: Router
   ) {}
 
@@ -195,7 +188,6 @@ export class CheckoutComponent implements OnInit {
 
   loadCheckoutData(): void {
     this.isLoading = true;
-    this.errorMessage = '';
 
     forkJoin({
       cart: this.cartService.getCart(),
@@ -208,9 +200,8 @@ export class CheckoutComponent implements OnInit {
         const defaultAddress = this.addresses.find((address) => address.isDefault);
         this.selectedAddressId = defaultAddress?._id || this.addresses[0]?._id || '';
       },
-      error: (error) => {
+      error: () => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Unable to load checkout details.';
       }
     });
   }
@@ -220,23 +211,17 @@ export class CheckoutComponent implements OnInit {
     const payload = this.buildCheckoutPayload(selectedAddress);
 
     if (!payload) {
-      this.errorMessage = 'Please choose a valid delivery address before placing the order.';
+      this.errorService.showToast('Please choose a valid delivery address before placing the order.', 'error');
       return;
     }
 
     const RazorpayCheckout = (window as any).Razorpay;
     if (!RazorpayCheckout) {
-      this.errorMessage = 'Razorpay checkout failed to load. Please refresh and try again.';
-      return;
-    }
-
-    if (!environment.razorpayKeyId) {
-      this.errorMessage = 'Payment is not configured yet. Please contact support or try again later.';
+      this.errorService.showToast('Razorpay checkout failed to load. Please refresh and try again.', 'error');
       return;
     }
 
     this.isSubmitting = true;
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.orderService.checkout(payload).subscribe({
@@ -246,7 +231,7 @@ export class CheckoutComponent implements OnInit {
 
         if (!orderId || !razorOrder?.id) {
           this.isSubmitting = false;
-          this.errorMessage = 'Unable to initialize payment for this order.';
+          this.errorService.showToast('Unable to initialize payment for this order.', 'error');
           return;
         }
 
@@ -279,9 +264,8 @@ export class CheckoutComponent implements OnInit {
 
         razorpay.open();
       },
-      error: (error) => {
+      error: () => {
         this.isSubmitting = false;
-        this.errorMessage = error.error?.message || 'Unable to start checkout.';
       }
     });
   }
@@ -301,9 +285,8 @@ export class CheckoutComponent implements OnInit {
           this.cartService.resetCart();
           this.router.navigate(['/orders']);
         },
-        error: (error) => {
+        error: () => {
           this.isSubmitting = false;
-          this.errorMessage = error.error?.message || 'Payment verification failed.';
         }
       });
   }
@@ -317,7 +300,8 @@ export class CheckoutComponent implements OnInit {
       .map((item) => ({
         product: item.product?._id || '',
         variantId: item.variantId || '',
-        quantity: Number(item.quantity || 0)
+        quantity: Number(item.quantity || 0),
+        priceAtAddition: Number(item.priceAtAddition || 0)
       }))
       .filter((item) => item.product && item.variantId && item.quantity > 0);
 
@@ -354,16 +338,12 @@ export class CheckoutComponent implements OnInit {
     );
   }
 
-  taxAmount(): number {
-    return Math.round(this.itemsSubtotal() * 0.18);
-  }
-
   shippingAmount(): number {
     return this.itemsSubtotal() > 1000 ? 0 : 50;
   }
 
   grandTotal(): number {
-    return this.itemsSubtotal() + this.taxAmount() + this.shippingAmount();
+    return this.itemsSubtotal() + this.shippingAmount();
   }
 
   variantLabel(item: any): string {
@@ -393,3 +373,4 @@ export class CheckoutComponent implements OnInit {
     return item.variantId || item.product?._id || String(index);
   }
 }
+

@@ -5,10 +5,11 @@ import {Order} from "../models/order.model.js"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { uploadOnCloudinary } from "../utils/cloudinaryUpload.js";
 
 
 const addOrUpdateReview = asyncHandler(async (req, res) => {
-    const { productId, title, commentBody, rating, reviewImages} = req.body;
+    const { productId, title, commentBody, rating } = req.body;
 
     // 1. Verified Buyer Check
     const hasOrdered = await Order.findOne({
@@ -25,6 +26,31 @@ const addOrUpdateReview = asyncHandler(async (req, res) => {
         throw new ApiError(403, "You can only review products you have purchased and received.");
     }
 
+    const reviewImageFiles = req.files || [];
+    const uploadedReviewImages = await Promise.all(
+        reviewImageFiles.map(async (file) => {
+            const uploaded = await uploadOnCloudinary(file.path);
+            return uploaded?.url;
+        })
+    );
+
+    let existingReviewImages = [];
+    if (typeof req.body.reviewImages === "string" && req.body.reviewImages.trim()) {
+        try {
+            const parsedImages = JSON.parse(req.body.reviewImages);
+            if (Array.isArray(parsedImages)) {
+                existingReviewImages = parsedImages.filter((image) => typeof image === "string" && image.trim());
+            }
+        } catch (error) {
+            existingReviewImages = req.body.reviewImages
+                .split(",")
+                .map((image) => image.trim())
+                .filter(Boolean);
+        }
+    }
+
+    const combinedReviewImages = [...existingReviewImages, ...uploadedReviewImages.filter(Boolean)];
+
     // 2. Add or Update the Comment
     const review = await Comment.findOneAndUpdate(
         { user: req.user._id, product: productId }, // Find by this
@@ -32,7 +58,7 @@ const addOrUpdateReview = asyncHandler(async (req, res) => {
             title, 
             commentBody, 
             rating,
-            reviewImages: reviewImages || [],
+            reviewImages: combinedReviewImages,
         },
         { returnDocument: "after", upsert: true, runValidators: true } 
     );
@@ -97,4 +123,36 @@ const getReviewStats = asyncHandler(async (req, res) => {
     );
 });
 
-export { addOrUpdateReview, getProductReviews, getReviewStats};
+const deleteReview = asyncHandler(async (req, res) => {
+    const { productId } = req.params;
+
+    if (!productId) {
+        throw new ApiError(400, "Product ID is required");
+    }
+
+    const deletedReview = await Comment.findOneAndDelete({
+        user: req.user._id,
+        product: productId
+    });
+
+    if (!deletedReview) {
+        throw new ApiError(404, "Review not found");
+    }
+
+    const remainingReviews = await Comment.find({ product: productId });
+    const numberOfReviews = remainingReviews.length;
+    const averageRating = numberOfReviews
+        ? remainingReviews.reduce((sum, item) => sum + Number(item.rating || 0), 0) / numberOfReviews
+        : 0;
+
+    await Product.findByIdAndUpdate(productId, {
+        averageRating: Number(averageRating.toFixed(1)),
+        numberOfReviews
+    });
+
+    return res.status(200).json(
+        new ApiResponse(200, deletedReview, "Review deleted successfully")
+    );
+});
+
+export { addOrUpdateReview, getProductReviews, getReviewStats, deleteReview};

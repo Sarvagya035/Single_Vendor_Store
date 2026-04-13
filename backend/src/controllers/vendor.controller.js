@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
@@ -6,130 +7,97 @@ import { Vendor } from "../models/vendor.model.js"
 import { User } from "../models/user.model.js"
 import { Order } from "../models/order.model.js";
 
-const registerVendor = asyncHandler(async (req, res) => {
-    const userId = req.user?._id;
-
-    if (!userId) {
-        throw new ApiError(401, "Unauthorized request");
+const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
+    
+    const adminExists = await User.findOne({ role: "vendor" }); 
+    if (adminExists) {
+        throw new ApiError(400, "Admin already exists. Use regular login.");
     }
-
-    const existingApplication = await Vendor.findOne({ user: userId });
-    if (existingApplication && existingApplication.verificationStatus !== "rejected") {
-        throw new ApiError(400, "You have an active or approved vendor registration");
-    }
-
-    // 2. Destructure fields including bankDetails from req.body
-    // Frontend should send bankDetails as an object or flat fields
+    
     const { 
-        shopName, 
-        vendorAddress, 
-        vendorDescription, 
-        gstNumber,
-        accountHolderName,
-        accountNumber,
-        ifscCode,
-        bankName,
-        upiId 
+        // Admin Details
+        username, email, password, secretKey, phone,
+        // Store Details
+        shopName, vendorAddress, vendorDescription, gstNumber,
+        // Bank Details
+        accountHolderName, accountNumber, ifscCode, bankName, upiId 
     } = req.body;
 
-    // 3. Validation for all required fields
-    if (
-        [shopName, vendorAddress, vendorDescription, gstNumber, accountHolderName, accountNumber, ifscCode, bankName]
-        .some(field => !field || field.trim() === "")
-    ) {
-        throw new ApiError(400, "All details including primary bank details are required");
+    // 1. Security Check
+    if (secretKey !== process.env.ADMIN_SETUP_SECRET) {
+        throw new ApiError(403, "Invalid Secret Key!");
     }
 
-    // 4. Check for unique GST
-    const existingGst = await Vendor.findOne({ gstNumber: gstNumber.toUpperCase() });
-    if (existingGst) {
-        throw new ApiError(409, "Vendor with this GST already exists");
+    const requiredFields = [
+        username, email, password, phone,
+        shopName, vendorAddress, vendorDescription, gstNumber, 
+        accountHolderName, accountNumber, ifscCode, bankName
+    ];
+
+    if (requiredFields.some(field => !field || field.trim() === "")) {
+        throw new ApiError(400, "All admin, store, and primary bank details are mandatory");
     }
 
-    // 5. Handle Logo Upload
-    const logoImageLocalPath = req.file?.path;
-    if (!logoImageLocalPath) {
-        throw new ApiError(404, "Logo Image is required");
-    }
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    const logoImage = await uploadOnCloudinary(logoImageLocalPath);
-    if (!logoImage) {
-        throw new ApiError(400, "Error uploading Logo Image");
-    }
-
-    // 6. Create Vendor with Bank Details
-    const newVendor = await Vendor.create({
-        shopName,
-        vendorAddress,
-        vendorDescription,
-        vendorLogo: logoImage?.url,
-        user: userId,
-        gstNumber: gstNumber.toUpperCase(),
-        // Mapping flat fields to the nested bankDetails object in the model
-        bankDetails: {
-            accountHolderName,
-            accountNumber,
-            ifscCode,
-            bankName,
-            upiId: upiId || "" // UPI is optional in our model
+    try {
+        // 4. Handle Logo Upload
+        const logoImageLocalPath = req.file?.path;
+        if (!logoImageLocalPath) {
+            throw new ApiError(400, "Store Logo is required");
         }
-    });
-
-    if (!newVendor) {
-        throw new ApiError(500, "Something went wrong while creating vendor profile");
-    }
-
-    return res.status(201).json(
-        new ApiResponse(201, newVendor, "Vendor registration submitted successfully")
-    );
-});
-
-const getVendorDetails = asyncHandler(async (req, res)=>{
-
-    const userId = req.user?._id
     
-    if(!userId){
-        throw new ApiError(401, "User Unauthorized")
-    }
-
-    const vendor = await Vendor.findOne({user: userId});
-
-    if(!vendor){
-        throw new ApiError(404, "Vendor not found")
-    }
-
-    return res.status(200).json(new ApiResponse(
-        200,
-        vendor,
-        "Vendor details fetched successfully"
-    ))
-
-})
-
-const updateVendorDetails = asyncHandler(async (req, res)=>{
-
-    const userId = req.user?._id
-    if(!userId){
-        throw new ApiError(401, "Unauthorized Request")
-    }
-
-    const vendor = await Vendor.findOne({user: userId})
-
-    if(!vendor){
-        throw new ApiError(404, "Vendor not found")
-    }
-
-    const fieldsToUpdate = ["vendorAddress", "vendorDescription"]
-
-    fieldsToUpdate.forEach((field)=>{
-        if(req.body[field] !== undefined){
-            vendor[field] = req.body[field]
+        const logoImage = await uploadOnCloudinary(logoImageLocalPath);
+        if (!logoImage) {
+            throw new ApiError(500, "Failed to upload logo to Cloudinary");
         }
-    })
+    
+        const userArray = await User.create([{
+            username,
+            email,
+            password,
+            phone, 
+            role: ["customer", "vendor"] 
+        }], {session});
 
-    await vendor.save()
-    return res.status(200).json(new ApiResponse(200, vendor, "vendor details updated successfully"))
-})
+        const user = userArray[0]
+    
+        const storeArray = await Vendor.create([{
+            shopName,
+            vendorAddress,
+            vendorDescription,
+            vendorLogo: logoImage?.url,
+            user: user._id,
+            gstNumber: gstNumber.toUpperCase(),
+            verificationStatus: "approved",
+            bankDetails: {
+                accountHolderName,
+                accountNumber,
+                ifscCode,
+                bankName,
+                upiId: upiId || ""
+            }
+        }], {session});
+
+        const store = storeArray[0]
+        await session.commitTransaction();
+        session.endSession();
+
+        const createdUser = await User.findById(user._id).select("-password");
+    
+        return res
+            .status(201)
+            .json(new ApiResponse(201, { user: createdUser, store }, "Admin and Store setup successful! Please login to continue."));
+    
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+
+        console.error("Setup Rollback Triggered:", error.message);
+        throw new ApiError(500, `Setup Failed: ${error.message}. You can try again safely.`);
+    }
+});
 
 const updateVendorlogo = asyncHandler(async (req, res)=>{
 
@@ -190,15 +158,11 @@ const updateBankDetails = asyncHandler(async (req, res) => {
         bankName,
         upiId
     };
-
-    // 4. Reset verification status logic is if bank changes we have to reverify....
-    vendor.verificationStatus = "pending";
-    vendor.isVerified = false;
-
+    
     await vendor.save();
 
     return res.status(200).json(
-        new ApiResponse(200, vendor, "Bank details updated. Profile sent for re-verification.")
+        new ApiResponse(200, vendor, "Bank details updated successfully")
     );
 });
 
@@ -421,8 +385,50 @@ const getVendorSoldProducts = asyncHandler(async (req, res) => {
     );
 });
 
+const getVendorDetails = asyncHandler(async (req, res)=>{
+
+    const userId = req.user?._id;
+
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    const vendor = await Vendor.findOne({ user: userId }).populate("user", "username email");
+    if (!vendor) {
+        throw new ApiError(404, "Store profile not found for this user");
+    }
+    return res
+        .status(200)
+        .json(new ApiResponse(200, vendor, "Store details fetched successfully"));
+})
+
+const updateVendorDetails = asyncHandler(async (req, res)=>{
+
+    const userId = req.user?._id
+    if(!userId){
+        throw new ApiError(401, "Unauthorized Request")
+    }
+
+    const vendor = await Vendor.findOne({user: userId})
+
+    if(!vendor){
+        throw new ApiError(404, "Vendor not found")
+    }
+
+    const fieldsToUpdate = ["vendorAddress", "vendorDescription"]
+
+    fieldsToUpdate.forEach((field)=>{
+        if(req.body[field] !== undefined){
+            vendor[field] = req.body[field]
+        }
+    })
+
+    await vendor.save()
+    return res.status(200).json(new ApiResponse(200, vendor, "vendor details updated successfully"))
+})
+
 export {
-    registerVendor,
+    // registerVendor,
     getVendorDetails,
     updateVendorDetails,
     updateVendorlogo,
@@ -433,6 +439,7 @@ export {
     deleteExistingVendor,
     updateBankDetails,
     getVendorAnalytics,
-    getVendorSoldProducts
+    getVendorSoldProducts,
+    setupInitialAdminAndStore
 
 }

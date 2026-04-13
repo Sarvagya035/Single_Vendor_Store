@@ -1,11 +1,18 @@
 export interface CustomerUser {
   _id?: string;
   username?: string;
+  fullName?: string;
   email?: string;
   phone?: string;
   avatar?: string;
   role?: string | string[];
   createdAt?: string;
+}
+
+export interface CustomerVendorProfile {
+  _id?: string;
+  shopName?: string;
+  verificationStatus?: string;
 }
 
 export interface CustomerProfileForm {
@@ -56,10 +63,15 @@ export interface CustomerCatalogProduct {
   productName: string;
   productDescription?: string;
   brand?: string;
-  isActive?: boolean;
   averageRating?: number;
   numberOfReviews?: number;
   category?: string;
+  vendor?: {
+    _id?: string;
+    shopName?: string;
+    vendorLogo?: string;
+    vendorDescription?: string;
+  };
   mainImages?: string[];
   basePrice?: number;
   variants?: CustomerCatalogVariant[];
@@ -70,6 +82,9 @@ export interface CustomerCatalogProduct {
     slug?: string;
   };
   availableVariants?: CustomerCatalogVariant[];
+  catalogCategorySlug?: string;
+  catalogCategoryName?: string;
+  createdAt?: string;
 }
 
 export interface CustomerLandingCategoryGroup {

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CustomerCart } from '../models/customer.models';
+import { ApiService } from './api.service';
 
 const EMPTY_CART: CustomerCart = {
   cartItems: [],
@@ -20,46 +20,38 @@ export class CartService {
 
   readonly cart$ = this.cartSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private api: ApiService) {}
 
   get currentCart(): CustomerCart {
     return this.cartSubject.value;
   }
 
   getCart(): Observable<any> {
-    return this.http.get(`${this.cartUrl}/get-cart`, { withCredentials: true }).pipe(
+    return this.api.get(`${this.cartUrl}/get-cart`).pipe(
       tap((response: any) => this.cartSubject.next(this.normalizeCart(response)))
     );
   }
 
   addToCart(productId: string, variantId: string, quantity: number): Observable<any> {
-    return this.http
-      .post(
-        `${this.cartUrl}/add-to-cart`,
-        { productId, variantId, quantity },
-        { withCredentials: true }
-      )
+    return this.api
+      .post(`${this.cartUrl}/add-to-cart`, { productId, variantId, quantity })
       .pipe(tap(() => this.refreshCartState()));
   }
 
   updateQuantity(productId: string, variantId: string, action: 'inc' | 'dec'): Observable<any> {
-    return this.http
-      .patch(
-        `${this.cartUrl}/update-cart`,
-        { productId, variantId, action },
-        { withCredentials: true }
-      )
+    return this.api
+      .patch(`${this.cartUrl}/update-cart`, { productId, variantId, action })
       .pipe(tap(() => this.refreshCartState()));
   }
 
   removeItem(variantId: string): Observable<any> {
-    return this.http
-      .delete(`${this.cartUrl}/delete-cart/${variantId}`, { withCredentials: true })
+    return this.api
+      .delete(`${this.cartUrl}/delete-cart/${variantId}`)
       .pipe(tap(() => this.refreshCartState()));
   }
 
   clearCart(): Observable<any> {
-    return this.http.delete(`${this.cartUrl}/clear-cart`, { withCredentials: true }).pipe(
+    return this.api.delete(`${this.cartUrl}/clear-cart`).pipe(
       tap(() => {
         this.cartSubject.next(EMPTY_CART);
       })

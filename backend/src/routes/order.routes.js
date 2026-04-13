@@ -15,7 +15,6 @@ import {authorizeRoles} from "../middlewares/authorization.middleware.js"
 
 const router = Router();
 
-// Sabhi order routes ke liye user ka login hona zaroori hai
 router.use(verifyJWT); 
 
 // 1. POST: /api/v1/orders/checkout
@@ -31,6 +30,6 @@ router.route("/cancel/:orderId").put(cancelOrder);
 router.route("/vendor-orders").get(authorizeRoles("vendor"), getVendorOrders);
 router.route("/vendor-update-status/:orderId").put(authorizeRoles("vendor"), updateOrderStatus);
 
-router.route("/admin/all-orders").get(authorizeRoles("admin"), getAllOrders);
+router.route("/admin/all-orders").get(authorizeRoles("vendor"), getAllOrders);
 
 export default router;  

@@ -34,9 +34,9 @@ describe('RoleGuard', () => {
   }
 
   it('allows navigation when a user has a matching role in an array', async () => {
-    authService.getCurrentUser.mockReturnValue(of({ success: true, data: { role: ['admin'] } }));
+    authService.getCurrentUser.mockReturnValue(of({ success: true, data: { role: ['vendor'] } }));
 
-    await expect(firstValueFrom(guard.canActivate(routeWithRoles(['admin', 'Admin'])) as any)).resolves.toBe(true);
+    await expect(firstValueFrom(guard.canActivate(routeWithRoles(['vendor', 'Vendor'])) as any)).resolves.toBe(true);
   });
 
   it('allows navigation when a user role comes back as a single string', async () => {
@@ -48,7 +48,7 @@ describe('RoleGuard', () => {
   it('redirects to home when the user lacks the required role', async () => {
     authService.getCurrentUser.mockReturnValue(of({ success: true, data: { role: ['customer'] } }));
 
-    const result: any = await firstValueFrom(guard.canActivate(routeWithRoles(['admin'])) as any);
+    const result: any = await firstValueFrom(guard.canActivate(routeWithRoles(['vendor'])) as any);
     expect(result.toString()).toBe('/');
   });
 

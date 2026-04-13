@@ -38,9 +38,9 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
           </div>
           <span
             class="rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.16em]"
-            [ngClass]="stockBadgeClass"
+            [ngClass]="selectedVariantStock > 0 ? 'bg-amber-50 text-amber-800' : 'bg-rose-50 text-rose-700'"
           >
-            {{ stockBadgeLabel }}
+            {{ selectedVariantStock > 0 ? 'In stock' : 'Out of stock' }}
           </span>
         </div>
 
@@ -53,7 +53,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             Choose Variant
           </label>
           <select
-            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition focus:border-sky-400 focus:bg-white"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition focus:border-amber-500 focus:bg-white"
             [ngModel]="selectedVariantId"
             (ngModelChange)="variantChanged.emit($event)"
             [ngModelOptions]="{ standalone: true }"
@@ -81,15 +81,9 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             </div>
             <div>
               Stock:
-              <span [ngClass]="selectedVariantStock <= lowStockThreshold ? 'text-rose-600' : 'text-slate-900'">
-                {{ selectedVariantStock }}
-              </span>
+              <span class="text-slate-900">{{ selectedVariantStock }}</span>
             </div>
           </div>
-
-          <p *ngIf="isLowStock" class="mt-3 text-sm font-bold text-rose-600">
-            Only {{ selectedVariantStock }} left. Order soon.
-          </p>
         </div>
 
         <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -118,22 +112,31 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             </button>
           </div>
 
-          <button
-            type="button"
-            class="btn-primary !w-full !justify-center !py-3.5"
-            [disabled]="!selectedVariant?._id || isAdding"
-            (click)="addToCart.emit()"
-          >
-            {{ isAdding ? 'Adding...' : 'Add To Cart' }}
-          </button>
+          <div class="flex w-full flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              class="btn-secondary !w-full !justify-center !py-3.5"
+              [disabled]="!selectedVariant?._id || isBuying"
+              (click)="buyNow.emit()"
+            >
+              {{ isBuying ? 'Processing...' : 'Buy Now' }}
+            </button>
+
+            <button
+              type="button"
+              class="btn-primary !w-full !justify-center !py-3.5"
+              [disabled]="!selectedVariant?._id || isAdding"
+              (click)="addToCart.emit()"
+            >
+              {{ isAdding ? 'Adding...' : 'Add To Cart' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   `
 })
 export class ProductPurchasePanelComponent {
-  readonly lowStockThreshold = 5;
-
   @Input() product: CustomerCatalogProduct | null = null;
   @Input() variants: CustomerCatalogVariant[] = [];
   @Input() selectedVariant?: CustomerCatalogVariant;
@@ -143,12 +146,14 @@ export class ProductPurchasePanelComponent {
   @Input() discountedPriceLabel = '';
   @Input() quantity = 1;
   @Input() isAdding = false;
+  @Input() isBuying = false;
   @Input() variantLabels: Record<string, string> = {};
   @Input() attributes: Array<{ key: string; value: string }> = [];
 
   @Output() variantChanged = new EventEmitter<string>();
   @Output() quantityChanged = new EventEmitter<number | string>();
   @Output() addToCart = new EventEmitter<void>();
+  @Output() buyNow = new EventEmitter<void>();
 
   get showVariantSelector(): boolean {
     return this.variants.length > 1;
@@ -157,32 +162,5 @@ export class ProductPurchasePanelComponent {
   get selectedVariantStock(): number {
     return this.selectedVariant?.productStock || 0;
   }
-
-  get isLowStock(): boolean {
-    return this.selectedVariantStock > 0 && this.selectedVariantStock <= this.lowStockThreshold;
-  }
-
-  get stockBadgeLabel(): string {
-    if (this.selectedVariantStock <= 0) {
-      return 'Out of stock';
-    }
-
-    if (this.isLowStock) {
-      return 'Few left';
-    }
-
-    return 'In stock';
-  }
-
-  get stockBadgeClass(): string {
-    if (this.selectedVariantStock <= 0) {
-      return 'bg-rose-50 text-rose-700';
-    }
-
-    if (this.isLowStock) {
-      return 'bg-rose-100 text-rose-700';
-    }
-
-    return 'bg-emerald-50 text-emerald-700';
-  }
 }
+

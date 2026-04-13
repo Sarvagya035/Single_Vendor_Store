@@ -9,8 +9,8 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="glass-card overflow-hidden">
-      <div class="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50 px-8 py-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="app-surface overflow-hidden">
+      <div class="flex flex-col gap-4 border-b border-[#f1e4d4] bg-[#fff7ed]/50 px-8 py-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 class="text-lg text-xs font-black uppercase tracking-widest text-slate-900">Saved Addresses</h3>
           <p class="mt-2 text-sm font-medium text-slate-500">
@@ -30,19 +30,12 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
       <div class="space-y-4 p-8">
         <div
           *ngIf="successMessage"
-          class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
+          class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800"
         >
           {{ successMessage }}
         </div>
 
-        <div
-          *ngIf="errorMessage"
-          class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700"
-        >
-          {{ errorMessage }}
-        </div>
-
-        <div *ngIf="showForm" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
+        <div *ngIf="showForm" class="rounded-[1.75rem] border border-[#f1e4d4] bg-white p-6 shadow-[0_18px_40px_rgba(111,78,55,0.06)]">
           <div class="flex items-center justify-between gap-4">
             <div>
               <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
@@ -61,29 +54,54 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <input
                 name="fullname"
                 [(ngModel)]="form.fullname"
+                (ngModelChange)="validateFullname($event)"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                [class.border-red-300]="!!fullnameError"
+                [class.focus:border-red-400]="!!fullnameError"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
+              <p *ngIf="fullnameError" class="ml-1 text-xs font-semibold text-red-500">
+                {{ fullnameError }}
+              </p>
             </label>
 
             <label class="space-y-2">
               <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Phone</span>
               <input
                 name="phone"
+                type="tel"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                maxlength="10"
                 [(ngModel)]="form.phone"
+                (ngModelChange)="validatePhone($event)"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                [class.border-red-300]="!!phoneError"
+                [class.focus:border-red-400]="!!phoneError"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
+              <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
+                {{ phoneError }}
+              </p>
             </label>
 
             <label class="space-y-2">
               <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Postal Code</span>
               <input
                 name="postalCode"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="10"
                 [(ngModel)]="form.postalCode"
+                (ngModelChange)="validatePostalCode($event)"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                [class.border-red-300]="!!postalCodeError"
+                [class.focus:border-red-400]="!!postalCodeError"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
+              <p *ngIf="postalCodeError" class="ml-1 text-xs font-semibold text-red-500">
+                {{ postalCodeError }}
+              </p>
             </label>
 
             <label class="space-y-2 sm:col-span-2">
@@ -92,7 +110,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="addressLine1"
                 [(ngModel)]="form.addressLine1"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -101,7 +119,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <input
                 name="addressLine2"
                 [(ngModel)]="form.addressLine2"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -111,7 +129,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="city"
                 [(ngModel)]="form.city"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -121,7 +139,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="state"
                 [(ngModel)]="form.state"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -131,7 +149,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="country"
                 [(ngModel)]="form.country"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-indigo-300 focus:bg-white"
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
               />
             </label>
 
@@ -148,7 +166,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           Loading addresses...
         </div>
 
-        <div *ngIf="!loading && addresses.length === 0" class="rounded-[1.75rem] border border-dashed border-slate-300 bg-white/70 px-6 py-12 text-center">
+        <div *ngIf="!loading && addresses.length === 0" class="rounded-[1.75rem] border border-dashed border-[#e7dac9] bg-white/70 px-6 py-12 text-center">
           <p class="text-lg font-black text-slate-900">No saved addresses yet</p>
           <p class="mt-2 text-sm font-medium text-slate-500">
             Add your first delivery address to get started.
@@ -158,7 +176,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
         <div *ngIf="addresses.length" class="grid gap-4">
           <article
             *ngFor="let address of addresses; trackBy: trackByAddress"
-            class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]"
+            class="rounded-[1.75rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_40px_rgba(111,78,55,0.06)]"
           >
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="space-y-3">
@@ -166,7 +184,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                   <h4 class="text-lg font-black text-slate-900">{{ address.fullname }}</h4>
                   <span
                     *ngIf="address.isDefault"
-                    class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-emerald-700"
+                    class="rounded-full bg-[#fff7ed] px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
                   >
                     Default
                   </span>
@@ -192,7 +210,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 <button
                   *ngIf="!address.isDefault"
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-indigo-100 bg-indigo-50/60 text-indigo-700"
+                  class="btn-secondary !px-4 !py-2 border-amber-100 bg-[#fff7ed]/60 text-amber-800"
                   (click)="setDefault(address)"
                 >
                   Make Default
@@ -219,8 +237,10 @@ export class CustomerAddressBookComponent implements OnInit {
   showForm = false;
   editingAddressId: string | null = null;
   successMessage = '';
-  errorMessage = '';
   form: CustomerAddressForm = this.createEmptyForm();
+  fullnameError = '';
+  phoneError = '';
+  postalCodeError = '';
 
   constructor(private addressService: AddressService) {}
 
@@ -230,16 +250,14 @@ export class CustomerAddressBookComponent implements OnInit {
 
   loadAddresses(): void {
     this.loading = true;
-    this.errorMessage = '';
 
     this.addressService.getAddresses().subscribe({
       next: (res) => {
         this.loading = false;
         this.addresses = res?.data || [];
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'Failed to load addresses.';
       }
     });
   }
@@ -249,7 +267,9 @@ export class CustomerAddressBookComponent implements OnInit {
     this.editingAddressId = null;
     this.form = this.createEmptyForm();
     this.successMessage = '';
-    this.errorMessage = '';
+    this.fullnameError = '';
+    this.phoneError = '';
+    this.postalCodeError = '';
   }
 
   startEdit(address: CustomerAddress): void {
@@ -266,18 +286,30 @@ export class CustomerAddressBookComponent implements OnInit {
       country: address.country
     };
     this.successMessage = '';
-    this.errorMessage = '';
+    this.fullnameError = '';
+    this.phoneError = '';
+    this.postalCodeError = '';
   }
 
   cancelForm(): void {
     this.showForm = false;
     this.editingAddressId = null;
     this.form = this.createEmptyForm();
+    this.fullnameError = '';
+    this.phoneError = '';
+    this.postalCodeError = '';
   }
 
   saveAddress(): void {
+    const valid = this.validateFullname(this.form.fullname)
+      && this.validatePhone(this.form.phone)
+      && this.validatePostalCode(this.form.postalCode);
+
+    if (!valid) {
+      return;
+    }
+
     this.isSaving = true;
-    this.errorMessage = '';
     this.successMessage = '';
 
     const request$ = this.editingAddressId
@@ -291,9 +323,8 @@ export class CustomerAddressBookComponent implements OnInit {
         this.cancelForm();
         this.loadAddresses();
       },
-      error: (err) => {
+      error: () => {
         this.isSaving = false;
-        this.errorMessage = err.error?.message || 'Failed to save address.';
       }
     });
   }
@@ -303,7 +334,6 @@ export class CustomerAddressBookComponent implements OnInit {
       return;
     }
 
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.addressService.setDefaultAddress(address._id).subscribe({
@@ -311,9 +341,7 @@ export class CustomerAddressBookComponent implements OnInit {
         this.successMessage = res?.message || 'Default address updated.';
         this.loadAddresses();
       },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Failed to update default address.';
-      }
+      error: () => {}
     });
   }
 
@@ -327,7 +355,6 @@ export class CustomerAddressBookComponent implements OnInit {
       return;
     }
 
-    this.errorMessage = '';
     this.successMessage = '';
 
     this.addressService.deleteAddress(address._id).subscribe({
@@ -335,14 +362,52 @@ export class CustomerAddressBookComponent implements OnInit {
         this.successMessage = res?.message || 'Address deleted successfully.';
         this.loadAddresses();
       },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Failed to delete address.';
-      }
+      error: () => {}
     });
   }
 
   trackByAddress(_: number, address: CustomerAddress): string {
     return address._id || address.addressLine1;
+  }
+
+  validateFullname(value: string): boolean {
+    const normalized = String(value || '').trim();
+    if (!normalized) {
+      this.fullnameError = 'Full name is required.';
+      return false;
+    }
+
+    const alphabetOnlyName = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+    this.fullnameError = alphabetOnlyName.test(normalized)
+      ? ''
+      : 'Use letters only. Numbers and symbols are not allowed.';
+    return !this.fullnameError;
+  }
+
+  validatePhone(value: string): boolean {
+    const normalized = String(value || '').trim();
+    if (!normalized) {
+      this.phoneError = 'Phone number is required.';
+      return false;
+    }
+
+    this.phoneError = /^\d{10}$/.test(normalized)
+      ? ''
+      : 'Enter a 10-digit phone number.';
+    return !this.phoneError;
+  }
+
+  validatePostalCode(value: string): boolean {
+    const normalized = String(value || '').trim();
+    if (!normalized) {
+      this.postalCodeError = 'Postal code is required.';
+      return false;
+    }
+
+    this.postalCodeError = /^\d+$/.test(normalized)
+      ? ''
+      : 'Postal code must contain digits only.';
+    return !this.postalCodeError;
   }
 
   private createEmptyForm(): CustomerAddressForm {
@@ -358,3 +423,4 @@ export class CustomerAddressBookComponent implements OnInit {
     };
   }
 }
+

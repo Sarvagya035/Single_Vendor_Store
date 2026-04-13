@@ -22,6 +22,7 @@ export interface OrderItemRecord {
   quantity?: number;
   price?: number;
   variantImage?: string;
+  vendor?: string;
   sku?: string;
   orderItemStatus?: OrderStatus;
 }
@@ -41,7 +42,6 @@ export interface OrderRecord {
   shippingAddress?: OrderShippingAddress;
   paymentInfo?: OrderPaymentInfo;
   itemsPrice?: number;
-  taxPrice?: number;
   shippingPrice?: number;
   totalAmount?: number;
   orderStatus?: OrderStatus;
@@ -55,6 +55,7 @@ export interface OrderCheckoutItemPayload {
   product: string;
   variantId: string;
   quantity: number;
+  priceAtAddition?: number;
 }
 
 export interface OrderCheckoutPayload {
@@ -81,7 +82,7 @@ export interface VerifyPaymentPayload {
   razorpay_signature: string;
 }
 
-export interface AdminOrdersResponse {
+export interface StoreOrdersResponse {
   orders: OrderRecord[];
   totalRevenue: number;
 }

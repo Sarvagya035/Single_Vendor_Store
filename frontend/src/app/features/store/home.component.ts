@@ -1,222 +1,267 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
-
-interface LandingCategoryNode extends CustomerLandingCategory {
-  children: LandingCategoryNode[];
-}
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="relative min-h-[calc(100vh-72px)] w-full overflow-hidden bg-slate-50">
-      <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -top-24 left-8 h-72 w-72 rounded-full bg-sky-300/25 blur-3xl"></div>
-        <div class="absolute top-32 right-0 h-96 w-96 rounded-full bg-amber-200/25 blur-3xl"></div>
+    <div class="min-h-[calc(100vh-72px)] bg-slate-50">
+      <div class="w-full">
+        <div
+          class="relative min-h-[calc(80vh-50px)]"
+          style="background-size: cover; background-position: center; background-repeat: no-repeat;"
+        >
+          <div
+            class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out"
+            [style.background-image]="'url(' + currentHeroSlide().image + ')'"
+            [class.opacity-0]="heroIsTransitioning"
+            [class.opacity-100]="!heroIsTransitioning"
+          ></div>
+
+          <div
+            *ngIf="transitionHeroSlide"
+            class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-500 ease-in-out"
+            [class.opacity-100]="heroIsTransitioning"
+            [style.background-image]="'url(' + transitionHeroSlide.image + ')'"
+          ></div>
+
+          <div class="absolute inset-0">
+            <div class="mx-auto flex h-full w-full max-w-7xl items-end px-4 pb-8 sm:px-6 lg:px-8 lg:pb-10">
+              <div class="flex flex-wrap items-center gap-3">
+                <a
+                  routerLink="/products"
+                  class="inline-flex items-center justify-center rounded-full bg-[#3f2418] px-6 py-3 text-sm font-semibold tracking-[0.04em] text-white shadow-[0_14px_30px_rgba(63,36,24,0.25)] transition hover:-translate-y-0.5 hover:bg-[#2f1b14]"
+                >
+                  Shop Now
+                </a>
+                <a
+                  href="#categories"
+                  class="inline-flex items-center justify-center rounded-full border border-[#3f2418] bg-white/90 px-6 py-3 text-sm font-semibold tracking-[0.04em] text-[#3f2418] shadow-[0_12px_28px_rgba(63,36,24,0.12)] transition hover:-translate-y-0.5 hover:bg-white"
+                >
+                  View Categories
+                </a>
+
+                <div class="ml-2 flex items-center gap-2 rounded-full bg-black/10 px-3 py-2 backdrop-blur-sm">
+                  <button
+                    *ngFor="let slide of heroSlides; let index = index; trackBy: trackByHeroSlide"
+                    type="button"
+                    class="h-2.5 rounded-full transition-all duration-300"
+                    [class.w-10]="index === heroSlideIndex"
+                    [class.w-2.5]="index !== heroSlideIndex"
+                    [class.bg-white]="index === heroSlideIndex"
+                    [class.bg-white/45]="index !== heroSlideIndex"
+                    [attr.aria-label]="'Go to banner slide ' + (index + 1)"
+                    (click)="setHeroSlide(index)"
+                  ></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <section class="relative h-full w-full px-3 py-3 sm:px-4 lg:px-6 lg:py-6">
-        <div class="h-full min-h-[calc(100vh-88px)] overflow-hidden rounded-[2rem] border border-white/70 bg-white/90 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+      <section class="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+        <div class="grid gap-3 rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-4 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:grid-cols-2 lg:grid-cols-4">
+          <div *ngFor="let highlight of trustHighlights; trackBy: trackByHighlight" class="flex items-center gap-3 rounded-[1.35rem] bg-[#fff9f2] px-4 py-3">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6f4e37,#8b5e3c)] text-white shadow-[0_12px_24px_rgba(111,78,55,0.18)]">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path [attr.d]="highlight.icon"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-black tracking-tight text-slate-900">{{ highlight.title }}</p>
+              <p class="text-xs font-medium text-slate-500">{{ highlight.description }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          <div class="grid min-h-[calc(100vh-150px)] gap-0 lg:grid-cols-[320px_1fr]">
-            <aside class="border-b border-slate-200 bg-slate-50/80 px-4 py-5 lg:sticky lg:top-6 lg:h-[calc(100vh-120px)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:bg-slate-50/90">
-              
-
-              <div class="mt-5 space-y-3">
-                <button
-                  type="button"
-                  class="w-full rounded-[1.4rem] border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                  [class.border-blue-600]="selectedCategorySlug === 'all'"
-                  [class.bg-blue-50]="selectedCategorySlug === 'all'"
-                  [class.text-blue-900]="selectedCategorySlug === 'all'"
-                  [class.border-slate-200]="selectedCategorySlug !== 'all'"
-                  [class.bg-white]="selectedCategorySlug !== 'all'"
-                  [class.text-slate-900]="selectedCategorySlug !== 'all'"
-                  (click)="selectCategory('all')"
-                >
-                  <div class="flex items-center justify-between gap-3">
-                    <div>
-                      <p class="text-[11px] font-black uppercase tracking-[0.22em]" [class.text-blue-700]="selectedCategorySlug === 'all'" [class.text-slate-400]="selectedCategorySlug !== 'all'">
-                        All categories
-                      </p>
-                      <p class="mt-1 text-base font-black">Shop everything</p>
-                    </div>
-                    <span class="rounded-full px-3 py-1 text-xs font-black" [class.bg-blue-600]="selectedCategorySlug === 'all'" [class.text-white]="selectedCategorySlug === 'all'" [class.bg-slate-100]="selectedCategorySlug !== 'all'" [class.text-slate-600]="selectedCategorySlug !== 'all'">
-                      {{ totalProductCount() }}
-                    </span>
-                  </div>
-                </button>
-
-                <div *ngIf="loadingCategories" class="space-y-3">
-                  <div *ngFor="let _ of skeletonCards" class="h-20 rounded-[1.4rem] border border-slate-200 bg-white p-4 shadow-sm"></div>
-                </div>
-
-                <button
-                  *ngFor="let category of visibleCatalogCategories; trackBy: trackByVisibleCategoryId"
-                  type="button"
-                  class="w-full rounded-[1.4rem] border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                  [class.border-sky-300]="isSelectedCategory(category)"
-                  [class.bg-sky-50]="isSelectedCategory(category)"
-                  [class.text-slate-900]="!isSelectedCategory(category)"
-                  [class.border-slate-200]="!isSelectedCategory(category)"
-                  [class.bg-white]="!isSelectedCategory(category)"
-                  (click)="handleCategoryClick(category)"
-                  [style.paddingLeft.px]="16 + ((category.level || 0) * 18)"
-                >
-                  <div class="flex items-center justify-between gap-3">
-                    <div class="flex min-w-0 items-center gap-3">
-                      <div class="h-11 w-11 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-                        <img
-                          [src]="categoryImage(category)"
-                          [alt]="category.name"
-                          class="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div class="min-w-0">
-                        <p class="truncate text-base font-black">{{ category.name }}</p>
-                        <p class="mt-0.5 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-                          {{ category.children.length ? 'Parent category' : 'Child category' }}
-                        </p>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <span
-                        *ngIf="category.children.length"
-                        class="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-xs font-black text-slate-600"
-                      >
-                        {{ isExpanded(category) ? '−' : '+' }}
-                      </span>
-                      <span class="shrink-0 rounded-full px-3 py-1 text-xs font-black" [class.bg-sky-600]="isSelectedCategory(category)" [class.text-white]="isSelectedCategory(category)" [class.bg-slate-100]="!isSelectedCategory(category)" [class.text-slate-600]="!isSelectedCategory(category)">
-                      {{ categoryCount(category) }}
-                    </span>
-                    </div>
-                  </div>
-                </button>
+      <section id="categories" class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 scroll-mt-6">
+        <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
+          <div class="px-4 pb-6 pt-8 sm:px-6 lg:px-8">
+            <div>
+              <div class="mb-4 text-center">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Categories</p>
+                <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Shop by category</h3>
               </div>
-            </aside>
 
-            <main class="bg-white px-4 py-5 sm:px-6 lg:px-6">
-              <div class="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Landing page</p>
-                  <h1 class="mt-1 text-3xl font-black tracking-tight text-slate-900">Products</h1>
-                  <p class="mt-2 text-sm font-medium text-slate-500">
-                    {{ pageSubtitle() }}
-                  </p>
-                </div>
-
-                <form class="w-full md:max-w-xl" (ngSubmit)="searchProducts()">
-                  <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-sky-400 focus-within:bg-white">
-                    <span class="text-slate-400">
-                      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="7"></circle>
-                        <path d="m20 20-3.5-3.5"></path>
-                      </svg>
-                    </span>
-                    <input
-                      name="searchQuery"
-                      [(ngModel)]="searchQuery"
-                      (ngModelChange)="onSearchQueryChange($event)"
-                      type="text"
-                      placeholder="Search for products, brands and more"
-                      class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400"
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <a
+                  *ngFor="let category of catalogCategories; trackBy: trackByCategoryId"
+                  [routerLink]="['/products']"
+                  [queryParams]="{ category: category.slug || category.name }"
+                  class="group overflow-hidden rounded-[1.35rem] border bg-white text-left shadow-sm transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(47,27,20,0.08)]"
+                  [style.border-color]="categoryAccent(category).border"
+                >
+                  <div class="h-1 w-full" [style.background-color]="categoryAccent(category).accent"></div>
+                  <div class="aspect-[4/3] overflow-hidden" [style.background]="categoryAccent(category).background">
+                    <img
+                      [src]="categoryImage(category)"
+                      [alt]="category.name"
+                      class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     />
                   </div>
-                </form>
+                  <div class="space-y-1 p-4">
+                    <h4 class="truncate text-lg font-semibold text-slate-900">{{ category.name }}</h4>
+                    <p class="text-sm font-medium text-slate-500">{{ categoryCount(category) }} item{{ categoryCount(category) === 1 ? '' : 's' }}</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <div class="mt-8">
+              <div class="mb-4 text-center">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Products</p>
+                <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
               </div>
 
-              <div
-                *ngIf="catalogMessage"
-                class="mb-4 rounded-[1.1rem] border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900"
-              >
-                {{ catalogMessage }}
-              </div>
+              <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <a
+                  *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
+                  [routerLink]="['/products', product._id]"
+                  class="group rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
+                >
+                  <div class="aspect-square overflow-hidden rounded-[1.25rem] border border-slate-200 bg-slate-100">
+                    <img
+                      [src]="productImage(product)"
+                      [alt]="product.productName"
+                      class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    />
+                  </div>
 
-              <div
-                *ngIf="catalogError"
-                class="mb-4 rounded-[1.1rem] border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-900"
-              >
-                {{ catalogError }}
-              </div>
-
-              <div *ngIf="loadingProducts" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
-                  <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
-                  <div class="mt-4 h-4 w-3/4 rounded-full bg-slate-200"></div>
-                  <div class="mt-3 h-4 w-1/2 rounded-full bg-slate-200"></div>
-                  <div class="mt-3 h-10 rounded-[1rem] bg-slate-200"></div>
-                </div>
-              </div>
-
-              <ng-container *ngIf="!loadingProducts">
-                <div *ngIf="displayProducts().length === 0" class="rounded-[1.6rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
-                  <h2 class="text-2xl font-black text-slate-900">No products found</h2>
-                  <p class="mt-3 text-sm font-medium text-slate-500">
-                    Try a different search or switch to another category.
-                  </p>
-                </div>
-
-                <div *ngIf="displayProducts().length > 0" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  <a
-                    *ngFor="let product of displayProducts(); trackBy: trackByProductId"
-                    [routerLink]="['/products', product._id]"
-                    class="group rounded-[1.8rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
-                  >
-                    <div class="aspect-square overflow-hidden rounded-[1.3rem] border border-slate-200 bg-slate-100">
-                      <img
-                        [src]="productImage(product)"
-                        [alt]="product.productName"
-                        class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                      />
+                  <div class="mt-4 space-y-3">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <p class="truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{{ product.brand || 'Premium Pack' }}</p>
+                        <h4 class="mt-1 line-clamp-2 text-lg font-semibold text-slate-900">{{ product.productName }}</h4>
+                      </div>
+                      <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-amber-200">
+                        {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
+                      </span>
                     </div>
 
-                    <div class="mt-4 space-y-3">
-                      <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                          <p class="truncate text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-                            {{ product.brand || 'Generic Brand' }}
-                          </p>
-                          <h2 class="mt-1 line-clamp-2 text-lg font-black text-slate-900">
-                            {{ product.productName }}
-                          </h2>
-                        </div>
-                        <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-slate-900 shadow-sm ring-1 ring-amber-200">
-                          {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
-                        </span>
+                    <p class="text-sm font-semibold text-slate-500">{{ product.categoryDetails?.name || 'Dry fruits & nuts' }}</p>
+                  </div>
+                </a>
+              </div>
+
+              <div class="mt-6 text-center">
+                <a
+                  routerLink="/products"
+                  class="btn-primary inline-flex items-center justify-center !px-6 !py-3 text-sm tracking-[0.04em]"
+                >
+                  All Products
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8 scroll-mt-6">
+        <div class="rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-8 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:px-6 lg:px-8">
+          <div class="text-center">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Customer reviews</p>
+            <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">What our customers say</h3>
+            <p class="mt-3 text-sm font-medium text-slate-500">
+              A quick look at the kind of feedback your shoppers could see on the home page.
+            </p>
+          </div>
+
+          <div class="mt-8 overflow-hidden">
+            <div class="flex w-max gap-5 animate-review-marquee hover:[animation-play-state:paused]">
+              <article
+                *ngFor="let review of marqueeReviews; trackBy: trackByHomeReview"
+                class="w-[320px] flex-shrink-0 rounded-[1.6rem] border border-[#eadcc9] bg-[#fffaf5] p-5 shadow-[0_14px_34px_rgba(47,27,20,0.05)]"
+              >
+                <div class="flex items-start gap-4">
+                  <img
+                    [src]="review.image"
+                    [alt]="review.name"
+                    class="h-14 w-14 rounded-full border-2 border-[#eadcc9] object-cover shadow-sm"
+                  />
+
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <p class="truncate text-base font-semibold text-slate-900">{{ review.name }}</p>
+                        <p class="mt-1 truncate text-xs font-semibold uppercase tracking-[0.12em] text-[#8b5e3c]">{{ review.product }}</p>
                       </div>
-
-                      <p class="text-sm font-semibold text-slate-500">
-                        {{ product.categoryDetails?.name || 'General Category' }}
-                      </p>
-
-                      <div class="flex items-center gap-2">
-                        <span *ngIf="productOriginalPrice(product)" class="text-sm font-bold text-slate-400 line-through">
-                          {{ productOriginalPrice(product) }}
-                        </span>
-                        <span class="text-base font-black text-slate-900">
-                          {{ productDiscountedPrice(product) }}
-                        </span>
-                      </div>
-
-                      <div class="flex items-center justify-between pt-1 text-sm font-black">
-                        <span class="text-slate-500">
-                          {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
-                        </span>
-                        <span class="text-sky-700 transition group-hover:translate-x-1 group-hover:text-sky-800">
-                          View Product
-                        </span>
+                      <div class="rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-semibold text-[#6f4e37]">
+                        {{ review.rating }}/5
                       </div>
                     </div>
-                  </a>
+
+                    <p class="mt-4 text-sm font-medium leading-7 text-slate-600">
+                      "{{ review.comment }}"
+                    </p>
+
+                    <div class="mt-5 flex items-center gap-1 text-[#d4a017]">
+                      <span *ngFor="let _ of reviewStars(review.rating); trackBy: trackByStar" class="text-sm">★</span>
+                    </div>
+                  </div>
                 </div>
-              </ng-container>
-            </main>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+        <div class="overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
+          <img
+            src="/assets/banner%20-2%20.png"
+            alt="Dry fruits banner"
+            class="h-auto w-full object-cover"
+          />
+        </div>
+      </section>
+
+      <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+        <div class="grid gap-6 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_0.95fr]">
+          <div class="flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-10">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">About Us</p>
+            <h3 class="mt-2 text-2xl font-bold tracking-tight text-slate-900">About Divya Dryfruit House</h3>
+            <p class="mt-4 max-w-2xl text-sm font-medium leading-8 text-slate-500">
+              We believe better wellness starts with what you bring home. Our focus is on premium dry fruits, spices, herbs, and fresh bakery items, all selected with care for quality, freshness, and family-friendly everyday use.
+            </p>
+            <p class="mt-3 max-w-2xl text-sm font-medium leading-8 text-slate-500">
+              From almonds, cashews, and walnuts to traditional herbs and wholesome bakery treats, we aim to make one trusted place for taste, health, and convenience.
+            </p>
+
+            <div class="mt-6 flex flex-wrap gap-3">
+              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Fresh selection</span>
+              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Wide variety</span>
+              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Customer focused</span>
+            </div>
+          </div>
+
+          <div class="grid gap-4 bg-[#fffaf5] px-6 py-8 sm:grid-cols-2 sm:px-8 lg:px-10">
+            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)]">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Quality first</p>
+              <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                Carefully chosen products that support a healthy lifestyle and reliable everyday shopping.
+              </p>
+            </div>
+            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)]">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">One roof</p>
+              <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                Dry fruits, spices, herbs, and bakery essentials brought together for simple, convenient buying.
+              </p>
+            </div>
+            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)] sm:col-span-2">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Trusted by customers</p>
+              <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                Friendly service, fair pricing, and a focus on freshness help us build trust with every order.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -226,24 +271,107 @@ interface LandingCategoryNode extends CustomerLandingCategory {
 export class HomeComponent implements OnInit, OnDestroy {
   user: any = null;
   searchQuery = '';
+  heroSlideIndex = 0;
+  heroIsTransitioning = false;
+  transitionHeroSlide: { eyebrow: string; title: string; subtitle: string; image: string } | null = null;
+  private heroSlideTimer?: ReturnType<typeof setInterval>;
   loadingProducts = false;
+  loadingCategories = false;
   products: CustomerCatalogProduct[] = [];
   landingCategories: CustomerLandingCategoryGroup[] = [];
   catalogCategories: CustomerLandingCategory[] = [];
-  catalogCategoryTree: LandingCategoryNode[] = [];
-  visibleCatalogCategories: LandingCategoryNode[] = [];
-  expandedCategoryIds = new Set<string>();
-  selectedCategorySlug = 'all';
-  viewMode: 'landing' | 'search' = 'landing';
-  catalogMessage = '';
-  catalogError = '';
-  loadingCategories = false;
-  private searchDebounceHandle: ReturnType<typeof setTimeout> | null = null;
-  readonly skeletonCards = Array.from({ length: 6 });
+  readonly heroSlides = [
+    {
+      eyebrow: 'Premium dry fruits',
+      title: 'Fresh dry fruits for everyday health.',
+      subtitle: 'Explore almonds, cashews, pistachios, raisins, dates, seeds, and healthy snack mixes curated for your family.',
+      image: '/assets/banner-1.webp'
+    },
+    {
+      eyebrow: 'Gift ready packs',
+      title: 'Beautifully packed for gifting and sharing.',
+      subtitle: 'Choose elegant collections that are ready for festivals, celebrations, and thoughtful gifting.',
+      image: '/assets/banner-3.webp'
+    },
+    {
+      eyebrow: 'Healthy snacking',
+      title: 'Premium nuts and mixes for daily wellness.',
+      subtitle: 'Discover clean, tasty, and wholesome dry fruit packs made for everyday enjoyment.',
+      image: '/assets/banner-4.webp'
+    }
+  ];
+  readonly homeReviews = [
+    {
+      name: 'Aarav Mehta',
+      product: 'Mixed Dry Fruits Pack',
+      rating: 5,
+      comment: 'Fresh packing, great taste, and the almonds were excellent.',
+      image: 'https://i.pravatar.cc/120?img=12'
+    },
+    {
+      name: 'Neha Sharma',
+      product: 'Premium Cashews',
+      rating: 5,
+      comment: 'Quality is very consistent and the delivery came on time.',
+      image: 'https://i.pravatar.cc/120?img=32'
+    },
+    {
+      name: 'Rahul Verma',
+      product: 'Gift Box Collection',
+      rating: 4,
+      comment: 'Perfect for gifting. The packaging looked premium and neat.',
+      image: 'https://i.pravatar.cc/120?img=45'
+    },
+    {
+      name: 'Priya Nair',
+      product: 'Pistachio Mix',
+      rating: 5,
+      comment: 'Very fresh stock and the flavor was much better than expected.',
+      image: 'https://i.pravatar.cc/120?img=47'
+    },
+    {
+      name: 'Karan Joshi',
+      product: 'Roasted Nuts Combo',
+      rating: 4,
+      comment: 'Good value for money and the site made shopping simple.',
+      image: 'https://i.pravatar.cc/120?img=56'
+    },
+    {
+      name: 'Simran Kaur',
+      product: 'Healthy Snack Pack',
+      rating: 5,
+      comment: 'Loved the variety. Will definitely order again for home use.',
+      image: 'https://i.pravatar.cc/120?img=68'
+    }
+  ];
+  readonly marqueeReviews = [...this.homeReviews, ...this.homeReviews];
+  readonly trustHighlights = [
+    {
+      title: 'Fresh packing',
+      description: 'Packed with care for better freshness.',
+      icon: 'M5 13l4 4L19 7'
+    },
+    {
+      title: 'Premium quality',
+      description: 'Selected dry fruits and nuts only.',
+      icon: 'M12 2l3 7h7l-5.5 4.1L18 20l-6-3.7L6 20l1.5-6.9L2 9h7l3-7z'
+    },
+    {
+      title: 'Fast shipping',
+      description: 'Quick dispatch on every order.',
+      icon: 'M3 13h13M13 5l7 8-7 8'
+    },
+    {
+      title: 'Secure checkout',
+      description: 'Safe payment and order flow.',
+      icon: 'M12 2l7 4v6c0 5-3.5 9.7-7 10-3.5-.3-7-5-7-10V6l7-4z'
+    }
+  ];
 
   constructor(
     private authService: AuthService,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -251,97 +379,25 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.user = user;
     });
 
-    this.authService.getCurrentUser().subscribe({
+    this.authService.ensureCurrentUser().subscribe({
       next: () => {},
-      error: () => {
-        this.authService.clearCurrentUser();
-      }
+      error: () => this.authService.clearCurrentUser()
     });
 
     this.loadLandingProducts();
     this.loadLandingCategories();
+    this.startHeroCarousel();
   }
 
   ngOnDestroy(): void {
-    if (this.searchDebounceHandle) {
-      clearTimeout(this.searchDebounceHandle);
-      this.searchDebounceHandle = null;
+    if (this.heroSlideTimer) {
+      clearInterval(this.heroSlideTimer);
+      this.heroSlideTimer = undefined;
     }
-  }
-
-  isAdmin(): boolean {
-    if (!this.user?.role) return false;
-    if (Array.isArray(this.user.role)) {
-      return this.user.role.some((role: string) => role.toLowerCase() === 'admin');
-    }
-    return String(this.user.role).toLowerCase() === 'admin';
-  }
-
-  isCustomer(): boolean {
-    return !!this.user && !this.isAdmin();
-  }
-
-  searchProducts(): void {
-    const query = this.searchQuery.trim();
-    this.catalogError = '';
-    this.catalogMessage = '';
-
-    if (!query) {
-      this.viewMode = 'landing';
-      this.loadLandingProducts();
-      return;
-    }
-
-    this.loadingProducts = true;
-    this.viewMode = 'search';
-    this.selectedCategorySlug = 'all';
-    this.products = [];
-    this.catalogService.searchProducts(query).subscribe({
-      next: (response) => {
-        this.loadingProducts = false;
-        const rawProducts = Array.isArray(response?.data) ? response.data : response?.data?.docs || [];
-        this.products = this.filterProductsByPrefix(rawProducts, query);
-        this.catalogMessage = this.products.length
-          ? `${this.products.length} product${this.products.length === 1 ? '' : 's'} found for "${query}".`
-          : `No products matched "${query}".`;
-      },
-      error: (error) => {
-        this.loadingProducts = false;
-        this.products = [];
-        this.catalogError = error.error?.message || 'Unable to load products right now.';
-      }
-    });
-  }
-
-  onSearchQueryChange(value: string): void {
-    this.searchQuery = value;
-
-    if (this.searchDebounceHandle) {
-      clearTimeout(this.searchDebounceHandle);
-      this.searchDebounceHandle = null;
-    }
-
-    const query = value.trim();
-    if (!query) {
-      this.viewMode = 'landing';
-      this.selectedCategorySlug = 'all';
-      this.catalogError = '';
-      this.catalogMessage = '';
-      this.loadLandingProducts();
-      return;
-    }
-
-    this.searchDebounceHandle = setTimeout(() => {
-      if (this.searchQuery.trim() === query) {
-        this.searchProducts();
-      }
-    }, 200);
   }
 
   loadLandingProducts(): void {
     this.loadingProducts = true;
-    this.catalogError = '';
-    this.catalogMessage = '';
     this.products = [];
     this.landingCategories = [];
 
@@ -349,17 +405,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.loadingProducts = false;
         this.landingCategories = Array.isArray(response?.data) ? response.data : [];
-        this.products = [];
-        this.viewMode = 'landing';
-        if (!this.landingCategories.some((category) => this.normalizeCategoryKey(category.categorySlug || category.categoryName || '') === this.normalizeCategoryKey(this.selectedCategorySlug))) {
-          this.selectedCategorySlug = 'all';
-        }
-        this.refreshCatalogMessage();
+        this.products = this.flattenLandingProducts(this.landingCategories);
       },
-      error: (error) => {
+      error: () => {
         this.loadingProducts = false;
+        this.products = [];
         this.landingCategories = [];
-        this.catalogError = error.error?.message || 'Unable to load the catalog right now.';
       }
     });
   }
@@ -371,30 +422,96 @@ export class HomeComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.loadingCategories = false;
         this.catalogCategories = Array.isArray(response?.data) ? response.data : [];
-        this.catalogCategoryTree = this.buildCategoryTree(this.catalogCategories);
-        this.expandedCategoryIds = new Set<string>();
-        this.visibleCatalogCategories = this.buildVisibleCategoryList();
         this.catalogCategories = [...this.catalogCategories].sort((a, b) => {
           const levelDiff = Number(a.level || 0) - Number(b.level || 0);
           if (levelDiff !== 0) return levelDiff;
           return String(a.name || '').localeCompare(String(b.name || ''));
         });
-        this.refreshCatalogMessage();
       },
-      error: (error) => {
+      error: () => {
         this.loadingCategories = false;
         this.catalogCategories = [];
-        this.catalogError = error.error?.message || 'Unable to load categories right now.';
       }
     });
   }
 
-  productImage(product: CustomerCatalogProduct): string {
-    return (
-      product.displayVariant?.variantImage ||
-      product.mainImages?.[0] ||
-      'https://via.placeholder.com/640x480?text=Product'
+  goToProducts(): void {
+    const query = this.searchQuery.trim();
+    if (!query) {
+      this.router.navigate(['/products']);
+      return;
+    }
+
+    this.router.navigate(['/products'], { queryParams: { q: query } });
+  }
+
+  currentHeroSlide(): { eyebrow: string; title: string; subtitle: string; image: string } {
+    return this.heroSlides[this.heroSlideIndex] || this.heroSlides[0];
+  }
+
+  setHeroSlide(index: number): void {
+    const total = this.heroSlides.length;
+    if (!total) {
+      return;
+    }
+
+    const normalized = ((index % total) + total) % total;
+    if (normalized === this.heroSlideIndex || this.heroIsTransitioning) {
+      return;
+    }
+
+    this.transitionToSlide(normalized);
+  }
+
+  private startHeroCarousel(): void {
+    if (this.heroSlideTimer) {
+      clearInterval(this.heroSlideTimer);
+    }
+
+    this.heroSlideTimer = setInterval(() => {
+      this.setHeroSlide(this.heroSlideIndex + 1);
+    }, 4200);
+  }
+
+  private transitionToSlide(nextIndex: number): void {
+    const nextSlide = this.heroSlides[nextIndex];
+    if (!nextSlide) {
+      return;
+    }
+
+    this.transitionHeroSlide = nextSlide;
+    this.heroIsTransitioning = true;
+
+    window.setTimeout(() => {
+      this.heroSlideIndex = nextIndex;
+      this.heroIsTransitioning = false;
+      this.transitionHeroSlide = null;
+    }, 520);
+  }
+
+  featuredProducts(): CustomerCatalogProduct[] {
+    return this.products.slice(0, 12);
+  }
+
+  categoryImage(category: CustomerLandingCategory): string {
+    return category.image || 'https://via.placeholder.com/160x160?text=Category';
+  }
+
+  categoryAccent(category: CustomerLandingCategory): { accent: string; border: string; background: string } {
+    return {
+      accent: '#6F4E37',
+      border: '#E7DACF',
+      background: 'linear-gradient(180deg, rgba(111,78,55,0.08), rgba(255,255,255,1))'
+    };
+  }
+
+  categoryCount(category: CustomerLandingCategory): number {
+    const key = this.normalizeCategoryKey(category.slug || category.name);
+    const landingGroup = this.landingCategories.find(
+      (group) => this.normalizeCategoryKey(group.categorySlug || group.categoryName || '') === key
     );
+
+    return landingGroup?.products?.length || 0;
   }
 
   formatCurrency(amount: number): string {
@@ -405,99 +522,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     }).format(amount || 0);
   }
 
-  productOriginalPrice(product: CustomerCatalogProduct): string {
-    const original = product.displayVariant?.productPrice || product.basePrice || 0;
-    const discounted = product.displayVariant?.finalPrice || product.basePrice || 0;
-
-    if (!original || original === discounted) {
-      return '';
-    }
-
-    return this.formatCurrency(original);
-  }
-
-  productDiscountedPrice(product: CustomerCatalogProduct): string {
-    return this.formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0);
-  }
-
-  selectCategory(slug: string): void {
-    this.selectedCategorySlug = slug || 'all';
-    this.viewMode = 'landing';
-    this.searchQuery = '';
-    this.catalogError = '';
-    this.products = [];
-    this.refreshCatalogMessage();
-  }
-
-  handleCategoryClick(category: LandingCategoryNode): void {
-    if (category.children.length > 0) {
-      this.toggleCategoryExpansion(category);
-      return;
-    }
-
-    this.selectCategory(category.slug);
-  }
-
-  displayProducts(): CustomerCatalogProduct[] {
-    if (this.viewMode === 'search') {
-      return this.products;
-    }
-
-    if (this.selectedCategorySlug === 'all') {
-      return this.landingCategories.reduce<CustomerCatalogProduct[]>(
-        (allProducts, category) => allProducts.concat(category.products || []),
-        []
-      );
-    }
-
-    return this.landingCategories.find(
-      (category) => this.normalizeCategoryKey(category.categorySlug || category.categoryName || '') === this.normalizeCategoryKey(this.selectedCategorySlug)
-    )?.products || [];
-  }
-
-  totalProductCount(): number {
-    return this.landingCategories.reduce((total, category) => total + (category.products?.length || 0), 0);
-  }
-
-  categoryCount(category: CustomerLandingCategory): number {
-    const key = this.normalizeCategoryKey(category.slug || category.name);
-    const node = this.findCategoryNodeBySlug(key);
-
-    if (!node) {
-      return 0;
-    }
-
-    return this.countProductsForNode(node);
-  }
-
-  categoryImage(category: CustomerLandingCategory): string {
-    return category.image || 'https://via.placeholder.com/160x160?text=Category';
-  }
-
-  isSelectedCategory(category: CustomerLandingCategory): boolean {
-    return this.normalizeCategoryKey(this.selectedCategorySlug) === this.normalizeCategoryKey(category.slug || category.name);
-  }
-
-  isExpanded(category: LandingCategoryNode): boolean {
-    return this.expandedCategoryIds.has(category._id);
-  }
-
-  pageSubtitle(): string {
-    if (this.viewMode === 'search' && this.searchQuery.trim()) {
-      return `Showing search results for "${this.searchQuery.trim()}".`;
-    }
-
-    if (this.selectedCategorySlug === 'all') {
-      return 'Browse featured products by category or search for a specific item.';
-    }
-
-    const selectedCategory = this.catalogCategories.find(
-      (category) => this.normalizeCategoryKey(category.slug || category.name) === this.normalizeCategoryKey(this.selectedCategorySlug)
-    );
-
-    return selectedCategory?.name
-      ? `Browsing ${selectedCategory.name}.`
-      : 'Browse featured products by category or search for a specific item.';
+  productImage(product: CustomerCatalogProduct): string {
+    return product.displayVariant?.variantImage || product.mainImages?.[0] || 'https://via.placeholder.com/640x480?text=Product';
   }
 
   trackByCategoryId(_: number, category: CustomerLandingCategory): string {
@@ -508,140 +534,43 @@ export class HomeComponent implements OnInit, OnDestroy {
     return product._id;
   }
 
-  trackByCategorySlug(_: number, category: CustomerLandingCategoryGroup): string {
-    return category.categorySlug || category.categoryName || '';
+  trackByHighlight(_: number, highlight: { title: string; description: string }): string {
+    return highlight.title;
   }
 
-  trackByVisibleCategoryId(_: number, category: LandingCategoryNode): string {
-    return category._id;
+  trackByHeroSlide(_: number, slide: { image: string }): string {
+    return slide.image;
+  }
+
+  trackByHomeReview(_: number, review: { name: string; product: string; rating: number; comment: string; image: string }): string {
+    return `${review.name}-${review.product}`;
+  }
+
+  trackByStar(_: number, star: number): number {
+    return star;
+  }
+
+  reviewStars(rating: number): number[] {
+    return Array.from({ length: Math.max(0, Math.min(5, Number(rating) || 0)) }, (_, index) => index);
   }
 
   private normalizeCategoryKey(value: string): string {
     return String(value || '').trim().toLowerCase();
   }
 
-  private filterProductsByPrefix(products: CustomerCatalogProduct[], query: string): CustomerCatalogProduct[] {
-    const normalizedQuery = this.normalizeCategoryKey(query);
+  private flattenLandingProducts(groups: CustomerLandingCategoryGroup[]): CustomerCatalogProduct[] {
+    const catalogProducts: CustomerCatalogProduct[] = [];
 
-    if (!normalizedQuery) {
-      return products;
-    }
-
-    return products.filter((product) =>
-      this.normalizeCategoryKey(product.productName || '').startsWith(normalizedQuery)
-    );
-  }
-
-  private buildCategoryTree(categories: CustomerLandingCategory[]): LandingCategoryNode[] {
-    const nodeMap = new Map<string, LandingCategoryNode>();
-
-    categories.forEach((category) => {
-      nodeMap.set(category._id, {
-        ...category,
-        children: []
-      });
-    });
-
-    const roots: LandingCategoryNode[] = [];
-
-    nodeMap.forEach((node) => {
-      const parentId = node.parentCategory ? String(node.parentCategory) : '';
-      if (parentId && nodeMap.has(parentId)) {
-        nodeMap.get(parentId)?.children.push(node);
-      } else {
-        roots.push(node);
-      }
-    });
-
-    const sortNodes = (nodes: LandingCategoryNode[]): LandingCategoryNode[] => {
-      return nodes
-        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
-        .map((node) => ({
-          ...node,
-          children: sortNodes(node.children || [])
-        }));
-    };
-
-    return sortNodes(roots);
-  }
-
-  private buildVisibleCategoryList(): LandingCategoryNode[] {
-    const visible: LandingCategoryNode[] = [];
-
-    const visit = (nodes: LandingCategoryNode[], depth = 0): void => {
-      nodes.forEach((node) => {
-        visible.push({
-          ...node,
-          level: depth
+    groups.forEach((group) => {
+      (group.products || []).forEach((product) => {
+        catalogProducts.push({
+          ...product,
+          catalogCategorySlug: group.categorySlug || product.categoryDetails?.slug || '',
+          catalogCategoryName: group.categoryName || product.categoryDetails?.name || ''
         });
-
-        if (node.children.length > 0 && this.expandedCategoryIds.has(node._id)) {
-          visit(node.children, depth + 1);
-        }
       });
-    };
+    });
 
-    visit(this.catalogCategoryTree);
-    return visible;
-  }
-
-  private toggleCategoryExpansion(category: LandingCategoryNode): void {
-    if (this.expandedCategoryIds.has(category._id)) {
-      this.expandedCategoryIds.delete(category._id);
-    } else {
-      this.expandedCategoryIds.add(category._id);
-    }
-
-    this.visibleCatalogCategories = this.buildVisibleCategoryList();
-  }
-
-  private findCategoryNodeBySlug(slug: string): LandingCategoryNode | null {
-    const targetSlug = this.normalizeCategoryKey(slug);
-    const stack = [...this.catalogCategoryTree];
-
-    while (stack.length > 0) {
-      const current = stack.shift();
-      if (!current) continue;
-
-      if (this.normalizeCategoryKey(current.slug || current.name) === targetSlug) {
-        return current;
-      }
-
-      stack.unshift(...(current.children || []));
-    }
-
-    return null;
-  }
-
-  private countProductsForNode(node: LandingCategoryNode): number {
-    const directCount = this.landingCategories.find(
-      (group) => this.normalizeCategoryKey(group.categorySlug || group.categoryName || '') === this.normalizeCategoryKey(node.slug || node.name)
-    )?.products?.length || 0;
-
-    if (!node.children.length) {
-      return directCount;
-    }
-
-    return node.children.reduce((total, child) => total + this.countProductsForNode(child), directCount);
-  }
-
-  private refreshCatalogMessage(): void {
-    if (this.viewMode === 'search') {
-      return;
-    }
-
-    const selectedCategory = this.findCategoryNodeBySlug(this.selectedCategorySlug);
-
-    if (this.selectedCategorySlug === 'all') {
-      this.catalogMessage = this.landingCategories.length
-        ? `Showing ${this.totalProductCount()} curated product${this.totalProductCount() === 1 ? '' : 's'} across ${this.landingCategories.length} categorie${this.landingCategories.length === 1 ? 'y' : 's'}.`
-        : 'No active product categories are available in the catalog yet.';
-      return;
-    }
-
-    const count = this.categoryCount(selectedCategory || { _id: '', name: '', slug: this.selectedCategorySlug });
-    this.catalogMessage = selectedCategory?.name
-      ? `Browsing ${selectedCategory.name} with ${count} product${count === 1 ? '' : 's'}.`
-      : 'Browse featured products by category or search for a specific item.';
+    return catalogProducts;
   }
 }

@@ -6,11 +6,13 @@ const addressSchema = new Schema({
         type: String,
         required: true,
         trim: true,
+        match: [/^[A-Za-z]+(?: [A-Za-z]+)*$/, "Full name must contain only alphabets and spaces"]
     },
     phone: {
         type: String,
         trim: true,
         required: true,
+        match: [/^\d{10}$/, "Phone number must be exactly 10 digits"],
     },
     addressLine1: {
         type: String,
@@ -35,6 +37,7 @@ const addressSchema = new Schema({
         type: String,
         trim: true,
         required: true,
+        match: [/^\d+$/, "Postal code must contain only digits"],
     },
     country: {
         type: String,

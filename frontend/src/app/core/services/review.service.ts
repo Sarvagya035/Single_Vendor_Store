@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ProductReview, ProductReviewForm, ProductReviewStat } from '../models/review.models';
-import { SKIP_GLOBAL_ERROR_NOTIFICATION } from '../interceptors/request-flags';
 
 @Injectable({
   providedIn: 'root'
@@ -15,23 +14,25 @@ export class ReviewService {
 
   getProductReviews(productId: string): Observable<ProductReview[]> {
     return this.http
-      .get<any>(`${this.reviewUrl}/get-review/${productId}`)
+      .get<any>(`${this.reviewUrl}/get-review/${productId}`, { withCredentials: true })
       .pipe(map((response) => this.normalizeReviews(response?.data)));
   }
 
   getReviewStats(productId: string): Observable<ProductReviewStat[]> {
     return this.http
-      .get<any>(`${this.reviewUrl}/stats/${productId}`)
+      .get<any>(`${this.reviewUrl}/stats/${productId}`, { withCredentials: true })
       .pipe(map((response) => this.normalizeStats(response?.data)));
   }
 
-  addOrUpdateReview(payload: ProductReviewForm): Observable<ProductReview | null> {
+  addOrUpdateReview(payload: ProductReviewForm | FormData): Observable<ProductReview | null> {
     return this.http
-      .post<any>(`${this.reviewUrl}/add-review`, payload, {
-        withCredentials: true,
-        context: new HttpContext().set(SKIP_GLOBAL_ERROR_NOTIFICATION, true)
-      })
+      .post<any>(`${this.reviewUrl}/add-review`, payload, { withCredentials: true })
       .pipe(map((response) => this.normalizeReview(response?.data)));
+  }
+
+  deleteReview(productId: string): Observable<any> {
+    return this.http
+      .delete<any>(`${this.reviewUrl}/delete-review/${productId}`, { withCredentials: true });
   }
 
   private normalizeReviews(payload: unknown): ProductReview[] {

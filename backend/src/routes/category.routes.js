@@ -8,20 +8,20 @@ const router = Router()
 
 router.route("/create-category").post(
     verifyJWT,
-    authorizeRoles("admin"), 
+    authorizeRoles("vendor"), 
     upload.single("image"), 
     createCategory
 )
 
 router.route("/update-category/:categoryId").patch(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     updateCategory
 )
 
 router.route("/delete-category/:categoryId").delete(
     verifyJWT,
-    authorizeRoles("admin"),
+    authorizeRoles("vendor"),
     deleteCategory
 )
 

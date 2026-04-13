@@ -22,7 +22,7 @@ const router = Router();
 // Route to create a product
 router.route("/add-product").post(
     verifyJWT, 
-    authorizeRoles("vendor", "admin"),
+    authorizeRoles("vendor"),
     upload.fields([
         { 
             name: "mainImages", 
@@ -57,7 +57,7 @@ router.route("/delete-product/:productId").delete(
 
 router.route("/update-product/:productId").patch(
     verifyJWT,
-    authorizeRoles("vendor", "admin"), 
+    authorizeRoles("vendor"), 
     updateProductDetails
 );
 

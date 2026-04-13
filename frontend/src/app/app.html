@@ -1,5 +1,13 @@
-<app-header></app-header>
-<main class="min-h-[calc(100vh-64px)]">
-  <router-outlet></router-outlet>
+<app-header [isNavigating]="isNavigating()"></app-header>
+<app-global-loading></app-global-loading>
+<app-global-toast></app-global-toast>
+<main class="min-h-[calc(100vh-124px)]">
+  <div
+    class="transition-all duration-300 ease-out"
+    [class.opacity-60]="isNavigating()"
+    [class.translate-y-1]="isNavigating()"
+  >
+    <router-outlet></router-outlet>
+  </div>
 </main>
-<app-notification-banner></app-notification-banner>
+<app-footer></app-footer>

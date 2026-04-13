@@ -1,14 +1,16 @@
-class ApiResponse{
-    constructor(
-        statusCode,
-        data,
-        message = "Success"
-    ){
-        this.statusCode = statusCode
-        this.data = data
-        this.message = message
-        this.success = statusCode < 400
+class ApiResponse {
+    constructor(statusCode, data, message = "Success") {
+        Object.defineProperty(this, "statusCode", {
+            value: statusCode,
+            enumerable: false,
+            writable: true,
+            configurable: true
+        });
+
+        this.success = true;
+        this.message = message;
+        this.data = data;
     }
 }
 
-export { ApiResponse }
+export { ApiResponse };

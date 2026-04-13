@@ -8,7 +8,8 @@ const userSchema = new Schema({
         type: String,
         required: true,
         trim: true, 
-        index: true
+        index: true,
+        match: [/^[A-Za-z]+(?: [A-Za-z]+)*$/, "Name must contain only alphabets and spaces"]
     },
 
     email: {
@@ -27,7 +28,8 @@ const userSchema = new Schema({
         type: String,
         trim: true,
         unique: true,
-        sparse: true
+        sparse: true,
+        match: [/^\d+$/, "Phone number must contain only digits"]
     },
 
     password: {
@@ -44,6 +46,14 @@ const userSchema = new Schema({
 
     refreshToken: {
         type: String
+    },
+
+    resetPasswordToken: {
+        type: String
+    },
+
+    resetPasswordExpire: {
+        type: Date
     }
 
 },

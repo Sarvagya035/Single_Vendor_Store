@@ -22,8 +22,8 @@ const createProduct = asyncHandler(async (req, res) => {
 
     // 4. Check if Vendor is approved (Using req.user from verifyJWT)
     const vendor = await Vendor.findOne({ user: req.user._id });
-    if (!vendor || vendor.verificationStatus !== "approved") {
-        throw new ApiError(403, "Only approved vendors can create products");
+    if (!vendor) {
+        throw new ApiError(404, "Vendor not found");
     }
 
     // 5. Handle mainImages Upload (Array)

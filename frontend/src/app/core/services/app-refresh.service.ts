@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-export type RefreshScope = 'global' | 'auth' | 'admin' | 'storeOwner' | 'customer';
+export type RefreshScope = 'global' | 'auth' | 'admin' | 'vendor' | 'customer';
 
 @Injectable({
   providedIn: 'root'

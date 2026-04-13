@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ToastKind } from '../../core/services/error.service';
 
 @Component({
   selector: 'app-toast-banner',
@@ -9,9 +10,16 @@ import { Component, Input } from '@angular/core';
     <div
       *ngIf="visible"
       [class]="
-        'fixed bottom-6 right-6 z-[70] rounded-2xl px-5 py-3 text-sm font-bold text-white shadow-xl transition-all ' +
-        (type === 'success' ? 'bg-emerald-600' : 'bg-rose-600')
+        'fixed right-6 top-16 z-[220] w-[min(92vw,28rem)] rounded-2xl border px-5 py-4 text-sm font-bold leading-6 shadow-[0_20px_45px_rgba(15,23,42,0.28)] transition-all ' +
+        (type === 'success'
+          ? 'border-[#8b5e3c] bg-[#6f4e37] text-white'
+          : type === 'warning'
+            ? 'border-[#f5e6d3] bg-[#d4a017] text-slate-900'
+            : type === 'info'
+              ? 'border-[#e7dac9] bg-[#f5e6d3] text-[#2f1b14]'
+              : 'border-rose-200 bg-rose-600 text-white')
       "
+      style="word-break: break-word;"
     >
       {{ message }}
     </div>
@@ -20,5 +28,5 @@ import { Component, Input } from '@angular/core';
 export class ToastBannerComponent {
   @Input() visible = false;
   @Input() message = '';
-  @Input() type: 'success' | 'error' = 'success';
+  @Input() type: ToastKind = 'success';
 }

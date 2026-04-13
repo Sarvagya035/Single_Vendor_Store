@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
-  AdminOrdersResponse,
   CheckoutResponseData,
   OrderCheckoutPayload,
   OrderRecord,
+  StoreOrdersResponse,
   VerifyPaymentPayload
 } from '../models/order.models';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,35 +16,48 @@ import {
 export class OrderService {
   private readonly orderUrl = `${environment.apiUrl}/orders`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private api: ApiService) {}
 
   checkout(payload: OrderCheckoutPayload): Observable<any> {
-    return this.http.post(`${this.orderUrl}/checkout`, payload, { withCredentials: true });
+    return this.api.post(`${this.orderUrl}/checkout`, payload);
   }
 
   verifyPayment(payload: VerifyPaymentPayload): Observable<any> {
-    return this.http.post(`${this.orderUrl}/verify-payment`, payload, { withCredentials: true });
+    return this.api.post(`${this.orderUrl}/verify-payment`, payload);
   }
 
   getMyOrders(): Observable<OrderRecord[]> {
-    return this.http
-      .get<any>(`${this.orderUrl}/my-orders`, { withCredentials: true })
+    return this.api
+      .get<any>(`${this.orderUrl}/my-orders`)
       .pipe(map((response) => this.normalizeOrderList(response?.data)));
   }
 
   getOrderDetails(orderId: string): Observable<OrderRecord | null> {
-    return this.http
-      .get<any>(`${this.orderUrl}/order/${orderId}`, { withCredentials: true })
+    return this.api
+      .get<any>(`${this.orderUrl}/order/${orderId}`)
       .pipe(map((response) => this.normalizeOrder(response?.data)));
   }
 
   cancelOrder(orderId: string): Observable<any> {
-    return this.http.put(`${this.orderUrl}/cancel/${orderId}`, {}, { withCredentials: true });
+    return this.api.put(`${this.orderUrl}/cancel/${orderId}`, {});
   }
 
-  getAdminOrders(): Observable<AdminOrdersResponse> {
-    return this.http
-      .get<any>(`${this.orderUrl}/admin/all-orders`, { withCredentials: true })
+  getVendorOrders(): Observable<OrderRecord[]> {
+    return this.api
+      .get<any>(`${this.orderUrl}/vendor-orders`)
+      .pipe(map((response) => this.normalizeOrderList(response?.data)));
+  }
+
+  updateVendorOrderStatus(orderId: string, orderItemId: string, status: string): Observable<any> {
+    return this.api.put(
+      `${this.orderUrl}/vendor-update-status/${orderId}`,
+      { orderItemId, status }
+    );
+  }
+
+  getAdminOrders(): Observable<StoreOrdersResponse> {
+    return this.api
+      .get<any>(`${this.orderUrl}/admin/all-orders`)
       .pipe(
         map((response) => {
           const payload = response?.data ?? {};
@@ -54,18 +67,6 @@ export class OrderService {
           };
         })
       );
-  }
-
-  updateOrderStatus(orderId: string, orderItemId: string, status: string): Observable<any> {
-    return this.http.put(
-      `${this.orderUrl}/update-status/${orderId}`,
-      { orderItemId, status },
-      { withCredentials: true }
-    );
-  }
-
-  deleteOrderByAdmin(orderId: string): Observable<any> {
-    return this.http.delete(`${this.orderUrl}/admin/delete-order/${orderId}`, { withCredentials: true });
   }
 
   private normalizeOrderList(payload: unknown): OrderRecord[] {
@@ -95,6 +96,7 @@ export class OrderService {
             quantity: Number(item?.quantity || 0),
             price: Number(item?.price || 0),
             variantImage: item?.variantImage,
+            vendor: item?.vendor,
             sku: item?.sku,
             orderItemStatus: item?.orderItemStatus
           }))
@@ -102,7 +104,6 @@ export class OrderService {
       shippingAddress: payload.shippingAddress || undefined,
       paymentInfo: payload.paymentInfo || undefined,
       itemsPrice: Number(payload.itemsPrice || 0),
-      taxPrice: Number(payload.taxPrice || 0),
       shippingPrice: Number(payload.shippingPrice || 0),
       totalAmount: Number(payload.totalAmount || 0),
       orderStatus: payload.orderStatus,
