@@ -165,7 +165,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
         </div>
       </section>
 
-      <section class="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
+      <section id="about" class="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8 scroll-mt-6">
         <div class="rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-8 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:px-6 lg:px-8">
           <div class="text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Customer reviews</p>

@@ -49,6 +49,16 @@ export const routes: Routes = [
       import('./features/store/products-page.component').then((m) => m.ProductsPageComponent)
   },
   {
+    path: 'about-us',
+    loadComponent: () =>
+      import('./features/store/about.component').then((m) => m.AboutComponent)
+  },
+  {
+    path: 'contact',
+    loadComponent: () =>
+      import('./features/store/contact.component').then((m) => m.ContactComponent)
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login.component').then((m) => m.LoginComponent)

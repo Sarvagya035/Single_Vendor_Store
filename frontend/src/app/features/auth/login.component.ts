@@ -11,18 +11,18 @@ import { catchError, finalize, EMPTY } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-screen flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
+    <div class="min-h-[calc(100vh-124px)] flex flex-col justify-start relative overflow-hidden px-4 pb-10 pt-2 sm:px-6 lg:px-8 lg:pb-14 lg:pt-4 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
       <!-- Background Glow Effects -->
       <div class="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-[#f5e6d3]/40 blur-[120px] animate-float"></div>
       <div class="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[#d4a017]/20 blur-[120px] animate-float" style="animation-delay: 2s"></div>
 
-      <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
+      <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2 pt-1 sm:pt-2">
         <h2 class="text-4xl font-black text-slate-900 tracking-tight">Login</h2>
         <p class="text-slate-500 font-medium tracking-wide">Enter your credentials to access your account</p>
       </div>
 
-      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div class="app-surface p-10">
+      <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+        <div class="app-surface p-8 sm:p-10">
           <form class="space-y-8" (ngSubmit)="onSubmit()">
             
             <div class="space-y-2">

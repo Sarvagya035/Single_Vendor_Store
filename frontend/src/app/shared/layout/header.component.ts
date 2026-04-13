@@ -46,8 +46,8 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               <a routerLink="/products" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Products</a>
               <a routerLink="/products" [queryParams]="{ category: 'combos' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Combos</a>
               <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
-              <a routerLink="/products" [queryParams]="{ category: 'career' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Career</a>
-              <a routerLink="/" fragment="contact" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Contact</a>
+              <a routerLink="/about-us" class="nav-link" routerLinkActive="text-amber-700 after:w-full">About Us</a>
+              <a routerLink="/contact" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Contact Us</a>
             </ng-container>
 
             <ng-container *ngIf="user && !isCustomer()">

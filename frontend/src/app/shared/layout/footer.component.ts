@@ -27,7 +27,9 @@ import { RouterModule } from '@angular/router';
             <p class="text-[11px] font-extrabold uppercase tracking-[0.32em] text-[#fff4e6]">Explore</p>
             <div class="mt-4 space-y-3 text-sm font-semibold">
               <a routerLink="/" class="block text-[#e8d8ca] transition hover:text-white">Home</a>
+              <a routerLink="/about-us" class="block text-[#e8d8ca] transition hover:text-white">About Us</a>
               <a routerLink="/products" class="block text-[#e8d8ca] transition hover:text-white">Browse Products</a>
+              <a routerLink="/contact" class="block text-[#e8d8ca] transition hover:text-white">Contact Us</a>
               <a routerLink="/cart" class="block text-[#e8d8ca] transition hover:text-white">Cart</a>
               <a routerLink="/profile" class="block text-[#e8d8ca] transition hover:text-white">Profile</a>
             </div>
