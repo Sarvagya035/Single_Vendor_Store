@@ -14,6 +14,26 @@ export interface OrderPaymentInfo {
   method?: 'COD' | 'Online' | string;
 }
 
+export interface ShipmentEventRecord {
+  status: string;
+  description?: string;
+  location?: string;
+  eventTime?: string;
+}
+
+export interface ShipmentRecord {
+  _id?: string;
+  order?: string;
+  courierName?: string;
+  trackingNumber?: string;
+  shipmentStatus?: string;
+  estimatedDeliveryDate?: string;
+  deliveredAt?: string;
+  lastSyncedAt?: string;
+  isTestMode?: boolean;
+  trackingEvents?: ShipmentEventRecord[];
+}
+
 export interface OrderItemRecord {
   _id?: string;
   product?: string;
@@ -41,6 +61,7 @@ export interface OrderRecord {
   orderItems?: OrderItemRecord[];
   shippingAddress?: OrderShippingAddress;
   paymentInfo?: OrderPaymentInfo;
+  shipment?: ShipmentRecord | null;
   itemsPrice?: number;
   shippingPrice?: number;
   totalAmount?: number;

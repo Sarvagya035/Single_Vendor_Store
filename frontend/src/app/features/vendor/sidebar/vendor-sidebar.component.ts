@@ -89,6 +89,23 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
               </span>
             </div>
           </a>
+
+          @if (showShipments) {
+            <a
+              routerLink="/vendor/shipments"
+              class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+              [ngClass]="activeView === 'shipments' ? 'border-emerald-200 bg-emerald-50 text-emerald-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <p class="mt-1 text-base font-black">Shipments</p>
+                </div>
+                <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'shipments' ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-700'">
+                  {{ shipmentCount }}
+                </span>
+              </div>
+            </a>
+          }
         </nav>
       </div>
     </aside>
@@ -100,5 +117,7 @@ export class VendorSidebarComponent {
   @Input() categoryCount = 0;
   @Input() customerCount = 0;
   @Input() orderCount = 0;
+  @Input() shipmentCount = 0;
+  @Input() showShipments = false;
 }
 

@@ -39,6 +39,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'track-order/:orderId',
+    loadComponent: () =>
+      import('./features/store/track-order.component').then((m) => m.TrackOrderComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'products/:productId',
     loadComponent: () =>
       import('./features/store/product-detail.component').then((m) => m.ProductDetailComponent),
@@ -214,6 +220,22 @@ export const routes: Routes = [
             path: ':orderId',
             loadComponent: () =>
               import('./features/store/order-detail.component').then((m) => m.OrderDetailComponent)
+          }
+        ]
+      },
+      {
+        path: 'shipments',
+        canActivate: [AuthGuard, RoleGuard],
+        data: { roles: ['admin', 'Admin'] },
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/shipments-page/vendor-shipments-page.component').then(
+                (m) => m.VendorShipmentsPageComponent
+              )
           }
         ]
       }

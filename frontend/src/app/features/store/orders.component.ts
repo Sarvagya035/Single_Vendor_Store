@@ -60,6 +60,7 @@ import { OrderService } from '../../core/services/order.service';
               <div class="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-end">
                 <p class="text-2xl font-black text-slate-900">{{ formatCurrency(displayOrderTotal(order)) }}</p>
                 <div class="flex gap-3">
+                  <a [routerLink]="['/track-order', order._id]" class="btn-primary !px-5 !py-3">Track</a>
                   <a [routerLink]="['/orders', order._id]" class="btn-secondary !px-5 !py-3">View Details</a>
                   <button
                     *ngIf="canCancel(order)"

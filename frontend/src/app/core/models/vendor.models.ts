@@ -13,7 +13,7 @@ export interface VendorProfile {
 
 export type ToastType = 'success' | 'error';
 
-export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories' | 'customers';
+export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories' | 'customers' | 'shipments';
 export type ReportRange = 'weekly' | 'monthly' | 'custom';
 export type ReportFormat = 'csv' | 'pdf';
 
@@ -167,4 +167,16 @@ export interface OrderReportRequest {
   format: ReportFormat;
   startDate?: string;
   endDate?: string;
+}
+
+export type AdminShipmentStatus = 'Created' | 'Picked Up' | 'In Transit' | 'Out for Delivery' | 'Delivered' | 'Exception';
+
+export interface AdminShipmentUpdatePayload {
+  courierName?: string;
+  trackingNumber?: string;
+  shipmentStatus?: AdminShipmentStatus | string;
+  estimatedDeliveryDate?: string;
+  description?: string;
+  location?: string;
+  isTestMode?: boolean;
 }

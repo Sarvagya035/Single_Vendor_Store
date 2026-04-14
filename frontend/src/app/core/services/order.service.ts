@@ -5,6 +5,7 @@ import {
   CheckoutResponseData,
   OrderCheckoutPayload,
   OrderRecord,
+  ShipmentRecord,
   StoreOrdersResponse,
   VerifyPaymentPayload
 } from '../models/order.models';
@@ -36,6 +37,18 @@ export class OrderService {
     return this.api
       .get<any>(`${this.orderUrl}/order/${orderId}`)
       .pipe(map((response) => this.normalizeOrder(response?.data)));
+  }
+
+  getShipmentDetails(orderId: string): Observable<ShipmentRecord | null> {
+    return this.api
+      .get<any>(`${this.orderUrl}/shipment/${orderId}`)
+      .pipe(map((response) => this.normalizeShipment(response?.data)));
+  }
+
+  syncShipmentStatus(orderId: string): Observable<ShipmentRecord | null> {
+    return this.api
+      .post<any>(`${this.orderUrl}/shipment/${orderId}/sync`, {})
+      .pipe(map((response) => this.normalizeShipment(response?.data)));
   }
 
   cancelOrder(orderId: string): Observable<any> {
@@ -103,6 +116,7 @@ export class OrderService {
         : [],
       shippingAddress: payload.shippingAddress || undefined,
       paymentInfo: payload.paymentInfo || undefined,
+      shipment: this.normalizeShipment(payload.shipment),
       itemsPrice: Number(payload.itemsPrice || 0),
       shippingPrice: Number(payload.shippingPrice || 0),
       totalAmount: Number(payload.totalAmount || 0),
@@ -111,6 +125,32 @@ export class OrderService {
       deliveredAt: payload.deliveredAt,
       createdAt: payload.createdAt,
       updatedAt: payload.updatedAt
+    };
+  }
+
+  private normalizeShipment(payload: any): ShipmentRecord | null {
+    if (!payload || typeof payload !== 'object') {
+      return null;
+    }
+
+    return {
+      _id: payload._id,
+      order: payload.order,
+      courierName: payload.courierName,
+      trackingNumber: payload.trackingNumber,
+      shipmentStatus: payload.shipmentStatus,
+      estimatedDeliveryDate: payload.estimatedDeliveryDate,
+      deliveredAt: payload.deliveredAt,
+      lastSyncedAt: payload.lastSyncedAt,
+      isTestMode: Boolean(payload.isTestMode),
+      trackingEvents: Array.isArray(payload.trackingEvents)
+        ? payload.trackingEvents.map((event: any) => ({
+            status: String(event?.status || ''),
+            description: event?.description,
+            location: event?.location,
+            eventTime: event?.eventTime
+          }))
+        : []
     };
   }
 }

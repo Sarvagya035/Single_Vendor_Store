@@ -17,6 +17,10 @@ import {
     getAllUsers, 
     toggleProductStatusByAdmin 
 } from "../controllers/admin.Controllers.js";
+import {
+    getAdminShipments,
+    updateAdminShipment
+} from "../controllers/shipment.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router()
@@ -84,6 +88,8 @@ router.route("/profile").get(verifyJWT, authorizeRoles("vendor", "admin"), getVe
 router.route("/analytics").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorAnalytics); //partially tested without products working
 router.route("/sold-items").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorSoldProducts); //partially tested without products working
 router.route("/reports/orders").get(verifyJWT, authorizeRoles("vendor", "admin"), downloadOrderReports);
+router.route("/shipments").get(verifyJWT, authorizeRoles("admin"), getAdminShipments);
+router.route("/shipments/:orderId").patch(verifyJWT, authorizeRoles("admin"), updateAdminShipment);
 
 router.route("/initial-setup-129986").post(upload.single("vendorLogo"), setupInitialAdminAndStore) //working nicely
 

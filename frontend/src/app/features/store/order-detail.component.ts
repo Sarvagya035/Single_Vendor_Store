@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { OrderItemRecord, OrderRecord, OrderStatus } from '../../core/models/order.models';
+import {
+  OrderItemRecord,
+  OrderRecord,
+  OrderStatus,
+  ShipmentEventRecord,
+  ShipmentRecord
+} from '../../core/models/order.models';
 import { AuthService } from '../../core/services/auth.service';
 import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
@@ -24,6 +30,9 @@ import { OrderService } from '../../core/services/order.service';
 
           <div class="flex gap-3">
             <a [routerLink]="backLink" class="btn-secondary !px-5 !py-3">Back To Orders</a>
+            <a *ngIf="order?._id as orderId" [routerLink]="['/track-order', orderId]" class="btn-primary !px-5 !py-3">
+              Track Order
+            </a>
             <button
               *ngIf="canCancel()"
               type="button"
@@ -65,6 +74,98 @@ import { OrderService } from '../../core/services/order.service';
                   <p class="mt-3 text-base font-black text-slate-900">{{ isVendorView() ? 'Handled by marketplace' : (order.paymentInfo?.status || 'Pending') }}</p>
                 </div>
               </div>
+            </div>
+
+            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#f1e4d4] pb-4">
+                <div>
+                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Tracking</p>
+                  <h2 class="mt-2 text-2xl font-black text-slate-900">Shipment progress</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span *ngIf="shipment?.isTestMode" class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800">
+                    Test Mode
+                  </span>
+                  <button
+                    *ngIf="canRefreshShipment()"
+                    type="button"
+                    class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800 transition hover:bg-amber-100"
+                    (click)="refreshShipment()"
+                  >
+                    Refresh Tracking
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="shipment; else noShipment" class="mt-5 space-y-4">
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
+                    <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Courier</p>
+                    <p class="mt-3 text-base font-black text-slate-900">{{ shipment.courierName || 'DHL' }}</p>
+                  </div>
+                  <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
+                    <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Tracking Number</p>
+                    <p class="mt-3 break-all text-base font-black text-slate-900">{{ shipment.trackingNumber || 'Not assigned yet' }}</p>
+                  </div>
+                </div>
+
+                <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
+                  <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Shipment Status</p>
+                      <p class="mt-3 text-lg font-black text-slate-900">{{ shipment.shipmentStatus || 'Created' }}</p>
+                    </div>
+                    <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(shipment.shipmentStatus)">
+                      {{ shipment.shipmentStatus || 'Created' }}
+                    </span>
+                  </div>
+                  <div class="mt-4 text-sm font-medium leading-7 text-slate-600">
+                    <p *ngIf="shipment.estimatedDeliveryDate">Estimated delivery: {{ formatDate(shipment.estimatedDeliveryDate) }}</p>
+                    <p *ngIf="shipment.lastSyncedAt">Last synced: {{ formatDateTime(shipment.lastSyncedAt) }}</p>
+                  </div>
+                </div>
+
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Timeline</p>
+                    <p class="text-xs font-semibold text-slate-500">{{ shipment.trackingEvents?.length || 0 }} updates</p>
+                  </div>
+
+                  <div *ngIf="shipment.trackingEvents?.length; else noEvents" class="space-y-3">
+                    <article
+                      *ngFor="let event of shipment.trackingEvents; trackBy: trackByEvent"
+                      class="rounded-[1.2rem] border border-[#e7dac9] bg-white p-4"
+                    >
+                      <div class="flex items-start justify-between gap-4">
+                        <div>
+                          <p class="text-sm font-black text-slate-900">{{ event.status }}</p>
+                          <p class="mt-1 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
+                        </div>
+                        <p class="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+                          {{ formatDateTime(event.eventTime) }}
+                        </p>
+                      </div>
+                      <p *ngIf="event.location" class="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
+                        {{ event.location }}
+                      </p>
+                    </article>
+                  </div>
+                </div>
+              </div>
+
+              <ng-template #noShipment>
+                <div class="mt-5 rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fff7ed]/50 p-5">
+                  <p class="text-sm font-semibold text-slate-600">
+                    Shipment details will appear here after payment verification creates a tracking record.
+                  </p>
+                </div>
+              </ng-template>
+
+              <ng-template #noEvents>
+                <div class="rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fff7ed]/50 p-5">
+                  <p class="text-sm font-semibold text-slate-600">No tracking events recorded yet.</p>
+                </div>
+              </ng-template>
             </div>
 
             <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
@@ -138,6 +239,7 @@ import { OrderService } from '../../core/services/order.service';
 })
 export class OrderDetailComponent implements OnInit {
   order: OrderRecord | null = null;
+  shipment: ShipmentRecord | null = null;
   isLoading = false;
   successMessage = '';
   currentRoles: string[] = [];
@@ -224,10 +326,31 @@ export class OrderDetailComponent implements OnInit {
       next: (order) => {
         this.isLoading = false;
         this.order = order;
+        this.shipment = order?.shipment || null;
       },
       error: () => {
         this.isLoading = false;
       }
+    });
+  }
+
+  refreshShipment(): void {
+    if (!this.order?._id) {
+      return;
+    }
+
+    this.orderService.syncShipmentStatus(this.order._id).subscribe({
+      next: (shipment) => {
+        this.shipment = shipment;
+        if (this.order) {
+          this.order = {
+            ...this.order,
+            shipment
+          };
+        }
+        this.successMessage = 'Tracking updated successfully.';
+      },
+      error: () => {}
     });
   }
 
@@ -284,7 +407,13 @@ export class OrderDetailComponent implements OnInit {
         return 'bg-amber-100 text-amber-800';
       case 'Shipped':
         return 'bg-amber-100 text-amber-800';
+      case 'Out for Delivery':
+      case 'In Transit':
+      case 'Picked Up':
+      case 'Created':
+        return 'bg-amber-100 text-amber-800';
       case 'Cancelled':
+      case 'Exception':
         return 'bg-rose-100 text-rose-700';
       default:
         return 'bg-amber-100 text-amber-700';
@@ -295,12 +424,34 @@ export class OrderDetailComponent implements OnInit {
     return item.variantId || item.product || String(index);
   }
 
+  trackByEvent(index: number, event: ShipmentEventRecord): string {
+    return `${event.status}-${event.eventTime || index}`;
+  }
+
   itemTotal(item: OrderItemRecord): number {
     return Number(item.price || 0) * Number(item.quantity || 0);
   }
 
   isVendorView(): boolean {
     return this.currentRoles.includes('vendor');
+  }
+
+  canRefreshShipment(): boolean {
+    return this.currentRoles.includes('admin');
+  }
+
+  formatDateTime(value?: string): string {
+    if (!value) {
+      return 'Recently';
+    }
+
+    return new Intl.DateTimeFormat('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date(value));
   }
 
   private normalizeRoles(role: unknown): string[] {

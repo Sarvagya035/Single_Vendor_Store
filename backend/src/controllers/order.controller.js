@@ -6,7 +6,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { razorpayInstance } from "../utils/razorpay.js";
 import { Cart } from "../models/cart.model.js";
 import { Vendor } from "../models/vendor.model.js";
+import { Shipment } from "../models/shipment.model.js";
 import crypto from "crypto";
+import { createShipmentForOrder } from "../services/dhl.service.js";
 
 const cloneOrderWithItems = (orderDoc, filteredItems) => {
     const order = orderDoc.toObject ? orderDoc.toObject() : { ...orderDoc };
@@ -140,7 +142,20 @@ const verifyPayment = asyncHandler(async (req, res) => {
     // Step 5: Clear User's Cart
     await Cart.findOneAndDelete({ user: req.user._id });
 
-    return res.status(200).json(new ApiResponse(200, order, "Payment verified and inventory updated!"));
+    let shipment = null;
+
+    try {
+        shipment = await createShipmentForOrder(order);
+    } catch (error) {
+        console.error("Shipment creation failed:", error.message);
+    }
+
+    const responseOrder = order.toObject ? order.toObject() : { ...order };
+    responseOrder.shipment = shipment ? (shipment.toObject ? shipment.toObject() : { ...shipment }) : null;
+
+    return res.status(200).json(
+        new ApiResponse(200, responseOrder, "Payment verified and inventory updated!")
+    );
 });
 
 // Update Order Status (Shipped, Delivered etc.)
@@ -208,14 +223,22 @@ const getOrderDetails = asyncHandler(async (req, res) => {
     const userRoles = Array.isArray(req.user.role) ? req.user.role : [req.user.role];
 
     if (userRoles.includes("admin")) {
+        const shipment = await Shipment.findOne({ order: order._id });
+        const orderData = order.toObject();
+        orderData.shipment = shipment ? shipment.toObject() : null;
+
         return res.status(200).json(
-            new ApiResponse(200, order, "Order details fetched")
+            new ApiResponse(200, orderData, "Order details fetched")
         );
     }
 
     if (order.user._id.toString() === req.user._id.toString()) {
+        const shipment = await Shipment.findOne({ order: order._id });
+        const orderData = order.toObject();
+        orderData.shipment = shipment ? shipment.toObject() : null;
+
         return res.status(200).json(
-            new ApiResponse(200, order, "Order details fetched")
+            new ApiResponse(200, orderData, "Order details fetched")
         );
     }
 
@@ -228,8 +251,17 @@ const getOrderDetails = asyncHandler(async (req, res) => {
             );
 
             if (vendorItems.length) {
+                const shipment = await Shipment.findOne({ order: order._id });
+
                 return res.status(200).json(
-                    new ApiResponse(200, cloneOrderWithItems(order, vendorItems), "Order details fetched")
+                    new ApiResponse(
+                        200,
+                        {
+                            ...cloneOrderWithItems(order, vendorItems),
+                            shipment: shipment ? shipment.toObject() : null
+                        },
+                        "Order details fetched"
+                    )
                 );
             }
         }

@@ -11,12 +11,14 @@ import {
 import { forkJoin } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthService } from '../../../core/services/auth.service';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { CustomerUser } from '../../../core/models/customer.models';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorSidebarComponent } from '../sidebar/vendor-sidebar.component';
 import { VendorDashboardView } from '../../../core/models/vendor.models';
 import { OrderService } from '../../../core/services/order.service';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-vendor-shell',
@@ -32,6 +34,8 @@ import { OrderService } from '../../../core/services/order.service';
             [categoryCount]="categoryCount"
             [customerCount]="customerCount"
             [orderCount]="orderCount"
+            [shipmentCount]="shipmentCount"
+            [showShipments]="isAdminUser"
           />
 
           <section class="space-y-6">
@@ -61,6 +65,8 @@ export class VendorShellComponent implements OnInit {
   categoryCount = 0;
   customerCount = 0;
   orderCount = 0;
+  shipmentCount = 0;
+  currentRoles: string[] = [];
   readonly isNavigating = signal(false);
 
   private readonly destroyRef = inject(DestroyRef);
@@ -68,6 +74,7 @@ export class VendorShellComponent implements OnInit {
   constructor(
     private vendorService: VendorService,
     private orderService: OrderService,
+    private authService: AuthService,
     private router: Router,
     private appRefreshService: AppRefreshService
   ) {}
@@ -85,6 +92,10 @@ export class VendorShellComponent implements OnInit {
       return 'orders';
     }
 
+    if (this.router.url.includes('/vendor/shipments')) {
+      return 'shipments';
+    }
+
     if (this.router.url.includes('/vendor/categories')) {
       return 'categories';
     }
@@ -96,7 +107,29 @@ export class VendorShellComponent implements OnInit {
     return 'products';
   }
 
+  get isAdminUser(): boolean {
+    return this.currentRoles.includes('admin');
+  }
+
   ngOnInit() {
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentRoles = this.normalizeRoles(user?.role);
+    });
+
+    if (!this.currentRoles.length) {
+      this.authService.getCurrentUser().subscribe({
+        next: () => {
+          this.loadSummary();
+        },
+        error: () => {
+          this.currentRoles = [];
+          this.loadSummary();
+        }
+      });
+    } else {
+      this.loadSummary();
+    }
+
     this.router.events
       .pipe(
         filter(
@@ -123,29 +156,45 @@ export class VendorShellComponent implements OnInit {
       }
     });
 
-    this.loadSummary();
   }
 
   loadSummary(): void {
+    const shipmentRequest = this.isAdminUser ? this.vendorService.getAdminShipments() : of(null);
+
     forkJoin({
       products: this.vendorService.getMyProducts(),
       orders: this.orderService.getVendorOrders(),
       categories: this.vendorService.getCategoryTree(),
-      users: this.vendorService.getAllUsers(1, 1000)
+      users: this.vendorService.getAllUsers(1, 1000),
+      shipments: shipmentRequest
     }).subscribe({
-      next: ({ products, orders, categories, users }) => {
+      next: ({ products, orders, categories, users, shipments }) => {
         this.productCount = products?.data?.docs?.length || 0;
         this.orderCount = orders.length || 0;
         this.categoryCount = this.countCategories(categories?.data || []);
         this.customerCount = this.countCustomers(users?.users || []);
+        this.shipmentCount = shipments?.summary?.totalShipments || 0;
       },
       error: () => {
         this.productCount = 0;
         this.categoryCount = 0;
         this.customerCount = 0;
         this.orderCount = 0;
+        this.shipmentCount = 0;
       }
     });
+  }
+
+  private normalizeRoles(role: unknown): string[] {
+    if (Array.isArray(role)) {
+      return role.map((value) => String(value));
+    }
+
+    if (typeof role === 'string' && role.trim()) {
+      return [role];
+    }
+
+    return [];
   }
 
   private countCategories(categories: Array<{ children?: Array<any> }>): number {

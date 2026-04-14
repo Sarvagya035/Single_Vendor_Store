@@ -4,6 +4,7 @@ import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { CustomerUser } from '../models/customer.models';
 import {
+  AdminShipmentUpdatePayload,
   OrderReportRequest,
   VendorAnalyticsPayload,
   VendorCustomersResponse,
@@ -185,6 +186,25 @@ export class VendorService {
     return this.http
       .get<any>(`${this.adminUrl}/sold-items`, { withCredentials: true })
       .pipe(map((response) => (Array.isArray(response?.data) ? response.data : [])));
+  }
+
+  getAdminShipments(): Observable<any> {
+    return this.http
+      .get<any>(`${this.adminUrl}/shipments`, { withCredentials: true })
+      .pipe(
+        map((response) => ({
+          shipments: Array.isArray(response?.data?.shipments) ? response.data.shipments : [],
+          summary: {
+            totalShipments: Number(response?.data?.summary?.totalShipments || 0),
+            deliveredShipments: Number(response?.data?.summary?.deliveredShipments || 0),
+            openShipments: Number(response?.data?.summary?.openShipments || 0)
+          }
+        }))
+      );
+  }
+
+  updateAdminShipment(orderId: string, payload: AdminShipmentUpdatePayload): Observable<any> {
+    return this.http.patch(`${this.adminUrl}/shipments/${orderId}`, payload, { withCredentials: true });
   }
 
   downloadOrdersReport(request: OrderReportRequest): Observable<HttpResponse<Blob>> {
