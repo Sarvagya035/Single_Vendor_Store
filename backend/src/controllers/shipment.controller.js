@@ -6,6 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { syncShipmentFromDhl, syncTestShipment } from "../services/dhl.service.js";
 import { sendShipmentCreatedEmail, sendShipmentStatusEmail } from "../utils/shipmentNotifications.js";
+import { syncOrderFromShipment } from "../utils/shipmentOrderSync.js";
 
 const attachShipmentToOrder = (orderDoc, shipmentDoc) => {
     const order = orderDoc.toObject ? orderDoc.toObject() : { ...orderDoc };
@@ -105,6 +106,7 @@ const syncShipmentStatus = asyncHandler(async (req, res) => {
         : await syncShipmentFromDhl(shipment);
 
     if (updatedShipment.shipmentStatus !== previousStatus) {
+        await syncOrderFromShipment(order, updatedShipment);
         try {
             await sendShipmentStatusEmail({
                 order,
@@ -231,6 +233,8 @@ const updateAdminShipment = asyncHandler(async (req, res) => {
     }
 
     const savedShipment = await shipment.save();
+
+    await syncOrderFromShipment(order, savedShipment);
 
     if (wasNewShipment) {
         try {

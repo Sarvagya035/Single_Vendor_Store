@@ -1,6 +1,7 @@
 import { Shipment } from "../models/shipment.model.js";
 import { syncShipmentFromDhl, syncTestShipment } from "../services/dhl.service.js";
 import { sendShipmentStatusEmail } from "./shipmentNotifications.js";
+import { syncOrderFromShipment } from "./shipmentOrderSync.js";
 
 const DEFAULT_POLL_INTERVAL_MS = 5 * 60 * 1000;
 const DEFAULT_INITIAL_DELAY_MS = 15 * 1000;
@@ -55,6 +56,7 @@ const pollOpenShipments = async () => {
             try {
                 const previousStatus = shipment.shipmentStatus;
                 await syncShipment(shipment);
+                await syncOrderFromShipment(shipment.order, shipment);
 
                 if (shipment.shipmentStatus !== previousStatus) {
                     try {
