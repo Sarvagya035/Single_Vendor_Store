@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { syncShipmentFromDhl, syncTestShipment } from "../services/dhl.service.js";
+import { sendShipmentCreatedEmail, sendShipmentStatusEmail } from "../utils/shipmentNotifications.js";
 
 const attachShipmentToOrder = (orderDoc, shipmentDoc) => {
     const order = orderDoc.toObject ? orderDoc.toObject() : { ...orderDoc };
@@ -60,7 +61,7 @@ const serializeShipment = (shipmentDoc) => {
 const getShipmentDetails = asyncHandler(async (req, res) => {
     const { orderId } = req.params;
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate("user", "fullName username email");
     if (!order) {
         throw new ApiError(404, "Order not found");
     }
@@ -83,7 +84,7 @@ const getShipmentDetails = asyncHandler(async (req, res) => {
 const syncShipmentStatus = asyncHandler(async (req, res) => {
     const { orderId } = req.params;
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate("user", "fullName username email");
     if (!order) {
         throw new ApiError(404, "Order not found");
     }
@@ -98,9 +99,23 @@ const syncShipmentStatus = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Shipment record not found");
     }
 
+    const previousStatus = shipment.shipmentStatus;
     const updatedShipment = shipment.isTestMode
         ? await syncTestShipment(shipment)
         : await syncShipmentFromDhl(shipment);
+
+    if (updatedShipment.shipmentStatus !== previousStatus) {
+        try {
+            await sendShipmentStatusEmail({
+                order,
+                shipment: updatedShipment,
+                previousStatus,
+                currentStatus: updatedShipment.shipmentStatus
+            });
+        } catch (error) {
+            console.error("[Shipment Email] Failed to send status update:", error.message);
+        }
+    }
 
     return res.status(200).json(
         new ApiResponse(200, updatedShipment, "Shipment status synced successfully")
@@ -155,6 +170,7 @@ const updateAdminShipment = asyncHandler(async (req, res) => {
     }
 
     let shipment = await Shipment.findOne({ order: order._id });
+    const wasNewShipment = !shipment;
 
     if (!shipment) {
         shipment = await Shipment.create({
@@ -188,8 +204,9 @@ const updateAdminShipment = asyncHandler(async (req, res) => {
         }
     }
 
+    const previousStatus = shipment.shipmentStatus;
     const normalizedStatus = normalizeShipmentInput(shipmentStatus);
-    const statusChanged = normalizedStatus && shipment.trackingEvents?.[shipment.trackingEvents.length - 1]?.status !== normalizedStatus;
+    const statusChanged = normalizedStatus && previousStatus !== normalizedStatus;
 
     if (statusChanged) {
         shipment.trackingEvents.push({
@@ -214,6 +231,30 @@ const updateAdminShipment = asyncHandler(async (req, res) => {
     }
 
     const savedShipment = await shipment.save();
+
+    if (wasNewShipment) {
+        try {
+            await sendShipmentCreatedEmail({
+                order,
+                shipment: savedShipment
+            });
+        } catch (error) {
+            console.error("[Shipment Email] Failed to send created email:", error.message);
+        }
+    }
+
+    if (statusChanged) {
+        try {
+            await sendShipmentStatusEmail({
+                order,
+                shipment: savedShipment,
+                previousStatus,
+                currentStatus: savedShipment.shipmentStatus
+            });
+        } catch (error) {
+            console.error("[Shipment Email] Failed to send status update:", error.message);
+        }
+    }
 
     return res.status(200).json(
         new ApiResponse(200, serializeShipment(savedShipment), "Shipment updated successfully")

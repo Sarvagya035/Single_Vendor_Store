@@ -9,6 +9,7 @@ import { Vendor } from "../models/vendor.model.js";
 import { Shipment } from "../models/shipment.model.js";
 import crypto from "crypto";
 import { createShipmentForOrder } from "../services/dhl.service.js";
+import { sendShipmentCreatedEmail } from "../utils/shipmentNotifications.js";
 
 const cloneOrderWithItems = (orderDoc, filteredItems) => {
     const order = orderDoc.toObject ? orderDoc.toObject() : { ...orderDoc };
@@ -142,12 +143,24 @@ const verifyPayment = asyncHandler(async (req, res) => {
     // Step 5: Clear User's Cart
     await Cart.findOneAndDelete({ user: req.user._id });
 
+    const notifiedOrder = await Order.findById(order._id).populate("user", "fullName username email");
     let shipment = null;
 
     try {
-        shipment = await createShipmentForOrder(order);
+        shipment = await createShipmentForOrder(notifiedOrder);
     } catch (error) {
         console.error("Shipment creation failed:", error.message);
+    }
+
+    if (shipment) {
+        try {
+            await sendShipmentCreatedEmail({
+                order: notifiedOrder,
+                shipment
+            });
+        } catch (error) {
+            console.error("Shipment created email failed:", error.message);
+        }
     }
 
     const responseOrder = order.toObject ? order.toObject() : { ...order };

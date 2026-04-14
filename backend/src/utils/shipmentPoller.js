@@ -1,5 +1,6 @@
 import { Shipment } from "../models/shipment.model.js";
 import { syncShipmentFromDhl, syncTestShipment } from "../services/dhl.service.js";
+import { sendShipmentStatusEmail } from "./shipmentNotifications.js";
 
 const DEFAULT_POLL_INTERVAL_MS = 5 * 60 * 1000;
 const DEFAULT_INITIAL_DELAY_MS = 15 * 1000;
@@ -38,6 +39,12 @@ const pollOpenShipments = async () => {
     try {
         const shipments = await Shipment.find({
             shipmentStatus: { $nin: FINAL_STATUSES }
+        }).populate({
+            path: "order",
+            populate: {
+                path: "user",
+                select: "fullName username email"
+            }
         });
 
         if (!shipments.length) {
@@ -46,7 +53,24 @@ const pollOpenShipments = async () => {
 
         for (const shipment of shipments) {
             try {
+                const previousStatus = shipment.shipmentStatus;
                 await syncShipment(shipment);
+
+                if (shipment.shipmentStatus !== previousStatus) {
+                    try {
+                        await sendShipmentStatusEmail({
+                            order: shipment.order,
+                            shipment,
+                            previousStatus,
+                            currentStatus: shipment.shipmentStatus
+                        });
+                    } catch (emailError) {
+                        console.error(
+                            `[Shipment Poller] Email send failed for order ${shipment.order?.toString() || shipment._id}:`,
+                            emailError.message
+                        );
+                    }
+                }
             } catch (error) {
                 console.error(
                     `[Shipment Poller] Failed to sync order ${shipment.order?.toString() || shipment._id}:`,
