@@ -10,6 +10,7 @@ import {
     getVendorProducts, 
     restockVariant, 
     searchProductsDeep, 
+    updateVariant,
     updateProductDetails, 
     updateVariantDiscount } from "../controllers/product.controller.js";
 
@@ -77,6 +78,13 @@ router.route("/update-variant-discount/:productId/:variantId").patch(
     verifyJWT,
     authorizeRoles("vendor"),
     updateVariantDiscount
+)
+
+router.route("/update-variant/:productId/:variantId").patch(
+    verifyJWT,
+    authorizeRoles("vendor"),
+    upload.single("variantImage"),
+    updateVariant
 )
 
 router.route("/search").get(searchProductsDeep)

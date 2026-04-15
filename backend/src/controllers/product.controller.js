@@ -109,17 +109,42 @@ const getVendorProducts = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Vendor profile not found");
     }
 
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, q = "", category = "", status = "all" } = req.query;
 
-    const myProducts = Product.aggregate([
+    const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const trimmedQuery = String(q || "").trim();
+
+    const pipeline = [
         {
             $match: {
                 vendor: new mongoose.Types.ObjectId(vendor._id) 
             }
-        },
-        {
-            $sort: { createdAt: -1 } 
-        },
+        }
+    ];
+
+    if (status === "active") {
+        pipeline.push({
+            $match: {
+                isActive: true
+            }
+        });
+    } else if (status === "inactive") {
+        pipeline.push({
+            $match: {
+                isActive: false
+            }
+        });
+    }
+
+    if (category) {
+        pipeline.push({
+            $match: {
+                category: new mongoose.Types.ObjectId(category)
+            }
+        });
+    }
+
+    pipeline.push(
         {
             
             $lookup: {
@@ -129,8 +154,36 @@ const getVendorProducts = asyncHandler(async (req, res) => {
                 as: "categoryDetails"
             }
         },
-        { $unwind: "$categoryDetails" }
-    ]);
+        {
+            $unwind: {
+                path: "$categoryDetails",
+                preserveNullAndEmptyArrays: true
+            }
+        }
+    );
+
+    if (trimmedQuery) {
+        const queryRegex = { $regex: escapeRegex(trimmedQuery), $options: "i" };
+
+        pipeline.push({
+            $match: {
+                $or: [
+                    { productName: queryRegex },
+                    { brand: queryRegex },
+                    { "categoryDetails.name": queryRegex },
+                    { "categoryDetails.slug": queryRegex },
+                    { "variants.sku": queryRegex },
+                    { "variants.attributes.$**": queryRegex }
+                ]
+            }
+        });
+    }
+
+    pipeline.push({
+        $sort: { createdAt: -1 } 
+    });
+
+    const myProducts = Product.aggregate(pipeline);
 
     const options = {
         page: parseInt(page, 10),
@@ -404,6 +457,83 @@ const updateVariantDiscount = asyncHandler(async (req, res) => {
     );
 });
 
+const updateVariant = asyncHandler(async (req, res) => {
+    const { productId, variantId } = req.params;
+    const {
+        attributes,
+        productPrice,
+        discountPercentage,
+        productStock,
+        sku
+    } = req.body;
+
+    const product = await Product.findById(productId);
+    if (!product) throw new ApiError(404, "Product not found");
+
+    const vendor = await Vendor.findOne({ user: req.user._id });
+    if (!vendor || product.vendor.toString() !== vendor._id.toString()) {
+        throw new ApiError(403, "You are not authorized to update this variant");
+    }
+
+    const variant = product.variants.id(variantId);
+    if (!variant) throw new ApiError(404, "Variant not found");
+
+    if (typeof attributes !== "undefined") {
+        const parsedAttributes = typeof attributes === "string" ? JSON.parse(attributes) : attributes;
+
+        if (!parsedAttributes || typeof parsedAttributes !== "object" || !Object.keys(parsedAttributes).length) {
+            throw new ApiError(400, "Variant attributes are required");
+        }
+
+        variant.attributes = parsedAttributes;
+    }
+
+    if (typeof productPrice !== "undefined" && productPrice !== "") {
+        const normalizedPrice = Number(productPrice);
+        if (!Number.isFinite(normalizedPrice) || normalizedPrice < 0) {
+            throw new ApiError(400, "Variant price must be a valid non-negative number");
+        }
+        variant.productPrice = normalizedPrice;
+    }
+
+    if (typeof discountPercentage !== "undefined" && discountPercentage !== "") {
+        const normalizedDiscount = Number(discountPercentage);
+        if (!Number.isFinite(normalizedDiscount) || normalizedDiscount < 0 || normalizedDiscount > 100) {
+            throw new ApiError(400, "Discount must be between 0 and 100");
+        }
+        variant.discountPercentage = normalizedDiscount;
+    }
+
+    if (typeof productStock !== "undefined" && productStock !== "") {
+        const normalizedStock = Number(productStock);
+        if (!Number.isFinite(normalizedStock) || normalizedStock < 0) {
+            throw new ApiError(400, "Stock must be a valid non-negative number");
+        }
+        variant.productStock = normalizedStock;
+    }
+
+    if (typeof sku !== "undefined") {
+        const normalizedSku = String(sku || "").trim().toUpperCase();
+        if (!normalizedSku) {
+            throw new ApiError(400, "SKU is required");
+        }
+        variant.sku = normalizedSku;
+    }
+
+    const variantImageLocalPath = req.file?.path;
+    if (variantImageLocalPath) {
+        const uploadedImage = await uploadOnCloudinary(variantImageLocalPath);
+        if (!uploadedImage?.url) throw new ApiError(400, "Error uploading image");
+        variant.variantImage = uploadedImage.url;
+    }
+
+    await product.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, product, `Variant ${variant.sku} updated successfully`)
+    );
+});
+
 const deleteVariant = asyncHandler(async (req, res) => {
     const { productId, variantId } = req.params;
 
@@ -518,6 +648,7 @@ export {
     searchProductsDeep,
     restockVariant,
     addVariant,
+    updateVariant,
     updateVariantDiscount,
     deleteVariant,
     getProductById,

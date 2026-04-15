@@ -124,7 +124,14 @@ export const routes: Routes = [
       {
         path: 'products/add',
         loadComponent: () =>
-          import('./features/vendor/add-product/vendor-add-product.component').then((m) => m.VendorAddProductComponent)
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/add-product/vendor-add-product.component').then((m) => m.VendorAddProductComponent)
+          }
+        ]
       },
       {
         path: 'products/:productId/edit',
@@ -136,6 +143,34 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/vendor/edit-product-page/vendor-edit-product-page.component').then(
                 (m) => m.VendorEditProductPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'products/:productId/restock',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/restock-page/vendor-restock-page.component').then(
+                (m) => m.VendorRestockPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'products/:productId/variants',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/manage-variants-page/vendor-manage-variants-page.component').then(
+                (m) => m.VendorManageVariantsPageComponent
               )
           }
         ]

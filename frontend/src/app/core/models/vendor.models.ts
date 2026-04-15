@@ -127,6 +127,15 @@ export interface VendorVariantCreateForm {
   imageFile: File | null;
 }
 
+export interface VendorVariantUpdateForm {
+  attributesText: string;
+  productPrice: number | null;
+  discountPercentage: number | null;
+  productStock: number | null;
+  sku: string;
+  imageFile: File | null;
+}
+
 export interface VendorAnalyticsSummary {
   totalRevenue: number;
   totalItemsSold: number;

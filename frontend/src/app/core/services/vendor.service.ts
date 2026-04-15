@@ -48,8 +48,28 @@ export class VendorService {
     return this.http.patch(`${this.adminUrl}/update-logo`, formData, { withCredentials: true });
   }
 
-  getMyProducts(page = 1, limit = 100): Observable<any> {
-    return this.http.get(`${this.productUrl}/my-products?page=${page}&limit=${limit}`, { withCredentials: true });
+  getMyProducts(
+    page = 1,
+    limit = 100,
+    filters?: { q?: string; category?: string; status?: 'all' | 'active' | 'inactive' }
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+
+    if (filters?.q?.trim()) {
+      params = params.set('q', filters.q.trim());
+    }
+
+    if (filters?.category && filters.category !== 'all') {
+      params = params.set('category', filters.category);
+    }
+
+    if (filters?.status && filters.status !== 'all') {
+      params = params.set('status', filters.status);
+    }
+
+    return this.http.get(`${this.productUrl}/my-products`, { withCredentials: true, params });
   }
 
   getProductById(productId: string): Observable<any> {
@@ -86,6 +106,12 @@ export class VendorService {
       { discountPercentage },
       { withCredentials: true }
     );
+  }
+
+  updateVariant(productId: string, variantId: string, data: FormData): Observable<any> {
+    return this.http.patch(`${this.productUrl}/update-variant/${productId}/${variantId}`, data, {
+      withCredentials: true
+    });
   }
 
   deleteVariant(productId: string, variantId: string): Observable<any> {
