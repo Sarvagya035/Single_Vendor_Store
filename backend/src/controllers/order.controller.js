@@ -35,6 +35,31 @@ const calculateOrderStatusFromItems = (items = []) => {
     return "Processing";
 };
 
+const PENDING_ORDER_EXPIRY_MS = Number(process.env.ORDER_PENDING_EXPIRY_MS || 15 * 60 * 1000);
+
+const isExpiredPendingOrder = (order) => {
+    if (!order || order.paymentInfo?.status !== "Pending") {
+        return false;
+    }
+
+    const createdAt = order.createdAt ? new Date(order.createdAt).getTime() : 0;
+    if (!createdAt) {
+        return false;
+    }
+
+    return Date.now() - createdAt > PENDING_ORDER_EXPIRY_MS;
+};
+
+const cleanupExpiredPendingOrders = async (userId) => {
+    const cutoff = new Date(Date.now() - PENDING_ORDER_EXPIRY_MS);
+
+    await Order.deleteMany({
+        user: userId,
+        "paymentInfo.status": "Pending",
+        createdAt: { $lt: cutoff }
+    });
+};
+
 const createOrder = asyncHandler(async (req, res) => {
     const { orderItems, shippingAddress } = req.body;
 
@@ -218,7 +243,12 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
 // Get all orders of the logged-in user
 const getMyOrders = asyncHandler(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id }).sort("-createdAt");
+    await cleanupExpiredPendingOrders(req.user._id);
+
+    const orders = await Order.find({
+        user: req.user._id,
+        "paymentInfo.status": { $ne: "Pending" }
+    }).sort("-createdAt");
 
     return res.status(200).json(
         new ApiResponse(200, orders, "User orders fetched successfully")
@@ -234,8 +264,16 @@ const getOrderDetails = asyncHandler(async (req, res) => {
     if (!order) throw new ApiError(404, "Order not found");
 
     const userRoles = Array.isArray(req.user.role) ? req.user.role : [req.user.role];
+    const isCustomerOrder = order.user._id.toString() === req.user._id.toString();
+    const isAdmin = userRoles.includes("admin");
+    const isVendor = userRoles.includes("vendor");
 
-    if (userRoles.includes("admin")) {
+    if (isExpiredPendingOrder(order) && isCustomerOrder && !isAdmin && !isVendor) {
+        await Order.deleteOne({ _id: order._id });
+        throw new ApiError(404, "Order not found");
+    }
+
+    if (isAdmin) {
         const shipment = await Shipment.findOne({ order: order._id });
         const orderData = order.toObject();
         orderData.shipment = shipment ? shipment.toObject() : null;
@@ -245,7 +283,7 @@ const getOrderDetails = asyncHandler(async (req, res) => {
         );
     }
 
-    if (order.user._id.toString() === req.user._id.toString()) {
+    if (isCustomerOrder) {
         const shipment = await Shipment.findOne({ order: order._id });
         const orderData = order.toObject();
         orderData.shipment = shipment ? shipment.toObject() : null;
@@ -255,7 +293,7 @@ const getOrderDetails = asyncHandler(async (req, res) => {
         );
     }
 
-    if (userRoles.includes("vendor")) {
+    if (isVendor) {
         const vendor = await Vendor.findOne({ user: req.user._id });
 
         if (vendor) {

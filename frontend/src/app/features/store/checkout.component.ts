@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -166,7 +166,10 @@ const EMPTY_CART: CustomerCart = {
     </div>
   `
 })
-export class CheckoutComponent implements OnInit {
+export class CheckoutComponent implements OnInit, OnDestroy {
+  private readonly pendingPaymentKey = 'checkoutPendingPayment';
+  private readonly pendingPaymentTimeoutMs = 2 * 60 * 1000;
+  private pendingPaymentTimer: ReturnType<typeof setTimeout> | null = null;
   cart: CustomerCart = EMPTY_CART;
   addresses: CustomerAddress[] = [];
   selectedAddressId = '';
@@ -183,7 +186,24 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.restorePendingPaymentState();
     this.loadCheckoutData();
+  }
+
+  ngOnDestroy(): void {
+    this.clearPendingPaymentTimer();
+  }
+
+  @HostListener('window:focus')
+  onWindowFocus(): void {
+    this.recoverStalePaymentState();
+  }
+
+  @HostListener('document:visibilitychange')
+  onVisibilityChange(): void {
+    if (document.visibilityState === 'visible') {
+      this.recoverStalePaymentState();
+    }
   }
 
   loadCheckoutData(): void {
@@ -223,6 +243,7 @@ export class CheckoutComponent implements OnInit {
 
     this.isSubmitting = true;
     this.successMessage = '';
+    this.setPendingPaymentState();
 
     this.orderService.checkout(payload).subscribe({
       next: (response) => {
@@ -231,6 +252,7 @@ export class CheckoutComponent implements OnInit {
 
         if (!orderId || !razorOrder?.id) {
           this.isSubmitting = false;
+          this.clearPendingPaymentState();
           this.errorService.showToast('Unable to initialize payment for this order.', 'error');
           return;
         }
@@ -257,7 +279,7 @@ export class CheckoutComponent implements OnInit {
           },
           modal: {
             ondismiss: () => {
-              this.isSubmitting = false;
+              this.clearPendingPaymentState();
             }
           }
         });
@@ -265,7 +287,7 @@ export class CheckoutComponent implements OnInit {
         razorpay.open();
       },
       error: () => {
-        this.isSubmitting = false;
+        this.clearPendingPaymentState();
       }
     });
   }
@@ -280,15 +302,89 @@ export class CheckoutComponent implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.isSubmitting = false;
+          this.clearPendingPaymentState();
           this.successMessage = 'Payment verified successfully. Redirecting to your orders...';
           this.cartService.resetCart();
           this.router.navigate(['/orders']);
         },
         error: () => {
-          this.isSubmitting = false;
+          this.clearPendingPaymentState();
         }
       });
+  }
+
+  private setPendingPaymentState(): void {
+    this.clearPendingPaymentTimer();
+    sessionStorage.setItem(
+      this.pendingPaymentKey,
+      JSON.stringify({
+        createdAt: Date.now()
+      })
+    );
+    this.pendingPaymentTimer = window.setTimeout(() => {
+      this.recoverStalePaymentState(true);
+    }, this.pendingPaymentTimeoutMs);
+  }
+
+  private clearPendingPaymentState(): void {
+    this.clearPendingPaymentTimer();
+    sessionStorage.removeItem(this.pendingPaymentKey);
+    this.isSubmitting = false;
+  }
+
+  private clearPendingPaymentTimer(): void {
+    if (this.pendingPaymentTimer !== null) {
+      window.clearTimeout(this.pendingPaymentTimer);
+      this.pendingPaymentTimer = null;
+    }
+  }
+
+  private restorePendingPaymentState(): void {
+    const raw = sessionStorage.getItem(this.pendingPaymentKey);
+
+    if (!raw) {
+      this.isSubmitting = false;
+      return;
+    }
+
+    const pendingAt = this.extractPendingTimestamp(raw);
+    const expired = !pendingAt || Date.now() - pendingAt >= this.pendingPaymentTimeoutMs;
+
+    if (expired) {
+      this.clearPendingPaymentState();
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.clearPendingPaymentTimer();
+    this.pendingPaymentTimer = window.setTimeout(() => {
+      this.recoverStalePaymentState(true);
+    }, this.pendingPaymentTimeoutMs - (Date.now() - pendingAt));
+  }
+
+  private recoverStalePaymentState(force = false): void {
+    const raw = sessionStorage.getItem(this.pendingPaymentKey);
+
+    if (!raw) {
+      this.isSubmitting = false;
+      return;
+    }
+
+    const pendingAt = this.extractPendingTimestamp(raw);
+    const expired = !pendingAt || Date.now() - pendingAt >= this.pendingPaymentTimeoutMs;
+
+    if (force || expired) {
+      this.clearPendingPaymentState();
+    }
+  }
+
+  private extractPendingTimestamp(raw: string): number | null {
+    try {
+      const parsed = JSON.parse(raw);
+      return typeof parsed?.createdAt === 'number' ? parsed.createdAt : null;
+    } catch {
+      return null;
+    }
   }
 
   buildCheckoutPayload(address?: CustomerAddress): OrderCheckoutPayload | null {
