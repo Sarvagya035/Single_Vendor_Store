@@ -17,17 +17,33 @@
 
   html {
     @apply scroll-smooth;
+    font-family: 'Poppins', sans-serif;
   }
 
   body {
     @apply bg-slate-50 text-slate-900 font-normal antialiased;
-    font-family: 'Poppins', sans-serif;
+    font-family: inherit;
     background-color: var(--background);
     background-image:
       radial-gradient(circle at top left, rgba(212, 160, 23, 0.12), transparent 30%),
       radial-gradient(circle at top right, rgba(111, 78, 55, 0.12), transparent 26%),
       radial-gradient(circle at bottom center, rgba(245, 230, 211, 0.24), transparent 34%);
     color: var(--text-main);
+  }
+
+  *,
+  *::before,
+  *::after {
+    font-family: inherit;
+  }
+
+  app-root,
+  input,
+  textarea,
+  select,
+  option,
+  button {
+    font-family: inherit;
   }
 
   ::view-transition-old(root),
@@ -75,6 +91,7 @@
 
   button {
     @apply transition-all duration-200;
+    font: inherit;
   }
 }
 
@@ -89,6 +106,46 @@
 
   .app-page-description {
     @apply mt-3 max-w-3xl text-[15px] font-medium leading-8 text-slate-500;
+  }
+
+  .vendor-page-hero {
+    @apply rounded-[2rem] border border-[#eadfce] bg-[linear-gradient(135deg,#fffaf4_0%,#f8ecdb_55%,#fff6ea_100%)] px-6 py-7 shadow-[0_28px_70px_rgba(111,78,55,0.12)] lg:px-8;
+  }
+
+  .vendor-page-shell {
+    border: 1px solid var(--border);
+    border-radius: 2rem;
+    background: var(--surface);
+    box-shadow: 0 24px 60px rgba(47, 27, 20, 0.08);
+    overflow: hidden;
+  }
+
+  .vendor-section-head {
+    @apply border-b border-slate-200 px-6 py-5 lg:px-8;
+  }
+
+  .vendor-stat-card {
+    @apply rounded-[1.6rem] border border-slate-200 bg-white px-5 py-5 shadow-sm;
+  }
+
+  .vendor-stat-label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400;
+  }
+
+  .vendor-stat-value {
+    @apply mt-3 text-3xl font-bold text-slate-900;
+  }
+
+  .vendor-stat-copy {
+    @apply mt-2 text-sm font-medium text-slate-500;
+  }
+
+  .vendor-panel-title {
+    @apply mt-2 text-2xl font-bold text-slate-900;
+  }
+
+  .vendor-empty-title {
+    @apply text-2xl font-bold text-slate-900;
   }
 
   .app-surface {
@@ -143,6 +200,17 @@
   .theme-muted-panel {
     @apply border-[#eadcc9] bg-[#fffaf3];
   }
+
+  .vendor-theme {
+    font-weight: 400;
+  }
+
+  .vendor-theme input,
+  .vendor-theme textarea,
+  .vendor-theme select,
+  .vendor-theme button {
+    font: inherit;
+  }
 }
 
 @layer utilities {
@@ -161,6 +229,22 @@
 
   .font-semibold {
     font-weight: 500;
+  }
+
+  .vendor-theme .font-black {
+    font-weight: 600 !important;
+  }
+
+  .vendor-theme .font-extrabold {
+    font-weight: 600 !important;
+  }
+
+  .vendor-theme .font-bold {
+    font-weight: 500 !important;
+  }
+
+  .vendor-theme .font-semibold {
+    font-weight: 500 !important;
   }
 }
 

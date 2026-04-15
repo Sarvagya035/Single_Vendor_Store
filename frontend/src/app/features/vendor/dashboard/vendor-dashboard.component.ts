@@ -39,11 +39,13 @@ interface DashboardProduct {
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="space-y-6">
-      <div class="app-surface overflow-hidden">
+      <div class="vendor-page-shell">
         <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
           <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Vendor Overview</h1>
+              <p class="app-page-eyebrow">Dashboard</p>
+              <h1 class="app-page-title">Vendor Overview</h1>
+              <p class="app-page-description">Track revenue, products, orders, and reports from one consistent workspace.</p>
             </div>
 
             <div class="flex flex-wrap gap-3">
@@ -54,19 +56,19 @@ interface DashboardProduct {
         </div>
 
         <div class="grid gap-4 px-6 py-6 md:grid-cols-2 xl:grid-cols-4 lg:px-8">
-          <article *ngFor="let metric of metrics" class="rounded-[1.75rem] border p-5 shadow-sm transition hover:-translate-y-0.5"
+          <article *ngFor="let metric of metrics" class="vendor-stat-card transition hover:-translate-y-0.5"
             [ngClass]="metricCardClass(metric.tone)">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em]">{{ metric.label }}</p>
-            <p class="mt-4 text-3xl font-black tracking-tight text-slate-900">{{ metric.value }}</p>
-            <p class="mt-3 text-sm font-bold">{{ metric.change }}</p>
+            <p class="vendor-stat-label">{{ metric.label }}</p>
+            <p class="vendor-stat-value">{{ metric.value }}</p>
+            <p class="vendor-stat-copy !mt-3 !text-[15px] !text-current">{{ metric.change }}</p>
           </article>
         </div>
       </div>
 
-      <div class="app-surface overflow-hidden">
-        <div class="border-b border-slate-200 px-6 py-5 lg:px-8">
-          <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Reports</p>
-          <h2 class="mt-2 text-2xl font-black text-slate-900">Download Sales Reports</h2>
+      <div class="vendor-page-shell">
+        <div class="vendor-section-head">
+          <p class="vendor-stat-label">Reports</p>
+          <h2 class="vendor-panel-title">Download Sales Reports</h2>
           <p class="mt-2 text-sm font-medium text-slate-500">
             Export weekly, monthly, or custom order reports as CSV or PDF.
           </p>
@@ -179,10 +181,10 @@ interface DashboardProduct {
       </div>
 
       <div class="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
-        <section class="glass-card overflow-hidden">
-          <div class="border-b border-slate-200 px-6 py-5">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Recent Orders</p>
-            <h2 class="mt-2 text-2xl font-black text-slate-900">Fulfillment Snapshot</h2>
+        <section class="vendor-page-shell">
+          <div class="vendor-section-head">
+            <p class="vendor-stat-label">Recent Orders</p>
+            <h2 class="vendor-panel-title">Fulfillment Snapshot</h2>
           </div>
 
           <div *ngIf="isLoading" class="px-6 py-8 text-sm font-semibold text-slate-500">
@@ -211,9 +213,9 @@ interface DashboardProduct {
 
         <section class="space-y-6">
           <div class="app-surface overflow-hidden">
-            <div class="border-b border-slate-200 px-6 py-5">
-              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Quick Actions</p>
-              <h2 class="mt-2 text-2xl font-black text-slate-900">What Do You Want To Do?</h2>
+            <div class="vendor-section-head">
+              <p class="vendor-stat-label">Quick Actions</p>
+              <h2 class="vendor-panel-title">What Do You Want To Do?</h2>
             </div>
 
             <div class="grid gap-3 px-6 py-6">
@@ -224,10 +226,10 @@ interface DashboardProduct {
             </div>
           </div>
 
-          <div class="glass-card overflow-hidden">
-            <div class="border-b border-slate-200 px-6 py-5">
-              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Top Performers</p>
-              <h2 class="mt-2 text-2xl font-black text-slate-900">Best Selling Products</h2>
+          <div class="vendor-page-shell">
+            <div class="vendor-section-head">
+              <p class="vendor-stat-label">Top Performers</p>
+              <h2 class="vendor-panel-title">Best Selling Products</h2>
             </div>
 
             <div *ngIf="isLoading" class="px-6 py-8 text-sm font-semibold text-slate-500">

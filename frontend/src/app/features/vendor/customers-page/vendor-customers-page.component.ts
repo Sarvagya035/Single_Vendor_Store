@@ -11,13 +11,13 @@ import { VendorService } from '../../../core/services/vendor.service';
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="space-y-6">
-      <div class="app-surface overflow-hidden">
+      <div class="vendor-page-shell">
         <div class="border-b border-[#f1e4d4] px-6 py-6 lg:px-8">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Customer Directory</p>
-              <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Registered Customers</h1>
-              <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
+              <p class="app-page-eyebrow">Customer Directory</p>
+              <h1 class="app-page-title">Registered Customers</h1>
+              <p class="app-page-description">
                 Browse the customer list and click any card to open the full customer profile.
               </p>
             </div>
@@ -41,28 +41,28 @@ import { VendorService } from '../../../core/services/vendor.service';
         </div>
 
         <div class="grid gap-4 px-6 py-6 md:grid-cols-3 lg:px-8">
-          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Total Customers</p>
-            <p class="mt-3 text-3xl font-black text-slate-900">{{ customers.length }}</p>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Total Customers</p>
+            <p class="vendor-stat-value">{{ customers.length }}</p>
           </article>
-          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Visible Now</p>
-            <p class="mt-3 text-3xl font-black text-slate-900">{{ filteredCustomers.length }}</p>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Visible Now</p>
+            <p class="vendor-stat-value">{{ filteredCustomers.length }}</p>
           </article>
-          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600">Latest Signup</p>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-600">Latest Signup</p>
             <p class="mt-3 text-sm font-black text-slate-900">{{ newestCustomerLabel }}</p>
           </article>
         </div>
       </div>
 
-      <section class="app-surface overflow-hidden">
+      <section class="vendor-page-shell">
         <div *ngIf="isLoading" class="px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
           Loading customer accounts...
         </div>
 
         <div *ngIf="!isLoading && filteredCustomers.length === 0" class="px-6 py-12 text-center lg:px-8">
-          <h2 class="text-2xl font-black text-slate-900">No customers found</h2>
+          <h2 class="vendor-empty-title">No customers found</h2>
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
             Try a different search term or wait for new customer signups.
           </p>

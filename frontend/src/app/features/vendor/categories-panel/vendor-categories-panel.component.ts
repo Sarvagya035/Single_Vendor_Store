@@ -24,7 +24,8 @@ interface CategoryCreateForm {
       <div class="app-card overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 px-6 py-5">
           <div>
-            <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Manage category tree</h3>
+            <p class="vendor-stat-label">Category Tree</p>
+            <h3 class="vendor-panel-title">Manage category tree</h3>
           </div>
           <div class="flex flex-wrap gap-3">
             <button type="button" (click)="toggleCreateForm()" class="btn-primary !px-5 !py-3">
@@ -105,7 +106,7 @@ interface CategoryCreateForm {
         </div>
 
         <div *ngIf="!isLoading && categories.length === 0" class="app-card-soft mx-6 my-6 px-8 py-20 text-center">
-          <h3 class="text-2xl font-black text-slate-900">No Categories Yet</h3>
+          <h3 class="vendor-empty-title">No Categories Yet</h3>
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
             Categories from your backend will appear here once they are created.
           </p>

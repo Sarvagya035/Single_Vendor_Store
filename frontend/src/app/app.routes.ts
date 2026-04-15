@@ -134,6 +134,20 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'products/:productId/view',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/view-product-page/vendor-view-product-page.component').then(
+                (m) => m.VendorViewProductPageComponent
+              )
+          }
+        ]
+      },
+      {
         path: 'products/:productId/edit',
         loadComponent: () =>
           import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),

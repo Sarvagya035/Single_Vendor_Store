@@ -20,16 +20,13 @@ import {
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="space-y-8">
-      <div class="rounded-[2rem] border border-[#eadfce] bg-[linear-gradient(135deg,#fffaf4_0%,#f8ecdb_55%,#fff6ea_100%)] px-6 py-7 shadow-[0_28px_70px_rgba(111,78,55,0.12)] lg:px-8">
+      <div class="vendor-page-hero">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div class="max-w-3xl">
-            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-amber-600">Vendor Products</p>
-            <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
-              Product Management Dashboard
-            </h1>
-            <p class="mt-3 text-sm font-medium leading-relaxed text-slate-600 sm:text-base">
-              Run your catalog from one control center, then jump into dedicated edit, inventory, and variant workspaces
-              without mixing responsibilities.
+            <p class="app-page-eyebrow">Vendor Products</p>
+            <h1 class="app-page-title">Product Management Dashboard</h1>
+            <p class="app-page-description">
+              Review your catalog, filter product records quickly, and jump into dedicated view, edit, restock, and variant workflows.
             </p>
           </div>
 
@@ -82,28 +79,28 @@ import {
       </div>
 
       <div class="grid gap-4 md:grid-cols-3">
-        <article class="rounded-[1.6rem] border border-slate-200 bg-white px-5 py-5 shadow-sm">
-          <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Total Products</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ totalDocs }}</p>
-          <p class="mt-2 text-sm font-medium text-slate-500">Catalog entries under your vendor account.</p>
+        <article class="vendor-stat-card">
+          <p class="vendor-stat-label">Total Products</p>
+          <p class="vendor-stat-value">{{ totalDocs }}</p>
+          <p class="vendor-stat-copy">Catalog entries under your vendor account.</p>
         </article>
-        <article class="rounded-[1.6rem] border border-slate-200 bg-white px-5 py-5 shadow-sm">
-          <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Active Listings</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ activeCount }}</p>
-          <p class="mt-2 text-sm font-medium text-slate-500">Products currently visible to customers.</p>
+        <article class="vendor-stat-card">
+          <p class="vendor-stat-label">Active Listings</p>
+          <p class="vendor-stat-value">{{ activeCount }}</p>
+          <p class="vendor-stat-copy">Products currently visible to customers.</p>
         </article>
-        <article class="rounded-[1.6rem] border border-slate-200 bg-white px-5 py-5 shadow-sm">
-          <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Filtered Results</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ filteredProducts.length }}</p>
-          <p class="mt-2 text-sm font-medium text-slate-500">Products matching the current dashboard filters.</p>
+        <article class="vendor-stat-card">
+          <p class="vendor-stat-label">Filtered Results</p>
+          <p class="vendor-stat-value">{{ filteredProducts.length }}</p>
+          <p class="vendor-stat-copy">Products matching the current dashboard filters.</p>
         </article>
       </div>
 
-      <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
+      <div class="vendor-page-shell">
         <div class="flex flex-col gap-3 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Control Center</p>
-            <h2 class="mt-2 text-2xl font-black text-slate-900">Products Dashboard</h2>
+            <p class="vendor-stat-label">Control Center</p>
+            <h2 class="vendor-panel-title">Products Dashboard</h2>
           </div>
           <p class="text-sm font-semibold text-slate-500">
             Page <span class="font-black text-slate-900">{{ currentPage }}</span>
@@ -117,7 +114,7 @@ import {
         </div>
 
         <div *ngIf="!isLoading && filteredProducts.length === 0" class="px-6 py-20 text-center lg:px-8">
-          <h3 class="text-2xl font-black text-slate-900">No products found</h3>
+          <h3 class="vendor-empty-title">No products found</h3>
           <p class="mx-auto mt-3 max-w-xl text-sm font-medium leading-relaxed text-slate-500">
             Try a different search or filter, or add a new product to start building out your storefront catalog.
           </p>
@@ -178,7 +175,7 @@ import {
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <a [routerLink]="['/products', product._id]" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50">
+              <a [routerLink]="['/vendor/products', product._id, 'view']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50">
                 View
               </a>
               <a [routerLink]="['/vendor/products', product._id, 'edit']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50">
@@ -238,7 +235,7 @@ import {
             </div>
 
             <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              <a [routerLink]="['/products', product._id]" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
+              <a [routerLink]="['/vendor/products', product._id, 'view']" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
                 View
               </a>
               <a [routerLink]="['/vendor/products', product._id, 'edit']" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">

@@ -14,9 +14,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
     <section class="space-y-6">
       <div class="app-surface px-6 py-7 sm:px-8">
         <app-page-header
+          eyebrow="Orders"
           title="Manage incoming orders"
-          eyebrowClass="text-amber-600"
-          titleClass="text-4xl"
+          description="Review vendor-assigned orders, update line item statuses, and keep fulfillment moving from one place."
         >
           <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary !py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
@@ -30,24 +30,24 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
       </div>
 
       <div class="grid gap-4 md:grid-cols-3">
-        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
-          <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Processing</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Processing') }}</p>
+        <article class="vendor-stat-card !border-[#e7dac9] !bg-[#fff7ed]/80">
+          <p class="vendor-stat-label">Processing</p>
+          <p class="vendor-stat-value">{{ countByStatus('Processing') }}</p>
         </article>
-        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
-          <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Shipped</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Shipped') }}</p>
+        <article class="vendor-stat-card !border-[#e7dac9] !bg-[#fff7ed]/80">
+          <p class="vendor-stat-label">Shipped</p>
+          <p class="vendor-stat-value">{{ countByStatus('Shipped') }}</p>
         </article>
-        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
-          <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivered</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Delivered') }}</p>
+        <article class="vendor-stat-card !border-[#e7dac9] !bg-[#fff7ed]/80">
+          <p class="vendor-stat-label">Delivered</p>
+          <p class="vendor-stat-value">{{ countByStatus('Delivered') }}</p>
         </article>
       </div>
 
       <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading vendor orders...</div>
 
       <div *ngIf="!isLoading && orders.length === 0" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
-        <h2 class="text-2xl font-black text-slate-900">No vendor orders yet</h2>
+        <h2 class="vendor-empty-title">No vendor orders yet</h2>
         <p class="mt-3 text-sm font-medium text-slate-500">
           Orders assigned to your products will appear here automatically.
         </p>

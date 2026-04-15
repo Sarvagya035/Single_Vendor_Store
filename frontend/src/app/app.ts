@@ -18,8 +18,7 @@ import { GlobalLoadingComponent } from './shared/ui/global-loading.component';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, HeaderComponent, FooterComponent, GlobalToastComponent, GlobalLoadingComponent],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  templateUrl: './app.html'
 })
 export class App {
   protected readonly title = signal('frontend');
