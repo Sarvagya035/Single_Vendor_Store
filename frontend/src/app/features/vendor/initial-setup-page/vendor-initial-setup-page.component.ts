@@ -14,13 +14,13 @@ import { VendorService } from '../../../core/services/vendor.service';
       <div class="mx-auto max-w-6xl">
         <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div class="max-w-3xl">
-            <p class="text-xs font-black uppercase tracking-[0.28em] text-amber-700">
+            <p class="app-page-eyebrow text-amber-700">
               First-time bootstrap
             </p>
-            <h1 class="mt-3 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+            <h1 class="app-page-title !text-4xl sm:!text-5xl">
               Create your store account
             </h1>
-            <p class="mt-4 max-w-2xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
+            <p class="app-page-description">
               Use this page once to register the store owner, store profile, and payout details.
               It uses the existing backend bootstrap endpoint.
             </p>

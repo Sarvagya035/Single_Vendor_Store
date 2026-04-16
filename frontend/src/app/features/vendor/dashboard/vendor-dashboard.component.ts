@@ -45,7 +45,6 @@ interface DashboardProduct {
             <div>
               <p class="app-page-eyebrow">Dashboard</p>
               <h1 class="app-page-title">Vendor Overview</h1>
-              <p class="app-page-description">Track revenue, products, orders, and reports from one consistent workspace.</p>
             </div>
 
             <div class="flex flex-wrap gap-3">

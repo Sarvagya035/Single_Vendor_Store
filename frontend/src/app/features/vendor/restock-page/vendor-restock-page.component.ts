@@ -18,12 +18,12 @@ import {
   imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent],
   template: `
     <div class="space-y-8">
-      <div class="rounded-[2rem] border border-[#eadfce] bg-[linear-gradient(135deg,#fffaf4_0%,#f6ead6_55%,#fff7ef_100%)] px-6 py-7 shadow-[0_28px_70px_rgba(111,78,55,0.12)] lg:px-8">
+      <div class="vendor-page-hero">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div class="max-w-3xl">
-            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-amber-600">Inventory Management</p>
-            <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Manage Inventory / Restock</h1>
-            <p class="mt-3 text-sm font-medium leading-relaxed text-slate-600">
+            <p class="app-page-eyebrow">Inventory Management</p>
+            <h1 class="app-page-title">Manage Inventory / Restock</h1>
+            <p class="app-page-description">
               This page is only for stock updates. Product details and variant editing stay separate so inventory work stays fast and focused.
             </p>
           </div>
@@ -35,7 +35,7 @@ import {
         </div>
       </div>
 
-      <div *ngIf="isLoading" class="glass-card py-20 text-center">
+      <div *ngIf="isLoading" class="vendor-page-shell py-20 text-center">
         <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
         <p class="mt-4 text-sm font-medium text-slate-500">Loading inventory details...</p>
       </div>
@@ -49,7 +49,7 @@ import {
                 <div *ngIf="!primaryImageUrl" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-4xl font-black text-slate-400">{{ product.productName.charAt(0) || 'P' }}</div>
               </div>
               <div class="p-5">
-                <h2 class="text-2xl font-black text-slate-900">{{ product.productName }}</h2>
+                <h2 class="vendor-panel-title">{{ product.productName }}</h2>
                 <p class="mt-2 text-sm font-semibold text-slate-500">{{ product.brand || 'Generic' }}</p>
               </div>
             </div>

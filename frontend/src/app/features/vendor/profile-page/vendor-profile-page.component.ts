@@ -22,54 +22,66 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../.
     VendorEmptyStateComponent
   ],
   template: `
-    <div *ngIf="isLoading" class="flex flex-col items-center gap-4 py-20">
-      <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
-      <p class="font-medium text-slate-500">Loading store data...</p>
-    </div>
+    <section class="space-y-8">
+      <div class="vendor-page-hero">
+        <div class="max-w-3xl">
+          <p class="app-page-eyebrow">Store Profile</p>
+          <h1 class="app-page-title">Vendor profile</h1>
+          <p class="app-page-description">
+            Update your store identity, payout information, and logo from one consistent profile workspace.
+          </p>
+        </div>
+      </div>
 
-    <div *ngIf="!isLoading && vendor" class="space-y-10">
-      <app-vendor-profile-card
+      <div *ngIf="isLoading" class="vendor-page-shell flex flex-col items-center gap-4 py-20">
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
+        <p class="font-medium text-slate-500">Loading store data...</p>
+      </div>
+
+      <div *ngIf="!isLoading && vendor" class="space-y-10">
+        <app-vendor-profile-card
+          [vendor]="vendor"
+          [logoPreview]="logoPreview"
+          [isEditDetailsOpen]="isEditDetailsOpen"
+          [isEditBankOpen]="isEditBankOpen"
+          [isEditLogoOpen]="isEditLogoOpen"
+          (editDetails)="toggleDetailsEditor()"
+          (editBank)="toggleBankEditor()"
+          (editLogo)="toggleLogoEditor()"
+        />
+      </div>
+
+      <app-vendor-empty-state *ngIf="!isLoading && !vendor" />
+
+      <app-vendor-details-modal
+        [open]="isEditDetailsOpen"
+        [form]="form"
+        [isSaving]="isSavingDetails"
+        (formChange)="updateForm($event)"
+        (close)="toggleDetailsEditor()"
+        (submit)="onUpdateDetails()"
+      />
+
+      <app-vendor-bank-modal
+        [open]="isEditBankOpen"
+        [form]="bankForm"
+        [isSaving]="isSavingBank"
+        (formChange)="updateBankForm($event)"
+        (close)="toggleBankEditor()"
+        (submit)="onUpdateBankDetails()"
+      />
+
+      <app-vendor-logo-modal
+        [open]="isEditLogoOpen"
         [vendor]="vendor"
         [logoPreview]="logoPreview"
-        [isEditDetailsOpen]="isEditDetailsOpen"
-        [isEditBankOpen]="isEditBankOpen"
-        [isEditLogoOpen]="isEditLogoOpen"
-        (editDetails)="toggleDetailsEditor()"
-        (editBank)="toggleBankEditor()"
-        (editLogo)="toggleLogoEditor()"
+        [selectedLogoName]="selectedLogo?.name || ''"
+        [isUploading]="isUploadingLogo"
+        (close)="toggleLogoEditor()"
+        (selectLogo)="onLogoSelected($event)"
+        (submit)="onUpdateLogo()"
       />
-    </div>
-
-    <app-vendor-empty-state *ngIf="!isLoading && !vendor" />
-
-    <app-vendor-details-modal
-      [open]="isEditDetailsOpen"
-      [form]="form"
-      [isSaving]="isSavingDetails"
-      (formChange)="updateForm($event)"
-      (close)="toggleDetailsEditor()"
-      (submit)="onUpdateDetails()"
-    />
-
-    <app-vendor-bank-modal
-      [open]="isEditBankOpen"
-      [form]="bankForm"
-      [isSaving]="isSavingBank"
-      (formChange)="updateBankForm($event)"
-      (close)="toggleBankEditor()"
-      (submit)="onUpdateBankDetails()"
-    />
-
-    <app-vendor-logo-modal
-      [open]="isEditLogoOpen"
-      [vendor]="vendor"
-      [logoPreview]="logoPreview"
-      [selectedLogoName]="selectedLogo?.name || ''"
-      [isUploading]="isUploadingLogo"
-      (close)="toggleLogoEditor()"
-      (selectLogo)="onLogoSelected($event)"
-      (submit)="onUpdateLogo()"
-    />
+    </section>
   `
 })
 export class VendorProfilePageComponent implements OnInit {

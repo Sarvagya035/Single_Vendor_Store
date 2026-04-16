@@ -38,12 +38,12 @@ interface WizardStep {
   ],
   template: `
     <div class="space-y-8">
-      <div class="rounded-[2rem] border border-[#eadfce] bg-[linear-gradient(135deg,#fffaf4_0%,#f6ead6_55%,#fff7ef_100%)] px-6 py-7 shadow-[0_28px_70px_rgba(111,78,55,0.12)] lg:px-8">
+      <div class="vendor-page-hero">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div class="max-w-3xl">
-            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-amber-600">Vendor Products</p>
-            <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Add Product</h1>
-            <p class="mt-3 text-sm font-medium leading-relaxed text-slate-600">
+            <p class="app-page-eyebrow">Vendor Products</p>
+            <h1 class="app-page-title">Add Product</h1>
+            <p class="app-page-description">
               Use a guided workflow so product details, media, option setup, variants, and final review each stay clear and focused.
             </p>
           </div>
@@ -58,13 +58,13 @@ interface WizardStep {
             class="rounded-[1.4rem] border px-4 py-4 text-left transition"
             [ngClass]="i === currentStep ? 'border-amber-300 bg-white text-slate-900 shadow-sm' : i < currentStep ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-white/70 bg-white/70 text-slate-500'"
           >
-            <p class="text-[10px] font-black uppercase tracking-[0.22em]">Step {{ i + 1 }}</p>
-            <h2 class="mt-2 text-sm font-black">{{ step.title }}</h2>
+            <p class="vendor-stat-label">Step {{ i + 1 }}</p>
+            <h2 class="mt-2 text-sm font-bold text-slate-900">{{ step.title }}</h2>
           </button>
         </div>
       </div>
 
-      <div *ngIf="isLoadingCategories" class="glass-card py-20 text-center">
+      <div *ngIf="isLoadingCategories" class="vendor-page-shell py-20 text-center">
         <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
         <p class="mt-4 text-sm font-medium text-slate-500">Loading categories...</p>
       </div>
@@ -97,7 +97,7 @@ interface WizardStep {
 
           <app-vendor-form-section eyebrow="Preview" title="Draft summary">
             <div class="space-y-4 rounded-[1.6rem] border border-slate-200 bg-slate-50/70 p-5 text-sm font-medium text-slate-600">
-              <h3 class="text-2xl font-black text-slate-900">{{ form.productName || 'Untitled product' }}</h3>
+              <h3 class="vendor-panel-title">{{ form.productName || 'Untitled product' }}</h3>
               <p>{{ form.brand || 'Generic brand' }}</p>
               <p>{{ form.productDescription || 'Your description will appear here as you fill the form.' }}</p>
               <p><span class="font-black text-slate-900">Category:</span> {{ categoryNamePreview }}</p>
@@ -152,7 +152,7 @@ interface WizardStep {
           <app-vendor-form-section eyebrow="Generator" title="Combinations preview">
             <div class="space-y-3">
               <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
-                <h3 class="text-xl font-black text-slate-900">{{ generatedCombinations.length }} combinations ready</h3>
+                <h3 class="vendor-panel-title !text-xl">{{ generatedCombinations.length }} combinations ready</h3>
                 <p class="mt-2 text-sm font-medium text-slate-500">Examples generated from your option setup.</p>
               </div>
               <div *ngIf="generatedCombinations.length === 0" class="rounded-[1.5rem] border border-dashed border-slate-200 bg-white px-5 py-8 text-center text-sm font-medium text-slate-500">
@@ -190,7 +190,7 @@ interface WizardStep {
           <app-vendor-form-section eyebrow="Step 5" title="Review & submit">
             <div class="space-y-5">
               <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
-                <h3 class="text-2xl font-black text-slate-900">{{ form.productName || 'Untitled product' }}</h3>
+                <h3 class="vendor-panel-title">{{ form.productName || 'Untitled product' }}</h3>
                 <p class="mt-2 text-sm font-semibold text-slate-500">{{ form.brand || 'Generic brand' }}</p>
                 <p class="mt-4 text-sm font-medium text-slate-600">{{ form.productDescription || 'No description yet.' }}</p>
               </div>

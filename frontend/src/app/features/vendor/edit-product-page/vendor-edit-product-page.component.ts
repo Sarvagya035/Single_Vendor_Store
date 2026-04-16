@@ -24,12 +24,12 @@ import {
   imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent],
   template: `
     <div class="space-y-8">
-      <div class="rounded-[2rem] border border-[#eadfce] bg-[linear-gradient(135deg,#fffaf4_0%,#f6ead6_55%,#fff7ef_100%)] px-6 py-7 shadow-[0_28px_70px_rgba(111,78,55,0.12)] lg:px-8">
+      <div class="vendor-page-hero">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div class="max-w-3xl">
-            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-amber-600">Vendor Products</p>
-            <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Edit Product Details</h1>
-            <p class="mt-3 text-sm font-medium leading-relaxed text-slate-600">
+            <p class="app-page-eyebrow">Vendor Products</p>
+            <h1 class="app-page-title">Edit Product Details</h1>
+            <p class="app-page-description">
               This page is only for customer-facing product information. Inventory and variant operations live in their own dedicated workspaces.
             </p>
           </div>
@@ -41,13 +41,13 @@ import {
         </div>
       </div>
 
-      <div *ngIf="isLoading" class="glass-card py-20 text-center">
+      <div *ngIf="isLoading" class="vendor-page-shell py-20 text-center">
         <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
         <p class="mt-4 text-sm font-medium text-slate-500">Loading product details...</p>
       </div>
 
       <div *ngIf="!isLoading && !product" class="glass-card py-16 text-center">
-        <h2 class="text-2xl font-black text-slate-900">Product not found</h2>
+        <h2 class="vendor-empty-title">Product not found</h2>
         <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
           We couldn't load that product. It may have been deleted or the link may be outdated.
         </p>
@@ -102,8 +102,8 @@ import {
                 </div>
               </div>
               <div class="space-y-2 p-5">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Product</p>
-                <h3 class="text-2xl font-black text-slate-900">{{ form.productName || product.productName }}</h3>
+                <p class="vendor-stat-label">Product</p>
+                <h3 class="vendor-panel-title">{{ form.productName || product.productName }}</h3>
                 <p class="text-sm font-medium text-slate-500">{{ form.brand || product.brand || 'Generic' }}</p>
               </div>
             </div>

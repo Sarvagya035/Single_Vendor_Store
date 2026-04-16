@@ -7,7 +7,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="glass-card overflow-hidden">
+    <section class="vendor-page-shell">
       <div class="grid gap-8 p-6 sm:p-8 xl:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] xl:items-start">
         <div class="rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,249,242,0.98),rgba(245,230,211,0.9))] p-6 shadow-[0_24px_60px_rgba(111,78,55,0.08)]">
           <div class="flex flex-col items-center text-center xl:items-start xl:text-left">
@@ -31,7 +31,8 @@ import { VendorProfile } from '../../../core/models/vendor.models';
 
             <div class="mt-6 w-full space-y-3">
               <div class="space-y-3">
-                <h2 class="text-3xl font-black tracking-tight text-slate-900">{{ vendor.shopName }}</h2>
+                <p class="vendor-stat-label">Vendor Profile</p>
+                <h2 class="vendor-panel-title">{{ vendor.shopName }}</h2>
                 <div class="inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-amber-800">
                   {{ vendor.verificationStatus }}
                 </div>
@@ -57,20 +58,20 @@ import { VendorProfile } from '../../../core/models/vendor.models';
         </div>
 
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-700">GST</p>
+          <div class="vendor-stat-card !border-[#e7dac9] !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">GST</p>
             <p class="mt-3 break-words text-lg font-black text-slate-900">{{ vendor.gstNumber }}</p>
           </div>
-          <div class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-700">Address</p>
+          <div class="vendor-stat-card !border-[#e7dac9] !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Address</p>
             <p class="mt-3 text-sm font-bold leading-relaxed text-slate-900">{{ vendor.vendorAddress }}</p>
           </div>
-          <div class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-700">Brand Summary</p>
+          <div class="vendor-stat-card !border-[#e7dac9] !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Brand Summary</p>
             <p class="mt-3 text-sm font-bold leading-7 text-slate-900">{{ vendor.vendorDescription }}</p>
           </div>
-          <div class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-700">Banking</p>
+          <div class="vendor-stat-card !border-[#e7dac9] !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Banking</p>
             <div class="mt-3 space-y-2 text-sm font-bold text-slate-900">
               <p>{{ vendor.bankDetails?.bankName || 'Bank details missing' }}</p>
               <p class="text-slate-600">{{ maskedAccountNumber() }}</p>

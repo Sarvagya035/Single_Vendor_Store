@@ -17,9 +17,6 @@ import { VendorService } from '../../../core/services/vendor.service';
             <div>
               <p class="app-page-eyebrow">Customer Directory</p>
               <h1 class="app-page-title">Registered Customers</h1>
-              <p class="app-page-description">
-                Browse the customer list and click any card to open the full customer profile.
-              </p>
             </div>
 
             <div class="flex flex-wrap gap-3">

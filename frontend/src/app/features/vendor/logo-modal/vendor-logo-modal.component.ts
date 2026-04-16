@@ -11,8 +11,8 @@ import { VendorProfile } from '../../../core/models/vendor.models';
       <div class="glass-card w-full max-w-xl p-8 shadow-2xl">
         <div class="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
-            <p class="text-xs font-black uppercase tracking-[0.28em] text-slate-400">Edit Store Logo</p>
-            <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Upload a New Brand Image</h3>
+            <p class="vendor-stat-label">Edit Store Logo</p>
+            <h3 class="vendor-panel-title">Upload a New Brand Image</h3>
           </div>
           <button type="button" (click)="close.emit()" class="btn-secondary !px-4 !py-2 text-xs">
             Close

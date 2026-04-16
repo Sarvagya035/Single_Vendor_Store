@@ -12,8 +12,8 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
       <div class="glass-card w-full max-w-2xl p-8 shadow-2xl">
         <div class="flex items-start justify-between gap-4 border-b border-[#f1e4d4] pb-4">
           <div>
-            <p class="text-xs font-black uppercase tracking-[0.28em] text-amber-700">Bank Details</p>
-            <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Update Payout Information</h3>
+            <p class="vendor-stat-label !text-amber-700">Bank Details</p>
+            <h3 class="vendor-panel-title">Update Payout Information</h3>
           </div>
           <button type="button" (click)="close.emit()" class="btn-secondary !px-4 !py-2 text-xs">
             Close

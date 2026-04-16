@@ -49,11 +49,11 @@ interface ShipmentCardView {
   imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="app-surface px-6 py-7 sm:px-8">
+      <div class="vendor-page-shell px-6 py-7 sm:px-8">
         <app-page-header
+          eyebrow="Shipments"
           title="Manage shipments"
-          eyebrowClass="text-emerald-600"
-          titleClass="text-4xl"
+          description="Track vendor shipments, update delivery fields, and keep logistics status consistent."
         >
           <button type="button" (click)="loadShipments()" [disabled]="isLoading" class="btn-secondary !py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Shipments' }}
@@ -62,17 +62,17 @@ interface ShipmentCardView {
       </div>
 
       <div *ngIf="summary" class="grid gap-4 md:grid-cols-3">
-        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-sm">
-          <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Total</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ summary.totalShipments }}</p>
+        <article class="vendor-stat-card">
+          <p class="vendor-stat-label">Total</p>
+          <p class="vendor-stat-value">{{ summary.totalShipments }}</p>
         </article>
-        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-sm">
-          <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Open</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ summary.openShipments }}</p>
+        <article class="vendor-stat-card">
+          <p class="vendor-stat-label">Open</p>
+          <p class="vendor-stat-value">{{ summary.openShipments }}</p>
         </article>
-        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-sm">
-          <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Delivered</p>
-          <p class="mt-3 text-3xl font-black text-slate-900">{{ summary.deliveredShipments }}</p>
+        <article class="vendor-stat-card">
+          <p class="vendor-stat-label">Delivered</p>
+          <p class="vendor-stat-value">{{ summary.deliveredShipments }}</p>
         </article>
       </div>
 
@@ -83,7 +83,7 @@ interface ShipmentCardView {
       <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading shipment records...</div>
 
       <div *ngIf="!isLoading && shipments.length === 0" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
-        <h2 class="text-2xl font-black text-slate-900">No shipments yet</h2>
+        <h2 class="vendor-empty-title">No shipments yet</h2>
         <p class="mt-3 text-sm font-medium text-slate-500">
           Shipment records will appear here after payment verification creates them.
         </p>

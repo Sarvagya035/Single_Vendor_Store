@@ -25,9 +25,6 @@ import {
           <div class="max-w-3xl">
             <p class="app-page-eyebrow">Vendor Products</p>
             <h1 class="app-page-title">Product Management Dashboard</h1>
-            <p class="app-page-description">
-              Review your catalog, filter product records quickly, and jump into dedicated view, edit, restock, and variant workflows.
-            </p>
           </div>
 
           <div class="flex flex-wrap gap-3">

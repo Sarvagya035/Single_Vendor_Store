@@ -7,10 +7,10 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="glass-card border-dashed p-16 text-center space-y-6">
+    <div class="vendor-page-shell border-dashed p-16 text-center space-y-6">
       <div class="text-6xl animate-float">🏪</div>
       <div>
-        <h2 class="text-2xl font-black text-slate-900">No active store found</h2>
+        <h2 class="vendor-empty-title">No active store found</h2>
         <p class="mx-auto mt-2 max-w-sm text-slate-500">
           Your account is not currently linked to a store profile.
         </p>

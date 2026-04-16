@@ -26,12 +26,12 @@ import {
   imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent],
   template: `
     <div class="space-y-8">
-      <div class="rounded-[2rem] border border-[#eadfce] bg-[linear-gradient(135deg,#fffaf4_0%,#f6ead6_55%,#fff7ef_100%)] px-6 py-7 shadow-[0_28px_70px_rgba(111,78,55,0.12)] lg:px-8">
+      <div class="vendor-page-hero">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div class="max-w-3xl">
-            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-amber-600">Variant Management</p>
-            <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Manage Variants</h1>
-            <p class="mt-3 text-sm font-medium leading-relaxed text-slate-600">
+            <p class="app-page-eyebrow">Variant Management</p>
+            <h1 class="app-page-title">Manage Variants</h1>
+            <p class="app-page-description">
               Edit product combinations here without mixing inventory-only changes into the product details page.
             </p>
           </div>
@@ -43,27 +43,27 @@ import {
         </div>
       </div>
 
-      <div *ngIf="isLoading" class="glass-card py-20 text-center">
+      <div *ngIf="isLoading" class="vendor-page-shell py-20 text-center">
         <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
         <p class="mt-4 text-sm font-medium text-slate-500">Loading variants...</p>
       </div>
 
       <div *ngIf="!isLoading && product" class="space-y-8">
         <div class="grid gap-4 md:grid-cols-3">
-          <article class="rounded-[1.6rem] border border-slate-200 bg-white px-5 py-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Product</p>
-            <p class="mt-3 text-2xl font-black text-slate-900">{{ product.productName }}</p>
+            <article class="vendor-stat-card">
+            <p class="vendor-stat-label">Product</p>
+            <p class="vendor-stat-value !text-2xl">{{ product.productName }}</p>
             <p class="mt-2 text-sm font-semibold text-slate-500">{{ product.brand || 'Generic' }}</p>
           </article>
-          <article class="rounded-[1.6rem] border border-slate-200 bg-white px-5 py-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Variant Count</p>
-            <p class="mt-3 text-3xl font-black text-slate-900">{{ product.variants?.length || 0 }}</p>
-            <p class="mt-2 text-sm font-medium text-slate-500">Each combination is managed independently here.</p>
+          <article class="vendor-stat-card">
+            <p class="vendor-stat-label">Variant Count</p>
+            <p class="vendor-stat-value">{{ product.variants?.length || 0 }}</p>
+            <p class="vendor-stat-copy">Each combination is managed independently here.</p>
           </article>
-          <article class="rounded-[1.6rem] border border-slate-200 bg-white px-5 py-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Total Stock</p>
-            <p class="mt-3 text-3xl font-black text-slate-900">{{ totalStock }}</p>
-            <p class="mt-2 text-sm font-medium text-slate-500">Combined inventory across all variants.</p>
+          <article class="vendor-stat-card">
+            <p class="vendor-stat-label">Total Stock</p>
+            <p class="vendor-stat-value">{{ totalStock }}</p>
+            <p class="vendor-stat-copy">Combined inventory across all variants.</p>
           </article>
         </div>
 

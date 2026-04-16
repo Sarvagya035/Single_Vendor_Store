@@ -16,7 +16,6 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         <app-page-header
           eyebrow="Orders"
           title="Manage incoming orders"
-          description="Review vendor-assigned orders, update line item statuses, and keep fulfillment moving from one place."
         >
           <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary !py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
