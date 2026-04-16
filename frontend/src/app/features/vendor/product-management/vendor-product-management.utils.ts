@@ -38,7 +38,7 @@ export function flattenCategories(nodes: VendorCategoryRecord[], target: FlatCat
 }
 
 export function categoryOptionLabel(option: FlatCategoryOption): string {
-  return `${'-- '.repeat(option.level)}${option.name}`;
+  return option.name;
 }
 
 export function totalProductStock(product?: VendorProductRecord | null): number {

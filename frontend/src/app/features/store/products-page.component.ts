@@ -791,8 +791,7 @@ export class ProductsPageComponent implements OnInit {
   categoryLabel(category: CustomerLandingCategory): string {
     const level = Number(category.level || 0);
     const indent = level > 0 ? `${'  '.repeat(level)}- ` : '';
-    const typeLabel = level > 0 ? 'Child' : 'Parent';
-    return `${indent}${category.name} (${typeLabel})`;
+    return `${indent}${category.name}`;
   }
 
   private normalizeCategoryKey(value: string): string {

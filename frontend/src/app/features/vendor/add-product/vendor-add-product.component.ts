@@ -43,9 +43,6 @@ interface WizardStep {
           <div class="max-w-3xl">
             <p class="app-page-eyebrow">Vendor Products</p>
             <h1 class="app-page-title">Add Product</h1>
-            <p class="app-page-description">
-              Use a guided workflow so product details, media, option setup, variants, and final review each stay clear and focused.
-            </p>
           </div>
           <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
         </div>
