@@ -105,6 +105,7 @@ interface ProductMessage {
               [createdLabel]="formatDate(product.createdAt)"
               [variantCount]="product.variants?.length || 0"
               [stockLabel]="'' + totalStock(product)"
+              [lowStock]="isLowStock(product)"
               [priceLabel]="formatCurrency(product.basePrice)"
               [statusBusy]="isBusy('status-' + product._id)"
               [deleteBusy]="isBusy('delete-product-' + product._id)"
@@ -776,6 +777,11 @@ export class VendorProductsPanelComponent implements OnInit, OnChanges {
       (total, variant) => total + (variant.productStock || 0),
       0,
     );
+  }
+
+  isLowStock(product: VendorProductRecord): boolean {
+    const stock = this.totalStock(product);
+    return stock > 0 && stock <= 5;
   }
 
   attributeSummary(variant: VendorProductVariant): string {

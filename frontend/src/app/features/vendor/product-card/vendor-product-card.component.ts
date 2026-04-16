@@ -48,6 +48,12 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
           <p class="mt-1 text-sm font-semibold text-slate-700">{{ stockLabel }}</p>
+          <span
+            *ngIf="lowStock"
+            class="mt-2 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800"
+          >
+            Low stock
+          </span>
         </div>
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Start Price</p>
@@ -103,6 +109,7 @@ export class VendorProductCardComponent {
   @Input() createdLabel = '';
   @Input() variantCount = 0;
   @Input() stockLabel = '';
+  @Input() lowStock = false;
   @Input() priceLabel = '';
   @Input() statusBusy = false;
   @Input() deleteBusy = false;

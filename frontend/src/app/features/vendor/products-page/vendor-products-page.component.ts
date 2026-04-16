@@ -244,8 +244,8 @@ import {
                   <a [routerLink]="['/vendor/products', product._id, 'variants']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                     Variants
                   </a>
-                  <button type="button" (click)="deleteProduct(product)" [disabled]="busyDeleteId === product._id" class="block w-full px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-60">
-                    {{ busyDeleteId === product._id ? 'Deleting...' : 'Delete' }}
+                  <button type="button" (click)="openDeleteModal(product)" class="block w-full px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50">
+                    Delete
                   </button>
                 </div>
               </div>
@@ -323,8 +323,8 @@ import {
                   <a [routerLink]="['/vendor/products', product._id, 'variants']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                     Variants
                   </a>
-                  <button type="button" (click)="deleteProduct(product)" [disabled]="busyDeleteId === product._id" class="block w-full px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-60">
-                    {{ busyDeleteId === product._id ? 'Deleting...' : 'Delete' }}
+                  <button type="button" (click)="openDeleteModal(product)" class="block w-full px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50">
+                    Delete
                   </button>
                 </div>
               </div>
@@ -373,6 +373,46 @@ import {
           </div>
         </div>
       </div>
+
+      <div
+        *ngIf="pendingDeleteProduct"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/55 px-4 py-6 backdrop-blur-sm"
+        (click)="closeDeleteModal()"
+      >
+        <div
+          class="w-full max-w-lg rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl"
+          (click)="$event.stopPropagation()"
+        >
+          <p class="text-[11px] font-black uppercase tracking-[0.2em] text-rose-500">Delete product</p>
+          <h3 class="mt-2 text-2xl font-black text-slate-900">Remove "{{ pendingDeleteProduct.productName }}"?</h3>
+          <p class="mt-3 text-sm font-medium leading-relaxed text-slate-600">
+            This will permanently delete the product and all of its variants. The product will no longer appear in your catalog or storefront.
+          </p>
+
+          <div class="mt-5 rounded-[1.4rem] border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+            Please confirm only if you are sure. This action cannot be undone.
+          </div>
+
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              (click)="closeDeleteModal()"
+              [disabled]="busyDeleteId === pendingDeleteProduct._id"
+              class="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              (click)="confirmDeleteProduct()"
+              [disabled]="busyDeleteId === pendingDeleteProduct._id"
+              class="rounded-2xl border border-rose-200 bg-rose-600 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-rose-700 disabled:opacity-60"
+            >
+              {{ busyDeleteId === pendingDeleteProduct._id ? 'Deleting...' : 'Delete Product' }}
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
   `,
 })
@@ -388,6 +428,7 @@ export class VendorProductsPageComponent implements OnInit {
   visiblePages: number[] = [];
   busyDeleteId = '';
   openActionMenuId: string | null = null;
+  pendingDeleteProduct: VendorProductRecord | null = null;
   categoriesTree: VendorCategoryRecord[] = [];
   categoryOptions: FlatCategoryOption[] = [];
   private searchDebounceHandle: ReturnType<typeof setTimeout> | null = null;
@@ -501,12 +542,25 @@ export class VendorProductsPageComponent implements OnInit {
     });
   }
 
-  deleteProduct(product: VendorProductRecord): void {
-    const confirmed = window.confirm(`Delete "${product.productName}" and all of its variants?`);
-    if (!confirmed) {
+  openDeleteModal(product: VendorProductRecord): void {
+    this.closeActionMenu();
+    this.pendingDeleteProduct = product;
+  }
+
+  closeDeleteModal(): void {
+    if (this.busyDeleteId) {
       return;
     }
 
+    this.pendingDeleteProduct = null;
+  }
+
+  confirmDeleteProduct(): void {
+    if (!this.pendingDeleteProduct) {
+      return;
+    }
+
+    const product = this.pendingDeleteProduct;
     this.busyDeleteId = product._id;
     this.vendorService.deleteProduct(product._id).subscribe({
       next: (res) => {
@@ -519,6 +573,7 @@ export class VendorProductsPageComponent implements OnInit {
         this.errorService.showToast('Product deleted successfully.', 'success');
         this.appRefreshService.notify('vendor');
         this.closeActionMenu();
+        this.pendingDeleteProduct = null;
         this.loadVendorProducts(this.currentPage);
       },
       error: (err) => {

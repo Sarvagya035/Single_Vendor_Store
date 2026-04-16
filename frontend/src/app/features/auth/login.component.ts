@@ -18,7 +18,6 @@ import { catchError, finalize, EMPTY } from 'rxjs';
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2 pt-1 sm:pt-2">
         <h2 class="text-4xl font-black text-slate-900 tracking-tight">Login</h2>
-        <p class="text-slate-500 font-medium tracking-wide">Enter your credentials to access your account</p>
       </div>
 
       <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md relative z-10">

@@ -27,9 +27,6 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../.
         <div class="max-w-3xl">
           <p class="app-page-eyebrow">Store Profile</p>
           <h1 class="app-page-title">Vendor profile</h1>
-          <p class="app-page-description">
-            Update your store identity, payout information, and logo from one consistent profile workspace.
-          </p>
         </div>
       </div>
 
