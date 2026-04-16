@@ -75,6 +75,45 @@ import {
         </div>
       </div>
 
+      <div class="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-wrap gap-2">
+          <span
+            *ngIf="searchQuery.trim()"
+            class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
+          >
+            Search: "{{ searchQuery.trim() }}"
+          </span>
+          <span
+            *ngIf="selectedCategory !== 'all'"
+            class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-700"
+          >
+            Category: {{ selectedCategoryLabel }}
+          </span>
+          <span
+            *ngIf="selectedStatus !== 'all'"
+            class="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-black uppercase tracking-[0.16em]"
+            [ngClass]="selectedStatus === 'active' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-50 text-slate-600'"
+          >
+            Status: {{ selectedStatusLabel }}
+          </span>
+          <span
+            *ngIf="hasActiveFilters"
+            class="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-rose-700"
+          >
+            Filters active
+          </span>
+        </div>
+
+        <button
+          *ngIf="hasActiveFilters"
+          type="button"
+          (click)="clearFilters()"
+          class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50"
+        >
+          Reset filters
+        </button>
+      </div>
+
       <div class="grid gap-4 md:grid-cols-3">
         <article class="vendor-stat-card">
           <p class="vendor-stat-label">Total Products</p>
@@ -84,12 +123,12 @@ import {
         <article class="vendor-stat-card">
           <p class="vendor-stat-label">Active Listings</p>
           <p class="vendor-stat-value">{{ activeCount }}</p>
-          <p class="vendor-stat-copy">Products currently visible to customers.</p>
+          <p class="vendor-stat-copy">Products currently visible to customers on this page.</p>
         </article>
         <article class="vendor-stat-card">
-          <p class="vendor-stat-label">Filtered Results</p>
-          <p class="vendor-stat-value">{{ filteredProducts.length }}</p>
-          <p class="vendor-stat-copy">Products matching the current dashboard filters.</p>
+          <p class="vendor-stat-label">Low Stock</p>
+          <p class="vendor-stat-value">{{ lowStockCount }}</p>
+          <p class="vendor-stat-copy">Products with 5 or fewer units left on this page.</p>
         </article>
       </div>
 
@@ -159,7 +198,15 @@ import {
             </div>
 
             <div class="flex items-center text-sm font-black text-slate-900">
-              {{ stockFor(product) }}
+              <span class="inline-flex items-center gap-2">
+                {{ stockFor(product) }}
+                <span
+                  *ngIf="isLowStock(product)"
+                  class="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800"
+                >
+                  Low stock
+                </span>
+              </span>
             </div>
 
             <div class="flex items-center">
@@ -178,20 +225,30 @@ import {
               <a [routerLink]="['/vendor/products', product._id, 'edit']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50">
                 Edit
               </a>
-              <a [routerLink]="['/vendor/products', product._id, 'restock']" class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800 transition hover:bg-amber-100">
-                Restock
-              </a>
-              <a [routerLink]="['/vendor/products', product._id, 'variants']" class="rounded-xl border border-slate-200 bg-slate-900 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-white transition hover:bg-slate-700">
-                Variants
-              </a>
-              <button
-                type="button"
-                (click)="deleteProduct(product)"
-                [disabled]="busyDeleteId === product._id"
-                class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
-              >
-                {{ busyDeleteId === product._id ? 'Deleting...' : 'Delete' }}
-              </button>
+              <div class="relative">
+                <button
+                  type="button"
+                  (click)="toggleActionMenu(product._id)"
+                  class="rounded-xl border border-slate-200 bg-slate-900 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-white transition hover:bg-slate-700"
+                >
+                  More
+                </button>
+
+                <div
+                  *ngIf="openActionMenuId === product._id"
+                  class="absolute right-0 top-full z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                >
+                  <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
+                    Restock
+                  </a>
+                  <a [routerLink]="['/vendor/products', product._id, 'variants']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    Variants
+                  </a>
+                  <button type="button" (click)="deleteProduct(product)" [disabled]="busyDeleteId === product._id" class="block w-full px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-60">
+                    {{ busyDeleteId === product._id ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </div>
             </div>
           </article>
         </div>
@@ -225,7 +282,16 @@ import {
                 <div class="mt-4 grid grid-cols-2 gap-3 text-sm font-semibold text-slate-600">
                   <p><span class="font-black text-slate-900">Category:</span> {{ product.categoryDetails?.name || 'Uncategorized' }}</p>
                   <p><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
-                  <p><span class="font-black text-slate-900">Stock:</span> {{ stockFor(product) }}</p>
+                  <p>
+                    <span class="font-black text-slate-900">Stock:</span>
+                    {{ stockFor(product) }}
+                    <span
+                      *ngIf="isLowStock(product)"
+                      class="ml-2 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800"
+                    >
+                      Low stock
+                    </span>
+                  </p>
                   <p><span class="font-black text-slate-900">Created:</span> {{ createdLabel(product.createdAt) }}</p>
                 </div>
               </div>
@@ -238,20 +304,30 @@ import {
               <a [routerLink]="['/vendor/products', product._id, 'edit']" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
                 Edit
               </a>
-              <a [routerLink]="['/vendor/products', product._id, 'restock']" class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-amber-800">
-                Restock
-              </a>
-              <a [routerLink]="['/vendor/products', product._id, 'variants']" class="rounded-xl border border-slate-900 bg-slate-900 px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-white">
-                Variants
-              </a>
-              <button
-                type="button"
-                (click)="deleteProduct(product)"
-                [disabled]="busyDeleteId === product._id"
-                class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-rose-700 disabled:opacity-60"
-              >
-                {{ busyDeleteId === product._id ? 'Deleting...' : 'Delete' }}
-              </button>
+              <div class="relative col-span-2 sm:col-span-1">
+                <button
+                  type="button"
+                  (click)="toggleActionMenu(product._id)"
+                  class="w-full rounded-xl border border-slate-900 bg-slate-900 px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-white"
+                >
+                  More
+                </button>
+
+                <div
+                  *ngIf="openActionMenuId === product._id"
+                  class="absolute right-0 top-full z-20 mt-2 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                >
+                  <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
+                    Restock
+                  </a>
+                  <a [routerLink]="['/vendor/products', product._id, 'variants']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    Variants
+                  </a>
+                  <button type="button" (click)="deleteProduct(product)" [disabled]="busyDeleteId === product._id" class="block w-full px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-60">
+                    {{ busyDeleteId === product._id ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </div>
             </div>
           </article>
         </div>
@@ -311,6 +387,7 @@ export class VendorProductsPageComponent implements OnInit {
   limit = 10;
   visiblePages: number[] = [];
   busyDeleteId = '';
+  openActionMenuId: string | null = null;
   categoriesTree: VendorCategoryRecord[] = [];
   categoryOptions: FlatCategoryOption[] = [];
   private searchDebounceHandle: ReturnType<typeof setTimeout> | null = null;
@@ -343,6 +420,30 @@ export class VendorProductsPageComponent implements OnInit {
     return this.products.filter((product) => product.isActive !== false).length;
   }
 
+  get lowStockCount(): number {
+    return this.products.filter((product) => this.isLowStock(product)).length;
+  }
+
+  get hasActiveFilters(): boolean {
+    return Boolean(this.searchQuery.trim()) || this.selectedCategory !== 'all' || this.selectedStatus !== 'all';
+  }
+
+  get selectedCategoryLabel(): string {
+    return this.categoryOptions.find((option) => option._id === this.selectedCategory)?.name || 'All categories';
+  }
+
+  get selectedStatusLabel(): string {
+    if (this.selectedStatus === 'active') {
+      return 'Active';
+    }
+
+    if (this.selectedStatus === 'inactive') {
+      return 'Inactive';
+    }
+
+    return 'All statuses';
+  }
+
   onSearchChange(): void {
     if (this.searchDebounceHandle) {
       clearTimeout(this.searchDebounceHandle);
@@ -354,11 +455,21 @@ export class VendorProductsPageComponent implements OnInit {
   }
 
   applyFilters(): void {
+    this.closeActionMenu();
+    this.loadVendorProducts(1);
+  }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.selectedCategory = 'all';
+    this.selectedStatus = 'all';
+    this.closeActionMenu();
     this.loadVendorProducts(1);
   }
 
   loadVendorProducts(page = 1): void {
     this.isLoading = true;
+    this.closeActionMenu();
     const normalizedPage = Math.max(1, page);
 
     this.vendorService.getMyProducts(normalizedPage, this.limit, {
@@ -407,6 +518,7 @@ export class VendorProductsPageComponent implements OnInit {
 
         this.errorService.showToast('Product deleted successfully.', 'success');
         this.appRefreshService.notify('vendor');
+        this.closeActionMenu();
         this.loadVendorProducts(this.currentPage);
       },
       error: (err) => {
@@ -442,6 +554,19 @@ export class VendorProductsPageComponent implements OnInit {
 
   trackByNumber(_: number, value: number): number {
     return value;
+  }
+
+  toggleActionMenu(productId: string): void {
+    this.openActionMenuId = this.openActionMenuId === productId ? null : productId;
+  }
+
+  closeActionMenu(): void {
+    this.openActionMenuId = null;
+  }
+
+  isLowStock(product: VendorProductRecord): boolean {
+    const stock = this.stockFor(product);
+    return stock > 0 && stock <= 5;
   }
 
   private loadCategories(): void {
