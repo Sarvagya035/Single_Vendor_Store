@@ -87,6 +87,29 @@ export interface CustomerCatalogProduct {
   createdAt?: string;
 }
 
+export interface CustomerWishlistProduct {
+  _id?: string;
+  productName?: string;
+  brand?: string;
+  mainImages?: string[];
+  basePrice?: number;
+  variants?: CustomerCatalogVariant[];
+  isActive?: boolean;
+  categoryDetails?: {
+    _id?: string;
+    name?: string;
+    slug?: string;
+  };
+}
+
+export interface CustomerWishlist {
+  _id?: string;
+  owner?: string;
+  products: CustomerWishlistProduct[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface CustomerLandingCategoryGroup {
   categoryName?: string;
   categorySlug?: string;

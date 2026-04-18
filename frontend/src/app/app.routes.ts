@@ -33,6 +33,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'wishlist',
+    loadComponent: () =>
+      import('./features/store/wishlist.component').then((m) => m.WishlistComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'orders/:orderId',
     loadComponent: () =>
       import('./features/store/order-detail.component').then((m) => m.OrderDetailComponent),
@@ -251,6 +257,27 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/vendor/customer-details-page/vendor-customer-details-page.component').then(
                 (m) => m.VendorCustomerDetailsPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'customers/:userId/orders',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/customer-orders-page/vendor-customer-orders-page.component').then(
+                (m) => m.VendorCustomerOrdersPageComponent
+              )
+          },
+          {
+            path: ':orderId',
+            loadComponent: () =>
+              import('./features/vendor/customer-order-detail-page/vendor-customer-order-detail-page.component').then(
+                (m) => m.VendorCustomerOrderDetailPageComponent
               )
           }
         ]

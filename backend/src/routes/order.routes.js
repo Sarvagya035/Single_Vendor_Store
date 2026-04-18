@@ -6,6 +6,7 @@ import {
     getOrderDetails,
     cancelOrder,
     getVendorOrders,
+    getCustomerOrdersForVendor,
     updateOrderStatus,
     getAllOrders
 
@@ -34,6 +35,7 @@ router.route("/shipment/:orderId").get(getShipmentDetails);
 router.route("/shipment/:orderId/sync").post(authorizeRoles("admin"), syncShipmentStatus);
 
 router.route("/vendor-orders").get(authorizeRoles("vendor"), getVendorOrders);
+router.route("/vendor/customer/:customerId").get(authorizeRoles("vendor", "admin"), getCustomerOrdersForVendor);
 router.route("/vendor-update-status/:orderId").put(authorizeRoles("vendor"), updateOrderStatus);
 
 router.route("/admin/all-orders").get(authorizeRoles("vendor"), getAllOrders);

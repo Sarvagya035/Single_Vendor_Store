@@ -10,7 +10,7 @@ import { RouterModule } from '@angular/router';
     <div *ngIf="open" class="border-t border-[#eadcc9] bg-[#fffaf5] animate-in slide-in-from-top duration-200 md:hidden" data-mobile-menu-panel>
       <div class="space-y-2 px-4 pt-2 pb-6">
         <ng-container *ngIf="showPublicNavLinks">
-          <a routerLink="/" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Home</a>
+          <a *ngIf="!loggedIn" routerLink="/" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Home</a>
           <a routerLink="/products" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Products</a>
           <a routerLink="/products" [queryParams]="{ category: 'combos' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Combos</a>
           <a routerLink="/products" [queryParams]="{ category: 'gifting' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Gifting Collection</a>
@@ -33,6 +33,22 @@ import { RouterModule } from '@angular/router';
             class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
           >
             My Orders
+          </a>
+          <a
+            *ngIf="!isAdmin && !isVendor"
+            routerLink="/wishlist"
+            (click)="close.emit()"
+            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+          >
+            My Wishlist
+          </a>
+          <a
+            *ngIf="!isAdmin && !isVendor"
+            routerLink="/addresses"
+            (click)="close.emit()"
+            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+          >
+            My Addresses
           </a>
           <a
             *ngIf="isVendor"

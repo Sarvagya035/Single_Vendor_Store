@@ -2,16 +2,18 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { ErrorService } from '../../core/services/error.service';
 import { ReviewService } from '../../core/services/review.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import {
   CustomerCatalogProduct,
   CustomerCatalogVariant,
-  CustomerLandingCategoryGroup
+  CustomerLandingCategoryGroup,
+  CustomerWishlistProduct
 } from '../../core/models/customer.models';
 import { ProductReview, ProductReviewForm, ProductReviewStat } from '../../core/models/review.models';
 import { ProductGalleryComponent } from './product-gallery/product-gallery.component';
@@ -54,16 +56,19 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                 [priceLabel]="formatCurrency(selectedVariant()?.finalPrice || product.basePrice || 0)"
                 [originalPriceLabel]="originalPriceLabel()"
                 [discountedPriceLabel]="discountedPriceLabel()"
-              [quantity]="quantity"
-              [isAdding]="isAdding"
-              [isBuying]="isBuying"
-              [variantLabels]="variantLabels()"
-              [attributes]="attributeEntries(selectedVariant()?.attributes)"
-              (variantChanged)="onVariantChange($event)"
-              (quantityChanged)="setQuantity($event)"
-              (addToCart)="addToCart()"
-              (buyNow)="buyNow()"
-            />
+                [quantity]="quantity"
+                [isAdding]="isAdding"
+                [isBuying]="isBuying"
+                [isWishlisted]="isWishlisted"
+                [isWishlistBusy]="isWishlistBusy"
+                [variantLabels]="variantLabels()"
+                [attributes]="attributeEntries(selectedVariant()?.attributes)"
+                (variantChanged)="onVariantChange($event)"
+                (quantityChanged)="setQuantity($event)"
+                (addToCart)="addToCart()"
+                (buyNow)="buyNow()"
+                (toggleWishlist)="toggleWishlist()"
+              />
             </div>
           </div>
 
@@ -79,11 +84,32 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </div>
 
             <div *ngIf="relatedProducts.length; else noRelatedProducts" class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              <a
+              <article
                 *ngFor="let related of relatedProducts; trackBy: trackByProductId"
-                [routerLink]="['/products', related._id]"
-                class="group rounded-[1.6rem] border border-[#e7dac9] bg-[#fff7ed]/50 p-4 shadow-[0_16px_40px_rgba(111,78,55,0.05)] transition hover:-translate-y-1 hover:border-[#d4a017] hover:bg-white hover:shadow-[0_24px_60px_rgba(111,78,55,0.1)]"
+                role="link"
+                tabindex="0"
+                (click)="openProduct(related)"
+                (keydown.enter)="openProduct(related)"
+                (keydown.space)="$event.preventDefault(); openProduct(related)"
+                class="group relative rounded-[1.6rem] border border-[#e7dac9] bg-[#fff7ed]/50 p-4 shadow-[0_16px_40px_rgba(111,78,55,0.05)] transition hover:-translate-y-1 hover:border-[#d4a017] hover:bg-white hover:shadow-[0_24px_60px_rgba(111,78,55,0.1)]"
               >
+                <button
+                  type="button"
+                  class="absolute right-4 top-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600"
+                  [disabled]="wishlistBusyId === related._id"
+                  [attr.aria-label]="isWishlistedProduct(related) ? 'Remove from wishlist' : 'Save to wishlist'"
+                  (click)="$event.stopPropagation(); toggleRelatedWishlist(related)"
+                  [ngClass]="isWishlistedProduct(related) ? 'border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-[0_14px_28px_rgba(244,63,94,0.24)] ring-rose-100' : ''"
+                >
+                  <svg *ngIf="wishlistBusyId !== related._id && !isWishlistedProduct(related)" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
+                  </svg>
+                  <svg *ngIf="wishlistBusyId !== related._id && isWishlistedProduct(related)" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+                    <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
+                  </svg>
+                  <span *ngIf="wishlistBusyId === related._id" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
+                </button>
+
                 <div class="aspect-square overflow-hidden rounded-[1.25rem] border border-[#e7dac9] bg-white">
                   <img
                     [src]="productImage(related)"
@@ -111,7 +137,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                     {{ related.categoryDetails?.name || 'Dry fruits & nuts' }}
                   </p>
                 </div>
-              </a>
+              </article>
             </div>
             <ng-template #noRelatedProducts>
               <div class="mt-6 rounded-[1.4rem] border border-dashed border-[#e7dac9] bg-[#fff7ed] px-6 py-10 text-center">
@@ -318,6 +344,7 @@ export class ProductDetailComponent implements OnInit {
   user: any = null;
   product: CustomerCatalogProduct | null = null;
   relatedProducts: CustomerCatalogProduct[] = [];
+  wishlistedProductIds = new Set<string>();
   loading = false;
   successMessage = '';
   selectedVariantId = '';
@@ -325,6 +352,9 @@ export class ProductDetailComponent implements OnInit {
   quantity = 1;
   isAdding = false;
   isBuying = false;
+  isWishlisted = false;
+  wishlistBusyId = '';
+  isWishlistBusy = false;
   reviews: ProductReview[] = [];
   reviewStats: ProductReviewStat[] = [];
   isSubmittingReview = false;
@@ -346,6 +376,7 @@ export class ProductDetailComponent implements OnInit {
     private cartService: CartService,
     private catalogService: CatalogService,
     private errorService: ErrorService,
+    private wishlistService: WishlistService,
     private reviewService: ReviewService,
     private route: ActivatedRoute,
     private router: Router
@@ -354,6 +385,15 @@ export class ProductDetailComponent implements OnInit {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.user = user;
+      if (this.isCustomer()) {
+        this.loadWishlistState();
+      } else {
+        this.wishlistedProductIds = new Set<string>();
+        this.isWishlisted = false;
+      }
+      if (this.product?._id) {
+        this.syncWishlistState(this.product._id);
+      }
     });
 
     this.authService.getCurrentUser().subscribe({
@@ -400,9 +440,10 @@ export class ProductDetailComponent implements OnInit {
       catalogProducts: this.catalogService.getCatalogProducts(1, 1000),
       landingProducts: this.catalogService.getLandingPageProducts(),
       reviews: this.reviewService.getProductReviews(productId),
-      reviewStats: this.reviewService.getReviewStats(productId)
+      reviewStats: this.reviewService.getReviewStats(productId),
+      wishlist: this.isCustomer() ? this.wishlistService.getWishlist() : of(null)
     }).subscribe({
-      next: ({ productResponse, catalogProducts, landingProducts, reviews, reviewStats }) => {
+      next: ({ productResponse, catalogProducts, landingProducts, reviews, reviewStats, wishlist }) => {
         this.loading = false;
         this.product = productResponse?.data || null;
         this.reviews = reviews;
@@ -414,6 +455,7 @@ export class ProductDetailComponent implements OnInit {
         const initialVariant = this.product?.displayVariant || this.product?.variants?.[0];
         this.selectedVariantId = initialVariant?._id || '';
         this.selectedImage = this.activeImage();
+        this.syncWishlistState(this.product?._id, wishlist);
         this.resetReviewForm();
       },
       error: (error) => {
@@ -450,6 +492,14 @@ export class ProductDetailComponent implements OnInit {
       product.mainImages?.[0] ||
       'https://via.placeholder.com/640x480?text=Product'
     );
+  }
+
+  openProduct(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    this.router.navigate(['/products', product._id]);
   }
 
   activeImage(): string {
@@ -529,6 +579,75 @@ export class ProductDetailComponent implements OnInit {
         this.isBuying = false;
       }
     });
+  }
+
+  toggleWishlist(): void {
+    if (!this.product?._id) {
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    this.isWishlistBusy = true;
+    this.wishlistService.toggleWishlist(this.product._id).subscribe({
+      next: (wishlist) => {
+        this.isWishlistBusy = false;
+        this.syncWishlistState(this.product?._id, wishlist);
+        this.errorService.showToast(
+          this.isWishlisted ? 'Saved to wishlist.' : 'Removed from wishlist.',
+          'success'
+        );
+      },
+      error: () => {
+        this.isWishlistBusy = false;
+      }
+    });
+  }
+
+  toggleRelatedWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    if (this.wishlistBusyId === product._id) {
+      return;
+    }
+
+    this.wishlistBusyId = product._id;
+    this.wishlistService.toggleWishlist(product._id).subscribe({
+      next: (wishlist) => {
+        this.wishlistBusyId = '';
+        this.syncWishlistSet(wishlist?.products || []);
+        this.errorService.showToast(
+          this.isWishlistedProduct(product) ? 'Saved to wishlist.' : 'Removed from wishlist.',
+          'success'
+        );
+      },
+      error: () => {
+        this.wishlistBusyId = '';
+        this.errorService.showToast('Unable to update wishlist right now.', 'error');
+      }
+    });
+  }
+
+  isWishlistedProduct(product: CustomerCatalogProduct): boolean {
+    return !!product?._id && this.wishlistedProductIds.has(product._id);
   }
 
   variantLabel(variant?: CustomerCatalogVariant): string {
@@ -759,6 +878,54 @@ export class ProductDetailComponent implements OnInit {
     if (this.reviewImagesInput?.nativeElement) {
       this.reviewImagesInput.nativeElement.value = '';
     }
+  }
+
+  private syncWishlistState(productId?: string, wishlist?: { products?: CustomerWishlistProduct[] } | null): void {
+    if (!productId || !this.isCustomer()) {
+      this.isWishlisted = false;
+      return;
+    }
+
+    if (wishlist !== undefined && wishlist !== null) {
+      const wishlistProducts = Array.isArray(wishlist.products) ? wishlist.products : [];
+      this.syncWishlistSet(wishlistProducts);
+      this.isWishlisted = this.wishlistedProductIds.has(productId);
+      return;
+    }
+
+    this.wishlistService.getWishlist().subscribe({
+      next: (response) => {
+        const wishlistProducts = Array.isArray(response?.products) ? response.products : [];
+        this.syncWishlistSet(wishlistProducts);
+        this.isWishlisted = this.wishlistedProductIds.has(productId);
+      },
+      error: () => {
+        this.isWishlisted = false;
+      }
+    });
+  }
+
+  private loadWishlistState(): void {
+    this.wishlistService.getWishlist().subscribe({
+      next: (wishlist) => {
+        this.syncWishlistSet(wishlist?.products || []);
+        if (this.product?._id) {
+          this.isWishlisted = this.wishlistedProductIds.has(this.product._id);
+        }
+      },
+      error: () => {
+        this.wishlistedProductIds = new Set<string>();
+        this.isWishlisted = false;
+      }
+    });
+  }
+
+  private syncWishlistSet(products: CustomerWishlistProduct[]): void {
+    this.wishlistedProductIds = new Set(
+      (products || [])
+        .map((item) => item?._id)
+        .filter((id): id is string => !!id)
+    );
   }
 
   private findSimilarProducts(

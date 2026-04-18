@@ -86,6 +86,22 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
           </div>
         </div>
 
+        <button
+          type="button"
+          class="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3.5 text-sm font-black uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-60"
+          [disabled]="isWishlistBusy"
+          [ngClass]="isWishlisted ? 'border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-[0_14px_28px_rgba(244,63,94,0.20)] hover:from-rose-500 hover:to-rose-700' : 'border-slate-200 bg-white text-slate-700 hover:border-amber-200 hover:bg-slate-50'"
+          (click)="toggleWishlist.emit()"
+        >
+          <svg *ngIf="!isWishlisted" viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
+          </svg>
+          <svg *ngIf="isWishlisted" viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor" aria-hidden="true">
+            <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
+          </svg>
+          {{ isWishlistBusy ? 'Updating...' : isWishlisted ? 'Saved to Wishlist' : 'Save to Wishlist' }}
+        </button>
+
         <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
           <div class="flex w-full items-center rounded-xl border border-slate-200 bg-slate-50 sm:max-w-[140px]">
             <button
@@ -147,6 +163,8 @@ export class ProductPurchasePanelComponent {
   @Input() quantity = 1;
   @Input() isAdding = false;
   @Input() isBuying = false;
+  @Input() isWishlisted = false;
+  @Input() isWishlistBusy = false;
   @Input() variantLabels: Record<string, string> = {};
   @Input() attributes: Array<{ key: string; value: string }> = [];
 
@@ -154,6 +172,7 @@ export class ProductPurchasePanelComponent {
   @Output() quantityChanged = new EventEmitter<number | string>();
   @Output() addToCart = new EventEmitter<void>();
   @Output() buyNow = new EventEmitter<void>();
+  @Output() toggleWishlist = new EventEmitter<void>();
 
   get showVariantSelector(): boolean {
     return this.variants.length > 1;

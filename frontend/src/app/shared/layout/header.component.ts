@@ -42,7 +42,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
           <div class="hidden items-center space-x-6 md:flex">
             <ng-container *ngIf="showPublicNavLinks()">
-              <a routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
+              <a *ngIf="!isCustomer()" routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
               <a routerLink="/products" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Products</a>
               <a routerLink="/products" [queryParams]="{ category: 'combos' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Combos</a>
               <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
@@ -183,6 +183,7 @@ export class HeaderComponent implements OnInit {
   readonly customerMenuItems: HeaderDropdownItem[] = [
     { label: 'Profile', route: '/profile' },
     { label: 'My Orders', route: '/orders' },
+    { label: 'My Wishlist', route: '/wishlist' },
     { label: 'My Addresses', route: '/addresses' },
     { label: 'Logout', action: 'logout', tone: 'danger' }
   ];

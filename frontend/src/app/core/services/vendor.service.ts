@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CustomerUser } from '../models/customer.models';
+import { CustomerUser, CustomerWishlist } from '../models/customer.models';
+import { OrderRecord } from '../models/order.models';
 import {
   AdminShipmentUpdatePayload,
   OrderReportRequest,
@@ -19,6 +20,8 @@ export class VendorService {
   private adminUrl = `${environment.apiUrl}/admin`;
   private productUrl = `${environment.apiUrl}/product`;
   private categoryUrl = `${environment.apiUrl}/category`;
+  private orderUrl = `${environment.apiUrl}/orders`;
+  private wishlistUrl = `${environment.apiUrl}/wishlist`;
 
   constructor(private http: HttpClient) { }
 
@@ -186,6 +189,18 @@ export class VendorService {
     );
   }
 
+  getCustomerOrderHistory(customerId: string): Observable<OrderRecord[]> {
+    return this.http
+      .get<any>(`${this.orderUrl}/vendor/customer/${customerId}`, { withCredentials: true })
+      .pipe(map((response) => (Array.isArray(response?.data) ? response.data : [])));
+  }
+
+  getCustomerWishlist(customerId: string): Observable<CustomerWishlist> {
+    return this.http
+      .get<any>(`${this.wishlistUrl}/vendor/customer/${customerId}`, { withCredentials: true })
+      .pipe(map((response) => this.normalizeWishlist(response?.data)));
+  }
+
   getVendorAnalytics(): Observable<VendorAnalyticsPayload> {
     return this.http
       .get<any>(`${this.adminUrl}/analytics`, { withCredentials: true })
@@ -269,6 +284,16 @@ export class VendorService {
     const hasRestrictedRole = roles.some((role) => role === 'vendor' || role === 'admin');
 
     return hasCustomer && !hasRestrictedRole;
+  }
+
+  private normalizeWishlist(payload: any): CustomerWishlist {
+    return {
+      _id: payload?._id,
+      owner: payload?.owner,
+      products: Array.isArray(payload?.products) ? payload.products : [],
+      createdAt: payload?.createdAt,
+      updatedAt: payload?.updatedAt
+    };
   }
 
   private toTimestamp(value?: string): number {

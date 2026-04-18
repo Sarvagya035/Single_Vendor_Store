@@ -61,6 +61,12 @@ export class OrderService {
       .pipe(map((response) => this.normalizeOrderList(response?.data)));
   }
 
+  getVendorCustomerOrders(customerId: string): Observable<OrderRecord[]> {
+    return this.api
+      .get<any>(`${this.orderUrl}/vendor/customer/${customerId}`)
+      .pipe(map((response) => this.normalizeOrderList(response?.data)));
+  }
+
   updateVendorOrderStatus(orderId: string, orderItemId: string, status: string): Observable<any> {
     return this.api.put(
       `${this.orderUrl}/vendor-update-status/${orderId}`,

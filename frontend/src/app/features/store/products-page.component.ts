@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogService } from '../../core/services/catalog.service';
+import { ErrorService } from '../../core/services/error.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
+import { WishlistService } from '../../core/services/wishlist.service';
 
 interface LandingCategoryNode extends CustomerLandingCategory {
   children: LandingCategoryNode[];
@@ -256,11 +258,32 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 </div>
 
                 <div *ngIf="displayProducts().length > 0" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  <a
+                  <article
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
-                    [routerLink]="['/products', product._id]"
-                    class="group rounded-[1.8rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
+                    role="link"
+                    tabindex="0"
+                    (click)="openProduct(product)"
+                    (keydown.enter)="openProduct(product)"
+                    (keydown.space)="$event.preventDefault(); openProduct(product)"
+                    class="group relative rounded-[1.8rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
                   >
+                    <button
+                      type="button"
+                      class="absolute right-4 top-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600"
+                      [disabled]="wishlistBusyId === product._id"
+                      [attr.aria-label]="isWishlisted(product) ? 'Remove from wishlist' : 'Save to wishlist'"
+                      (click)="$event.stopPropagation(); toggleWishlist(product)"
+                      [ngClass]="isWishlisted(product) ? 'border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-[0_14px_28px_rgba(244,63,94,0.24)] ring-rose-100' : ''"
+                    >
+                      <svg *ngIf="wishlistBusyId !== product._id && !isWishlisted(product)" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
+                      </svg>
+                      <svg *ngIf="wishlistBusyId !== product._id && isWishlisted(product)" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+                        <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
+                      </svg>
+                      <span *ngIf="wishlistBusyId === product._id" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
+                    </button>
+
                     <div class="aspect-square overflow-hidden rounded-[1.3rem] border border-slate-200 bg-slate-100">
                       <img
                         [src]="productImage(product)"
@@ -306,7 +329,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                         </span>
                       </div>
                     </div>
-                  </a>
+                  </article>
                 </div>
 
                 <div *ngIf="displayProducts().length > pageSize" class="mt-6 flex flex-col gap-4 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -405,6 +428,8 @@ export class ProductsPageComponent implements OnInit {
   searchQuery = '';
   loadingProducts = false;
   products: CustomerCatalogProduct[] = [];
+  wishlistedProductIds = new Set<string>();
+  wishlistBusyId = '';
   landingCategories: CustomerLandingCategoryGroup[] = [];
   catalogCategories: CustomerLandingCategory[] = [];
   sidebarCategories: CustomerLandingCategory[] = [];
@@ -447,12 +472,20 @@ export class ProductsPageComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private catalogService: CatalogService,
-    private route: ActivatedRoute
+    private errorService: ErrorService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private wishlistService: WishlistService
   ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.user = user;
+      if (this.isCustomer()) {
+        this.loadWishlistState();
+      } else {
+        this.wishlistedProductIds = new Set<string>();
+      }
     });
 
     this.authService.ensureCurrentUser().subscribe({
@@ -498,6 +531,14 @@ export class ProductsPageComponent implements OnInit {
 
   isCustomer(): boolean {
     return !!this.user && !this.isAdmin() && !this.isVendor();
+  }
+
+  openProduct(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    this.router.navigate(['/products', product._id]);
   }
 
   searchProducts(): void {
@@ -616,6 +657,41 @@ export class ProductsPageComponent implements OnInit {
       currency: 'INR',
       maximumFractionDigits: 0
     }).format(amount || 0);
+  }
+
+  isWishlisted(product: CustomerCatalogProduct): boolean {
+    return !!product?._id && this.wishlistedProductIds.has(product._id);
+  }
+
+  toggleWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+
+    if (this.wishlistBusyId === product._id) {
+      return;
+    }
+
+    this.wishlistBusyId = product._id;
+    this.wishlistService.toggleWishlist(product._id).subscribe({
+      next: (wishlist) => {
+        this.wishlistBusyId = '';
+        this.syncWishlistSet(wishlist?.products || []);
+        this.errorService.showToast(
+          this.wishlistedProductIds.has(product._id) ? 'Saved to wishlist.' : 'Removed from wishlist.',
+          'success'
+        );
+      },
+      error: (error) => {
+        this.wishlistBusyId = '';
+        this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
+      }
+    });
   }
 
   productOriginalPrice(product: CustomerCatalogProduct): string {
@@ -1002,6 +1078,25 @@ export class ProductsPageComponent implements OnInit {
 
   private normalizeCatalogKey(value: string): string {
     return String(value || '').trim().toLowerCase();
+  }
+
+  private loadWishlistState(): void {
+    this.wishlistService.getWishlist().subscribe({
+      next: (wishlist) => {
+        this.syncWishlistSet(wishlist?.products || []);
+      },
+      error: () => {
+        this.wishlistedProductIds = new Set<string>();
+      }
+    });
+  }
+
+  private syncWishlistSet(products: { _id?: string }[]): void {
+    this.wishlistedProductIds = new Set(
+      (products || [])
+        .map((item) => item?._id)
+        .filter((id): id is string => !!id)
+    );
   }
 
   private toTimestamp(value?: string): number {

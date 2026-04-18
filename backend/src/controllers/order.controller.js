@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Order } from "../models/order.model.js";
 import { Product } from "../models/product.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -381,6 +382,22 @@ const getVendorOrders = asyncHandler(async (req, res) => {
     );
 });
 
+const getCustomerOrdersForVendor = asyncHandler(async (req, res) => {
+    const { customerId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(customerId)) {
+        throw new ApiError(400, "Invalid customer id");
+    }
+
+    const orders = await Order.find({ user: customerId })
+        .populate("user", "fullName username email")
+        .sort("-createdAt");
+
+    return res.status(200).json(
+        new ApiResponse(200, orders, "Customer order history fetched successfully")
+    );
+});
+
 // Get every single order (For Admin Dashboard)
 const getAllOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find().populate("user", "fullName email").sort("-createdAt");
@@ -403,6 +420,7 @@ export {
     getOrderDetails,
     cancelOrder,
     getVendorOrders,
+    getCustomerOrdersForVendor,
     getAllOrders,
     
 }

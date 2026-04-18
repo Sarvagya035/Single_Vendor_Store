@@ -1,13 +1,14 @@
 import { Router } from "express";
-import { toggleWishlist, getUserWishlist } from "../controllers/wishlist.controller.js";
+import { toggleWishlist, getUserWishlist, getCustomerWishlistForVendor } from "../controllers/wishlist.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { authorizeRoles } from "../middlewares/authorization.middleware.js";
 
 const router = Router();
 
-// Secure all routes
 router.use(verifyJWT);
 
-router.route("/get-wishlist").get(getUserWishlist);
-router.route("/toggle/:productId").post(toggleWishlist);
+router.route("/get-wishlist").get(authorizeRoles("customer"), getUserWishlist);
+router.route("/toggle/:productId").post(authorizeRoles("customer"), toggleWishlist);
+router.route("/vendor/customer/:customerId").get(authorizeRoles("vendor", "admin"), getCustomerWishlistForVendor);
 
 export default router;
