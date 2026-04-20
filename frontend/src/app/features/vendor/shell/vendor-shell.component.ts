@@ -88,6 +88,10 @@ export class VendorShellComponent implements OnInit {
       return 'profile';
     }
 
+    if (this.router.url.includes('/vendor/best-selling-products')) {
+      return 'best-selling-products';
+    }
+
     if (this.router.url.includes('/vendor/orders')) {
       return 'orders';
     }

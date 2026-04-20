@@ -50,6 +50,7 @@ interface DashboardProduct {
             <div class="flex flex-wrap gap-3">
               <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
               <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Manage Products</a>
+              <a routerLink="/vendor/best-selling-products" class="btn-secondary !px-6 !py-3">Best Sellers</a>
             </div>
           </div>
         </div>
@@ -250,6 +251,9 @@ interface DashboardProduct {
                 </div>
                 <p class="mt-3 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
               </article>
+              <a routerLink="/vendor/best-selling-products" class="mt-4 inline-flex rounded-2xl border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50">
+                View full best sellers
+              </a>
             </div>
           </div>
         </section>

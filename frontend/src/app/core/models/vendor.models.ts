@@ -13,7 +13,15 @@ export interface VendorProfile {
 
 export type ToastType = 'success' | 'error';
 
-export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories' | 'customers' | 'shipments';
+export type VendorDashboardView =
+  | 'dashboard'
+  | 'profile'
+  | 'products'
+  | 'orders'
+  | 'categories'
+  | 'customers'
+  | 'shipments'
+  | 'best-selling-products';
 export type ReportRange = 'weekly' | 'monthly' | 'custom';
 export type ReportFormat = 'csv' | 'pdf';
 

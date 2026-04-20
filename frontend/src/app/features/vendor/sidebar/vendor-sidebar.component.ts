@@ -31,6 +31,21 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
           </a>
 
           <a
+            routerLink="/vendor/best-selling-products"
+            class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
+            [ngClass]="activeView === 'best-selling-products' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="mt-1 text-base font-black">Best Sellers</p>
+              </div>
+              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'best-selling-products' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
+                Hot
+              </span>
+            </div>
+          </a>
+
+          <a
             routerLink="/vendor/products"
             class="block w-full rounded-xl border px-4 py-3 text-left transition-all"
             [ngClass]="activeView === 'products' ? 'border-amber-200 bg-amber-50 text-amber-800 shadow-sm' : 'border-transparent bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50'"

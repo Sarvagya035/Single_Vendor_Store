@@ -220,6 +220,20 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'best-selling-products',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/best-selling-products-page/vendor-best-selling-products-page.component').then(
+                (m) => m.VendorBestSellingProductsPageComponent
+              )
+          }
+        ]
+      },
+      {
         path: 'categories',
         loadComponent: () =>
           import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),

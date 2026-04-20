@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { CustomerUser, CustomerWishlist, CustomerWishlistProduct } from '../../../core/models/customer.models';
 import { OrderRecord } from '../../../core/models/order.models';
+import { VendorProductRecord } from '../../../core/models/vendor.models';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 
@@ -104,6 +105,74 @@ import { VendorService } from '../../../core/services/vendor.service';
             </div>
           </section>
         </div>
+
+        <section *ngIf="loadingProduct || selectedProduct" class="vendor-page-shell p-6 lg:p-8">
+          <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="vendor-stat-label">Product Preview</p>
+              <h2 class="vendor-panel-title mt-2">Open product here</h2>
+            </div>
+            <button
+              *ngIf="selectedProduct"
+              type="button"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50"
+              (click)="closeProductPreview()"
+            >
+              Close preview
+            </button>
+          </div>
+
+          <div *ngIf="loadingProduct" class="py-8 text-sm font-semibold text-slate-500">
+            Loading product preview...
+          </div>
+
+          <div *ngIf="selectedProduct" class="mt-5 grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <div class="overflow-hidden rounded-[1.8rem] border border-slate-200 bg-slate-50">
+              <img
+                [src]="selectedProduct.mainImages?.[0] || 'https://via.placeholder.com/720x720?text=Product'"
+                [alt]="selectedProduct.productName || 'Product preview'"
+                class="h-full w-full object-cover"
+              />
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex flex-wrap items-center gap-3">
+                <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
+                  {{ selectedProduct.brand || 'Product' }}
+                </p>
+                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-slate-900">
+                  {{ formatCurrency(selectedProduct.basePrice || 0) }}
+                </span>
+                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]" [ngClass]="selectedProduct.isActive === false ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700'">
+                  {{ selectedProduct.isActive === false ? 'Inactive' : 'Active' }}
+                </span>
+              </div>
+
+              <h3 class="text-2xl font-black text-slate-900">
+                {{ selectedProduct.productName || 'Product' }}
+              </h3>
+
+              <p class="max-w-3xl text-sm font-medium leading-7 text-slate-500">
+                {{ selectedProduct.productDescription || 'No product description available.' }}
+              </p>
+
+              <div class="grid gap-4 sm:grid-cols-3">
+                <article class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Category</p>
+                  <p class="mt-2 text-sm font-black text-slate-900">{{ selectedProduct.categoryDetails?.name || 'General Category' }}</p>
+                </article>
+                <article class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Variants</p>
+                  <p class="mt-2 text-sm font-black text-slate-900">{{ (selectedProduct.variants || []).length }} variant{{ (selectedProduct.variants || []).length === 1 ? '' : 's' }}</p>
+                </article>
+                <article class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
+                  <p class="mt-2 text-sm font-black text-slate-900">{{ totalStock(selectedProduct) }} units</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section class="vendor-page-shell p-6 lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
@@ -240,7 +309,7 @@ import { VendorService } from '../../../core/services/vendor.service';
                 <button
                   type="button"
                   class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800 transition hover:bg-amber-100"
-                  (click)="openProduct(item)"
+                  (click)="openProductById(item._id)"
                 >
                   View product
                 </button>
@@ -267,6 +336,8 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
   isLoading = true;
   loadingOrders = false;
   loadingWishlist = false;
+  loadingProduct = false;
+  selectedProduct: VendorProductRecord | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -333,11 +404,11 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
   }
 
   openProduct(item: CustomerWishlistProduct): void {
-    if (!item._id) {
+    if (!item?._id) {
       return;
     }
 
-    this.router.navigate(['/vendor/products', item._id, 'view']);
+    this.openProductById(item._id);
   }
 
   openProductById(productId?: string): void {
@@ -345,7 +416,23 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
       return;
     }
 
-    this.router.navigate(['/vendor/products', productId, 'view']);
+    this.loadingProduct = true;
+    this.vendorService.getProductById(productId).subscribe({
+      next: (response) => {
+        this.selectedProduct = this.normalizeProduct(response?.data);
+        this.loadingProduct = false;
+      },
+      error: () => {
+        this.loadingProduct = false;
+        this.selectedProduct = null;
+        this.errorService.showToast('Unable to load product preview.', 'error');
+      }
+    });
+  }
+
+  closeProductPreview(): void {
+    this.selectedProduct = null;
+    this.loadingProduct = false;
   }
 
   viewCustomerOrderHistory(): void {
@@ -498,6 +585,47 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
 
   trackByFrequentItem(_: number, item: FrequentItemSummary): string {
     return item.productId || item.name;
+  }
+
+  totalStock(product: VendorProductRecord | null): number {
+    if (!product?.variants?.length) {
+      return 0;
+    }
+
+    return product.variants.reduce((sum, variant) => sum + Number(variant.productStock || 0), 0);
+  }
+
+  private normalizeProduct(payload: any): VendorProductRecord | null {
+    if (!payload || typeof payload !== 'object') {
+      return null;
+    }
+
+    return {
+      _id: payload._id,
+      productName: payload.productName,
+      productDescription: payload.productDescription,
+      brand: payload.brand,
+      category: payload.category,
+      basePrice: Number(payload.basePrice || 0),
+      mainImages: Array.isArray(payload.mainImages) ? payload.mainImages : [],
+      variantOptions: Array.isArray(payload.variantOptions) ? payload.variantOptions : [],
+      variants: Array.isArray(payload.variants)
+        ? payload.variants.map((variant: any) => ({
+            _id: variant?._id,
+            attributes: variant?.attributes || {},
+            productPrice: Number(variant?.productPrice || 0),
+            discountPercentage: Number(variant?.discountPercentage || 0),
+            finalPrice: Number(variant?.finalPrice || 0),
+            productStock: Number(variant?.productStock || 0),
+            isAvailable: Boolean(variant?.isAvailable),
+            sku: variant?.sku,
+            variantImage: variant?.variantImage
+          }))
+        : [],
+      isActive: payload.isActive,
+      categoryDetails: payload.categoryDetails,
+      createdAt: payload.createdAt
+    };
   }
 
   private toTimestamp(value?: string): number {
