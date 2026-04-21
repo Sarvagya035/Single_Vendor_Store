@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   VendorProductRecord,
   VendorProductVariant,
@@ -24,124 +25,124 @@ import {
 @Component({
   selector: 'app-vendor-manage-variants-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent],
   template: `
-    <div class="space-y-8">
-      <div class="vendor-page-hero">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div class="max-w-3xl">
-            <p class="app-page-eyebrow">Variant Management</p>
-            <h1 class="app-page-title">Manage Variants</h1>
-            <p class="app-page-description">
-              Edit product combinations here without mixing inventory-only changes into the product details page.
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-3">
+    <section class="space-y-6">
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Variant Management"
+            title="Manage Variants"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            description="Edit product combinations here without mixing inventory-only changes into the product details page."
+          >
             <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
             <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary !px-6 !py-3">Edit Product</a>
             <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary !px-6 !py-3">Restock</a>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="isLoading" class="vendor-page-shell py-20 text-center">
-        <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
-        <p class="mt-4 text-sm font-medium text-slate-500">Loading variants...</p>
-      </div>
-
-      <div *ngIf="!isLoading && product" class="space-y-8">
-        <div class="grid gap-4 md:grid-cols-3">
-            <article class="vendor-stat-card">
-            <p class="vendor-stat-label">Product</p>
-            <p class="vendor-stat-value !text-2xl">{{ product.productName }}</p>
-            <p class="mt-2 text-sm font-semibold text-slate-500">{{ product.brand || 'Generic' }}</p>
-          </article>
-          <article class="vendor-stat-card">
-            <p class="vendor-stat-label">Variant Count</p>
-            <p class="vendor-stat-value">{{ product.variants?.length || 0 }}</p>
-            <p class="vendor-stat-copy">Each combination is managed independently here.</p>
-          </article>
-          <article class="vendor-stat-card">
-            <p class="vendor-stat-label">Total Stock</p>
-            <p class="vendor-stat-value">{{ totalStock }}</p>
-            <p class="vendor-stat-copy">Combined inventory across all variants.</p>
-          </article>
+          </app-page-header>
         </div>
 
-        <app-vendor-form-section eyebrow="Add Variant" title="Create a new variant">
-          <div class="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.75fr))_auto]">
-            <input [(ngModel)]="newVariant.attributesText" name="new-attributes" placeholder="Weight:500g, Type:Roasted" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-            <input type="number" [(ngModel)]="newVariant.productPrice" name="new-price" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-            <input type="number" [(ngModel)]="newVariant.discountPercentage" name="new-discount" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-            <input type="number" [(ngModel)]="newVariant.productStock" name="new-stock" min="0" placeholder="Stock" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-            <label class="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
-              {{ newVariant.imageFile?.name || 'Upload image' }}
-              <input type="file" accept="image/*" class="hidden" (change)="onNewVariantImageSelected($event)" />
-            </label>
-          </div>
-          <button type="button" (click)="addVariant()" [disabled]="isAddingVariant" class="btn-primary mt-5 !px-6 !py-3 disabled:opacity-60">
-            {{ isAddingVariant ? 'Adding Variant...' : 'Add Variant' }}
-          </button>
-        </app-vendor-form-section>
+        <div *ngIf="isLoading" class="px-6 py-20 text-center">
+          <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
+          <p class="mt-4 text-sm font-medium text-slate-500">Loading variants...</p>
+        </div>
 
-        <app-vendor-form-section eyebrow="Variant Cards" title="Edit existing variants">
-          <div *ngIf="!(product.variants?.length)" class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm font-medium text-slate-500">
-            No variants exist for this product yet.
-          </div>
+        <div *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+          <div class="grid gap-6">
+            <div class="grid gap-4 md:grid-cols-3">
+              <article class="vendor-stat-card">
+                <p class="vendor-stat-label">Product</p>
+                <p class="vendor-stat-value !text-2xl">{{ product.productName }}</p>
+                <p class="mt-2 text-sm font-semibold text-slate-500">{{ product.brand || 'Generic' }}</p>
+              </article>
+              <article class="vendor-stat-card">
+                <p class="vendor-stat-label">Variant Count</p>
+                <p class="vendor-stat-value">{{ product.variants?.length || 0 }}</p>
+                <p class="vendor-stat-copy">Each combination is managed independently here.</p>
+              </article>
+              <article class="vendor-stat-card">
+                <p class="vendor-stat-label">Total Stock</p>
+                <p class="vendor-stat-value">{{ totalStock }}</p>
+                <p class="vendor-stat-copy">Combined inventory across all variants.</p>
+              </article>
+            </div>
 
-          <div class="grid gap-5 xl:grid-cols-2" *ngIf="product.variants?.length">
-            <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.6rem] border border-slate-200 bg-slate-50/70 p-5">
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex min-w-0 items-center gap-4">
-                  <div class="h-16 w-16 overflow-hidden rounded-2xl bg-slate-100">
-                    <img *ngIf="variant.variantImage" [src]="variant.variantImage" [alt]="variant.sku || 'Variant'" class="h-full w-full object-cover" />
-                    <img *ngIf="!variant.variantImage && productImageUrl" [src]="productImageUrl" [alt]="product.productName || 'Product'" class="h-full w-full object-cover opacity-80" />
-                  </div>
-                  <div class="min-w-0">
-                    <h3 class="truncate text-lg font-black text-slate-900">{{ variantAttributeSummaryLabel(variant) }}</h3>
-                    <p class="mt-1 text-sm font-semibold text-slate-500">{{ variant.sku || 'SKU pending' }}</p>
-                  </div>
-                </div>
-                <button type="button" (click)="deleteVariant(variant)" [disabled]="busyDeleteId === variant._id" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-rose-700 disabled:opacity-60">
-                  {{ busyDeleteId === variant._id ? 'Deleting...' : 'Delete' }}
-                </button>
-              </div>
-
-              <div class="mt-5 grid gap-4">
-                <input [(ngModel)]="variantForms[variant._id || ''].attributesText" [name]="'attributes-' + (variant._id || '')" placeholder="Attributes" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-
-                <div class="grid gap-4 sm:grid-cols-2">
-                  <input type="number" [(ngModel)]="variantForms[variant._id || ''].productPrice" [name]="'price-' + (variant._id || '')" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                  <input type="number" [(ngModel)]="variantForms[variant._id || ''].discountPercentage" [name]="'discount-' + (variant._id || '')" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                </div>
-
-                <div class="grid gap-4 sm:grid-cols-2">
-                  <input type="number" [(ngModel)]="variantForms[variant._id || ''].productStock" [name]="'stock-' + (variant._id || '')" min="0" placeholder="Stock" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                  <input type="text" [(ngModel)]="variantForms[variant._id || ''].sku" [name]="'sku-' + (variant._id || '')" placeholder="SKU" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold uppercase text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                </div>
-
-                <label class="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-600">
-                  <span class="truncate">{{ variantForms[variant._id || ''].imageFile?.name || 'Upload replacement image' }}</span>
-                  <input type="file" accept="image/*" class="hidden" (change)="onVariantImageSelected($event, variant)" />
+            <app-vendor-form-section eyebrow="Add Variant" title="Create a new variant">
+              <div class="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.75fr))_auto]">
+                <input [(ngModel)]="newVariant.attributesText" name="new-attributes" placeholder="Weight:500g, Type:Roasted" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                <input type="number" [(ngModel)]="newVariant.productPrice" name="new-price" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                <input type="number" [(ngModel)]="newVariant.discountPercentage" name="new-discount" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                <input type="number" [(ngModel)]="newVariant.productStock" name="new-stock" min="0" placeholder="Stock" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                <label class="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
+                  {{ newVariant.imageFile?.name || 'Upload image' }}
+                  <input type="file" accept="image/*" class="hidden" (change)="onNewVariantImageSelected($event)" />
                 </label>
+              </div>
+              <button type="button" (click)="addVariant()" [disabled]="isAddingVariant" class="btn-primary mt-5 !px-6 !py-3 disabled:opacity-60">
+                {{ isAddingVariant ? 'Adding Variant...' : 'Add Variant' }}
+              </button>
+            </app-vendor-form-section>
 
-                <div class="grid gap-2 rounded-[1.4rem] border border-slate-200 bg-white p-4 text-sm font-medium text-slate-600">
-                  <p><span class="font-black text-slate-900">Final Price:</span> {{ finalPriceLabel(variant) }}</p>
-                  <p><span class="font-black text-slate-900">Current SKU:</span> {{ variant.sku || 'Pending' }}</p>
-                </div>
+            <app-vendor-form-section eyebrow="Variant Cards" title="Edit existing variants">
+              <div *ngIf="!(product.variants?.length)" class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm font-medium text-slate-500">
+                No variants exist for this product yet.
               </div>
 
-              <div class="mt-5 flex flex-col gap-3 sm:flex-row">
-                <button type="button" (click)="saveVariant(variant)" [disabled]="busySaveId === variant._id" class="btn-primary !px-6 !py-3 disabled:opacity-60">
-                  {{ busySaveId === variant._id ? 'Saving...' : 'Save Variant' }}
-                </button>
-                <button type="button" (click)="resetVariantForm(variant)" class="btn-secondary !px-6 !py-3">Reset</button>
+              <div class="grid gap-5 xl:grid-cols-2" *ngIf="product.variants?.length">
+                <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.6rem] border border-slate-200 bg-slate-50/70 p-5">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="flex min-w-0 items-center gap-4">
+                      <div class="h-16 w-16 overflow-hidden rounded-2xl bg-slate-100">
+                        <img *ngIf="variant.variantImage" [src]="variant.variantImage" [alt]="variant.sku || 'Variant'" class="h-full w-full object-cover" />
+                        <img *ngIf="!variant.variantImage && productImageUrl" [src]="productImageUrl" [alt]="product.productName || 'Product'" class="h-full w-full object-cover opacity-80" />
+                      </div>
+                      <div class="min-w-0">
+                        <h3 class="truncate text-lg font-black text-slate-900">{{ variantAttributeSummaryLabel(variant) }}</h3>
+                        <p class="mt-1 text-sm font-semibold text-slate-500">{{ variant.sku || 'SKU pending' }}</p>
+                      </div>
+                    </div>
+                    <button type="button" (click)="deleteVariant(variant)" [disabled]="busyDeleteId === variant._id" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-rose-700 disabled:opacity-60">
+                      {{ busyDeleteId === variant._id ? 'Deleting...' : 'Delete' }}
+                    </button>
+                  </div>
+  
+                  <div class="mt-5 grid gap-4">
+                    <input [(ngModel)]="variantForms[variant._id || ''].attributesText" [name]="'attributes-' + (variant._id || '')" placeholder="Attributes" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                      <input type="number" [(ngModel)]="variantForms[variant._id || ''].productPrice" [name]="'price-' + (variant._id || '')" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                      <input type="number" [(ngModel)]="variantForms[variant._id || ''].discountPercentage" [name]="'discount-' + (variant._id || '')" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                      <input type="number" [(ngModel)]="variantForms[variant._id || ''].productStock" [name]="'stock-' + (variant._id || '')" min="0" placeholder="Stock" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                      <input type="text" [(ngModel)]="variantForms[variant._id || ''].sku" [name]="'sku-' + (variant._id || '')" placeholder="SKU" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold uppercase text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                    </div>
+
+                    <label class="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-600">
+                      <span class="truncate">{{ variantForms[variant._id || ''].imageFile?.name || 'Upload replacement image' }}</span>
+                      <input type="file" accept="image/*" class="hidden" (change)="onVariantImageSelected($event, variant)" />
+                    </label>
+
+                    <div class="grid gap-2 rounded-[1.4rem] border border-slate-200 bg-white p-4 text-sm font-medium text-slate-600">
+                      <p><span class="font-black text-slate-900">Final Price:</span> {{ finalPriceLabel(variant) }}</p>
+                      <p><span class="font-black text-slate-900">Current SKU:</span> {{ variant.sku || 'Pending' }}</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 flex flex-col gap-3 sm:flex-row">
+                    <button type="button" (click)="saveVariant(variant)" [disabled]="busySaveId === variant._id" class="btn-primary !px-6 !py-3 disabled:opacity-60">
+                      {{ busySaveId === variant._id ? 'Saving...' : 'Save Variant' }}
+                    </button>
+                    <button type="button" (click)="resetVariantForm(variant)" class="btn-secondary !px-6 !py-3">Reset</button>
+                  </div>
+                </article>
               </div>
-            </article>
+            </app-vendor-form-section>
           </div>
-        </app-vendor-form-section>
+        </div>
       </div>
-    </div>
+    </section>
   `,
 })
 export class VendorManageVariantsPageComponent implements OnInit {

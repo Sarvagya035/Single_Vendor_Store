@@ -240,8 +240,8 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
       <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
         <div class="overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
           <img
-            src="/assets/banner%20-2%20.png"
-            alt="Dry fruits banner"
+            src="/assets/banner-test.png"
+            alt="Landing banner"
             class="h-auto w-full object-cover"
           />
         </div>
@@ -310,19 +310,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       eyebrow: 'Premium dry fruits',
       title: 'Fresh dry fruits for everyday health.',
       subtitle: 'Explore almonds, cashews, pistachios, raisins, dates, seeds, and healthy snack mixes curated for your family.',
-      image: '/assets/banner-1.webp'
-    },
-    {
-      eyebrow: 'Gift ready packs',
-      title: 'Beautifully packed for gifting and sharing.',
-      subtitle: 'Choose elegant collections that are ready for festivals, celebrations, and thoughtful gifting.',
-      image: '/assets/banner-3.webp'
-    },
-    {
-      eyebrow: 'Healthy snacking',
-      title: 'Premium nuts and mixes for daily wellness.',
-      subtitle: 'Discover clean, tasty, and wholesome dry fruit packs made for everyday enjoyment.',
-      image: '/assets/banner-4.webp'
+      image: '/assets/BEST.png'
     },
     {
       eyebrow: 'New arrival',

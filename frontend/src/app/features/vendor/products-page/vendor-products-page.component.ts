@@ -6,6 +6,7 @@ import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorCategoryRecord, VendorProductRecord } from '../../../core/models/vendor.models';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   FlatCategoryOption,
   buildFlatCategories,
@@ -17,131 +18,144 @@ import {
 @Component({
   selector: 'app-vendor-products-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-8">
-      <div class="vendor-page-hero">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div class="max-w-3xl">
-            <p class="app-page-eyebrow">Vendor Products</p>
-            <h1 class="app-page-title">Product Management Dashboard</h1>
-          </div>
-
-          <div class="flex flex-wrap gap-3">
+    <section class="space-y-6">
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Vendor Products"
+            title="Product Management Dashboard"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+          >
             <a routerLink="/vendor/products/add" class="btn-primary !px-7 !py-3.5">
               Add Product
             </a>
+          </app-page-header>
+        </div>
+
+        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-3 lg:px-6">
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Total Products</p>
+            <p class="vendor-stat-value">{{ totalDocs }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Active Listings</p>
+            <p class="vendor-stat-value">{{ activeCount }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-600">Low Stock</p>
+            <p class="vendor-stat-value">{{ lowStockCount }}</p>
+          </article>
+        </div>
+
+        <div class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-3">
+              <div>
+                <p class="vendor-stat-label">Control Center</p>
+                <h2 class="vendor-panel-title">All Products</h2>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+              <div class="relative w-full xl:max-w-[calc(100%-150px)]">
+                <svg
+                  class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                </svg>
+                <input
+                  type="text"
+                  [(ngModel)]="searchQuery"
+                  (ngModelChange)="onSearchChange()"
+                  placeholder="Search by name, brand, SKU, or category..."
+                  class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                />
+              </div>
+
+              <button
+                type="button"
+                (click)="loadVendorProducts(currentPage)"
+                [disabled]="isLoading"
+                class="inline-flex items-center justify-center gap-2 rounded-2xl border border-transparent bg-[#f7f3ef] px-5 py-3.5 text-sm font-bold text-slate-900 transition hover:bg-[#efe7df] disabled:opacity-60"
+              >
+                <svg class="h-4 w-4 text-[#7c5646]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 11a8.5 8.5 0 1 0 1.5 4.8" />
+                  <path d="M20 4v7h-7" />
+                </svg>
+                Refresh Products
+              </button>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <label class="block min-w-[150px]">
+                <select
+                  [(ngModel)]="selectedCategory"
+                  (ngModelChange)="applyFilters()"
+                  class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-5 py-3.5 text-sm font-bold text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                >
+                  <option value="all">All Categories</option>
+                  <option *ngFor="let category of categoryOptions; trackBy: trackByCategoryOption" [value]="category._id">
+                    {{ category.name }}
+                  </option>
+                </select>
+              </label>
+
+              <label class="block min-w-[130px]">
+                <select
+                  [(ngModel)]="selectedStatus"
+                  (ngModelChange)="applyFilters()"
+                  class="block w-full rounded-2xl border border-[#d4a017] bg-white px-5 py-3.5 text-sm font-bold text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition focus:border-[#b87912] focus:ring-4 focus:ring-amber-100"
+                >
+                  <option value="all">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </label>
+
+              <button
+                *ngIf="hasActiveFilters"
+                type="button"
+                (click)="clearFilters()"
+                class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50"
+              >
+                Reset filters
+              </button>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <span
+                *ngIf="searchQuery.trim()"
+                class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
+              >
+                Search: "{{ searchQuery.trim() }}"
+              </span>
+              <span
+                *ngIf="selectedCategory !== 'all'"
+                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-700"
+              >
+                Category: {{ selectedCategoryLabel }}
+              </span>
+              <span
+                *ngIf="selectedStatus !== 'all'"
+                class="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-black uppercase tracking-[0.16em]"
+                [ngClass]="selectedStatus === 'active' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-50 text-slate-600'"
+              >
+                Status: {{ selectedStatusLabel }}
+              </span>
+              <span
+                *ngIf="hasActiveFilters"
+                class="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-rose-700"
+              >
+                Filters active
+              </span>
+            </div>
           </div>
-        </div>
-
-        <div class="mt-7 grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,0.7fr))]">
-          <label class="block">
-            <span class="mb-2 ml-1 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Search</span>
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (ngModelChange)="onSearchChange()"
-              placeholder="Search by name, brand, SKU, or category"
-              class="block w-full rounded-2xl border border-white/70 bg-white px-5 py-4 text-sm font-medium text-slate-900 shadow-inner outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-            />
-          </label>
-
-          <label class="block">
-            <span class="mb-2 ml-1 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Category</span>
-            <select
-              [(ngModel)]="selectedCategory"
-              (ngModelChange)="applyFilters()"
-              class="block w-full rounded-2xl border border-white/70 bg-white px-5 py-4 text-sm font-bold text-slate-900 shadow-inner outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-            >
-              <option value="all">All categories</option>
-              <option *ngFor="let category of categoryOptions; trackBy: trackByCategoryOption" [value]="category._id">
-                {{ category.name }}
-              </option>
-            </select>
-          </label>
-
-          <label class="block">
-            <span class="mb-2 ml-1 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Status</span>
-            <select
-              [(ngModel)]="selectedStatus"
-              (ngModelChange)="applyFilters()"
-              class="block w-full rounded-2xl border border-white/70 bg-white px-5 py-4 text-sm font-bold text-slate-900 shadow-inner outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-            >
-              <option value="all">All statuses</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </label>
-        </div>
-      </div>
-
-      <div class="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex flex-wrap gap-2">
-          <span
-            *ngIf="searchQuery.trim()"
-            class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-          >
-            Search: "{{ searchQuery.trim() }}"
-          </span>
-          <span
-            *ngIf="selectedCategory !== 'all'"
-            class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-700"
-          >
-            Category: {{ selectedCategoryLabel }}
-          </span>
-          <span
-            *ngIf="selectedStatus !== 'all'"
-            class="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-black uppercase tracking-[0.16em]"
-            [ngClass]="selectedStatus === 'active' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-50 text-slate-600'"
-          >
-            Status: {{ selectedStatusLabel }}
-          </span>
-          <span
-            *ngIf="hasActiveFilters"
-            class="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-rose-700"
-          >
-            Filters active
-          </span>
-        </div>
-
-        <button
-          *ngIf="hasActiveFilters"
-          type="button"
-          (click)="clearFilters()"
-          class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50"
-        >
-          Reset filters
-        </button>
-      </div>
-
-      <div class="grid gap-4 md:grid-cols-3">
-        <article class="vendor-stat-card">
-          <p class="vendor-stat-label">Total Products</p>
-          <p class="vendor-stat-value">{{ totalDocs }}</p>
-          <p class="vendor-stat-copy">Catalog entries under your vendor account.</p>
-        </article>
-        <article class="vendor-stat-card">
-          <p class="vendor-stat-label">Active Listings</p>
-          <p class="vendor-stat-value">{{ activeCount }}</p>
-          <p class="vendor-stat-copy">Products currently visible to customers on this page.</p>
-        </article>
-        <article class="vendor-stat-card">
-          <p class="vendor-stat-label">Low Stock</p>
-          <p class="vendor-stat-value">{{ lowStockCount }}</p>
-          <p class="vendor-stat-copy">Products with 5 or fewer units left on this page.</p>
-        </article>
-      </div>
-
-      <div class="vendor-page-shell">
-        <div class="flex flex-col gap-3 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <div>
-            <p class="vendor-stat-label">Control Center</p>
-            <h2 class="vendor-panel-title">Products Dashboard</h2>
-          </div>
-          <p class="text-sm font-semibold text-slate-500">
-            Page <span class="font-black text-slate-900">{{ currentPage }}</span>
-            of <span class="font-black text-slate-900">{{ totalPages }}</span>
-          </p>
         </div>
 
         <div *ngIf="isLoading" class="px-6 py-20 text-center lg:px-8">
@@ -160,7 +174,7 @@ import {
         </div>
 
         <div *ngIf="!isLoading && filteredProducts.length > 0" class="hidden lg:block">
-          <div class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-slate-50/80 px-8 py-4 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+          <div class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-[#fffaf5] px-6 py-5 text-sm font-semibold text-slate-500">
             <span>Product</span>
             <span>Category</span>
             <span>Variants</span>
@@ -171,25 +185,25 @@ import {
 
           <article
             *ngFor="let product of filteredProducts; trackBy: trackByProductId"
-            class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-100 px-8 py-5 last:border-b-0"
+            class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-white px-6 py-5 transition hover:bg-[#fffaf4] last:border-b-0"
           >
             <div class="flex min-w-0 items-center gap-4">
-              <div class="h-16 w-16 overflow-hidden rounded-2xl bg-slate-100">
+              <div class="h-14 w-14 overflow-hidden rounded-full bg-[#f5ede5]">
                 <img *ngIf="imageFor(product)" [src]="imageFor(product)" [alt]="product.productName" class="h-full w-full object-cover" />
-                <div *ngIf="!imageFor(product)" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-xl font-black text-slate-500">
+                <div *ngIf="!imageFor(product)" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#f2ebe7] to-[#fff7f1] text-xl font-black text-[#7c5646]">
                   {{ product.productName.charAt(0) || 'P' }}
                 </div>
               </div>
               <div class="min-w-0">
                 <h3 class="truncate text-base font-black text-slate-900">{{ product.productName }}</h3>
-                <p class="mt-1 truncate text-sm font-semibold text-slate-600">{{ product.brand || 'Generic' }}</p>
+                <p class="mt-1 truncate text-sm font-medium text-[#9c5f39]">{{ product.brand || 'Generic' }}</p>
                 <p class="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
                   Added {{ createdLabel(product.createdAt) }}
                 </p>
               </div>
             </div>
 
-            <div class="flex items-center text-sm font-bold text-slate-700">
+            <div class="flex items-center text-sm font-medium text-[#9c5f39]">
               {{ product.categoryDetails?.name || 'Uncategorized' }}
             </div>
 
@@ -211,25 +225,25 @@ import {
 
             <div class="flex items-center">
               <span
-                class="inline-flex rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em]"
-                [ngClass]="product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'"
+                class="inline-flex rounded-full px-3 py-1 text-xs font-black"
+                [ngClass]="product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-[#f2ebe7] text-[#8c6c5d]'"
               >
                 {{ product.isActive ? 'Active' : 'Inactive' }}
               </span>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <a [routerLink]="['/vendor/products', product._id, 'view']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50">
+              <a [routerLink]="['/vendor/products', product._id, 'view']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-[#fffaf4]">
                 View
               </a>
-              <a [routerLink]="['/vendor/products', product._id, 'edit']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50">
+              <a [routerLink]="['/vendor/products', product._id, 'edit']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-[#fffaf4]">
                 Edit
               </a>
               <div class="relative">
                 <button
                   type="button"
                   (click)="toggleActionMenu(product._id)"
-                  class="rounded-xl border border-slate-200 bg-slate-900 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-white transition hover:bg-slate-700"
+                  class="rounded-xl border border-[#7c5646] bg-[#7c5646] px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-white transition hover:bg-[#6e4b3d]"
                 >
                   More
                 </button>
@@ -256,12 +270,12 @@ import {
         <div *ngIf="!isLoading && filteredProducts.length > 0" class="grid gap-4 p-4 lg:hidden">
           <article
             *ngFor="let product of filteredProducts; trackBy: trackByProductId"
-            class="rounded-[1.6rem] border border-slate-200 bg-slate-50/70 p-4"
+            class="rounded-[1.6rem] border border-slate-200 bg-white p-4"
           >
             <div class="flex items-start gap-4">
-              <div class="h-16 w-16 overflow-hidden rounded-2xl bg-slate-100">
+              <div class="h-14 w-14 overflow-hidden rounded-full bg-[#f5ede5]">
                 <img *ngIf="imageFor(product)" [src]="imageFor(product)" [alt]="product.productName" class="h-full w-full object-cover" />
-                <div *ngIf="!imageFor(product)" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-xl font-black text-slate-500">
+                <div *ngIf="!imageFor(product)" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#f2ebe7] to-[#fff7f1] text-xl font-black text-[#7c5646]">
                   {{ product.productName.charAt(0) || 'P' }}
                 </div>
               </div>

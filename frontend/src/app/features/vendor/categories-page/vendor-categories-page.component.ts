@@ -14,27 +14,30 @@ import { ToastType } from '../../../core/models/vendor.models';
   imports: [CommonModule, VendorCategoriesPanelComponent, PageHeaderComponent, ToastBannerComponent],
   template: `
     <section class="space-y-6">
-      <div class="app-surface p-6 sm:p-8">
-        <app-page-header
-          eyebrow="Vendor Category Management"
-          title="Manage your store categories"
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Vendor Category Management"
+            title="Manage your store categories"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+          />
+        </div>
+
+        <app-vendor-categories-panel
+          [categories]="categories"
+          [isLoading]="isCategorySyncing"
+          [isCreating]="isCreatingCategory"
+          [isUpdating]="isUpdatingCategory"
+          [createForm]="categoryCreateForm"
+          [createError]="categoryCreateError"
+          [createImageName]="selectedCategoryImage?.name || ''"
+          (selectCreateImage)="onCategoryImageSelected($event)"
+          (submitCreate)="createCategory($event)"
+          (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
+          (deleteCategory)="deleteCategory($event)"
+          (refresh)="loadCategories()"
         />
       </div>
-
-      <app-vendor-categories-panel
-        [categories]="categories"
-        [isLoading]="isCategorySyncing"
-        [isCreating]="isCreatingCategory"
-        [isUpdating]="isUpdatingCategory"
-        [createForm]="categoryCreateForm"
-        [createError]="categoryCreateError"
-        [createImageName]="selectedCategoryImage?.name || ''"
-        (selectCreateImage)="onCategoryImageSelected($event)"
-        (submitCreate)="createCategory($event)"
-        (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
-        (deleteCategory)="deleteCategory($event)"
-        (refresh)="loadCategories()"
-      />
 
       <app-toast-banner [visible]="toast.visible" [message]="toast.message" [type]="toast.type" />
     </section>

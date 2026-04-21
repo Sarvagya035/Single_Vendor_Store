@@ -15,22 +15,24 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="app-surface px-6 py-7 sm:px-8">
-        <app-page-header
-          eyebrow="Customer Orders"
-          [title]="customer ? customerLabel() + ' order history' : 'Customer order history'"
-        >
-          <button type="button" (click)="goBack()" class="btn-secondary !py-3">
-            Back to Customer
-          </button>
-        </app-page-header>
-      </div>
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Customer Orders"
+            [title]="customer ? customerLabel() + ' order history' : 'Customer order history'"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+          >
+            <button type="button" (click)="goBack()" class="btn-secondary !py-3">
+              Back to Customer
+            </button>
+          </app-page-header>
+        </div>
 
-      <div *ngIf="isLoading" class="vendor-page-shell px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
-        Loading customer order history...
-      </div>
+        <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">
+          Loading customer order history...
+        </div>
 
-      <div *ngIf="!isLoading && customer" class="vendor-page-shell p-6 lg:p-8">
+        <div *ngIf="!isLoading && customer" class="px-4 py-4 sm:px-5 lg:px-6">
         <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div class="flex items-center gap-4">
             <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-xl font-black text-slate-500">
@@ -68,21 +70,21 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         </div>
       </div>
 
-      <div *ngIf="!isLoading && !customer" class="vendor-page-shell px-6 py-12 text-center lg:px-8">
-        <h2 class="vendor-empty-title">Customer not found</h2>
-        <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
-          The customer you selected may have been removed or the link is invalid.
-        </p>
-      </div>
+        <div *ngIf="!isLoading && !customer" class="px-4 py-12 text-center sm:px-5 lg:px-6">
+          <h2 class="vendor-empty-title">Customer not found</h2>
+          <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
+            The customer you selected may have been removed or the link is invalid.
+          </p>
+        </div>
 
-      <div *ngIf="!isLoading && customerOrders.length === 0 && customer" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
-        <h2 class="vendor-empty-title">No customer orders yet</h2>
-        <p class="mt-3 text-sm font-medium text-slate-500">
-          This customer has not placed any orders yet.
-        </p>
-      </div>
+        <div *ngIf="!isLoading && customerOrders.length === 0 && customer" class="border-t border-slate-200 px-4 py-16 text-center sm:px-5 lg:px-6">
+          <h2 class="vendor-empty-title">No customer orders yet</h2>
+          <p class="mt-3 text-sm font-medium text-slate-500">
+            This customer has not placed any orders yet.
+          </p>
+        </div>
 
-      <div *ngIf="!isLoading && customerOrders.length > 0" class="vendor-page-shell p-6 lg:p-8">
+        <div *ngIf="!isLoading && customerOrders.length > 0" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
         <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p class="vendor-stat-label">Search</p>
@@ -195,6 +197,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             </div>
           </div>
         </article>
+        </div>
       </div>
     </section>
   `

@@ -27,7 +27,7 @@ import { of } from 'rxjs';
   template: `
     <div class="vendor-theme min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_38%,#fff9f2_100%)] pt-4 pb-12">
       <main class="w-full px-4 sm:px-6 lg:px-8">
-        <div class="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+        <div class="grid gap-5 lg:grid-cols-[228px_minmax(0,1fr)] lg:items-start">
           <app-vendor-sidebar
             [activeView]="activeView"
             [productCount]="productCount"

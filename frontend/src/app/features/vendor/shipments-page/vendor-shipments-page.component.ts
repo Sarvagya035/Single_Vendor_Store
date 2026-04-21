@@ -49,50 +49,52 @@ interface ShipmentCardView {
   imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="vendor-page-shell px-6 py-7 sm:px-8">
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
         <app-page-header
           eyebrow="Shipments"
           title="Manage shipments"
           description="Track vendor shipments, update delivery fields, and keep logistics status consistent."
+          titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
         >
           <button type="button" (click)="loadShipments()" [disabled]="isLoading" class="btn-secondary !py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Shipments' }}
           </button>
         </app-page-header>
-      </div>
+        </div>
 
-      <div *ngIf="summary" class="grid gap-4 md:grid-cols-3">
-        <article class="vendor-stat-card">
+        <div *ngIf="summary" class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-3 lg:px-6">
+        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Total</p>
           <p class="vendor-stat-value">{{ summary.totalShipments }}</p>
         </article>
-        <article class="vendor-stat-card">
+        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Open</p>
           <p class="vendor-stat-value">{{ summary.openShipments }}</p>
         </article>
-        <article class="vendor-stat-card">
+        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Delivered</p>
           <p class="vendor-stat-value">{{ summary.deliveredShipments }}</p>
         </article>
-      </div>
+        </div>
 
-      <div *ngIf="successMessage" class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+      <div *ngIf="successMessage" class="border-t border-slate-200 px-4 py-3 text-sm font-semibold text-emerald-800 sm:px-5 lg:px-6">
         {{ successMessage }}
       </div>
 
-      <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading shipment records...</div>
+      <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading shipment records...</div>
 
-      <div *ngIf="!isLoading && shipments.length === 0" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
+      <div *ngIf="!isLoading && shipments.length === 0" class="border-t border-slate-200 px-4 py-12 text-center sm:px-5 lg:px-6">
         <h2 class="vendor-empty-title">No shipments yet</h2>
         <p class="mt-3 text-sm font-medium text-slate-500">
           Shipment records will appear here after payment verification creates them.
         </p>
       </div>
 
-      <div *ngIf="shipments.length" class="grid gap-5">
+        <div *ngIf="shipments.length" class="grid gap-5 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
         <article
           *ngFor="let shipment of shipments; trackBy: trackByShipment"
-          class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]"
+          class="rounded-[1.5rem] border border-slate-200 bg-white p-5 transition hover:bg-[#fffaf4]"
         >
           <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div class="min-w-0 flex-1">
@@ -106,18 +108,18 @@ interface ShipmentCardView {
                 </span>
               </div>
 
-              <div class="mt-4 grid gap-4 md:grid-cols-3">
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                <div class="mt-4 grid gap-4 md:grid-cols-3">
+                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Customer</p>
                   <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.customerName || 'Customer' }}</p>
                   <p class="mt-1 text-xs font-semibold text-slate-500">{{ shipment.customerEmail || '-' }}</p>
                 </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Courier</p>
                   <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.courierName || 'DHL' }}</p>
                   <p class="mt-1 text-xs font-semibold text-slate-500">Tracking: {{ shipment.trackingNumber || 'Not assigned' }}</p>
                 </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Timeline</p>
                   <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.trackingEvents.length }} update(s)</p>
                   <p class="mt-1 text-xs font-semibold text-slate-500">
@@ -126,7 +128,7 @@ interface ShipmentCardView {
                 </div>
               </div>
 
-              <div class="mt-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+              <div class="mt-4 rounded-[1.5rem] border border-slate-200 bg-white p-4">
                 <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Order status</p>
                 <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.orderStatus || 'Processing' }}</p>
                 <p class="mt-1 text-xs font-semibold text-slate-500">
@@ -137,7 +139,7 @@ interface ShipmentCardView {
               <div class="mt-4 grid gap-3">
                 <article
                   *ngFor="let event of shipment.trackingEvents || []; trackBy: trackByEvent"
-                  class="rounded-[1.4rem] border border-slate-200 bg-slate-50/70 p-4"
+                  class="rounded-[1.4rem] border border-slate-200 bg-white p-4"
                 >
                   <div class="flex items-start justify-between gap-4">
                     <div>
@@ -155,7 +157,7 @@ interface ShipmentCardView {
               </div>
             </div>
 
-            <div class="min-w-[320px] rounded-[1.75rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
+            <div class="min-w-[320px] rounded-[1.5rem] border border-slate-200 bg-[#fffaf4] p-5">
               <p class="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">Update shipment</p>
               <h3 class="mt-2 text-xl font-black text-slate-900">Edit delivery fields</h3>
 
@@ -231,7 +233,8 @@ interface ShipmentCardView {
               </div>
             </div>
           </div>
-        </article>
+          </article>
+        </div>
       </div>
     </section>
   `

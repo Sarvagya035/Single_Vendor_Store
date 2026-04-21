@@ -14,104 +14,109 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="app-surface px-6 py-7 sm:px-8">
-        <app-page-header
-          eyebrow="Customer Order"
-          [title]="customer ? customerLabel() + ' order detail' : 'Customer order detail'"
-          description="Inspect the full order in the context of this customer."
-        >
-          <button type="button" (click)="goBack()" class="btn-secondary !py-3">
-            Back to Order History
-          </button>
-        </app-page-header>
-      </div>
-
-      <div *ngIf="isLoading" class="vendor-page-shell px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
-        Loading customer order detail...
-      </div>
-
-      <div *ngIf="!isLoading && !customer" class="vendor-page-shell px-6 py-12 text-center lg:px-8">
-        <h2 class="vendor-empty-title">Customer not found</h2>
-        <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
-          The customer you selected may have been removed or the link is invalid.
-        </p>
-      </div>
-
-      <div *ngIf="!isLoading && customer && !order" class="vendor-page-shell px-6 py-12 text-center lg:px-8">
-        <h2 class="vendor-empty-title">Order not found</h2>
-        <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
-          This order does not belong to the selected customer or may no longer be available.
-        </p>
-      </div>
-
-      <div *ngIf="!isLoading && customer && order" class="space-y-6">
-        <div class="vendor-page-shell p-6 lg:p-8">
-          <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-            <div class="min-w-0 flex-1">
-              <div class="flex flex-wrap items-center gap-3">
-                <p class="text-lg font-black text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
-                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(vendorOrderStatus(order))">
-                  {{ vendorOrderStatus(order) }}
-                </span>
-              </div>
-
-              <div class="mt-4 grid gap-4 md:grid-cols-3">
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Customer</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ customerLabel() }}</p>
-                </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Items</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ order.orderItems?.length || 0 }} item(s)</p>
-                </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Placed</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex min-w-[220px] flex-col items-start gap-3 xl:items-end">
-              <p class="text-2xl font-black text-slate-900">{{ formatCurrency(orderTotal(order)) }}</p>
-              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Order total</p>
-            </div>
-          </div>
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Customer Order"
+            [title]="customer ? customerLabel() + ' order detail' : 'Customer order detail'"
+            description="Inspect the full order in the context of this customer."
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+          >
+            <button type="button" (click)="goBack()" class="btn-secondary !py-3">
+              Back to Order History
+            </button>
+          </app-page-header>
         </div>
 
-        <div class="vendor-page-shell p-6 lg:p-8">
-          <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="vendor-stat-label">Order Items</p>
-              <h2 class="vendor-panel-title mt-2">What this customer bought</h2>
-            </div>
-            <p class="text-sm font-medium text-slate-500">
-              {{ order.orderItems?.length || 0 }} item{{ (order.orderItems?.length || 0) === 1 ? '' : 's' }}
-            </p>
-          </div>
+        <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">
+          Loading customer order detail...
+        </div>
 
-          <div class="mt-5 grid gap-4">
-            <article
-              *ngFor="let item of order.orderItems || []; trackBy: trackByOrderItem"
-              class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4"
-            >
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0">
-                  <p class="text-sm font-black text-slate-900">{{ item.name || 'Order item' }}</p>
-                  <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                    {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
-                  </p>
+        <div *ngIf="!isLoading && !customer" class="px-4 py-12 text-center sm:px-5 lg:px-6">
+          <h2 class="vendor-empty-title">Customer not found</h2>
+          <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
+            The customer you selected may have been removed or the link is invalid.
+          </p>
+        </div>
+
+        <div *ngIf="!isLoading && customer && !order" class="px-4 py-12 text-center sm:px-5 lg:px-6">
+          <h2 class="vendor-empty-title">Order not found</h2>
+          <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
+            This order does not belong to the selected customer or may no longer be available.
+          </p>
+        </div>
+
+        <div *ngIf="!isLoading && customer && order" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+          <div class="space-y-6">
+            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
+              <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-3">
+                    <p class="text-lg font-black text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
+                    <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(vendorOrderStatus(order))">
+                      {{ vendorOrderStatus(order) }}
+                    </span>
+                  </div>
+
+                  <div class="mt-4 grid gap-4 md:grid-cols-3">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Customer</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ customerLabel() }}</p>
+                    </div>
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Items</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ order.orderItems?.length || 0 }} item(s)</p>
+                    </div>
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Placed</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
-                    {{ formatCurrency(itemTotal(item)) }}
-                  </span>
-                  <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]" [ngClass]="orderItemStatusClass(item.orderItemStatus)">
-                    {{ item.orderItemStatus || 'Processing' }}
-                  </span>
+                <div class="flex min-w-[220px] flex-col items-start gap-3 xl:items-end">
+                  <p class="text-2xl font-black text-slate-900">{{ formatCurrency(orderTotal(order)) }}</p>
+                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Order total</p>
                 </div>
               </div>
-            </article>
+            </section>
+
+            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
+              <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p class="vendor-stat-label">Order Items</p>
+                  <h2 class="vendor-panel-title mt-2">What this customer bought</h2>
+                </div>
+                <p class="text-sm font-medium text-slate-500">
+                  {{ order.orderItems?.length || 0 }} item{{ (order.orderItems?.length || 0) === 1 ? '' : 's' }}
+                </p>
+              </div>
+
+              <div class="mt-5 grid gap-4">
+                <article
+                  *ngFor="let item of order.orderItems || []; trackBy: trackByOrderItem"
+                  class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4"
+                >
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="min-w-0">
+                      <p class="text-sm font-black text-slate-900">{{ item.name || 'Order item' }}</p>
+                      <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                        {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
+                      </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
+                        {{ formatCurrency(itemTotal(item)) }}
+                      </span>
+                      <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]" [ngClass]="orderItemStatusClass(item.orderItemStatus)">
+                        {{ item.orderItemStatus || 'Processing' }}
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
           </div>
         </div>
       </div>

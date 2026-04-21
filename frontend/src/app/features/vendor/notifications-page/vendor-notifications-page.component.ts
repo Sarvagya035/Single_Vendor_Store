@@ -16,38 +16,40 @@ type NotificationFilter = 'all' | 'unread' | 'active';
   imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="vendor-page-shell px-6 py-7 sm:px-8">
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
         <app-page-header
           eyebrow="Notifications"
           title="Notification center"
           description="Track low-stock alerts and keep product availability under control from one place."
+          titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
         >
           <button type="button" (click)="reload()" [disabled]="isLoading" class="btn-secondary !py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Notifications' }}
           </button>
         </app-page-header>
-      </div>
+        </div>
 
-      <div class="grid gap-4 md:grid-cols-4">
-        <article class="vendor-stat-card">
+        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-4 lg:px-6">
+        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Unread</p>
           <p class="vendor-stat-value">{{ summary.unreadNotifications }}</p>
         </article>
-        <article class="vendor-stat-card">
+        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Low stock</p>
           <p class="vendor-stat-value">{{ summary.activeLowStockAlerts }}</p>
         </article>
-        <article class="vendor-stat-card">
+        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Resolved</p>
           <p class="vendor-stat-value">{{ summary.resolvedLowStockAlerts }}</p>
         </article>
-        <article class="vendor-stat-card">
+        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Total</p>
           <p class="vendor-stat-value">{{ summary.totalNotifications }}</p>
         </article>
-      </div>
+        </div>
 
-      <div class="vendor-page-shell px-6 py-6 sm:px-8">
+        <div class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div class="flex flex-wrap gap-2">
             <button
@@ -85,25 +87,26 @@ type NotificationFilter = 'all' | 'unread' | 'active';
             {{ isMarkingAllRead ? 'Updating...' : 'Mark all as read' }}
           </button>
         </div>
+        </div>
       </div>
 
       <div *ngIf="successMessage" class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
         {{ successMessage }}
       </div>
 
-      <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading notifications...</div>
+      <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading notifications...</div>
 
-      <div *ngIf="!isLoading && filteredNotifications.length === 0" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
+      <div *ngIf="!isLoading && filteredNotifications.length === 0" class="border-t border-slate-200 px-4 py-12 text-center sm:px-5 lg:px-6">
         <h2 class="vendor-empty-title">No active notifications right now</h2>
         <p class="mt-3 text-sm font-medium text-slate-500">
           Resolved low-stock alerts disappear automatically after restock.
         </p>
       </div>
 
-      <div *ngIf="filteredNotifications.length" class="grid gap-4">
+      <div *ngIf="filteredNotifications.length" class="grid gap-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
         <article
           *ngFor="let notification of filteredNotifications; trackBy: trackByNotification"
-          class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+          class="rounded-[1.5rem] border border-slate-200 bg-white p-5 transition hover:bg-[#fffaf4]"
           [class.opacity-75]="notification.isRead"
         >
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -121,15 +124,15 @@ type NotificationFilter = 'all' | 'unread' | 'active';
               <p class="mt-3 text-sm font-medium text-slate-600">{{ notification.message }}</p>
 
               <div class="mt-4 grid gap-3 md:grid-cols-3">
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Product</p>
                   <p class="mt-2 text-sm font-black text-slate-900">{{ notification.productName }}</p>
                 </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Variant</p>
                   <p class="mt-2 text-sm font-black text-slate-900">{{ notification.variantLabel }}</p>
                 </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                   <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
                   <p class="mt-2 text-sm font-black text-slate-900">{{ notification.currentStock }} / {{ notification.stockThreshold }}</p>
                 </div>

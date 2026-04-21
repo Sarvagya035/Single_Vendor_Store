@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   VendorCategoryRecord,
   VendorProductEditForm,
   VendorProductRecord,
 } from '../../../core/models/vendor.models';
-import { VendorFormSectionComponent } from '../form-section/vendor-form-section.component';
 import {
   FlatCategoryOption,
   buildFlatCategories,
@@ -21,107 +21,119 @@ import {
 @Component({
   selector: 'app-vendor-edit-product-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
-    <div class="space-y-8">
-      <div class="vendor-page-hero">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div class="max-w-3xl">
-            <p class="app-page-eyebrow">Vendor Products</p>
-            <h1 class="app-page-title">Edit Product Details</h1>
-            <p class="app-page-description">
-              This page is only for customer-facing product information. Inventory and variant operations live in their own dedicated workspaces.
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-3">
+    <section class="space-y-6">
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Vendor Products"
+            title="Edit Product Details"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            description="This page is only for customer-facing product information. Inventory and variant operations live in their own dedicated workspaces."
+          >
             <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
             <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary !px-6 !py-3">Go to Restock</a>
             <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-secondary !px-6 !py-3">Manage Variants</a>
-          </div>
+          </app-page-header>
         </div>
-      </div>
 
-      <div *ngIf="isLoading" class="vendor-page-shell py-20 text-center">
-        <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
-        <p class="mt-4 text-sm font-medium text-slate-500">Loading product details...</p>
-      </div>
+        <div *ngIf="isLoading" class="px-6 py-20 text-center lg:px-8">
+          <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
+          <p class="mt-4 text-sm font-medium text-slate-500">Loading product details...</p>
+        </div>
 
-      <div *ngIf="!isLoading && !product" class="glass-card py-16 text-center">
-        <h2 class="vendor-empty-title">Product not found</h2>
-        <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
-          We couldn't load that product. It may have been deleted or the link may be outdated.
-        </p>
-        <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Return to Products</a>
-      </div>
+        <div *ngIf="!isLoading && !product" class="px-6 py-16 text-center lg:px-8">
+          <h2 class="vendor-empty-title">Product not found</h2>
+          <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
+            We couldn't load that product. It may have been deleted or the link may be outdated.
+          </p>
+          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Return to Products</a>
+        </div>
 
-      <form *ngIf="!isLoading && product" class="grid gap-8 xl:grid-cols-[1.15fr_0.85fr]" (ngSubmit)="saveProduct()">
-        <app-vendor-form-section eyebrow="Customer Facing" title="Editable product details">
-          <div class="grid gap-5 md:grid-cols-2">
-            <label class="space-y-2 md:col-span-2">
-              <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Product Name</span>
-              <input type="text" name="productName" [(ngModel)]="form.productName" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-            </label>
+        <form *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6" (ngSubmit)="saveProduct()">
+          <div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
+              <div class="border-b border-slate-100 pb-4">
+                <p class="vendor-stat-label">Customer Facing</p>
+                <h2 class="vendor-panel-title">Editable product details</h2>
+              </div>
 
-            <label class="space-y-2">
-              <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Brand</span>
-              <input type="text" name="brand" [(ngModel)]="form.brand" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-            </label>
+              <div class="mt-6 grid gap-5 md:grid-cols-2">
+                <label class="space-y-2 md:col-span-2">
+                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Product Name</span>
+                  <input type="text" name="productName" [(ngModel)]="form.productName" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                </label>
 
-            <label class="space-y-2">
-              <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
-              <select name="category" [(ngModel)]="form.category" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100">
-                <option value="">Select category</option>
-                <option *ngFor="let option of flatCategories; trackBy: trackByCategory" [value]="option._id">{{ optionLabel(option) }}</option>
-              </select>
-            </label>
+                <label class="space-y-2">
+                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Brand</span>
+                  <input type="text" name="brand" [(ngModel)]="form.brand" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                </label>
 
-            <label class="space-y-2 md:col-span-2">
-              <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Description</span>
-              <textarea rows="7" name="productDescription" [(ngModel)]="form.productDescription" class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100"></textarea>
-            </label>
+                <label class="space-y-2">
+                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
+                  <select name="category" [(ngModel)]="form.category" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100">
+                    <option value="">Select category</option>
+                    <option *ngFor="let option of flatCategories; trackBy: trackByCategory" [value]="option._id">{{ optionLabel(option) }}</option>
+                  </select>
+                </label>
 
-            <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 md:col-span-2">
-              <input type="checkbox" [(ngModel)]="form.isActive" name="isActive" class="h-4 w-4 rounded border-slate-300 text-amber-700 focus:ring-amber-500" />
-              <span class="text-sm font-bold text-slate-700">Product is active and visible to customers.</span>
-            </label>
+                <label class="space-y-2 md:col-span-2">
+                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Description</span>
+                  <textarea rows="7" name="productDescription" [(ngModel)]="form.productDescription" class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100"></textarea>
+                </label>
 
-            <div class="flex flex-col gap-3 sm:flex-row md:col-span-2">
-              <button type="submit" [disabled]="isSubmitting" class="btn-primary !px-8 !py-4">{{ isSubmitting ? 'Saving Changes...' : 'Save Changes' }}</button>
-              <button type="button" (click)="cancel()" class="btn-secondary !px-8 !py-4">Cancel</button>
-            </div>
-          </div>
-        </app-vendor-form-section>
+                <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 md:col-span-2">
+                  <input type="checkbox" [(ngModel)]="form.isActive" name="isActive" class="h-4 w-4 rounded border-slate-300 text-amber-700 focus:ring-amber-500" />
+                  <span class="text-sm font-bold text-slate-700">Product is active and visible to customers.</span>
+                </label>
 
-        <app-vendor-form-section eyebrow="Preview" title="Product summary">
-          <div class="space-y-5">
-            <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm">
-              <div class="aspect-[4/3] bg-slate-50">
-                <img *ngIf="primaryImageUrl" [src]="primaryImageUrl" [alt]="product.productName" class="h-full w-full object-cover" />
-                <div *ngIf="!primaryImageUrl" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-4xl font-black text-slate-400">
-                  {{ product.productName.charAt(0) || 'P' }}
+                <div class="flex flex-col gap-3 sm:flex-row md:col-span-2">
+                  <button type="submit" [disabled]="isSubmitting" class="btn-primary !px-8 !py-4">{{ isSubmitting ? 'Saving Changes...' : 'Save Changes' }}</button>
+                  <button type="button" (click)="cancel()" class="btn-secondary !px-8 !py-4">Cancel</button>
                 </div>
               </div>
-              <div class="space-y-2 p-5">
-                <p class="vendor-stat-label">Product</p>
-                <h3 class="vendor-panel-title">{{ form.productName || product.productName }}</h3>
-                <p class="text-sm font-medium text-slate-500">{{ form.brand || product.brand || 'Generic' }}</p>
-              </div>
-            </div>
+            </section>
 
-            <div class="grid gap-3 rounded-[1.5rem] border border-slate-200 bg-white p-5 text-sm font-medium text-slate-600">
-              <p><span class="font-black text-slate-900">Category:</span> {{ categoryPreview }}</p>
-              <p><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
-              <p><span class="font-black text-slate-900">Total Stock:</span> {{ totalStock }}</p>
-              <p><span class="font-black text-slate-900">Status:</span> {{ form.isActive ? 'Active' : 'Inactive' }}</p>
-            </div>
+            <aside class="space-y-6">
+              <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
+                <div class="border-b border-slate-100 pb-4">
+                  <p class="vendor-stat-label">Preview</p>
+                  <h2 class="vendor-panel-title">Product summary</h2>
+                </div>
 
-            <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5 text-sm font-medium leading-relaxed text-slate-600">
-              {{ form.productDescription || 'Your product description preview appears here as you edit.' }}
-            </div>
+                <div class="mt-6 space-y-5">
+                  <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm">
+                    <div class="aspect-[4/3] bg-slate-50">
+                      <img *ngIf="primaryImageUrl" [src]="primaryImageUrl" [alt]="product.productName" class="h-full w-full object-cover" />
+                      <div *ngIf="!primaryImageUrl" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-4xl font-black text-slate-400">
+                        {{ product.productName.charAt(0) || 'P' }}
+                      </div>
+                    </div>
+                    <div class="space-y-2 p-5">
+                      <p class="vendor-stat-label">Product</p>
+                      <h3 class="vendor-panel-title">{{ form.productName || product.productName }}</h3>
+                      <p class="text-sm font-medium text-slate-500">{{ form.brand || product.brand || 'Generic' }}</p>
+                    </div>
+                  </div>
+
+                  <div class="grid gap-3 rounded-[1.5rem] border border-slate-200 bg-white p-5 text-sm font-medium text-slate-600">
+                    <p><span class="font-black text-slate-900">Category:</span> {{ categoryPreview }}</p>
+                    <p><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
+                    <p><span class="font-black text-slate-900">Total Stock:</span> {{ totalStock }}</p>
+                    <p><span class="font-black text-slate-900">Status:</span> {{ form.isActive ? 'Active' : 'Inactive' }}</p>
+                  </div>
+
+                  <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5 text-sm font-medium leading-relaxed text-slate-600">
+                    {{ form.productDescription || 'Your product description preview appears here as you edit.' }}
+                  </div>
+                </div>
+              </section>
+            </aside>
           </div>
-        </app-vendor-form-section>
-      </form>
-    </div>
+        </form>
+      </div>
+    </section>
   `,
 })
 export class VendorEditProductPageComponent implements OnInit {

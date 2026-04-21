@@ -7,38 +7,35 @@ import { OrderRecord } from '../../../core/models/order.models';
 import { VendorProductRecord } from '../../../core/models/vendor.models';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-vendor-customer-details-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="vendor-page-shell">
-        <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p class="app-page-eyebrow">Customer Details</p>
-              <h1 class="app-page-title">Customer Profile</h1>
-              <p class="app-page-description">
-                View account details, order history, and wishlist items in one place.
-              </p>
-            </div>
-
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Customer Details"
+            title="Customer Profile"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            description="View account details, order history, and wishlist items in one place."
+          >
             <button type="button" (click)="goBack()" class="btn-secondary !px-6 !py-3">
               Back to Customers
             </button>
-          </div>
+          </app-page-header>
         </div>
-      </div>
 
-      <div *ngIf="isLoading" class="vendor-page-shell px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
+      <div *ngIf="isLoading" class="px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
         Loading customer details...
       </div>
 
-      <div *ngIf="!isLoading && customer" class="space-y-6">
+      <div *ngIf="!isLoading && customer" class="space-y-6 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
         <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <section class="vendor-page-shell p-6 lg:p-8">
+          <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
             <div class="flex items-center gap-4">
               <div class="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-2xl font-black text-slate-500">
                 <img *ngIf="customer.avatar; else initialsBlock" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
@@ -80,7 +77,7 @@ import { VendorService } from '../../../core/services/vendor.service';
             </dl>
           </section>
 
-          <section class="vendor-page-shell p-6 lg:p-8">
+          <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
               <div>
                 <p class="vendor-stat-label">Activity</p>
@@ -106,7 +103,7 @@ import { VendorService } from '../../../core/services/vendor.service';
           </section>
         </div>
 
-        <section *ngIf="loadingProduct || selectedProduct" class="vendor-page-shell p-6 lg:p-8">
+        <section *ngIf="loadingProduct || selectedProduct" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Product Preview</p>
@@ -174,7 +171,7 @@ import { VendorService } from '../../../core/services/vendor.service';
           </div>
         </section>
 
-        <section class="vendor-page-shell p-6 lg:p-8">
+        <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Order History</p>
@@ -198,7 +195,7 @@ import { VendorService } from '../../../core/services/vendor.service';
           </p>
         </section>
 
-        <section class="vendor-page-shell p-6 lg:p-8">
+        <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Buying Pattern</p>
@@ -263,7 +260,7 @@ import { VendorService } from '../../../core/services/vendor.service';
           </div>
         </section>
 
-        <section class="vendor-page-shell p-6 lg:p-8">
+        <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Wishlist</p>
@@ -318,8 +315,9 @@ import { VendorService } from '../../../core/services/vendor.service';
           </div>
         </section>
       </div>
+      </div>
 
-      <div *ngIf="!isLoading && !customer" class="vendor-page-shell px-6 py-12 text-center lg:px-8">
+      <div *ngIf="!isLoading && !customer" class="px-6 py-12 text-center lg:px-8">
         <h2 class="vendor-empty-title">Customer not found</h2>
         <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
           The customer you selected may have been removed or the link is invalid.

@@ -4,60 +4,51 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-vendor-initial-setup-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
-    <div class="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(79,70,229,0.14),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.12),_transparent_28%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_45%,#f8fafc_100%)] px-4 py-12 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-6xl">
-        <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-3xl">
-            <p class="app-page-eyebrow text-amber-700">
-              First-time bootstrap
-            </p>
-            <h1 class="app-page-title !text-4xl sm:!text-5xl">
-              Create your store account
-            </h1>
-            <p class="app-page-description">
-              Use this page once to register the store owner, store profile, and payout details.
-              It uses the existing backend bootstrap endpoint.
-            </p>
-          </div>
-
-          <a routerLink="/login" class="btn-secondary !py-3">
-            Back to Login
-          </a>
+    <section class="space-y-6">
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header eyebrow="First-time bootstrap" title="Create your store account" titleClass="!text-[1.9rem] sm:!text-[2.2rem]" description="Use this page once to register the store owner, store profile, and payout details." >
+            <a routerLink="/login" class="btn-secondary !py-3">Back to Login</a>
+          </app-page-header>
         </div>
 
-        <div *ngIf="submitted" class="glass-card mx-auto max-w-3xl p-10 text-center sm:p-14">
-          <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-amber-600/10 text-4xl font-black text-amber-700">
-            ✓
-          </div>
-          <h2 class="mt-6 text-3xl font-black tracking-tight text-slate-900">
-            Setup completed
-          </h2>
-          <p class="mx-auto mt-4 max-w-xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
-            The store account and profile were created successfully. You can now sign in and open the store dashboard.
-          </p>
-          <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <a routerLink="/login" class="btn-primary !px-8 !py-3">
-              Go to Login
-            </a>
-            <button type="button" class="btn-secondary !px-8 !py-3" (click)="resetForm()">
-              Create another
-            </button>
+        <div *ngIf="submitted" class="px-4 py-10 sm:px-5 lg:px-6 lg:py-12">
+          <div class="mx-auto max-w-3xl rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm sm:p-14">
+            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-amber-600/10 text-4xl font-black text-amber-700">
+              ✓
+            </div>
+            <h2 class="mt-6 text-3xl font-black tracking-tight text-slate-900">
+              Setup completed
+            </h2>
+            <p class="mx-auto mt-4 max-w-xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
+              The store account and profile were created successfully. You can now sign in and open the store dashboard.
+            </p>
+            <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <a routerLink="/login" class="btn-primary !px-8 !py-3">
+                Go to Login
+              </a>
+              <button type="button" class="btn-secondary !px-8 !py-3" (click)="resetForm()">
+                Create another
+              </button>
+            </div>
           </div>
         </div>
 
-        <form *ngIf="!submitted" (ngSubmit)="onSubmit()" class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <section class="space-y-6">
-            <div class="glass-card p-6 sm:p-8">
-              <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
-                Account Details
-              </h2>
-              <div class="mt-6 grid gap-5 sm:grid-cols-2">
+        <form *ngIf="!submitted" (ngSubmit)="onSubmit()" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+          <div class="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+            <section class="space-y-6">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
+                  Account Details
+                </h2>
+                <div class="mt-6 grid gap-5 sm:grid-cols-2">
                 <label class="space-y-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Full Name</span>
                   <input
@@ -130,14 +121,14 @@ import { VendorService } from '../../../core/services/vendor.service';
                     class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-amber-600"
                   />
                 </label>
+                </div>
               </div>
-            </div>
 
-            <div class="glass-card p-6 sm:p-8">
-              <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
-                Store Details
-              </h2>
-              <div class="mt-6 grid gap-5">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
+                  Store Details
+                </h2>
+                <div class="mt-6 grid gap-5">
                 <label class="space-y-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Shop Name</span>
                   <input
@@ -173,14 +164,14 @@ import { VendorService } from '../../../core/services/vendor.service';
                     class="block w-full resize-none rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-amber-600"
                   ></textarea>
                 </label>
+                </div>
               </div>
-            </div>
 
-            <div class="glass-card p-6 sm:p-8">
-              <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
-                Bank Details
-              </h2>
-              <div class="mt-6 grid gap-5 sm:grid-cols-2">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
+                  Bank Details
+                </h2>
+                <div class="mt-6 grid gap-5 sm:grid-cols-2">
                 <label class="space-y-2 sm:col-span-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Account Holder Name</span>
                   <input
@@ -256,71 +247,72 @@ import { VendorService } from '../../../core/services/vendor.service';
                     class="block w-full rounded-2xl border-none bg-slate-50 px-4 py-4 font-bold text-slate-900 shadow-inner focus:ring-2 focus:ring-amber-600"
                   />
                 </label>
-              </div>
-            </div>
-          </section>
-
-          <aside class="space-y-6 lg:sticky lg:top-8 lg:self-start">
-            <div class="glass-card p-6 sm:p-8">
-              <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
-                Store Logo
-              </h2>
-              <p class="mt-2 text-sm font-medium text-slate-500">
-                Upload the logo that will represent the store.
-              </p>
-
-              <div class="mt-6 flex flex-col items-center gap-5 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/70 p-6 text-center">
-                <div class="relative">
-                  <img
-                    *ngIf="logoPreview"
-                    [src]="logoPreview"
-                    alt="Logo preview"
-                    class="h-28 w-28 rounded-3xl border-4 border-white object-cover shadow-xl"
-                  />
-                  <div
-                    *ngIf="!logoPreview"
-                    class="flex h-28 w-28 items-center justify-center rounded-3xl bg-amber-700 text-4xl font-black text-white shadow-xl"
-                  >
-                    S
-                  </div>
                 </div>
+              </div>
+            </section>
 
-                <label for="logoInput" class="btn-secondary cursor-pointer !px-6 !py-3">
-                  Choose Logo
-                </label>
-                <input
-                  id="logoInput"
-                  type="file"
-                  accept="image/*"
-                  class="hidden"
-                  (change)="onLogoSelected($event)"
-                />
-                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
-                  PNG, JPG or WEBP
+            <aside class="space-y-6 lg:sticky lg:top-8 lg:self-start">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
+                  Store Logo
+                </h2>
+                <p class="mt-2 text-sm font-medium text-slate-500">
+                  Upload the logo that will represent the store.
+                </p>
+
+                <div class="mt-6 flex flex-col items-center gap-5 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/70 p-6 text-center">
+                  <div class="relative">
+                    <img
+                      *ngIf="logoPreview"
+                      [src]="logoPreview"
+                      alt="Logo preview"
+                      class="h-28 w-28 rounded-3xl border-4 border-white object-cover shadow-xl"
+                    />
+                    <div
+                      *ngIf="!logoPreview"
+                      class="flex h-28 w-28 items-center justify-center rounded-3xl bg-amber-700 text-4xl font-black text-white shadow-xl"
+                    >
+                      S
+                    </div>
+                  </div>
+
+                  <label for="logoInput" class="btn-secondary cursor-pointer !px-6 !py-3">
+                    Choose Logo
+                  </label>
+                  <input
+                    id="logoInput"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="onLogoSelected($event)"
+                  />
+                  <p class="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                    PNG, JPG or WEBP
+                  </p>
+                </div>
+              </div>
+
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
+                  Setup Secret
+                </h2>
+                <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
+                  Keep the secret key private. It is required only for the first store bootstrap.
                 </p>
               </div>
-            </div>
 
-            <div class="glass-card space-y-4 p-6 sm:p-8">
-              <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
-                Setup Secret
-              </h2>
-              <p class="text-sm font-medium leading-7 text-slate-500">
-                Keep the secret key private. It is required only for the first store bootstrap.
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              [disabled]="isLoading"
-              class="btn-primary !w-full !py-5 text-lg shadow-2xl shadow-amber-200/60"
-            >
-              {{ isLoading ? 'Creating Store...' : 'Create Store Account' }}
-            </button>
-          </aside>
+              <button
+                type="submit"
+                [disabled]="isLoading"
+                class="btn-primary !w-full !py-5 text-lg shadow-2xl shadow-amber-200/60"
+              >
+                {{ isLoading ? 'Creating Store...' : 'Create Store Account' }}
+              </button>
+            </aside>
+          </div>
         </form>
       </div>
-    </div>
+    </section>
   `,
 })
 export class VendorInitialSetupPageComponent {

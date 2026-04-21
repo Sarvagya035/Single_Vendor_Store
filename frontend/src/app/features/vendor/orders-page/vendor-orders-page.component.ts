@@ -12,115 +12,154 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   imports: [CommonModule, FormsModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="app-surface px-6 py-7 sm:px-8">
-        <app-page-header
-          eyebrow="Orders"
-          title="Manage incoming orders"
-        >
-          <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary !py-3">
-            {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
-          </button>
-        </app-page-header>
-      </div>
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Order Management"
+            title="Vendor Orders"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+          >
+            <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary !px-5 !py-2.5">
+              {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
+            </button>
+          </app-page-header>
+        </div>
 
-      <div class="rounded-[1.75rem] border border-slate-200 bg-white px-4 py-4 shadow-[0_12px_40px_rgba(15,23,42,0.05)] sm:px-5">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div class="relative w-full max-w-xl">
-            <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+        <div class="grid gap-4 px-4 py-4 sm:px-5 lg:grid-cols-4 lg:px-6">
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Total Orders</p>
+            <p class="vendor-stat-value">{{ totalOrdersCount }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Processing</p>
+            <p class="vendor-stat-value">{{ processingOrdersCount }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-600">Shipped</p>
+            <p class="vendor-stat-value">{{ shippedOrdersCount }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label !text-amber-700">Delivered</p>
+            <p class="vendor-stat-value">{{ deliveredOrdersCount }}</p>
+          </article>
+        </div>
+
+        <div class="border-b border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
+          <div class="relative w-full max-w-2xl">
+            <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
             </svg>
             <input
               type="search"
               [(ngModel)]="searchQuery"
               (ngModelChange)="onSearchChange($event)"
-              placeholder="Search by order number, customer, item, or status"
-              class="block w-full rounded-full border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-semibold text-slate-900 shadow-inner outline-none transition placeholder:text-slate-400 focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+              placeholder="Search by order number, customer, or items..."
+              class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
             />
           </div>
-
-          <div class="inline-flex flex-wrap gap-1 rounded-full bg-[#f6f1eb] p-1">
-            <button
-              *ngFor="let tab of statusTabs"
-              type="button"
-              class="rounded-full px-4 py-2 text-sm font-black transition"
-              [ngClass]="activeFilter === tab.value
-                ? 'bg-white text-[#6f4e37] shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-                : 'text-slate-700 hover:text-[#6f4e37]'"
-              (click)="setFilter(tab.value)"
-            >
-              {{ tab.label }}
-            </button>
-          </div>
         </div>
-      </div>
 
-      <div *ngIf="successMessage" class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
-        {{ successMessage }}
-      </div>
-
-      <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading vendor orders...</div>
-
-      <div *ngIf="!isLoading && filteredOrders.length === 0" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
-        <h2 class="vendor-empty-title">
-          {{ orders.length ? 'No orders match this filter' : 'No vendor orders yet' }}
-        </h2>
-        <p class="mt-3 text-sm font-medium text-slate-500">
-          {{ orders.length
-            ? 'Try a different status tab or clear your search to see more orders.'
-            : 'Orders assigned to your products will appear here automatically. Refresh the page after new sales come in.' }}
-        </p>
-
-        <div class="mt-6 flex flex-wrap justify-center gap-3" *ngIf="orders.length">
+        <div class="flex flex-wrap gap-2 px-4 py-4 sm:px-5 lg:px-6">
           <button
+            *ngFor="let tab of statusTabs"
             type="button"
-            (click)="resetFilters()"
-            class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-black text-slate-800 transition hover:border-amber-200 hover:bg-[#fff7ed]"
+            class="rounded-full px-4 py-2 text-sm font-black transition"
+            [ngClass]="activeFilter === tab.value
+              ? 'bg-[#7c5646] text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)]'
+              : 'bg-[#f5ede5] text-slate-800 hover:bg-[#efe1d5] hover:text-[#7c5646]'"
+            (click)="setFilter(tab.value)"
           >
-            Clear filters
+            {{ tab.label }}
           </button>
         </div>
+
+        <div *ngIf="successMessage" class="border-t border-slate-200 px-4 py-3 text-sm font-semibold text-amber-800 sm:px-5 lg:px-6">
+          {{ successMessage }}
+        </div>
+
+        <div *ngIf="isLoading" class="border-t border-slate-200 px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">
+          Loading vendor orders...
+        </div>
+
+        <div *ngIf="!isLoading && filteredOrders.length === 0" class="border-t border-slate-200 px-4 py-12 text-center sm:px-5 lg:px-6">
+          <h2 class="vendor-empty-title">
+            {{ orders.length ? 'No orders match this filter' : 'No vendor orders yet' }}
+          </h2>
+          <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
+            {{ orders.length
+              ? 'Try a different status tab or clear your search to see more orders.'
+              : 'Orders assigned to your products will appear here automatically. Refresh the page after new sales come in.' }}
+          </p>
+
+          <div class="mt-6 flex flex-wrap justify-center gap-3" *ngIf="orders.length">
+            <button
+              type="button"
+              (click)="resetFilters()"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-black text-slate-800 transition hover:border-amber-200 hover:bg-[#fff7ed]"
+            >
+              Clear filters
+            </button>
+          </div>
       </div>
 
-      <div *ngIf="filteredOrders.length" class="grid gap-4">
-        <article
-          *ngFor="let order of filteredOrders; trackBy: trackByOrder"
-          class="cursor-pointer rounded-[1.6rem] border border-slate-200 bg-white px-6 py-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-[#e7dac9] hover:shadow-[0_16px_40px_rgba(111,78,55,0.08)]"
-          (click)="openOrder(order)"
-        >
-          <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div class="min-w-0 flex-1">
-              <div class="flex flex-wrap items-center gap-3">
-                <p class="text-xl font-black text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
-                <span class="rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[0.14em]" [ngClass]="statusClass(vendorOrderStatus(order))">
+        <div *ngIf="filteredOrders.length" class="space-y-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
+          <article
+            *ngFor="let order of filteredOrders; trackBy: trackByOrder"
+            class="cursor-pointer rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-[#e7dac9] hover:shadow-[0_16px_40px_rgba(111,78,55,0.08)] sm:px-5 sm:py-5"
+            (click)="openOrder(order)"
+          >
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start gap-3">
+                  <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#f2ebe7] text-[#7c5646]">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M7 4.5 12 2l5 2.5v5L12 12 7 9.5z" />
+                      <path d="M7 9.5 12 12l5-2.5" />
+                      <path d="M12 12v8" />
+                      <path d="M7 4.5v5L12 12" />
+                      <path d="M17 4.5v5L12 12" />
+                    </svg>
+                  </div>
+
+                  <div class="min-w-0">
+                    <p class="text-lg font-black text-slate-900 sm:text-xl">ORD-{{ shortOrderId(order._id) }}</p>
+                    <p class="mt-1 text-sm font-medium text-[#9c5f39]">{{ customerName(order) }}</p>
+                  </div>
+                </div>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Products</p>
+                    <p class="mt-2 text-sm font-medium text-slate-900">{{ orderProductsText(order) }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Placed On</p>
+                    <p class="mt-2 text-sm font-medium text-slate-900">{{ formatDateTime(order.createdAt) }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Total Amount</p>
+                    <p class="mt-2 text-2xl font-black text-slate-900">{{ formatCurrency(vendorOrderTotal(order)) }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex shrink-0 flex-col items-start gap-3 lg:items-end">
+                <span class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-black" [ngClass]="statusClass(vendorOrderStatus(order))">
+                  <span class="h-2.5 w-2.5 rounded-full" [ngClass]="statusDotClass(vendorOrderStatus(order))"></span>
                   {{ vendorOrderStatus(order) }}
                 </span>
+
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-full bg-[#7c5646] px-4 py-2.5 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
+                  (click)="$event.stopPropagation(); openOrder(order)"
+                >
+                  View Details
+                </button>
               </div>
-
-              <p class="mt-3 text-sm font-medium text-slate-500">
-                Placed on {{ formatDate(order.createdAt) }} • {{ order.orderItems?.length || 0 }} items
-              </p>
             </div>
-
-            <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5 lg:justify-end">
-              <div class="text-left sm:text-right">
-                <p class="text-sm font-medium text-slate-500">Total</p>
-                <p class="text-3xl font-black text-[#e67d00]">{{ formatCurrency(vendorOrderTotal(order)) }}</p>
-              </div>
-
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-800 transition hover:border-amber-200 hover:bg-[#fff7ed]"
-                (click)="$event.stopPropagation(); openOrder(order)"
-              >
-                <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0c-1.8 4.5-6 8-12 8S1.8 16.5 0 12c1.8-4.5 6-8 12-8s10.2 3.5 12 8Z" />
-                  <circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle>
-                </svg>
-                View
-              </button>
-            </div>
-          </div>
-        </article>
+          </article>
+        </div>
       </div>
     </section>
   `
@@ -147,6 +186,22 @@ export class VendorOrdersPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrders();
+  }
+
+  get totalOrdersCount(): number {
+    return this.orders.length;
+  }
+
+  get processingOrdersCount(): number {
+    return this.orders.filter((order) => this.vendorOrderStatus(order) === 'Processing').length;
+  }
+
+  get shippedOrdersCount(): number {
+    return this.orders.filter((order) => this.vendorOrderStatus(order) === 'Shipped').length;
+  }
+
+  get deliveredOrdersCount(): number {
+    return this.orders.filter((order) => this.vendorOrderStatus(order) === 'Delivered').length;
   }
 
   get filteredOrders(): OrderRecord[] {
@@ -237,6 +292,20 @@ export class VendorOrdersPageComponent implements OnInit {
     return 'Customer';
   }
 
+  orderProductsText(order: OrderRecord): string {
+    const names = (order.orderItems || [])
+      .map((item) => item.name || item.product || item.sku || item.variantId)
+      .filter(Boolean)
+      .map((value) => String(value).trim())
+      .filter(Boolean);
+
+    if (!names.length) {
+      return 'No products listed';
+    }
+
+    return names.join(', ');
+  }
+
   shortOrderId(orderId?: string): string {
     return orderId ? orderId.slice(-8).toUpperCase() : '--------';
   }
@@ -283,6 +352,20 @@ export class VendorOrdersPageComponent implements OnInit {
     }).format(new Date(value));
   }
 
+  formatDateTime(value?: string): string {
+    if (!value) {
+      return 'Recently';
+    }
+
+    return new Intl.DateTimeFormat('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    }).format(new Date(value));
+  }
+
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -295,13 +378,26 @@ export class VendorOrdersPageComponent implements OnInit {
   statusClass(status?: string): string {
     switch (status) {
       case 'Delivered':
-        return 'border-orange-100 bg-orange-50 text-[#e67d00]';
+        return 'border-emerald-200 bg-emerald-50 text-emerald-700';
       case 'Shipped':
-        return 'border-amber-100 bg-amber-50 text-[#b45309]';
+        return 'border-sky-200 bg-sky-50 text-sky-600';
       case 'Cancelled':
         return 'border-rose-100 bg-rose-50 text-rose-700';
       default:
-        return 'border-slate-200 bg-white text-slate-800';
+        return 'border-amber-200 bg-amber-50 text-amber-700';
+    }
+  }
+
+  statusDotClass(status?: string): string {
+    switch (status) {
+      case 'Delivered':
+        return 'bg-emerald-500';
+      case 'Shipped':
+        return 'bg-sky-500';
+      case 'Cancelled':
+        return 'bg-rose-500';
+      default:
+        return 'bg-amber-500';
     }
   }
 

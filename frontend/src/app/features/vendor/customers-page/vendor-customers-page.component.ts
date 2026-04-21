@@ -3,59 +3,45 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CustomerUser } from '../../../core/models/customer.models';
 import { OrderRecord } from '../../../core/models/order.models';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 interface VendorCustomerRow {
   user: CustomerUser;
   orderCount: number;
   totalSpent: number;
   status: 'Active' | 'Inactive';
-  lastOrderAt?: string;
-  orders: OrderRecord[];
+  joinedAt: string;
+  avatarClass: string;
 }
 
 @Component({
   selector: 'app-vendor-customers-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
   template: `
     <section class="space-y-6">
-      <div class="vendor-page-shell">
-        <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div class="max-w-3xl">
-              <p class="app-page-eyebrow">Customer Directory</p>
-              <h1 class="app-page-title">Registered Customers</h1>
-              <p class="app-page-description">
-                Review customer activity, total spend, order history, frequently bought products, and wishlist items in one place.
-              </p>
-            </div>
-
-            <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
-              <label class="relative w-full sm:flex-1 lg:w-[260px]">
-                <span class="sr-only">Search customers</span>
-                <input
-                  type="search"
-                  [(ngModel)]="searchTerm"
-                  (ngModelChange)="applyFilters()"
-                  placeholder="Search customers"
-                  class="w-full min-w-0 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner outline-none transition placeholder:text-slate-400 focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-                />
-              </label>
-              <button
-                type="button"
-                (click)="reloadCustomers()"
-                class="btn-secondary !w-full !justify-center !px-6 !py-3 sm:!w-auto"
-              >
-                {{ isLoading ? 'Loading...' : 'Refresh Customers' }}
-              </button>
-            </div>
-          </div>
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Customer Directory"
+            title="Registered Customers"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+          >
+            <button
+              type="button"
+              (click)="reloadCustomers()"
+              class="btn-secondary !px-5 !py-2.5"
+            >
+              {{ isLoading ? 'Refreshing...' : 'Refresh Customers' }}
+            </button>
+          </app-page-header>
         </div>
 
-        <div class="grid gap-4 px-6 py-6 md:grid-cols-3 lg:px-8">
+        <div class="grid gap-4 px-4 py-4 sm:px-5 lg:grid-cols-3 lg:px-6">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label !text-amber-700">Total Customers</p>
             <p class="vendor-stat-value">{{ customerRows.length }}</p>
@@ -69,9 +55,28 @@ interface VendorCustomerRow {
             <p class="mt-3 text-sm font-black text-slate-900">{{ newestCustomerLabel }}</p>
           </article>
         </div>
-      </div>
 
-      <section class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
+          <div class="relative">
+            <svg
+              class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+            </svg>
+            <input
+              type="search"
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="applyFilters()"
+              placeholder="Search customers by name, email..."
+              class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+            />
+          </div>
+        </div>
+
         <div *ngIf="isLoading" class="px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
           Loading customer accounts...
         </div>
@@ -85,26 +90,28 @@ interface VendorCustomerRow {
 
         <div *ngIf="!isLoading && filteredCustomers.length > 0" class="overflow-x-auto">
           <table class="min-w-full border-separate border-spacing-0">
-            <thead class="bg-white">
+            <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">
-                <th class="px-6 py-4 font-semibold lg:px-8">Customer</th>
-                <th class="px-6 py-4 font-semibold">Email</th>
-                <th class="px-6 py-4 font-semibold">Orders</th>
-                <th class="px-6 py-4 font-semibold">Total Spent</th>
-                <th class="px-6 py-4 font-semibold">Status</th>
-                <th class="px-6 py-4 font-semibold">Actions</th>
+                <th class="px-6 py-5 font-semibold lg:px-8">Customer</th>
+                <th class="px-6 py-5 font-semibold">Email</th>
+                <th class="px-6 py-5 font-semibold">Orders</th>
+                <th class="px-6 py-5 font-semibold">Total Spent</th>
+                <th class="px-6 py-5 font-semibold">Status</th>
+                <th class="px-6 py-5 font-semibold">Joined</th>
+                <th class="px-6 py-5 font-semibold text-right lg:px-8">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr
                 *ngFor="let customer of filteredCustomers; trackBy: trackByCustomer"
-                class="cursor-pointer border-t border-slate-100 bg-white transition hover:bg-[#fffaf4]"
-                title="Open customer details"
-                (click)="openCustomerDetails(customer)"
+                class="border-t border-slate-200 bg-white transition hover:bg-[#fffaf4]"
               >
-                <td class="border-t border-slate-100 px-6 py-5 lg:px-8">
+                <td class="border-t border-slate-200 px-6 py-5 lg:px-8">
                   <div class="flex items-center gap-4">
-                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fff2e5] text-sm font-black text-[#e67d00]">
+                    <div
+                      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-black uppercase text-white"
+                      [ngClass]="customer.avatarClass"
+                    >
                       {{ initials(customer.user) }}
                     </div>
                     <div class="min-w-0">
@@ -115,33 +122,50 @@ interface VendorCustomerRow {
                   </div>
                 </td>
 
-                <td class="border-t border-slate-100 px-6 py-5 text-sm font-medium text-slate-600">
+                <td class="border-t border-slate-200 px-6 py-5 text-sm font-medium text-[#9c5f39]">
                   {{ customer.user.email || 'No email provided' }}
                 </td>
 
-                <td class="border-t border-slate-100 px-6 py-5 text-sm font-black text-slate-900">
-                  {{ customer.orderCount }}
+                <td class="border-t border-slate-200 px-6 py-5">
+                  <div class="inline-flex items-center gap-2 text-sm font-black text-slate-900">
+                    <svg
+                      class="h-4 w-4 text-[#8a5f44]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M7 3h10l2 4v13H5V7l2-4Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M9 3v4h6V3" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M9 12h6" />
+                    </svg>
+                    {{ customer.orderCount }}
+                  </div>
                 </td>
 
-                <td class="border-t border-slate-100 px-6 py-5 text-lg font-black text-[#e67d00]">
+                <td class="border-t border-slate-200 px-6 py-5 text-sm font-black text-slate-900">
                   {{ formatCurrency(customer.totalSpent) }}
                 </td>
 
-                <td class="border-t border-slate-100 px-6 py-5">
+                <td class="border-t border-slate-200 px-6 py-5">
                   <span
-                    class="inline-flex rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.16em]"
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-black"
                     [ngClass]="customer.status === 'Active'
-                      ? 'bg-amber-100 text-amber-800'
-                      : 'bg-slate-100 text-slate-600'"
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-[#f2ebe7] text-[#8c6c5d]'"
                   >
                     {{ customer.status }}
                   </span>
                 </td>
 
-                <td class="border-t border-slate-100 px-6 py-5 lg:px-8">
+                <td class="border-t border-slate-200 px-6 py-5 text-sm font-medium text-[#9c5f39]">
+                  {{ customer.joinedAt }}
+                </td>
+
+                <td class="border-t border-slate-200 px-6 py-5 text-right lg:px-8">
                   <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-800 transition hover:border-amber-200 hover:bg-[#fff7ed]"
+                    class="inline-flex items-center gap-2 rounded-full bg-[#7c5646] px-4 py-2.5 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
                     title="Open customer details"
                     (click)="openCustomerDetails(customer); $event.stopPropagation()"
                   >
@@ -149,14 +173,14 @@ interface VendorCustomerRow {
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0c-1.8 4.5-6 8-12 8S1.8 16.5 0 12c1.8-4.5 6-8 12-8s10.2 3.5 12 8Z" />
                       <circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle>
                     </svg>
-                    View
+                    View Profile
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-      </section>
+      </div>
     </section>
   `
 })
@@ -165,6 +189,15 @@ export class VendorCustomersPageComponent implements OnInit {
   filteredCustomers: VendorCustomerRow[] = [];
   searchTerm = '';
   isLoading = true;
+
+  private readonly avatarPalette = [
+    'bg-emerald-500',
+    'bg-[#7c5646]',
+    'bg-[#2f8df4]',
+    'bg-[#ffb74d]',
+    'bg-[#8b5e3c]',
+    'bg-[#4e7c64]'
+  ];
 
   constructor(
     private vendorService: VendorService,
@@ -255,38 +288,40 @@ export class VendorCustomersPageComponent implements OnInit {
     }
 
     const orderRequests = users.map((user) =>
-      user._id ? this.vendorService.getCustomerOrderHistory(user._id) : of([])
+      user._id
+        ? this.vendorService.getCustomerOrderHistory(user._id).pipe(catchError(() => of([])))
+        : of([])
     );
 
     forkJoin(orderRequests).subscribe({
       next: (orderResults) => {
         this.customerRows = users.map((user, index) => {
           const orders = Array.isArray(orderResults[index]) ? orderResults[index] : [];
-          return this.toCustomerRow(user, orders);
+          return this.toCustomerRow(user, orders, index);
         });
         this.applyFilters();
         this.isLoading = false;
       },
       error: () => {
-        this.customerRows = users.map((user) => this.toCustomerRow(user, []));
+        this.customerRows = users.map((user, index) => this.toCustomerRow(user, [], index));
         this.applyFilters();
         this.isLoading = false;
       }
     });
   }
 
-  private toCustomerRow(user: CustomerUser, orders: OrderRecord[]): VendorCustomerRow {
+  private toCustomerRow(user: CustomerUser, orders: OrderRecord[], index: number): VendorCustomerRow {
     const orderCount = orders.length;
     const totalSpent = orders.reduce((sum, order) => sum + this.orderTotal(order), 0);
-    const latestOrder = [...orders].sort((a, b) => this.toTimestamp(b.createdAt) - this.toTimestamp(a.createdAt))[0];
+    const joinedAt = user.createdAt ? this.formatJoinedDate(user.createdAt) : 'Unknown';
 
     return {
       user,
       orderCount,
       totalSpent,
       status: orderCount > 0 ? 'Active' : 'Inactive',
-      lastOrderAt: latestOrder?.createdAt,
-      orders
+      joinedAt,
+      avatarClass: this.avatarPalette[index % this.avatarPalette.length]
     };
   }
 
@@ -301,5 +336,19 @@ export class VendorCustomersPageComponent implements OnInit {
   private toTimestamp(value?: string): number {
     const parsed = value ? new Date(value).getTime() : 0;
     return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  private formatJoinedDate(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return 'Unknown';
+    }
+
+    return new Intl.DateTimeFormat('en-CA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(date);
   }
 }

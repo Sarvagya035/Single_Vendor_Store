@@ -9,6 +9,7 @@ import { VendorEmptyStateComponent } from '../empty-state/vendor-empty-state.com
 import { VendorLogoModalComponent } from '../logo-modal/vendor-logo-modal.component';
 import { VendorProfileCardComponent } from '../profile-card/vendor-profile-card.component';
 import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../../core/models/vendor.models';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-vendor-profile-page',
@@ -19,65 +20,65 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../.
     VendorProfileCardComponent,
     VendorDetailsModalComponent,
     VendorLogoModalComponent,
-    VendorEmptyStateComponent
+    VendorEmptyStateComponent,
+    PageHeaderComponent
   ],
   template: `
-    <section class="space-y-8">
-      <div class="vendor-page-hero">
-        <div class="max-w-3xl">
-          <p class="app-page-eyebrow">Store Profile</p>
-          <h1 class="app-page-title">Vendor profile</h1>
+    <section class="space-y-6">
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header eyebrow="Store Profile" title="Vendor profile" titleClass="!text-[1.9rem] sm:!text-[2.2rem]" />
         </div>
-      </div>
 
-      <div *ngIf="isLoading" class="vendor-page-shell flex flex-col items-center gap-4 py-20">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
-        <p class="font-medium text-slate-500">Loading store data...</p>
-      </div>
+        <div *ngIf="isLoading" class="flex flex-col items-center gap-4 px-6 py-20">
+          <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
+          <p class="font-medium text-slate-500">Loading store data...</p>
+        </div>
 
-      <div *ngIf="!isLoading && vendor" class="space-y-10">
-        <app-vendor-profile-card
+        <div *ngIf="!isLoading && vendor" class="border-t border-slate-200">
+          <app-vendor-profile-card
+            [vendor]="vendor"
+            [logoPreview]="logoPreview"
+            [isEditDetailsOpen]="isEditDetailsOpen"
+            [isEditBankOpen]="isEditBankOpen"
+            [isEditLogoOpen]="isEditLogoOpen"
+            (editDetails)="toggleDetailsEditor()"
+            (editBank)="toggleBankEditor()"
+            (editLogo)="toggleLogoEditor()"
+          />
+        </div>
+
+        <app-vendor-empty-state *ngIf="!isLoading && !vendor" />
+
+        <app-vendor-details-modal
+          [open]="isEditDetailsOpen"
+          [form]="form"
+          [isSaving]="isSavingDetails"
+          (formChange)="updateForm($event)"
+          (close)="toggleDetailsEditor()"
+          (submit)="onUpdateDetails()"
+        />
+
+        <app-vendor-bank-modal
+          [open]="isEditBankOpen"
+          [form]="bankForm"
+          [isSaving]="isSavingBank"
+          (formChange)="updateBankForm($event)"
+          (close)="toggleBankEditor()"
+          (submit)="onUpdateBankDetails()"
+        />
+
+        <app-vendor-logo-modal
+          [open]="isEditLogoOpen"
           [vendor]="vendor"
           [logoPreview]="logoPreview"
-          [isEditDetailsOpen]="isEditDetailsOpen"
-          [isEditBankOpen]="isEditBankOpen"
-          [isEditLogoOpen]="isEditLogoOpen"
-          (editDetails)="toggleDetailsEditor()"
-          (editBank)="toggleBankEditor()"
-          (editLogo)="toggleLogoEditor()"
+          [selectedLogoName]="selectedLogo?.name || ''"
+          [isUploading]="isUploadingLogo"
+          (close)="toggleLogoEditor()"
+          (selectLogo)="onLogoSelected($event)"
+          (submit)="onUpdateLogo()"
         />
       </div>
-
-      <app-vendor-empty-state *ngIf="!isLoading && !vendor" />
-
-      <app-vendor-details-modal
-        [open]="isEditDetailsOpen"
-        [form]="form"
-        [isSaving]="isSavingDetails"
-        (formChange)="updateForm($event)"
-        (close)="toggleDetailsEditor()"
-        (submit)="onUpdateDetails()"
-      />
-
-      <app-vendor-bank-modal
-        [open]="isEditBankOpen"
-        [form]="bankForm"
-        [isSaving]="isSavingBank"
-        (formChange)="updateBankForm($event)"
-        (close)="toggleBankEditor()"
-        (submit)="onUpdateBankDetails()"
-      />
-
-      <app-vendor-logo-modal
-        [open]="isEditLogoOpen"
-        [vendor]="vendor"
-        [logoPreview]="logoPreview"
-        [selectedLogoName]="selectedLogo?.name || ''"
-        [isUploading]="isUploadingLogo"
-        (close)="toggleLogoEditor()"
-        (selectLogo)="onLogoSelected($event)"
-        (submit)="onUpdateLogo()"
-      />
     </section>
   `
 })

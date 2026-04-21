@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorProductRecord, VendorProductVariant } from '../../../core/models/vendor.models';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   formatVendorCurrency,
   formatVendorDate,
@@ -15,44 +16,40 @@ import {
 @Component({
   selector: 'app-vendor-view-product-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-8">
-      <div class="rounded-[2rem] border border-[#eadfce] bg-[linear-gradient(135deg,#fffaf4_0%,#f8ecdb_55%,#fff6ea_100%)] px-6 py-7 shadow-[0_28px_70px_rgba(111,78,55,0.12)] lg:px-8">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div class="max-w-3xl">
-            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-amber-600">Vendor Product View</p>
-            <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Product Details</h1>
-            <p class="mt-3 text-sm font-medium leading-relaxed text-slate-600 sm:text-base">
-              Review this product exactly as a vendor record, with images, pricing, stock, and variants, without any customer purchase actions.
-            </p>
-          </div>
-
-          <div class="flex flex-wrap gap-3">
+    <section class="space-y-6">
+      <div class="vendor-page-shell overflow-hidden">
+        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <app-page-header
+            eyebrow="Vendor Product View"
+            title="Product Details"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            description="Review this product exactly as a vendor record, with images, pricing, stock, and variants, without any customer purchase actions."
+          >
             <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
             <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary !px-6 !py-3">Edit</a>
             <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary !px-6 !py-3">Restock</a>
             <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-primary !px-6 !py-3">Manage Variants</a>
-          </div>
+          </app-page-header>
         </div>
-      </div>
 
-      <div *ngIf="isLoading" class="glass-card py-20 text-center">
-        <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
-        <p class="mt-4 text-sm font-medium text-slate-500">Loading product details...</p>
-      </div>
+        <div *ngIf="isLoading" class="px-4 py-20 text-center sm:px-5 lg:px-6">
+          <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
+          <p class="mt-4 text-sm font-medium text-slate-500">Loading product details...</p>
+        </div>
 
-      <div *ngIf="!isLoading && !product" class="glass-card py-16 text-center">
-        <h2 class="text-2xl font-black text-slate-900">Product not found</h2>
-        <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
-          We could not load this vendor product. It may have been removed or the link may be outdated.
-        </p>
-        <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Return to Products</a>
-      </div>
+        <div *ngIf="!isLoading && !product" class="px-4 py-16 text-center sm:px-5 lg:px-6">
+          <h2 class="vendor-empty-title">Product not found</h2>
+          <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
+            We could not load this vendor product. It may have been removed or the link may be outdated.
+          </p>
+          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Return to Products</a>
+        </div>
 
-      <div *ngIf="!isLoading && product" class="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-        <section class="app-surface overflow-hidden p-5 sm:p-6">
-          <div class="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div *ngIf="!isLoading && product" class="grid gap-6 px-4 py-4 sm:px-5 lg:px-6 xl:grid-cols-[1.1fr_0.9fr]">
+          <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
+            <div class="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div class="space-y-4">
               <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-50">
                 <div class="aspect-[4/3]">
@@ -84,7 +81,7 @@ import {
                 <p class="mt-2 text-sm font-semibold text-slate-600">{{ product.brand || 'Generic brand' }}</p>
               </div>
 
-              <div class="grid gap-3 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5 text-sm font-medium text-slate-600">
+              <div class="grid gap-3 rounded-[1.5rem] border border-slate-200 bg-[#fffaf4] p-5 text-sm font-medium text-slate-600">
                 <p><span class="font-black text-slate-900">Category:</span> {{ categoryName }}</p>
                 <p><span class="font-black text-slate-900">Created:</span> {{ createdLabel }}</p>
                 <p><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
@@ -112,7 +109,7 @@ import {
         </section>
 
         <section class="space-y-6">
-          <div class="app-surface p-5 sm:p-6">
+          <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Product images</p>
             <h3 class="mt-2 text-2xl font-black text-slate-900">Gallery summary</h3>
             <div class="mt-5 grid gap-3 text-sm font-medium text-slate-600">
@@ -122,12 +119,12 @@ import {
             </div>
           </div>
 
-          <div class="app-surface p-5 sm:p-6">
+          <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Variant options</p>
             <h3 class="mt-2 text-2xl font-black text-slate-900">Configured attributes</h3>
 
             <div *ngIf="product.variantOptions?.length; else noOptions" class="mt-5 space-y-3">
-              <div *ngFor="let option of product.variantOptions; trackBy: trackByOption" class="rounded-[1.25rem] border border-slate-200 bg-slate-50/70 p-4">
+              <div *ngFor="let option of product.variantOptions; trackBy: trackByOption" class="rounded-[1.25rem] border border-slate-200 bg-white p-4">
                 <p class="text-sm font-black text-slate-900">{{ option.name || 'Option' }}</p>
                 <p class="mt-2 text-sm font-medium text-slate-600">{{ (option.values || []).join(', ') || 'No values' }}</p>
               </div>
@@ -140,7 +137,7 @@ import {
         </section>
       </div>
 
-      <section *ngIf="!isLoading && product" class="app-surface p-5 sm:p-6">
+      <section *ngIf="!isLoading && product" class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
         <div class="flex flex-col gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Variant inventory</p>
@@ -151,50 +148,74 @@ import {
           </p>
         </div>
 
-        <div *ngIf="product.variants?.length; else noVariants" class="mt-6 grid gap-4 lg:grid-cols-2">
-          <article
-            *ngFor="let variant of product.variants; trackBy: trackByVariant"
-            class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5"
-          >
-            <div class="flex items-start gap-4">
-              <div class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                <img *ngIf="variant.variantImage" [src]="variant.variantImage" [alt]="variant.sku || 'Variant image'" class="h-full w-full object-cover" />
-                <div *ngIf="!variant.variantImage" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-xs font-black uppercase tracking-[0.18em] text-slate-500">
-                  No image
-                </div>
-              </div>
-
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p class="text-sm font-black text-slate-900">{{ variant.sku || 'SKU pending' }}</p>
-                    <p class="mt-1 text-sm font-medium text-slate-600">{{ variantAttributeText(variant) }}</p>
+        <div *ngIf="product.variants?.length" class="overflow-x-auto pt-5">
+          <table class="min-w-full border-separate border-spacing-0">
+            <thead class="bg-[#fffaf5]">
+              <tr class="text-left text-sm font-semibold text-slate-500">
+                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Variant</th>
+                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Attributes</th>
+                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Price</th>
+                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Final Price</th>
+                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Stock</th>
+                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let variant of product.variants; trackBy: trackByVariant"
+                class="border-t border-slate-200 bg-white transition hover:bg-[#fffaf4]"
+              >
+                <td class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6">
+                  <div class="flex items-center gap-4">
+                    <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                      <img *ngIf="variant.variantImage" [src]="variant.variantImage" [alt]="variant.sku || 'Variant image'" class="h-full w-full object-cover" />
+                      <div *ngIf="!variant.variantImage" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                        No image
+                      </div>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="truncate text-base font-black text-slate-900">{{ variant.sku || 'SKU pending' }}</p>
+                      <p class="mt-1 text-sm font-medium text-slate-600">{{ variant.isAvailable ? 'Available variant' : 'Unavailable variant' }}</p>
+                    </div>
                   </div>
+                </td>
+
+                <td class="border-t border-slate-200 px-4 py-5 text-sm font-medium text-[#9c5f39] sm:px-5 lg:px-6">
+                  {{ variantAttributeText(variant) }}
+                </td>
+
+                <td class="border-t border-slate-200 px-4 py-5 text-sm font-black text-slate-900 sm:px-5 lg:px-6">
+                  {{ formatCurrency(variant.productPrice) }}
+                </td>
+
+                <td class="border-t border-slate-200 px-4 py-5 text-sm font-black text-slate-900 sm:px-5 lg:px-6">
+                  {{ formatCurrency(variant.finalPrice) }}
+                </td>
+
+                <td class="border-t border-slate-200 px-4 py-5 text-sm font-black text-slate-900 sm:px-5 lg:px-6">
+                  {{ variant.productStock || 0 }}
+                </td>
+
+                <td class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6">
                   <span
-                    class="inline-flex rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]"
-                    [ngClass]="variant.isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'"
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-black"
+                    [ngClass]="variant.isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-[#f2ebe7] text-[#8c6c5d]'"
                   >
                     {{ variant.isAvailable ? 'Available' : 'Unavailable' }}
                   </span>
-                </div>
-
-                <div class="mt-4 grid gap-2 text-sm font-medium text-slate-600 sm:grid-cols-2">
-                  <p><span class="font-black text-slate-900">Price:</span> {{ formatCurrency(variant.productPrice) }}</p>
-                  <p><span class="font-black text-slate-900">Final price:</span> {{ formatCurrency(variant.finalPrice) }}</p>
-                  <p><span class="font-black text-slate-900">Discount:</span> {{ variant.discountPercentage || 0 }}%</p>
-                  <p><span class="font-black text-slate-900">Stock:</span> {{ variant.productStock || 0 }}</p>
-                </div>
-              </div>
-            </div>
-          </article>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <ng-template #noVariants>
-          <div class="mt-6 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm font-medium text-slate-500">
+          <div class="py-12 text-center text-sm font-medium text-slate-500">
             No variants available for this product yet.
           </div>
         </ng-template>
       </section>
+      </div>
     </section>
   `,
 })

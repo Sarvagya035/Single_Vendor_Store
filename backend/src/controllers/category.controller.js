@@ -22,7 +22,11 @@ const buildCategoryTree = (categories, parentId = null) => {
             _id: cat._id,
             name: cat.name,
             slug: cat.slug,
+            description: cat.description,
+            image: cat.image,
             level: cat.level,
+            parentCategory: cat.parentCategory,
+            isActive: cat.isActive,
             children: buildCategoryTree(categories, cat._id)
         });
     }
