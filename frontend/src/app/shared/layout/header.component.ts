@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { AppRefreshService } from '../../core/services/app-refresh.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
+import { VendorService } from '../../core/services/vendor.service';
 import { HeaderAccountDropdownComponent, HeaderDropdownItem } from './header-account-dropdown.component';
 import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
@@ -51,6 +52,29 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             </ng-container>
 
             <ng-container *ngIf="user && !isCustomer()">
+              <a
+                *ngIf="isVendor() || isAdmin()"
+                routerLink="/vendor/notifications"
+                class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                aria-label="Open vendor notifications"
+                title="Notifications"
+              >
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.157V11a6 6 0 10-12 0v3.157c0 .538-.214 1.055-.595 1.438L4 17h5m6 0a3 3 0 11-6 0m6 0H9"
+                  />
+                </svg>
+                <span
+                  *ngIf="vendorNotificationCount > 0"
+                  class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-black leading-none text-white"
+                >
+                  {{ vendorNotificationCount }}
+                </span>
+              </a>
+
               <app-header-account-dropdown
                 theme="vendor"
                 subtitle="Store account"
@@ -132,6 +156,29 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               (itemSelected)="handleVendorItem($event)"
             />
 
+            <a
+              *ngIf="user && (isVendor() || isAdmin())"
+              routerLink="/vendor/notifications"
+              class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+              aria-label="Open vendor notifications"
+              title="Notifications"
+            >
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.157V11a6 6 0 10-12 0v3.157c0 .538-.214 1.055-.595 1.438L4 17h5m6 0a3 3 0 11-6 0m6 0H9"
+                />
+              </svg>
+              <span
+                *ngIf="vendorNotificationCount > 0"
+                class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-black leading-none text-white"
+              >
+                {{ vendorNotificationCount }}
+              </span>
+            </a>
+
             <button
               type="button"
               class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2.5 text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
@@ -177,6 +224,7 @@ export class HeaderComponent implements OnInit {
   @Input() isNavigating = false;
   isMenuOpen = false;
   cartCount = 0;
+  vendorNotificationCount = 0;
   isDropdownOpen = false;
   isVendorDropdownOpen = false;
 
@@ -207,6 +255,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private cartService: CartService,
+    private vendorService: VendorService,
     private router: Router,
     private appRefreshService: AppRefreshService
   ) {}
@@ -227,8 +276,11 @@ export class HeaderComponent implements OnInit {
         this.cartService.getCart().subscribe({
           error: () => this.cartService.resetCart()
         });
+      } else if (this.isVendor() || this.isAdmin()) {
+        this.loadVendorNotificationCount();
       } else {
         this.cartService.resetCart();
+        this.vendorNotificationCount = 0;
         this.closeAllMenus();
       }
     });
@@ -249,6 +301,10 @@ export class HeaderComponent implements OnInit {
         this.authService.refreshCurrentUser().subscribe({
           error: () => this.authService.clearCurrentUser()
         });
+      }
+
+      if (scope === 'global' || scope === 'vendor') {
+        this.loadVendorNotificationCount();
       }
     });
   }
@@ -428,6 +484,22 @@ export class HeaderComponent implements OnInit {
     if (item.action === 'logout') {
       this.onLogout();
     }
+  }
+
+  private loadVendorNotificationCount(): void {
+    if (!this.user || (!this.isVendor() && !this.isAdmin())) {
+      this.vendorNotificationCount = 0;
+      return;
+    }
+
+    this.vendorService.getVendorNotifications().subscribe({
+      next: (response) => {
+        this.vendorNotificationCount = Number(response?.summary?.unreadNotifications || 0);
+      },
+      error: () => {
+        this.vendorNotificationCount = 0;
+      }
+    });
   }
 
 }

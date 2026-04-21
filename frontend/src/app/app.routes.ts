@@ -314,6 +314,20 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/notifications-page/vendor-notifications-page.component').then(
+                (m) => m.VendorNotificationsPageComponent
+              )
+          }
+        ]
+      },
+      {
         path: 'shipments',
         canActivate: [AuthGuard, RoleGuard],
         data: { roles: ['admin', 'Admin'] },

@@ -323,6 +323,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       title: 'Premium nuts and mixes for daily wellness.',
       subtitle: 'Discover clean, tasty, and wholesome dry fruit packs made for everyday enjoyment.',
       image: '/assets/banner-4.webp'
+    },
+    {
+      eyebrow: 'New arrival',
+      title: 'Explore our fresh banner showcase.',
+      subtitle: 'A new banner highlight added to the landing page carousel.',
+      image: '/assets/banner-test.png'
     }
   ];
   readonly homeReviews = [

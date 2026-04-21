@@ -96,6 +96,10 @@ export class VendorShellComponent implements OnInit {
       return 'orders';
     }
 
+    if (this.router.url.includes('/vendor/notifications')) {
+      return 'notifications';
+    }
+
     if (this.router.url.includes('/vendor/shipments')) {
       return 'shipments';
     }

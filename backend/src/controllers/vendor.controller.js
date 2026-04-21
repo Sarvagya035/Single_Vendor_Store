@@ -6,6 +6,8 @@ import {uploadOnCloudinary} from "../utils/cloudinaryUpload.js"
 import { Vendor } from "../models/vendor.model.js"
 import { User } from "../models/user.model.js"
 import { Order } from "../models/order.model.js";
+import { VendorNotification } from "../models/vendorNotification.model.js";
+import { syncLowStockNotificationsForVendor } from "../utils/vendorNotifications.js";
 
 const setupInitialAdminAndStore = asyncHandler(async (req, res) => {
     
@@ -385,6 +387,105 @@ const getVendorSoldProducts = asyncHandler(async (req, res) => {
     );
 });
 
+const serializeNotification = (notificationDoc) => {
+    const notification = notificationDoc.toObject ? notificationDoc.toObject() : { ...notificationDoc };
+    const metadata = notification.metadata || {};
+
+    return {
+        ...notification,
+        productName: notification.productName || metadata.productName || "",
+        variantLabel: notification.variantLabel || metadata.variantLabel || "",
+        currentStock: notification.currentStock ?? metadata.currentStock ?? 0,
+        stockThreshold: notification.stockThreshold ?? metadata.stockThreshold ?? 0,
+        isLowStock: notification.type === "low_stock" && !notification.isResolved
+    };
+};
+
+const getVendorNotifications = asyncHandler(async (req, res) => {
+    const vendor = await Vendor.findOne({ user: req.user._id });
+    if (!vendor) {
+        throw new ApiError(404, "Vendor profile not found");
+    }
+
+    await syncLowStockNotificationsForVendor(vendor._id);
+
+    const notifications = await VendorNotification.find({ vendor: vendor._id })
+        .sort({ isRead: 1, isResolved: 1, updatedAt: -1, createdAt: -1 });
+
+    const summary = {
+        totalNotifications: notifications.length,
+        unreadNotifications: notifications.filter((notification) => !notification.isRead).length,
+        activeLowStockAlerts: notifications.filter((notification) => notification.type === "low_stock" && !notification.isResolved).length,
+        resolvedLowStockAlerts: notifications.filter((notification) => notification.type === "low_stock" && notification.isResolved).length
+    };
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                notifications: notifications.map((notification) => serializeNotification(notification)),
+                summary
+            },
+            "Vendor notifications fetched successfully"
+        )
+    );
+});
+
+const markVendorNotificationRead = asyncHandler(async (req, res) => {
+    const { notificationId } = req.params;
+
+    const vendor = await Vendor.findOne({ user: req.user._id });
+    if (!vendor) {
+        throw new ApiError(404, "Vendor profile not found");
+    }
+
+    const notification = await VendorNotification.findOneAndUpdate(
+        {
+            _id: notificationId,
+            vendor: vendor._id
+        },
+        {
+            $set: {
+                isRead: true,
+                readAt: new Date()
+            }
+        },
+        { new: true }
+    );
+
+    if (!notification) {
+        throw new ApiError(404, "Notification not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, serializeNotification(notification), "Notification marked as read")
+    );
+});
+
+const markAllVendorNotificationsRead = asyncHandler(async (req, res) => {
+    const vendor = await Vendor.findOne({ user: req.user._id });
+    if (!vendor) {
+        throw new ApiError(404, "Vendor profile not found");
+    }
+
+    await VendorNotification.updateMany(
+        {
+            vendor: vendor._id,
+            isRead: false
+        },
+        {
+            $set: {
+                isRead: true,
+                readAt: new Date()
+            }
+        }
+    );
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "All notifications marked as read")
+    );
+});
+
 const getVendorDetails = asyncHandler(async (req, res)=>{
 
     const userId = req.user?._id;
@@ -440,6 +541,9 @@ export {
     updateBankDetails,
     getVendorAnalytics,
     getVendorSoldProducts,
-    setupInitialAdminAndStore
+    setupInitialAdminAndStore,
+    getVendorNotifications,
+    markVendorNotificationRead,
+    markAllVendorNotificationsRead
 
 }

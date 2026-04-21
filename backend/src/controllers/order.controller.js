@@ -11,6 +11,7 @@ import { Shipment } from "../models/shipment.model.js";
 import crypto from "crypto";
 import { createShipmentForOrder } from "../services/dhl.service.js";
 import { sendShipmentCreatedEmail } from "../utils/shipmentNotifications.js";
+import { syncLowStockNotificationsForProduct } from "../utils/vendorNotifications.js";
 
 const cloneOrderWithItems = (orderDoc, filteredItems) => {
     const order = orderDoc.toObject ? orderDoc.toObject() : { ...orderDoc };
@@ -157,6 +158,8 @@ const verifyPayment = asyncHandler(async (req, res) => {
             // Here you would normally trigger a refund logic
             throw new ApiError(400, "Payment successful, but item went out of stock. Contact support for refund.");
         }
+
+        await syncLowStockNotificationsForProduct(updatedProduct);
     }
 
     // Step 4: Finalize Order
@@ -339,6 +342,8 @@ const cancelOrder = asyncHandler(async (req, res) => {
             { _id: item.product, "variants._id": item.variantId },
             { $inc: { "variants.$.productStock": item.quantity } }
         );
+
+        await syncLowStockNotificationsForProduct(item.product);
     }
 
     order.orderStatus = "Cancelled";

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import {
@@ -164,6 +165,7 @@ export class VendorManageVariantsPageComponent implements OnInit {
     private route: ActivatedRoute,
     private vendorService: VendorService,
     private errorService: ErrorService,
+    private appRefreshService: AppRefreshService,
   ) {}
 
   ngOnInit(): void {
@@ -263,10 +265,11 @@ export class VendorManageVariantsPageComponent implements OnInit {
         if (!res?.success) {
           this.errorService.showToast(res?.message || 'Unable to update variant.', 'error');
           return;
-        }
-        this.errorService.showToast(`Variant ${form.sku.trim().toUpperCase()} updated successfully.`, 'success');
-        this.loadProduct();
-      },
+          }
+          this.errorService.showToast(`Variant ${form.sku.trim().toUpperCase()} updated successfully.`, 'success');
+          this.appRefreshService.notify('vendor');
+          this.loadProduct();
+        },
       error: (err) => {
         this.busySaveId = '';
         this.errorService.showToast(err?.error?.message || 'Unable to update variant.', 'error');

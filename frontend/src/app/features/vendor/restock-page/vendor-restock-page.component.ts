@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorProductRecord, VendorProductVariant } from '../../../core/models/vendor.models';
@@ -118,6 +119,7 @@ export class VendorRestockPageComponent implements OnInit {
     private route: ActivatedRoute,
     private vendorService: VendorService,
     private errorService: ErrorService,
+    private appRefreshService: AppRefreshService,
   ) {}
 
   ngOnInit(): void {
@@ -157,6 +159,7 @@ export class VendorRestockPageComponent implements OnInit {
         }
         this.restockDrafts[variant._id || ''] = null;
         this.errorService.showToast(`Added ${stockToAdd} units to ${variant.sku || 'the variant'}.`, 'success');
+        this.appRefreshService.notify('vendor');
         this.loadProduct();
       },
       error: (err) => {

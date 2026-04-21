@@ -39,9 +39,6 @@ import { VendorDashboardView } from '../../../core/models/vendor.models';
               <div>
                 <p class="mt-1 text-base font-black">Best Sellers</p>
               </div>
-              <span class="rounded-full px-3 py-1 text-xs font-black" [ngClass]="activeView === 'best-selling-products' ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-700'">
-                Hot
-              </span>
             </div>
           </a>
 

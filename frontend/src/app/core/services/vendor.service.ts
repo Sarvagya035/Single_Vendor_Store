@@ -9,6 +9,8 @@ import {
   OrderReportRequest,
   VendorAnalyticsPayload,
   VendorCustomersResponse,
+  VendorNotificationRecord,
+  VendorNotificationsPayload,
   VendorSoldOrderRecord
 } from '../models/vendor.models';
 
@@ -227,6 +229,32 @@ export class VendorService {
     return this.http
       .get<any>(`${this.adminUrl}/sold-items`, { withCredentials: true })
       .pipe(map((response) => (Array.isArray(response?.data) ? response.data : [])));
+  }
+
+  getVendorNotifications(): Observable<VendorNotificationsPayload> {
+    return this.http
+      .get<any>(`${this.adminUrl}/notifications`, { withCredentials: true })
+      .pipe(
+        map((response) => ({
+          notifications: Array.isArray(response?.data?.notifications) ? response.data.notifications : [],
+          summary: {
+            totalNotifications: Number(response?.data?.summary?.totalNotifications || 0),
+            unreadNotifications: Number(response?.data?.summary?.unreadNotifications || 0),
+            activeLowStockAlerts: Number(response?.data?.summary?.activeLowStockAlerts || 0),
+            resolvedLowStockAlerts: Number(response?.data?.summary?.resolvedLowStockAlerts || 0)
+          }
+        }))
+      );
+  }
+
+  markVendorNotificationRead(notificationId: string): Observable<VendorNotificationRecord> {
+    return this.http
+      .patch<any>(`${this.adminUrl}/notifications/${notificationId}/read`, {}, { withCredentials: true })
+      .pipe(map((response) => response?.data as VendorNotificationRecord));
+  }
+
+  markAllVendorNotificationsRead(): Observable<any> {
+    return this.http.patch(`${this.adminUrl}/notifications/read-all`, {}, { withCredentials: true });
   }
 
   getAdminShipments(): Observable<any> {
