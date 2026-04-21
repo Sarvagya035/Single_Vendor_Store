@@ -101,7 +101,7 @@
   }
 
   .app-page-title {
-    @apply mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl;
+    @apply mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl;
   }
 
   .app-page-description {
@@ -141,11 +141,11 @@
   }
 
   .vendor-panel-title {
-    @apply mt-2 text-2xl font-bold text-slate-900;
+    @apply mt-2 text-xl font-semibold text-slate-900;
   }
 
   .vendor-empty-title {
-    @apply text-2xl font-bold text-slate-900;
+    @apply text-xl font-semibold text-slate-900;
   }
 
   .app-surface {
@@ -205,6 +205,34 @@
     font-weight: 400;
   }
 
+  .vendor-theme .app-page-eyebrow {
+    @apply font-medium;
+  }
+
+  .vendor-theme .app-page-title {
+    @apply font-semibold;
+  }
+
+  .vendor-theme .app-page-description {
+    @apply font-normal;
+  }
+
+  .vendor-theme .vendor-panel-title {
+    @apply font-semibold;
+  }
+
+  .vendor-theme .vendor-stat-value {
+    @apply font-semibold;
+  }
+
+  .vendor-theme .vendor-empty-title {
+    @apply font-semibold;
+  }
+
+  .vendor-theme .vendor-stat-label {
+    @apply font-medium;
+  }
+
   .vendor-theme input,
   .vendor-theme textarea,
   .vendor-theme select,
@@ -232,19 +260,19 @@
   }
 
   .vendor-theme .font-black {
-    font-weight: 600 !important;
+    font-weight: 500 !important;
   }
 
   .vendor-theme .font-extrabold {
-    font-weight: 600 !important;
+    font-weight: 500 !important;
   }
 
   .vendor-theme .font-bold {
-    font-weight: 500 !important;
+    font-weight: 400 !important;
   }
 
   .vendor-theme .font-semibold {
-    font-weight: 500 !important;
+    font-weight: 400 !important;
   }
 }
 

@@ -98,12 +98,12 @@ interface VendorSidebarItem {
                   </span>
 
                   <div class="min-w-0 flex-1">
-                    <p class="text-[0.94rem] font-black tracking-[-0.01em]">{{ item.label }}</p>
+                    <p class="text-[0.92rem] font-medium tracking-[-0.01em]">{{ item.label }}</p>
                   </div>
 
                   @if (item.showCount !== false && item.count !== undefined) {
                     <span
-                      class="rounded-full px-2.5 py-0.5 text-[11px] font-black shadow-sm"
+                      class="rounded-full px-2.5 py-0.5 text-[11px] font-medium shadow-sm"
                       [ngClass]="activeView === item.view ? 'bg-[#f6b24c] text-[#5d3618]' : 'bg-[#f6b24c] text-[#5d3618]'"
                     >
                       {{ item.count }}
