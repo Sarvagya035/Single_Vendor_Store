@@ -21,149 +21,165 @@ const EMPTY_CART: CustomerCart = {
   imports: [CommonModule, RouterModule],
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
-      <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
-        <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="text-xs font-black uppercase tracking-[0.22em] text-amber-700">Shopping Bag</p>
-              <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Your cart</h1>
-              <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
-                Review the dry fruit packs you’ve added, adjust quantities, and continue to checkout when you’re ready.
-              </p>
+      <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
+        <div class="mx-auto w-full max-w-7xl">
+          <div class="vendor-page-shell overflow-hidden">
+            <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div class="max-w-2xl">
+                  <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
+                  <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Your cart</h1>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div
-            *ngIf="cartMessage"
-            class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800"
-          >
-            {{ cartMessage }}
-          </div>
+            <div
+              *ngIf="cartMessage"
+              class="mx-4 mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800 sm:mx-5 lg:mx-6"
+            >
+              {{ cartMessage }}
+            </div>
 
-          <div
-            *ngIf="cart.alerts"
-            class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700"
-          >
-            {{ cart.alerts }}
-          </div>
+            <div
+              *ngIf="cart.alerts"
+              class="mx-4 mt-4 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-700 sm:mx-5 lg:mx-6"
+            >
+              {{ cart.alerts }}
+            </div>
 
-          <div *ngIf="cartLoading" class="mt-10 text-sm font-semibold text-slate-500">
-            Loading cart...
-          </div>
+            <div *ngIf="cartLoading" class="px-4 py-6 text-sm font-medium text-slate-500 sm:px-5 lg:px-6">
+              Loading cart...
+            </div>
 
-          <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(47,27,20,0.05)]">
-            <h2 class="text-2xl font-black text-slate-900">Your cart is empty</h2>
-            <p class="mt-3 text-sm font-medium text-slate-500">
-              Browse products and add a variant to start building your order.
-            </p>
-            <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
-          </div>
+            <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] px-4 py-6 sm:px-5 lg:px-6">
+              <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
+                <p class="mt-3 text-sm font-medium text-slate-500">
+                  Browse products and add a variant to start building your order.
+                </p>
+                <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
+              </div>
+            </div>
 
-          <div *ngIf="cart.cartItems.length" class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <div class="space-y-4">
-              <article
-                *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
-                class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(47,27,20,0.06)]"
-              >
-                <div class="flex flex-col gap-4 sm:flex-row">
-                  <img
-                    [src]="cartItemImage(item)"
-                    [alt]="item.product?.productName || 'Cart item'"
-                    class="h-28 w-28 rounded-[1.5rem] object-cover"
-                  />
+            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 xl:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
+              <div class="space-y-5">
+                <article
+                  *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
+                  class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6"
+                >
+                  <div class="flex flex-col gap-4 sm:flex-row">
+                    <img
+                      [src]="cartItemImage(item)"
+                      [alt]="item.product?.productName || 'Cart item'"
+                      class="h-28 w-28 rounded-[1.5rem] object-cover"
+                    />
 
-                  <div class="min-w-0 flex-1">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <p class="text-lg font-black text-slate-900">
-                          {{ item.product?.productName || 'Product unavailable' }}
-                        </p>
-                        <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                          {{ variantLabel(resolveCartVariant(item)) }}
-                        </p>
-                      </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <p class="text-lg font-medium text-slate-900">
+                            {{ item.product?.productName || 'Product unavailable' }}
+                          </p>
+                          <p class="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                            {{ variantLabel(resolveCartVariant(item)) }}
+                          </p>
+                        </div>
 
-                      <button
-                        type="button"
-                        class="text-sm font-black text-rose-600 transition hover:text-rose-700"
-                        (click)="removeFromCart(item)"
-                      >
-                        Remove
-                      </button>
-                    </div>
-
-                    <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div class="flex items-center rounded-xl border border-[#e7dac9] bg-[#fff7ed]">
                         <button
                           type="button"
-                          class="px-4 py-3 text-base font-black text-[#6f4e37]"
-                          (click)="updateCartItem(item, 'dec')"
+                          class="text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                          (click)="removeFromCart(item)"
                         >
-                          -
-                        </button>
-                        <span class="min-w-12 text-center text-sm font-black text-slate-900">
-                          {{ item.quantity || 0 }}
-                        </span>
-                        <button
-                          type="button"
-                          class="px-4 py-3 text-base font-black text-[#6f4e37]"
-                          (click)="updateCartItem(item, 'inc')"
-                        >
-                          +
+                          Remove
                         </button>
                       </div>
 
-                      <div class="text-left sm:text-right">
-                        <p class="text-sm font-bold text-slate-500">Price</p>
-                        <p class="text-lg font-black text-slate-900">
-                          {{ formatCurrency((item.priceAtAddition || 0) * (item.quantity || 0)) }}
-                        </p>
+                      <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex items-center rounded-xl border border-[#e7dac9] bg-[#fffaf5]">
+                          <button
+                            type="button"
+                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            (click)="updateCartItem(item, 'dec')"
+                          >
+                            -
+                          </button>
+                          <span class="min-w-12 text-center text-sm font-medium text-slate-900">
+                            {{ item.quantity || 0 }}
+                          </span>
+                          <button
+                            type="button"
+                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            (click)="updateCartItem(item, 'inc')"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <div class="text-left sm:text-right">
+                          <p class="text-sm font-medium text-slate-500">Price</p>
+                          <p class="text-lg font-medium text-slate-900">
+                            {{ formatCurrency((item.priceAtAddition || 0) * (item.quantity || 0)) }}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            </div>
+                </article>
+              </div>
 
-            <aside class="h-fit rounded-[2rem] border border-[#e7dac9] bg-[#2f1b14] p-6 text-white shadow-[0_18px_50px_rgba(111,78,55,0.16)]">
-              <p class="text-xs font-black uppercase tracking-[0.22em] text-[#f5e6d3]">Summary</p>
-              <div class="mt-6 flex items-center justify-between text-sm font-bold text-[#f5e6d3]">
-                <span>Items</span>
-                <span>{{ cartCount() }}</span>
-              </div>
-              <div class="mt-3 flex items-center justify-between text-sm font-bold text-[#f5e6d3]">
-                <span>Total</span>
-                <span>{{ formatCurrency(cart.totalCartPrice || 0) }}</span>
-              </div>
-              <button
-                type="button"
-                class="mt-6 w-full rounded-2xl border border-white/20 px-4 py-3 text-sm font-black text-white transition hover:bg-white hover:text-slate-900"
-                (click)="clearCart()"
-              >
-                Clear Cart
-              </button>
-              <a
-                routerLink="/checkout"
-                class="mt-3 inline-flex w-full items-center justify-center rounded-2xl bg-white px-4 py-3 text-sm font-black text-slate-900 transition hover:bg-slate-100"
-              >
-                Proceed To Checkout
-              </a>
-            </aside>
+              <aside class="space-y-5">
+                <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6">
+                  <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Summary</p>
+
+                  <div class="mt-6 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4 text-sm text-slate-700">
+                    <div class="flex items-center justify-between">
+                      <span class="font-medium text-slate-500">Items</span>
+                      <span class="font-medium text-slate-900">{{ cartCount() }}</span>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
+                      <span class="font-medium text-slate-500">Total</span>
+                      <span class="text-2xl font-medium tracking-tight text-slate-900">{{ formatCurrency(cart.totalCartPrice || 0) }}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn-secondary mt-5 w-full !px-4 !py-3"
+                    (click)="clearCart()"
+                  >
+                    Clear Cart
+                  </button>
+                  <a
+                    routerLink="/checkout"
+                    class="btn-primary mt-3 inline-flex w-full items-center justify-center !px-4 !py-3"
+                  >
+                    Proceed To Checkout
+                  </a>
+                </div>
+              </aside>
+            </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </ng-container>
 
     <ng-template #guestState>
-      <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
-        <section class="max-w-3xl mx-auto px-4 py-20 text-center sm:px-6 lg:px-8">
-          <h1 class="text-4xl font-black tracking-tight text-slate-900">Sign in to view your cart</h1>
-          <p class="mt-4 text-base font-medium text-slate-500">
-            Your cart is available for customer accounts after login.
-          </p>
-          <a routerLink="/login" class="btn-primary mt-8 inline-flex !px-6 !py-3">Go To Login</a>
-        </section>
-      </div>
+      <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
+        <div class="mx-auto w-full max-w-7xl">
+          <div class="vendor-page-shell overflow-hidden">
+            <div class="bg-[#fffdfa] px-4 py-16 sm:px-5 lg:px-6">
+              <div class="mx-auto max-w-3xl rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
+                <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Sign in to view your cart</h1>
+                <p class="app-page-description !mt-3">
+                  Your cart is available for customer accounts after login.
+                </p>
+                <a routerLink="/login" class="btn-primary mt-8 inline-flex !px-6 !py-3">Go To Login</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </ng-template>
   `
 })

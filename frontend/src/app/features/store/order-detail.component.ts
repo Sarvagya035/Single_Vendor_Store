@@ -17,38 +17,42 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
-      <section [ngClass]="isVendorView() ? 'w-full px-0 py-0' : 'mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8'">
-        <div *ngIf="!isVendorView()" class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
+      <div class="mx-auto w-full max-w-7xl">
+        <div *ngIf="!isVendorView()" class="vendor-page-shell overflow-hidden">
+          <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Order Details</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">Order #{{ shortOrderId(order?._id) }}</h1>
-            <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-              Review items, shipping details, and payment status for this order.
-            </p>
-          </div>
+              <p class="app-page-eyebrow !text-slate-400">Order Details</p>
+              <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Order #{{ shortOrderId(order?._id) }}</h1>
+              <p class="app-page-description !mt-3 !max-w-2xl">
+                Review items, shipping details, and payment status for this order.
+              </p>
+            </div>
 
-          <div class="flex gap-3">
-            <a [routerLink]="backLink" class="btn-secondary !px-5 !py-3">Back To Orders</a>
-            <a *ngIf="order?._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary !px-5 !py-3">
-              Track Order
-            </a>
-            <button
-              *ngIf="canCancel()"
-              type="button"
-              class="rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-black text-rose-600 transition hover:bg-rose-100"
-              (click)="cancelOrder()"
-            >
-              Cancel Order
-            </button>
+            <div class="flex flex-wrap gap-3">
+              <a [routerLink]="backLink" class="btn-secondary !px-5 !py-3">Back To Orders</a>
+              <a *ngIf="order?._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary !px-5 !py-3">
+                Track Order
+              </a>
+              <button
+                *ngIf="canCancel()"
+                type="button"
+                class="rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-medium text-rose-600 transition hover:bg-rose-100"
+                (click)="cancelOrder()"
+              >
+                Cancel Order
+              </button>
+            </div>
+          </div>
           </div>
         </div>
 
-        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+        <div *ngIf="successMessage" class="mx-4 mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800 sm:mx-5 lg:mx-6">
           {{ successMessage }}
         </div>
 
-        <div *ngIf="isLoading" class="mt-10 text-sm font-semibold text-slate-500">Loading order details...</div>
+        <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading order details...</div>
 
         <div *ngIf="!isLoading && order as currentOrder" [ngClass]="isVendorView() ? 'mt-0' : 'mt-8'">
           <ng-container *ngIf="isVendorView(); else customerOrderLayout">
@@ -284,28 +288,28 @@ import { OrderService } from '../../core/services/order.service';
           </ng-container>
 
           <ng-template #customerOrderLayout>
-            <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+            <div class="grid gap-6 px-4 pb-6 sm:px-5 lg:px-6 xl:grid-cols-[minmax(0,1fr)_340px]">
               <section class="space-y-6">
                 <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
                   <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
                     <div>
-                      <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Status</p>
-                      <h2 class="mt-2 text-2xl font-black text-slate-900">Order progress</h2>
+                      <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Status</p>
+                      <h2 class="mt-2 text-2xl font-medium text-slate-900">Order progress</h2>
                     </div>
-                    <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(displayStatus)">
+                    <span class="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(displayStatus)">
                       {{ displayStatus }}
                     </span>
                   </div>
 
                   <div class="mt-5 grid gap-4 md:grid-cols-2">
                     <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
-                      <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Placed On</p>
-                      <p class="mt-3 text-base font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
+                      <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Placed On</p>
+                      <p class="mt-3 text-base font-medium text-slate-900">{{ formatDate(order.createdAt) }}</p>
                     </div>
 
                     <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
-                      <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Payment</p>
-                      <p class="mt-3 text-base font-black text-slate-900">{{ isVendorView() ? 'Handled by marketplace' : (order.paymentInfo?.status || 'Pending') }}</p>
+                      <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Payment</p>
+                      <p class="mt-3 text-base font-medium text-slate-900">{{ isVendorView() ? 'Handled by marketplace' : (order.paymentInfo?.status || 'Pending') }}</p>
                     </div>
                   </div>
                 </div>
@@ -313,17 +317,17 @@ import { OrderService } from '../../core/services/order.service';
                 <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
                   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#f1e4d4] pb-4">
                     <div>
-                      <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Tracking</p>
-                      <h2 class="mt-2 text-2xl font-black text-slate-900">Shipment progress</h2>
+                      <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Tracking</p>
+                      <h2 class="mt-2 text-2xl font-medium text-slate-900">Shipment progress</h2>
                     </div>
                     <div class="flex items-center gap-2">
-                      <span *ngIf="shipment?.isTestMode" class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800">
+                      <span *ngIf="shipment?.isTestMode" class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-amber-800">
                         Test Mode
                       </span>
                       <button
                         *ngIf="canRefreshShipment()"
                         type="button"
-                        class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800 transition hover:bg-amber-100"
+                        class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] text-amber-800 transition hover:bg-amber-100"
                         (click)="refreshShipment()"
                       >
                         Refresh Tracking
@@ -334,22 +338,22 @@ import { OrderService } from '../../core/services/order.service';
                   <div *ngIf="shipment; else noShipment" class="mt-5 space-y-4">
                     <div class="grid gap-4 md:grid-cols-2">
                       <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Courier</p>
-                        <p class="mt-3 text-base font-black text-slate-900">{{ shipment.courierName || 'DHL' }}</p>
+                        <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Courier</p>
+                        <p class="mt-3 text-base font-medium text-slate-900">{{ shipment.courierName || 'DHL' }}</p>
                       </div>
                       <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Tracking Number</p>
-                        <p class="mt-3 break-all text-base font-black text-slate-900">{{ shipment.trackingNumber || 'Not assigned yet' }}</p>
+                        <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Tracking Number</p>
+                        <p class="mt-3 break-all text-base font-medium text-slate-900">{{ shipment.trackingNumber || 'Not assigned yet' }}</p>
                       </div>
                     </div>
 
                     <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
                       <div class="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Shipment Status</p>
-                          <p class="mt-3 text-lg font-black text-slate-900">{{ shipment.shipmentStatus || 'Created' }}</p>
+                          <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Shipment Status</p>
+                          <p class="mt-3 text-lg font-medium text-slate-900">{{ shipment.shipmentStatus || 'Created' }}</p>
                         </div>
-                        <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(shipment.shipmentStatus)">
+                        <span class="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(shipment.shipmentStatus)">
                           {{ shipment.shipmentStatus || 'Created' }}
                         </span>
                       </div>
@@ -361,7 +365,7 @@ import { OrderService } from '../../core/services/order.service';
 
                     <div class="space-y-3">
                       <div class="flex items-center justify-between">
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Timeline</p>
+                        <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Timeline</p>
                         <p class="text-xs font-semibold text-slate-500">{{ shipment.trackingEvents?.length || 0 }} updates</p>
                       </div>
 
@@ -372,14 +376,14 @@ import { OrderService } from '../../core/services/order.service';
                         >
                           <div class="flex items-start justify-between gap-4">
                             <div>
-                              <p class="text-sm font-black text-slate-900">{{ event.status }}</p>
+                              <p class="text-sm font-medium text-slate-900">{{ event.status }}</p>
                               <p class="mt-1 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
                             </div>
                             <p class="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
                               {{ formatDateTime(event.eventTime) }}
                             </p>
                           </div>
-                          <p *ngIf="event.location" class="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
+                          <p *ngIf="event.location" class="mt-2 text-xs font-medium uppercase tracking-[0.16em] text-amber-700">
                             {{ event.location }}
                           </p>
                         </article>
@@ -434,8 +438,8 @@ import { OrderService } from '../../core/services/order.service';
 
               <aside class="space-y-6">
                 <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Delivery</p>
-                  <h2 class="mt-2 text-2xl font-black text-slate-900">Shipping address</h2>
+                  <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Delivery</p>
+                  <h2 class="mt-2 text-2xl font-medium text-slate-900">Shipping address</h2>
                   <p class="mt-4 text-sm font-medium leading-7 text-slate-600">
                     {{ order.shippingAddress?.address || 'Address unavailable' }}
                   </p>
@@ -469,8 +473,7 @@ import { OrderService } from '../../core/services/order.service';
             </div>
           </ng-template>
         </div>
-      </section>
-    </div>
+      </div>
   `
 })
 export class OrderDetailComponent implements OnInit {

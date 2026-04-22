@@ -18,9 +18,6 @@ import { OrderService } from '../../core/services/order.service';
             <div class="max-w-2xl">
               <p class="app-page-eyebrow !text-amber-700">Order History</p>
               <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My orders</h1>
-              <p class="app-page-description !mt-3 !max-w-2xl">
-                Track order status, review delivery details, and open any order for a full breakdown.
-              </p>
             </div>
 
             <div class="flex flex-wrap gap-3">
@@ -39,10 +36,6 @@ import { OrderService } from '../../core/services/order.service';
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p class="text-xs font-medium uppercase tracking-[0.28em] text-slate-400">Search Orders</p>
-              <h2 class="mt-2 text-2xl font-medium tracking-tight text-slate-900">Find an order fast</h2>
-              <p class="mt-2 max-w-2xl text-sm font-medium leading-7 text-slate-500">
-                Search by order number, item name, city, pincode, or status.
-              </p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
@@ -76,10 +69,6 @@ import { OrderService } from '../../core/services/order.service';
               class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
             />
           </div>
-
-          <p class="mt-3 text-sm font-medium text-slate-500">
-            Showing {{ filteredOrders.length }} of {{ orders.length }} order{{ orders.length === 1 ? '' : 's' }}.
-          </p>
         </div>
         </div>
 
