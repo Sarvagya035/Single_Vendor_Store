@@ -157,9 +157,6 @@ interface CategoryCreateForm {
               <div class="text-lg font-black text-slate-900">
                 {{ category.name }}
               </div>
-              <p *ngIf="category.description" class="mt-1 text-sm font-medium text-[#9c5f39]">
-                {{ category.description }}
-              </p>
             </div>
 
             <span

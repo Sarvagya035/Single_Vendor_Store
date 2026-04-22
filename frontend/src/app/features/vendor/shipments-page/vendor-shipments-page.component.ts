@@ -6,6 +6,7 @@ import {
   AdminShipmentStatus,
   AdminShipmentUpdatePayload
 } from '../../../core/models/vendor.models';
+import { AuthService } from '../../../core/services/auth.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
@@ -51,188 +52,242 @@ interface ShipmentCardView {
     <section class="space-y-6">
       <div class="vendor-page-shell overflow-hidden">
         <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-        <app-page-header
-          eyebrow="Shipments"
-          title="Manage shipments"
-          description="Track vendor shipments, update delivery fields, and keep logistics status consistent."
-          titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
-        >
-          <button type="button" (click)="loadShipments()" [disabled]="isLoading" class="btn-secondary !py-3">
-            {{ isLoading ? 'Refreshing...' : 'Refresh Shipments' }}
-          </button>
-        </app-page-header>
+          <app-page-header
+            eyebrow="Shipments"
+            title="Shipment management"
+            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+          >
+            <button type="button" (click)="loadShipments()" [disabled]="isLoading" class="btn-secondary !py-3">
+              {{ isLoading ? 'Refreshing...' : 'Refresh Shipments' }}
+            </button>
+          </app-page-header>
         </div>
 
         <div *ngIf="summary" class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-3 lg:px-6">
-        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-          <p class="vendor-stat-label">Total</p>
-          <p class="vendor-stat-value">{{ summary.totalShipments }}</p>
-        </article>
-        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-          <p class="vendor-stat-label">Open</p>
-          <p class="vendor-stat-value">{{ summary.openShipments }}</p>
-        </article>
-        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-          <p class="vendor-stat-label">Delivered</p>
-          <p class="vendor-stat-value">{{ summary.deliveredShipments }}</p>
-        </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label">Total</p>
+            <p class="vendor-stat-value">{{ summary.totalShipments }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label">Open</p>
+            <p class="vendor-stat-value">{{ summary.openShipments }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+            <p class="vendor-stat-label">Delivered</p>
+            <p class="vendor-stat-value">{{ summary.deliveredShipments }}</p>
+          </article>
         </div>
 
-      <div *ngIf="successMessage" class="border-t border-slate-200 px-4 py-3 text-sm font-semibold text-emerald-800 sm:px-5 lg:px-6">
-        {{ successMessage }}
-      </div>
+        <div *ngIf="successMessage" class="border-t border-slate-200 px-4 py-3 text-sm font-semibold text-emerald-800 sm:px-5 lg:px-6">
+          {{ successMessage }}
+        </div>
 
-      <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading shipment records...</div>
+        <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">
+          Loading shipment records...
+        </div>
 
-      <div *ngIf="!isLoading && shipments.length === 0" class="border-t border-slate-200 px-4 py-12 text-center sm:px-5 lg:px-6">
-        <h2 class="vendor-empty-title">No shipments yet</h2>
-        <p class="mt-3 text-sm font-medium text-slate-500">
-          Shipment records will appear here after payment verification creates them.
-        </p>
-      </div>
+        <div *ngIf="!isLoading && shipments.length === 0" class="border-t border-slate-200 px-4 py-12 text-center sm:px-5 lg:px-6">
+          <h2 class="vendor-empty-title">No shipments yet</h2>
+          <p class="mt-3 text-sm font-medium text-slate-500">
+            Shipment records will appear here after payment verification creates them.
+          </p>
+        </div>
 
-        <div *ngIf="shipments.length" class="grid gap-5 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
-        <article
-          *ngFor="let shipment of shipments; trackBy: trackByShipment"
-          class="rounded-[1.5rem] border border-slate-200 bg-white p-5 transition hover:bg-[#fffaf4]"
-        >
-          <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-            <div class="min-w-0 flex-1">
-              <div class="flex flex-wrap items-center gap-3">
-                <p class="text-lg font-black text-slate-900">Order #{{ shortOrderId(shipment.orderId) }}</p>
-                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(shipment.shipmentStatus)">
-                  {{ shipment.shipmentStatus || 'Created' }}
-                </span>
-                <span *ngIf="shipment.isTestMode" class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-amber-800">
-                  Test Mode
-                </span>
-              </div>
-
-                <div class="mt-4 grid gap-4 md:grid-cols-3">
-                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Customer</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.customerName || 'Customer' }}</p>
-                  <p class="mt-1 text-xs font-semibold text-slate-500">{{ shipment.customerEmail || '-' }}</p>
-                </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Courier</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.courierName || 'DHL' }}</p>
-                  <p class="mt-1 text-xs font-semibold text-slate-500">Tracking: {{ shipment.trackingNumber || 'Not assigned' }}</p>
-                </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Timeline</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.trackingEvents.length }} update(s)</p>
-                  <p class="mt-1 text-xs font-semibold text-slate-500">
-                    Last synced {{ formatDateTime(shipment.lastSyncedAt) }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-4 rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Order status</p>
-                <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.orderStatus || 'Processing' }}</p>
-                <p class="mt-1 text-xs font-semibold text-slate-500">
-                  {{ shipment.createdAt ? 'Created ' + formatDateTime(shipment.createdAt) : 'Recently created' }}
-                </p>
-              </div>
-
-              <div class="mt-4 grid gap-3">
-                <article
-                  *ngFor="let event of shipment.trackingEvents || []; trackBy: trackByEvent"
-                  class="rounded-[1.4rem] border border-slate-200 bg-white p-4"
-                >
-                  <div class="flex items-start justify-between gap-4">
-                    <div>
-                      <p class="text-sm font-black text-slate-900">{{ event.status }}</p>
-                      <p class="mt-1 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
+        <div *ngIf="shipments.length" class="space-y-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
+          <article
+            *ngFor="let shipment of shipments; trackBy: trackByShipment"
+            class="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-[0_12px_34px_rgba(47,27,20,0.05)]"
+          >
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-3">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f3eee9] text-[#7c5646]">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
+                      <path d="M3 7h11v8H3z" />
+                      <path d="M14 10h3l3 3v2h-6z" />
+                      <circle cx="7" cy="18" r="1.5" />
+                      <circle cx="17" cy="18" r="1.5" />
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <p class="text-lg font-black text-slate-900 sm:text-xl">ORD-{{ shortOrderId(shipment.orderId) }}</p>
+                      <span *ngIf="shipment.isTestMode" class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-700">
+                        Test Mode
+                      </span>
                     </div>
-                    <p class="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                      {{ formatDateTime(event.eventTime) }}
+                    <p class="mt-1 text-sm font-medium text-[#9c5f39]">
+                      {{ shipment.customerName || 'Customer' }} • {{ shipment.customerEmail || '-' }}
                     </p>
                   </div>
-                  <p *ngIf="event.location" class="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">
-                    {{ event.location }}
-                  </p>
-                </article>
-              </div>
-            </div>
+                </div>
 
-            <div class="min-w-[320px] rounded-[1.5rem] border border-slate-200 bg-[#fffaf4] p-5">
-              <p class="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">Update shipment</p>
-              <h3 class="mt-2 text-xl font-black text-slate-900">Edit delivery fields</h3>
-
-              <div *ngIf="drafts[shipment.orderId] as draft" class="mt-4 space-y-3">
-                <label class="block space-y-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Courier</span>
-                  <input
-                    class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-600/30"
-                    [(ngModel)]="draft.courierName"
-                  />
-                </label>
-
-                <label class="block space-y-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Tracking number</span>
-                  <input
-                    class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-600/30"
-                    [(ngModel)]="draft.trackingNumber"
-                  />
-                </label>
-
-                <label class="block space-y-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Status</span>
-                  <select
-                    class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-600/30"
-                    [(ngModel)]="draft.shipmentStatus"
-                  >
-                    <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}</option>
-                  </select>
-                </label>
-
-                <label class="block space-y-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Estimated delivery</span>
-                  <input
-                    type="date"
-                    class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-600/30"
-                    [(ngModel)]="draft.estimatedDeliveryDate"
-                  />
-                </label>
-
-                <label class="block space-y-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Event note</span>
-                  <textarea
-                    rows="3"
-                    class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-600/30"
-                    [(ngModel)]="draft.description"
-                  ></textarea>
-                </label>
-
-                <label class="block space-y-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Location</span>
-                  <input
-                    class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-emerald-300 focus:ring-2 focus:ring-emerald-600/30"
-                    [(ngModel)]="draft.location"
-                  />
-                </label>
-
-                <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
-                  <input type="checkbox" [(ngModel)]="draft.isTestMode" />
-                  <span class="text-sm font-bold text-slate-800">Test mode shipment</span>
-                </label>
-
-                <div class="flex gap-3 pt-2">
-                  <button
-                    type="button"
-                    class="btn-primary !px-5 !py-3"
-                    [disabled]="savingOrderId === shipment.orderId"
-                    (click)="saveShipment(shipment)"
-                  >
-                    {{ savingOrderId === shipment.orderId ? 'Saving...' : 'Save Shipment' }}
-                  </button>
-                  <a [routerLink]="['/track-order', shipment.orderId]" class="btn-secondary !px-5 !py-3">View Track Page</a>
+                <div class="mt-5 grid gap-4 md:grid-cols-4">
+                  <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Courier</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.courierName || 'DHL' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Tracking Number</p>
+                    <p class="mt-2 break-all text-sm font-black text-slate-900">{{ shipment.trackingNumber || 'Not assigned' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Estimated Delivery</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.estimatedDeliveryDate ? formatDate(shipment.estimatedDeliveryDate) : 'Not set' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Last Synced</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.lastSyncedAt ? formatDateTime(shipment.lastSyncedAt) : 'Not synced' }}</p>
+                  </div>
                 </div>
               </div>
+
+              <div class="flex shrink-0 flex-col items-start gap-3 lg:items-end">
+                <span class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-black" [ngClass]="statusClass(shipment.shipmentStatus)">
+                  <span class="h-2.5 w-2.5 rounded-full" [ngClass]="statusDotClass(shipment.shipmentStatus)"></span>
+                  {{ shipment.shipmentStatus || 'Created' }}
+                </span>
+
+                <button
+                  type="button"
+                  class="w-full rounded-full bg-[#f5ede5] px-5 py-3 text-sm font-black text-[#7c5646] transition hover:bg-[#efe1d5]"
+                  (click)="toggleShipment(shipment.orderId)"
+                >
+                  {{ isExpanded(shipment.orderId) ? 'Hide Timeline & Edit' : 'View Timeline & Edit' }}
+                </button>
+              </div>
             </div>
-          </div>
+
+            <div *ngIf="isExpanded(shipment.orderId)" class="mt-5 border-t border-slate-200 pt-5">
+              <div class="grid gap-0 overflow-hidden rounded-[1.5rem] border border-slate-200 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.95fr)]">
+                <section class="border-b border-slate-200 bg-[#fffaf4] p-5 lg:border-b-0 lg:border-r">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#7c5646]">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 8v4l3 2" />
+                      </svg>
+                    </span>
+                    <h3 class="text-lg font-black text-slate-900">Tracking Timeline ({{ shipment.trackingEvents.length }} events)</h3>
+                  </div>
+
+                  <div class="mt-5 space-y-5">
+                    <article
+                      *ngFor="let event of shipment.trackingEvents || []; trackBy: trackByEvent"
+                      class="relative pl-6"
+                    >
+                      <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full" [ngClass]="timelineDotClass(event.status)"></span>
+                      <span class="absolute left-[5px] top-4 bottom-0 w-px bg-slate-200"></span>
+                      <div class="space-y-1">
+                        <p class="text-sm font-black text-slate-900">{{ event.status }}</p>
+                        <p class="text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#9c5f39]">
+                          {{ event.location || 'Location unavailable' }} • {{ formatDateTime(event.eventTime) }}
+                        </p>
+                      </div>
+                    </article>
+                  </div>
+                </section>
+
+                <section class="bg-white p-5">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[#7c5646]">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
+                        <path d="M4 20h16" />
+                        <path d="M14.5 3.5l6 6L9 21H3v-6z" />
+                      </svg>
+                    </span>
+                    <h3 class="text-lg font-black text-slate-900">
+                      {{ isAdminUser ? 'Edit Shipment Details' : 'Shipment Details' }}
+                    </h3>
+                  </div>
+
+                  <div *ngIf="drafts[shipment.orderId] as draft" class="mt-5 space-y-4">
+                    <label class="block space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Courier Name</span>
+                      <input
+                        class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner outline-none transition focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                        [(ngModel)]="draft.courierName"
+                        [readonly]="!isAdminUser"
+                      />
+                    </label>
+
+                    <label class="block space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Tracking Number</span>
+                      <input
+                        class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner outline-none transition focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                        [(ngModel)]="draft.trackingNumber"
+                        [readonly]="!isAdminUser"
+                      />
+                    </label>
+
+                    <label class="block space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Status</span>
+                      <select
+                        class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner outline-none transition focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                        [(ngModel)]="draft.shipmentStatus"
+                        [disabled]="!isAdminUser"
+                      >
+                        <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}</option>
+                      </select>
+                    </label>
+
+                    <label class="block space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Estimated Delivery</span>
+                      <input
+                        type="date"
+                        class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner outline-none transition focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                        [(ngModel)]="draft.estimatedDeliveryDate"
+                        [readonly]="!isAdminUser"
+                      />
+                    </label>
+
+                    <label class="block space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Event Note</span>
+                      <textarea
+                        rows="3"
+                        class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner outline-none transition focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                        [(ngModel)]="draft.description"
+                        [readonly]="!isAdminUser"
+                      ></textarea>
+                    </label>
+
+                    <label class="block space-y-2">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Location</span>
+                      <input
+                        class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner outline-none transition focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                        [(ngModel)]="draft.location"
+                        [readonly]="!isAdminUser"
+                      />
+                    </label>
+
+                    <label class="flex items-center gap-3 rounded-2xl border border-[#eadcc9] bg-[#fffaf4] px-4 py-3">
+                      <input type="checkbox" [(ngModel)]="draft.isTestMode" [disabled]="!isAdminUser" />
+                      <span class="text-sm font-bold text-slate-800">Test mode shipment</span>
+                    </label>
+
+                    <div *ngIf="!isAdminUser" class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+                      Shipment editing is currently limited to admin users. Vendors can still review the shipment timeline here.
+                    </div>
+
+                    <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+                      <button
+                        *ngIf="isAdminUser"
+                        type="button"
+                        class="rounded-2xl bg-[#7c5646] px-5 py-3 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
+                        [disabled]="savingOrderId === shipment.orderId"
+                        (click)="saveShipment(shipment)"
+                      >
+                        {{ savingOrderId === shipment.orderId ? 'Saving...' : 'Save Shipment' }}
+                      </button>
+                      <a [routerLink]="['/vendor/orders', shipment.orderId, 'tracking']" class="rounded-2xl border border-[#eadcc9] bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-[#fffaf4]">
+                        Open Track Page
+                      </a>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
           </article>
         </div>
       </div>
@@ -247,14 +302,33 @@ export class VendorShipmentsPageComponent implements OnInit {
   isLoading = false;
   savingOrderId = '';
   successMessage = '';
+  expandedOrderId = '';
+  currentRoles: string[] = [];
 
   constructor(
+    private authService: AuthService,
     private vendorService: VendorService,
     private errorService: ErrorService
   ) {}
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentRoles = this.normalizeRoles(user?.role);
+    });
+
+    if (!this.currentRoles.length) {
+      this.authService.getCurrentUser().subscribe({
+        error: () => {
+          this.currentRoles = [];
+        }
+      });
+    }
+
     this.loadShipments();
+  }
+
+  get isAdminUser(): boolean {
+    return this.currentRoles.includes('admin') || this.currentRoles.includes('Admin');
   }
 
   loadShipments(): void {
@@ -266,14 +340,26 @@ export class VendorShipmentsPageComponent implements OnInit {
         this.summary = response?.summary || null;
         this.shipments = (response?.shipments || []).map((shipment: any) => this.mapShipment(shipment));
         this.drafts = this.buildDraftMap(this.shipments);
+        this.expandedOrderId = this.expandedOrderId && this.shipments.some((shipment) => shipment.orderId === this.expandedOrderId)
+          ? this.expandedOrderId
+          : '';
       },
       error: () => {
         this.isLoading = false;
         this.shipments = [];
         this.summary = null;
         this.drafts = {};
+        this.expandedOrderId = '';
       }
     });
+  }
+
+  toggleShipment(orderId: string): void {
+    this.expandedOrderId = this.expandedOrderId === orderId ? '' : orderId;
+  }
+
+  isExpanded(orderId: string): boolean {
+    return this.expandedOrderId === orderId;
   }
 
   saveShipment(shipment: ShipmentCardView): void {
@@ -343,17 +429,62 @@ export class VendorShipmentsPageComponent implements OnInit {
   statusClass(status?: string): string {
     switch (status) {
       case 'Delivered':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'border-emerald-200 bg-emerald-50 text-emerald-700';
       case 'Out for Delivery':
       case 'In Transit':
       case 'Picked Up':
       case 'Created':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'border-sky-200 bg-sky-50 text-sky-600';
       case 'Exception':
-        return 'bg-rose-100 text-rose-700';
+        return 'border-rose-200 bg-rose-50 text-rose-700';
       default:
-        return 'bg-amber-100 text-amber-700';
+        return 'border-amber-200 bg-amber-50 text-amber-700';
     }
+  }
+
+  statusDotClass(status?: string): string {
+    switch (status) {
+      case 'Delivered':
+        return 'bg-emerald-500';
+      case 'Out for Delivery':
+      case 'In Transit':
+      case 'Picked Up':
+      case 'Created':
+        return 'bg-sky-500';
+      case 'Exception':
+        return 'bg-rose-500';
+      default:
+        return 'bg-amber-500';
+    }
+  }
+
+  timelineDotClass(status?: string): string {
+    switch (status) {
+      case 'Delivered':
+        return 'bg-emerald-500';
+      case 'Out for Delivery':
+        return 'bg-amber-400';
+      case 'In Transit':
+      case 'Picked Up':
+      case 'Created':
+        return 'bg-slate-500';
+      case 'Exception':
+        return 'bg-rose-500';
+      default:
+        return 'bg-[#7c5646]';
+    }
+  }
+
+  formatDate(value?: string): string {
+    if (!value) {
+      return 'Recently';
+    }
+
+    return new Intl.DateTimeFormat('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).format(new Date(value));
   }
 
   private mapShipment(shipment: any): ShipmentCardView {
@@ -409,5 +540,17 @@ export class VendorShipmentsPageComponent implements OnInit {
     }
 
     return new Date(value).toISOString().slice(0, 10);
+  }
+
+  private normalizeRoles(role: unknown): string[] {
+    if (Array.isArray(role)) {
+      return role.map((value) => String(value));
+    }
+
+    if (typeof role === 'string' && role.trim()) {
+      return [role];
+    }
+
+    return [];
   }
 }

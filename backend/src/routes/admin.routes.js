@@ -94,7 +94,7 @@ router.route("/notifications").get(verifyJWT, authorizeRoles("vendor", "admin"),
 router.route("/notifications/:notificationId/read").patch(verifyJWT, authorizeRoles("vendor", "admin"), markVendorNotificationRead);
 router.route("/notifications/read-all").patch(verifyJWT, authorizeRoles("vendor", "admin"), markAllVendorNotificationsRead);
 router.route("/reports/orders").get(verifyJWT, authorizeRoles("vendor", "admin"), downloadOrderReports);
-router.route("/shipments").get(verifyJWT, authorizeRoles("admin"), getAdminShipments);
+router.route("/shipments").get(verifyJWT, authorizeRoles("vendor", "admin"), getAdminShipments);
 router.route("/shipments/:orderId").patch(verifyJWT, authorizeRoles("admin"), updateAdminShipment);
 
 router.route("/initial-setup-129986").post(upload.single("vendorLogo"), setupInitialAdminAndStore) //working nicely

@@ -18,7 +18,6 @@ import { VendorService } from '../../../core/services/vendor.service';
 import { VendorSidebarComponent } from '../sidebar/vendor-sidebar.component';
 import { VendorDashboardView } from '../../../core/models/vendor.models';
 import { OrderService } from '../../../core/services/order.service';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'app-vendor-shell',
@@ -35,7 +34,7 @@ import { of } from 'rxjs';
             [customerCount]="customerCount"
             [orderCount]="orderCount"
             [shipmentCount]="shipmentCount"
-            [showShipments]="isAdminUser"
+            [showShipments]="true"
           />
 
           <section class="space-y-6">
@@ -167,7 +166,7 @@ export class VendorShellComponent implements OnInit {
   }
 
   loadSummary(): void {
-    const shipmentRequest = this.isAdminUser ? this.vendorService.getAdminShipments() : of(null);
+    const shipmentRequest = this.vendorService.getAdminShipments();
 
     forkJoin({
       products: this.vendorService.getMyProducts(),

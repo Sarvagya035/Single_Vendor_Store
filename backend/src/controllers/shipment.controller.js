@@ -125,7 +125,23 @@ const syncShipmentStatus = asyncHandler(async (req, res) => {
 });
 
 const getAdminShipments = asyncHandler(async (req, res) => {
-    const shipments = await Shipment.find()
+    const userRoles = Array.isArray(req.user.role) ? req.user.role : [req.user.role];
+    let shipmentQuery = {};
+
+    if (userRoles.includes("vendor") && !userRoles.includes("admin")) {
+        const vendor = await Vendor.findOne({ user: req.user._id });
+
+        if (!vendor) {
+            throw new ApiError(404, "Vendor profile not found");
+        }
+
+        const vendorOrders = await Order.find({ "orderItems.vendor": vendor._id }).select("_id");
+        shipmentQuery = {
+            order: { $in: vendorOrders.map((order) => order._id) }
+        };
+    }
+
+    const shipments = await Shipment.find(shipmentQuery)
         .populate({
             path: "order",
             populate: {
@@ -169,6 +185,11 @@ const updateAdminShipment = asyncHandler(async (req, res) => {
     const order = await Order.findById(orderId).populate("user", "fullName username email");
     if (!order) {
         throw new ApiError(404, "Order not found");
+    }
+
+    const allowed = await canAccessOrder(order, req);
+    if (!allowed) {
+        throw new ApiError(403, "Unauthorized access to shipment update");
     }
 
     let shipment = await Shipment.findOne({ order: order._id });
