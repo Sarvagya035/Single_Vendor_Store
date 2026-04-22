@@ -16,7 +16,7 @@ import { ErrorService } from '../../core/services/error.service';
       <div class="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[#d4a017]/20 blur-[120px] animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
-        <h2 class="text-4xl font-black text-slate-900 tracking-tight">Reset Password</h2>
+        <h2 class="text-4xl font-semibold text-slate-900 tracking-tight">Reset Password</h2>
         <p class="text-slate-500 font-medium tracking-wide">Create a new password for your account</p>
       </div>
 
@@ -28,7 +28,7 @@ import { ErrorService } from '../../core/services/error.service';
 
           <form class="space-y-8" (ngSubmit)="onSubmit()" *ngIf="token">
             <div class="space-y-2">
-              <label for="newPassword" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">New Password</label>
+              <label for="newPassword" class="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.15em] ml-1">New Password</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   🔑
@@ -41,12 +41,12 @@ import { ErrorService } from '../../core/services/error.service';
                   required
                   [(ngModel)]="newPassword"
                   placeholder="Enter a new password"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
                 >
                 <button
                   type="button"
                   (click)="showPassword = !showPassword"
-                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                 >
                   {{ showPassword ? 'Hide' : 'Show' }}
                 </button>
@@ -54,7 +54,7 @@ import { ErrorService } from '../../core/services/error.service';
             </div>
 
             <div class="space-y-2">
-              <label for="confirmPassword" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Confirm Password</label>
+              <label for="confirmPassword" class="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.15em] ml-1">Confirm Password</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   🔒
@@ -67,12 +67,12 @@ import { ErrorService } from '../../core/services/error.service';
                   required
                   [(ngModel)]="confirmPassword"
                   placeholder="Confirm your new password"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
                 >
                 <button
                   type="button"
                   (click)="showConfirmPassword = !showConfirmPassword"
-                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                 >
                   {{ showConfirmPassword ? 'Hide' : 'Show' }}
                 </button>
@@ -86,7 +86,7 @@ import { ErrorService } from '../../core/services/error.service';
 
           <div class="mt-8 border-t border-[#f1e4d4] pt-6 text-center">
             <p class="text-sm font-medium text-slate-500">
-              <a routerLink="/login" class="text-amber-700 font-black hover:text-amber-800 transition-colors uppercase tracking-tighter">Back to Login</a>
+              <a routerLink="/login" class="text-amber-700 font-semibold hover:text-amber-800 transition-colors uppercase tracking-tighter">Back to Login</a>
             </p>
           </div>
         </div>

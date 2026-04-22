@@ -15,13 +15,15 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
-      <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
+      <div class="mx-auto w-full max-w-7xl">
+        <div class="vendor-page-shell overflow-hidden">
+          <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-amber-700">Track Order</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">Shipment tracking</h1>
-            <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+            <p class="app-page-eyebrow !text-amber-700">Track Order</p>
+            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Shipment tracking</h1>
+            <p class="app-page-description !mt-3 !max-w-2xl">
               Follow courier movement and delivery progress for this order.
             </p>
           </div>
@@ -31,21 +33,22 @@ import { OrderService } from '../../core/services/order.service';
             <a routerLink="/orders" class="btn-primary !px-5 !py-3">Back To Orders</a>
           </div>
         </div>
+          </div>
 
-        <div *ngIf="isLoading" class="mt-10 text-sm font-semibold text-slate-500">Loading tracking details...</div>
+        <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading tracking details...</div>
 
-        <div *ngIf="!isLoading && order" class="mt-8">
+        <div *ngIf="!isLoading && order" class="bg-[#fffdfa] p-4 sm:p-5 lg:p-6">
           <div class="rounded-[2.25rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)] sm:p-8">
             <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
               <div>
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Order</p>
-                <h2 class="mt-2 text-2xl font-black text-slate-900">#{{ shortOrderId(order._id) }}</h2>
+                <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Order</p>
+                <h2 class="mt-2 text-2xl font-medium text-slate-900">#{{ shortOrderId(order._id) }}</h2>
                 <p class="mt-2 text-sm font-medium text-slate-500">
                   Placed on {{ formatDate(order.createdAt) }} • {{ itemCount(order) }} item{{ itemCount(order) === 1 ? '' : 's' }}
                 </p>
               </div>
 
-              <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(trackingStage)">
+              <span class="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(trackingStage)">
                 {{ trackingStage }}
               </span>
             </div>
@@ -56,13 +59,13 @@ import { OrderService } from '../../core/services/order.service';
                 <div class="grid grid-cols-4 gap-2">
                   <div *ngFor="let step of trackingSteps; trackBy: trackByStep" class="relative z-10 text-center">
                     <div
-                      class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-4 text-sm font-black shadow-sm"
+                      class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-4 text-sm font-medium shadow-sm"
                       [ngClass]="stepCircleClass(step)"
                     >
                       <span *ngIf="step.completed">✓</span>
                       <span *ngIf="!step.completed">{{ step.index + 1 }}</span>
                     </div>
-                    <p class="mt-3 text-sm font-black text-slate-900">{{ step.label }}</p>
+                    <p class="mt-3 text-sm font-medium text-slate-900">{{ step.label }}</p>
                     <p class="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                       {{ step.time || 'Waiting' }}
                     </p>
@@ -74,10 +77,10 @@ import { OrderService } from '../../core/services/order.service';
             <div class="mt-8 rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] px-5 py-5">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
                 <div class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-600 text-white">
-                  <span class="text-lg font-black">✓</span>
+                  <span class="text-lg font-medium">✓</span>
                 </div>
                 <div class="min-w-0">
-                  <p class="text-lg font-black text-emerald-700">{{ bannerTitle }}</p>
+                  <p class="text-lg font-medium text-emerald-700">{{ bannerTitle }}</p>
                   <p class="mt-2 text-sm font-semibold leading-7 text-slate-700">{{ bannerMessage }}</p>
                   <p *ngIf="bannerDate" class="mt-2 text-sm font-medium text-slate-500">{{ bannerDate }}</p>
                 </div>
@@ -105,25 +108,25 @@ import { OrderService } from '../../core/services/order.service';
                   />
                   <ng-template #noImage>
                     <div class="text-center">
-                      <p class="text-xs font-black uppercase tracking-[0.16em] text-slate-400">No image</p>
+                      <p class="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">No image</p>
                     </div>
                   </ng-template>
                 </div>
 
                 <div class="min-w-0 flex-1">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                  <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
                     Ordered on {{ formatDate(order.createdAt) }}
                   </p>
-                  <h3 class="mt-2 text-lg font-black text-slate-900">{{ item.name || 'Order item' }}</h3>
+                  <h3 class="mt-2 text-lg font-medium text-slate-900">{{ item.name || 'Order item' }}</h3>
                   <p class="mt-2 text-sm font-semibold text-slate-600">Qty - {{ item.quantity || 0 }}</p>
-                  <p class="mt-4 text-xl font-black text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
+                  <p class="mt-4 text-xl font-medium text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
                 </div>
               </article>
             </div>
 
             <div class="mt-8 grid gap-4 border-t border-[#f1e4d4] pt-6 md:grid-cols-2">
               <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Shipping Address</p>
+                <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Shipping Address</p>
                 <p class="mt-3 text-sm font-medium leading-7 text-slate-600">
                   {{ order.shippingAddress?.address || 'Address unavailable' }}
                 </p>
@@ -134,7 +137,7 @@ import { OrderService } from '../../core/services/order.service';
               </div>
 
               <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#2f1b14] p-5 text-white">
-                <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Payment</p>
+                <p class="text-xs font-medium uppercase tracking-[0.22em] text-slate-400">Payment</p>
                 <div class="mt-4 space-y-3 text-sm font-medium text-slate-300">
                   <div class="flex items-center justify-between">
                     <span>Status</span>
@@ -153,8 +156,9 @@ import { OrderService } from '../../core/services/order.service';
             </div>
           </div>
         </div>
-      </section>
-    </div>
+        </div>
+      </div>
+    </section>
   `
 })
 export class TrackOrderComponent implements OnInit {

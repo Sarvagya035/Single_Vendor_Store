@@ -16,7 +16,7 @@ import { ErrorService } from '../../core/services/error.service';
       <div class="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[#d4a017]/20 blur-[120px] animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
-        <h2 class="text-4xl font-black text-slate-900 tracking-tight">Forgot Password</h2>
+        <h2 class="text-4xl font-semibold text-slate-900 tracking-tight">Forgot Password</h2>
         <p class="text-slate-500 font-medium tracking-wide">We’ll send a reset link to your email address</p>
       </div>
 
@@ -24,7 +24,7 @@ import { ErrorService } from '../../core/services/error.service';
         <div class="app-surface p-10">
           <form class="space-y-8" (ngSubmit)="onSubmit()">
             <div class="space-y-2">
-              <label for="email" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Email Address</label>
+              <label for="email" class="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.15em] ml-1">Email Address</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   📧
@@ -37,7 +37,7 @@ import { ErrorService } from '../../core/services/error.service';
                   required
                   [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
                 >
               </div>
             </div>
@@ -50,7 +50,7 @@ import { ErrorService } from '../../core/services/error.service';
           <div class="mt-8 border-t border-[#f1e4d4] pt-6 text-center">
             <p class="text-sm font-medium text-slate-500">
               Remember your password?
-              <a routerLink="/login" class="text-amber-700 font-black hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Back to Login</a>
+              <a routerLink="/login" class="text-amber-700 font-semibold hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Back to Login</a>
             </p>
           </div>
         </div>

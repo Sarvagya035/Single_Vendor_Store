@@ -8,6 +8,7 @@ export interface VendorProfile {
   vendorAddress?: string;
   gstNumber?: string;
   verificationStatus?: string;
+  createdAt?: string;
   bankDetails?: VendorBankDetails;
 }
 

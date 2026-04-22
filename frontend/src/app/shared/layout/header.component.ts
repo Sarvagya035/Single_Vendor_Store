@@ -20,7 +20,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
           <div class="flex h-11 items-center overflow-hidden">
             <div class="flex w-max items-center gap-4 whitespace-nowrap animate-announcement-marquee hover:[animation-play-state:paused]">
               <ng-container *ngFor="let message of announcementTicker; let last = last">
-                <span class="text-[11px] font-extrabold uppercase tracking-[0.18em] sm:text-xs">
+                <span class="text-[11px] font-semibold uppercase tracking-[0.18em] sm:text-xs">
                   {{ message }}
                 </span>
                 <span *ngIf="!last" class="text-[#d7b48d]">|</span>
@@ -69,7 +69,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
                 </svg>
                 <span
                   *ngIf="vendorNotificationCount > 0"
-                  class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-black leading-none text-white"
+                  class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
                 >
                   {{ vendorNotificationCount }}
                 </span>
@@ -92,7 +92,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             <ng-container *ngIf="isCustomer()">
               <a
                 routerLink="/cart"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
               >
                 Cart
                 <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
@@ -122,7 +122,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             <a
               *ngIf="isCustomer()"
               routerLink="/cart"
-              class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-black text-slate-700"
+              class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700"
             >
               Cart
               <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
@@ -173,7 +173,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               </svg>
               <span
                 *ngIf="vendorNotificationCount > 0"
-                class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-black leading-none text-white"
+                class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
               >
                 {{ vendorNotificationCount }}
               </span>

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
@@ -39,6 +40,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           <app-vendor-profile-card
             [vendor]="vendor"
             [logoPreview]="logoPreview"
+            [totalProducts]="totalProducts"
+            [totalRevenue]="totalRevenue"
+            [isMetricsLoading]="isMetricsLoading"
             [isEditDetailsOpen]="isEditDetailsOpen"
             [isEditBankOpen]="isEditBankOpen"
             [isEditLogoOpen]="isEditLogoOpen"
@@ -84,6 +88,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 })
 export class VendorProfilePageComponent implements OnInit {
   vendor: VendorProfile | null = null;
+  totalProducts = 0;
+  totalRevenue = 0;
+  isMetricsLoading = true;
   form: VendorDetailsForm = {
     vendorAddress: '',
     vendorDescription: ''
@@ -118,26 +125,40 @@ export class VendorProfilePageComponent implements OnInit {
 
   loadVendorProfile() {
     this.isLoading = true;
-    this.vendorService.getProfile().subscribe({
-      next: (res) => {
+    this.isMetricsLoading = true;
+
+    forkJoin({
+      profile: this.vendorService.getProfile(),
+      products: this.vendorService.getMyProducts(1, 100),
+      analytics: this.vendorService.getVendorAnalytics()
+    }).subscribe({
+      next: ({ profile, products, analytics }) => {
         this.isLoading = false;
-        if (res?.success) {
-          this.vendor = res.data;
+        this.isMetricsLoading = false;
+
+        if (profile?.success) {
+          this.vendor = profile.data;
           this.form = {
-            vendorAddress: res.data.vendorAddress || '',
-            vendorDescription: res.data.vendorDescription || ''
+            vendorAddress: profile.data.vendorAddress || '',
+            vendorDescription: profile.data.vendorDescription || ''
           };
           this.bankForm = {
-            accountHolderName: res.data.bankDetails?.accountHolderName || '',
-            accountNumber: res.data.bankDetails?.accountNumber || '',
-            ifscCode: res.data.bankDetails?.ifscCode || '',
-            bankName: res.data.bankDetails?.bankName || '',
-            upiId: res.data.bankDetails?.upiId || ''
+            accountHolderName: profile.data.bankDetails?.accountHolderName || '',
+            accountNumber: profile.data.bankDetails?.accountNumber || '',
+            ifscCode: profile.data.bankDetails?.ifscCode || '',
+            bankName: profile.data.bankDetails?.bankName || '',
+            upiId: profile.data.bankDetails?.upiId || ''
           };
         }
+
+        this.totalProducts = Number(products?.data?.totalDocs || products?.data?.docs?.length || 0);
+        this.totalRevenue = Number(analytics?.summary?.totalRevenue || 0);
       },
       error: () => {
         this.isLoading = false;
+        this.isMetricsLoading = false;
+        this.totalProducts = 0;
+        this.totalRevenue = 0;
       }
     });
   }
@@ -266,14 +287,8 @@ export class VendorProfilePageComponent implements OnInit {
   }
 
   private refreshAppState(): void {
-    this.vendorService.getProfile().subscribe({
-      next: (res) => {
-        if (res?.success) {
-          this.vendor = res.data;
-          this.appRefreshService.notify('vendor');
-        }
-      }
-    });
+    this.loadVendorProfile();
+    this.appRefreshService.notify('vendor');
   }
 }
 

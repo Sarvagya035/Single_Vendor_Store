@@ -17,7 +17,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
       <div class="absolute bottom-0 left-1/4 h-[500px] w-[500px] rounded-full bg-[#d4a017]/20 blur-[130px] animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2 pt-1 sm:pt-2">
-        <h2 class="text-4xl font-black text-slate-900 tracking-tight">Create Account</h2>
+        <h2 class="text-4xl font-semibold text-slate-900 tracking-tight">Create Account</h2>
       </div>
 
       <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
@@ -25,7 +25,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
           <form class="space-y-6" (ngSubmit)="onSubmit()">
             
             <div class="space-y-2">
-              <label for="username" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Full Name</label>
+              <label for="username" class="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.15em] ml-1">Full Name</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   👤
@@ -45,7 +45,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   [class.ring-2]="!!usernameError"
                   [class.ring-red-500]="!!usernameError"
                   [class.focus:ring-red-500]="!!usernameError"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
               </div>
               <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ usernameError }}
@@ -53,19 +53,19 @@ import { catchError, finalize, EMPTY } from 'rxjs';
             </div>
 
             <div class="space-y-2">
-              <label for="email" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Email Address</label>
+              <label for="email" class="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.15em] ml-1">Email Address</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   📧
                 </div>
                 <input id="email" name="email" type="email" autocomplete="email" required [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
               </div>
             </div>
 
             <div class="space-y-2">
-              <label for="phone" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Phone Number</label>
+              <label for="phone" class="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.15em] ml-1">Phone Number</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   📞
@@ -76,7 +76,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   [class.ring-2]="!!phoneError"
                   [class.ring-red-500]="!!phoneError"
                   [class.focus:ring-red-500]="!!phoneError"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-4 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600">
               </div>
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}
@@ -84,7 +84,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
             </div>
 
             <div class="space-y-2">
-              <label for="password" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Password</label>
+              <label for="password" class="text-[10px] uppercase font-semibold text-slate-400 tracking-[0.15em] ml-1">Password</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
                   🔑
@@ -97,12 +97,12 @@ import { catchError, finalize, EMPTY } from 'rxjs';
                   required
                   [(ngModel)]="password"
                   placeholder="Enter your password"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
+                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
                 >
                 <button
                   type="button"
                   (click)="showPassword = !showPassword"
-                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                 >
                   {{ showPassword ? 'Hide' : 'Show' }}
                 </button>
@@ -117,7 +117,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
           <div class="mt-8 border-t border-[#f1e4d4] pt-6 text-center">
             <p class="text-sm font-medium text-slate-500">
               Already have an account?
-              <a routerLink="/login" class="text-amber-700 font-black hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Login here</a>
+              <a routerLink="/login" class="text-amber-700 font-semibold hover:text-amber-800 transition-colors ml-1 uppercase tracking-tighter">Login here</a>
             </p>
           </div>
         </div>

@@ -8,12 +8,15 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="app-surface space-y-8 p-10">
-      <h3 class="border-b border-[#f1e4d4] pb-4 text-lg text-xs font-black uppercase tracking-widest text-slate-900">Account Details</h3>
+    <div class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(47,27,20,0.06)] sm:p-6">
+      <div class="border-b border-[#f1e4d4] pb-4">
+        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-700">Account Details</p>
+        <h3 class="mt-2 text-xl font-medium text-slate-900">Profile information</h3>
+      </div>
 
-      <form (ngSubmit)="onSubmit()" class="space-y-6">
+      <form (ngSubmit)="onSubmit()" class="mt-6 space-y-6">
         <div class="space-y-2">
-          <label for="username" class="ml-1 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Full Name</label>
+          <label for="username" class="ml-1 text-[10px] font-medium uppercase tracking-[0.1em] text-slate-400">Full Name</label>
           <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">👤</div>
             <input
@@ -26,7 +29,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
               [class.ring-2]="!!usernameError"
               [class.ring-red-500]="!!usernameError"
               [class.focus:ring-red-500]="!!usernameError"
-              class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
+              class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
             >
           </div>
           <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
@@ -35,7 +38,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
         </div>
 
         <div class="space-y-2">
-          <label for="phone" class="ml-1 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Phone Number</label>
+          <label for="phone" class="ml-1 text-[10px] font-medium uppercase tracking-[0.1em] text-slate-400">Phone Number</label>
           <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">📞</div>
             <input
@@ -51,7 +54,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
               [class.ring-2]="!!phoneError"
               [class.ring-red-500]="!!phoneError"
               [class.focus:ring-red-500]="!!phoneError"
-              class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
+              class="block w-full rounded-xl border-none bg-slate-50 py-4 pl-12 pr-4 font-medium text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
             >
           </div>
           <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">

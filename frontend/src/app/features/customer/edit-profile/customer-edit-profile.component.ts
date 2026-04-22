@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { CustomerAccountFormComponent } from '../account-form/customer-account-form.component';
 import { CustomerAvatarPanelComponent } from '../avatar-panel/customer-avatar-panel.component';
-import { CustomerChangePasswordPanelComponent } from '../change-password-panel/customer-change-password-panel.component';
 import { CustomerEditHeaderComponent } from '../edit-header/customer-edit-header.component';
 import { CustomerProfileForm } from '../../../core/models/customer.models';
 
@@ -17,37 +16,34 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
     CommonModule,
     CustomerEditHeaderComponent,
     CustomerAccountFormComponent,
-    CustomerAvatarPanelComponent,
-    CustomerChangePasswordPanelComponent
+    CustomerAvatarPanelComponent
   ],
   template: `
-    <div class="min-h-screen bg-slate-50 pt-16 pb-32">
-      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <app-customer-edit-header />
+    <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
+      <div class="mx-auto w-full max-w-7xl">
+        <div class="vendor-page-shell overflow-hidden">
+          <app-customer-edit-header />
 
-        <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
-          <app-customer-account-form
-            [user]="user"
-            [isSubmitting]="isUpdatingProfile"
-            (userChange)="updateUser($event)"
-            (submit)="onUpdateProfile()"
-          />
+          <div class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] lg:p-6">
+            <app-customer-account-form
+              [user]="user"
+              [isSubmitting]="isUpdatingProfile"
+              (userChange)="updateUser($event)"
+              (submit)="onUpdateProfile()"
+            />
 
-          <app-customer-avatar-panel
-            [user]="user"
-            [previewUrl]="previewUrl"
-            [selectedFileName]="selectedFile?.name || ''"
-            [isSubmitting]="isUpdatingAvatar"
-            (fileSelected)="onFileSelected($event)"
-            (submit)="onUpdateAvatar()"
-          />
-        </div>
-
-        <div class="mt-10">
-          <app-customer-change-password-panel />
+            <app-customer-avatar-panel
+              [user]="user"
+              [previewUrl]="previewUrl"
+              [selectedFileName]="selectedFile?.name || ''"
+              [isSubmitting]="isUpdatingAvatar"
+              (fileSelected)="onFileSelected($event)"
+              (submit)="onUpdateAvatar()"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   `
 })
 export class EditProfileComponent implements OnInit {

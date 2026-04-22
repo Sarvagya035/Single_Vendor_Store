@@ -8,26 +8,30 @@ import { CustomerAddressBookComponent } from '../customer/address-book/customer-
   standalone: true,
   imports: [CommonModule, RouterModule, CustomerAddressBookComponent],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
-      <section class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-amber-700">Customer Address Book</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">My Addresses</h1>
-            <p class="mt-3 text-sm font-medium text-slate-500">
-              Add, update, remove, and choose the default address for your orders.
-            </p>
+    <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
+      <div class="mx-auto w-full max-w-7xl">
+        <div class="vendor-page-shell overflow-hidden">
+          <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p class="app-page-eyebrow !text-amber-700">Customer Address Book</p>
+                <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My Addresses</h1>
+                <p class="app-page-description !mt-3 !max-w-2xl">
+                  Add, update, remove, and choose the default address for your orders.
+                </p>
+              </div>
+
+              <div class="flex flex-wrap gap-3">
+                <a routerLink="/profile" class="btn-secondary !px-5 !py-3">Back To Profile</a>
+                <a routerLink="/cart" class="btn-primary !px-5 !py-3">Go To Cart</a>
+              </div>
+            </div>
           </div>
 
-          <div class="flex flex-wrap gap-3">
-            <a routerLink="/profile" class="btn-secondary !px-5 !py-3">Back To Profile</a>
-            <a routerLink="/cart" class="btn-primary !px-5 !py-3">Go To Cart</a>
-          </div>
+          <app-customer-address-book />
         </div>
-
-        <app-customer-address-book />
-      </section>
-    </div>
+      </div>
+    </section>
   `
 })
 export class AddressesComponent {}

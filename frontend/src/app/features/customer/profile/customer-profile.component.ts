@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { CustomerEditProfileModalComponent } from '../edit-profile-modal/customer-edit-profile-modal.component';
 import { CustomerChangePasswordPanelComponent } from '../change-password-panel/customer-change-password-panel.component';
 import { CustomerPersonalDetailsComponent } from '../personal-details/customer-personal-details.component';
@@ -20,56 +21,69 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
     CustomerProfileSidebarComponent,
     CustomerPersonalDetailsComponent,
     CustomerChangePasswordPanelComponent,
-    CustomerEditProfileModalComponent
+    CustomerEditProfileModalComponent,
+    PageHeaderComponent
   ],
   template: `
-    <div class="min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_24%,#fff9f2_100%)] pt-16 pb-24">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <app-customer-profile-header
-          [isAdmin]="isAdmin()"
-          [isVendor]="isVendor()"
-          [vendorProfile]="vendorProfile"
-          (logout)="onLogout()"
-        />
-
-        <div *ngIf="!user && !error" class="flex flex-col items-center gap-4 py-20">
-          <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
-          <p class="font-medium tracking-wide text-slate-500">Syncing account data...</p>
-        </div>
-
-        <div *ngIf="error" class="app-surface mb-8 border-rose-100 bg-rose-50/50 p-6 font-bold text-rose-700">
-          ⚠️ {{ error }}
-        </div>
-
-        <div *ngIf="user" class="grid grid-cols-1 gap-8 xl:grid-cols-[340px_minmax(0,1fr)] xl:items-start">
-          <div class="space-y-6 xl:sticky xl:top-24">
-            <app-customer-profile-sidebar
-              [user]="user"
-              [roles]="getRoles()"
-              [memberYear]="getYear()"
-              (editProfile)="openEditProfileModal()"
-              (changePassword)="openPasswordModal()"
-            />
+    <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
+      <div class="mx-auto w-full max-w-7xl">
+        <div class="vendor-page-shell overflow-hidden">
+          <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+            <app-page-header eyebrow="Account Center" title="Customer profile" titleClass="!text-[1.9rem] sm:!text-[2.2rem]" />
           </div>
 
-          <div class="space-y-6">
-            <app-customer-personal-details [user]="user" />
+          <app-customer-profile-header
+            [isAdmin]="isAdmin()"
+            [isVendor]="isVendor()"
+            [vendorProfile]="vendorProfile"
+          />
+
+          <div *ngIf="!user && !error" class="flex flex-col items-center gap-4 px-6 py-20">
+            <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
+            <p class="font-medium tracking-wide text-slate-500">Syncing account data...</p>
+          </div>
+
+          <div *ngIf="error" class="mx-4 my-6 rounded-[1.5rem] border border-rose-100 bg-rose-50/60 p-6 text-sm font-medium text-rose-700 sm:mx-5 lg:mx-6">
+            {{ error }}
+          </div>
+
+          <div *ngIf="user" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 xl:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
+            <div class="min-w-0">
+              <app-customer-personal-details
+                [user]="user"
+                [roles]="getRoles()"
+                [memberSince]="getMemberSince()"
+                [isStoreLinked]="isAdmin() || isVendor()"
+              />
+            </div>
+
+            <div class="space-y-5">
+              <app-customer-profile-sidebar
+                [user]="user"
+                [roles]="getRoles()"
+                [memberSince]="getMemberSince()"
+                [hasStoreAccess]="isAdmin() || isVendor()"
+                [vendorProfile]="vendorProfile"
+                (editProfile)="openEditProfileModal()"
+                (changePassword)="openPasswordModal()"
+              />
+            </div>
           </div>
         </div>
-
-        <app-customer-change-password-panel
-          [open]="isPasswordModalOpen"
-          (closed)="closePasswordModal()"
-        />
-
-        <app-customer-edit-profile-modal
-          [open]="isEditProfileModalOpen"
-          [user]="user"
-          (closed)="closeEditProfileModal()"
-          (saved)="handleProfileSaved($event)"
-        />
       </div>
-    </div>
+
+      <app-customer-change-password-panel
+        [open]="isPasswordModalOpen"
+        (closed)="closePasswordModal()"
+      />
+
+      <app-customer-edit-profile-modal
+        [open]="isEditProfileModalOpen"
+        [user]="user"
+        (closed)="closeEditProfileModal()"
+        (saved)="handleProfileSaved($event)"
+      />
+    </section>
   `
 })
 export class ProfileComponent implements OnInit {
@@ -120,11 +134,14 @@ export class ProfileComponent implements OnInit {
     return String(this.user.role).toLowerCase() === 'vendor';
   }
 
-  getYear(): string {
+  getMemberSince(): string {
     if (!this.user?.createdAt) {
-      return 'N/A';
+      return 'Recently joined';
     }
-    return new Date(this.user.createdAt).getFullYear().toString();
+    return new Intl.DateTimeFormat('en-IN', {
+      month: 'long',
+      year: 'numeric'
+    }).format(new Date(this.user.createdAt));
   }
 
   fetchUser() {
