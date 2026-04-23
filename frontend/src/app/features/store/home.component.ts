@@ -93,7 +93,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                 <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Shop by category</h3>
               </div>
 
-              <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div class="grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 <a
                   *ngFor="let category of catalogCategories; trackBy: trackByCategoryId"
                   [routerLink]="['/products']"
@@ -106,12 +106,14 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                     <img
                       [src]="categoryImage(category)"
                       [alt]="category.name"
+                      loading="lazy"
+                      decoding="async"
                       class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     />
                   </div>
-                  <div class="space-y-1 p-4">
-                    <h4 class="truncate text-lg font-semibold text-slate-900">{{ category.name }}</h4>
-                    <p class="text-sm font-medium text-slate-500">{{ categoryCount(category) }} item{{ categoryCount(category) === 1 ? '' : 's' }}</p>
+                  <div class="space-y-1 p-2 sm:p-4">
+                    <h4 class="truncate text-xs font-semibold text-slate-900 sm:text-lg">{{ category.name }}</h4>
+                    <p class="text-[10px] font-medium text-slate-500 sm:text-sm">{{ categoryCount(category) }} item{{ categoryCount(category) === 1 ? '' : 's' }}</p>
                   </div>
                 </a>
               </div>
@@ -123,7 +125,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                 <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
               </div>
 
-              <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div class="grid grid-cols-3 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <article
                   *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
                   role="link"
@@ -131,11 +133,11 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                   (click)="openProduct(product)"
                   (keydown.enter)="openProduct(product)"
                   (keydown.space)="$event.preventDefault(); openProduct(product)"
-                  class="group relative rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
+                  class="group relative rounded-[1.6rem] border border-slate-200 bg-white p-2 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)] sm:p-4"
                 >
                   <button
                     type="button"
-                    class="absolute right-4 top-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600"
+                    class="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600 sm:right-4 sm:top-4 sm:h-11 sm:w-11"
                     [disabled]="wishlistBusyId === product._id"
                     [attr.aria-label]="isWishlisted(product) ? 'Remove from wishlist' : 'Save to wishlist'"
                     (click)="$event.stopPropagation(); toggleWishlist(product)"
@@ -154,22 +156,24 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                     <img
                       [src]="productImage(product)"
                       [alt]="product.productName"
+                      loading="lazy"
+                      decoding="async"
                       class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     />
                   </div>
 
-                  <div class="mt-4 space-y-3">
+                  <div class="mt-2 space-y-2 sm:mt-4 sm:space-y-3">
                     <div class="flex items-start justify-between gap-3">
                       <div class="min-w-0">
-                        <p class="truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{{ product.brand || 'Premium Pack' }}</p>
-                        <h4 class="mt-1 line-clamp-2 text-lg font-semibold text-slate-900">{{ product.productName }}</h4>
+                        <p class="truncate text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 sm:text-[11px]">{{ product.brand || 'Premium Pack' }}</p>
+                        <h4 class="mt-1 line-clamp-2 text-[11px] font-semibold text-slate-900 sm:text-lg">{{ product.productName }}</h4>
                       </div>
-                      <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-amber-200">
+                      <span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-3 sm:py-1 sm:text-xs">
                         {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
                       </span>
                     </div>
 
-                    <p class="text-sm font-semibold text-slate-500">{{ product.categoryDetails?.name || 'Dry fruits & nuts' }}</p>
+                    <p class="text-[10px] font-semibold text-slate-500 sm:text-sm">{{ product.categoryDetails?.name || 'Dry fruits & nuts' }}</p>
                   </div>
                 </article>
               </div>
@@ -208,6 +212,8 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                   <img
                     [src]="review.image"
                     [alt]="review.name"
+                    loading="lazy"
+                    decoding="async"
                     class="h-14 w-14 rounded-full border-2 border-[#eadcc9] object-cover shadow-sm"
                   />
 
@@ -242,6 +248,8 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
           <img
             src="/assets/banner%20-2%20.png"
             alt="Featured landing banner"
+            loading="lazy"
+            decoding="async"
             class="h-auto w-full object-cover"
           />
         </div>

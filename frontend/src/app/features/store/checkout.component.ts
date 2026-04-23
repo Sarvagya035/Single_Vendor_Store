@@ -32,9 +32,35 @@ const EMPTY_CART: CustomerCart = {
                 <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Review and place your order</h1>
               </div>
 
-              <div class="flex flex-wrap gap-3">
-                <a routerLink="/cart" class="btn-secondary !px-5 !py-3">Back to Cart</a>
-                <a routerLink="/addresses" class="btn-secondary !px-5 !py-3">Manage Addresses</a>
+              <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                <a routerLink="/cart" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">Back to Cart</a>
+                <a routerLink="/addresses" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">Manage Addresses</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-b border-slate-200 bg-gradient-to-r from-white via-[#fffaf5] to-white px-4 py-4 sm:px-5 lg:px-6">
+            <div class="grid gap-3 rounded-[1.4rem] border border-[#eadcc9] bg-white p-4 shadow-[0_12px_32px_rgba(111,78,55,0.05)] sm:grid-cols-3">
+              <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">1</span>
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Step 1</p>
+                  <p class="text-sm font-semibold text-slate-900">Select address</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">2</span>
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Step 2</p>
+                  <p class="text-sm font-semibold text-slate-900">Review items</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">3</span>
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Step 3</p>
+                  <p class="text-sm font-semibold text-slate-900">Pay securely</p>
+                </div>
               </div>
             </div>
           </div>
@@ -49,7 +75,42 @@ const EMPTY_CART: CustomerCart = {
             <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
               <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
               <p class="mt-3 text-sm font-medium text-slate-500">Add products to your cart before checking out.</p>
-              <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
+              <a routerLink="/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
+            </div>
+          </div>
+
+          <div *ngIf="!isLoading && cart.cartItems.length" class="px-4 pb-2 sm:px-5 lg:hidden lg:px-6">
+            <div class="rounded-[1.6rem] border border-[#e7dac9] bg-white p-4 shadow-[0_16px_40px_rgba(111,78,55,0.06)]">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Checkout total</p>
+                  <p class="mt-1 text-base font-semibold text-slate-900">{{ cartItemCount() }} item{{ cartItemCount() === 1 ? '' : 's' }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Payable now</p>
+                  <p class="mt-1 text-2xl font-black tracking-tight text-slate-900">{{ formatCurrency(grandTotal()) }}</p>
+                </div>
+              </div>
+
+              <div class="mt-4 grid gap-2 rounded-[1.3rem] bg-[#fffaf5] px-4 py-3 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="font-medium text-slate-500">Items total</span>
+                  <span class="font-semibold text-slate-900">{{ formatCurrency(itemsSubtotal()) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="font-medium text-slate-500">Shipping</span>
+                  <span class="font-semibold text-slate-900">{{ shippingAmount() === 0 ? 'Free' : formatCurrency(shippingAmount()) }}</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn-primary mt-4 w-full !px-4 !py-3 disabled:cursor-not-allowed disabled:opacity-60"
+                [disabled]="isSubmitting || !selectedAddressId || addresses.length === 0"
+                (click)="placeOrder()"
+              >
+                {{ isSubmitting ? 'Processing Payment...' : 'Pay With Razorpay' }}
+              </button>
             </div>
           </div>
 
@@ -109,7 +170,13 @@ const EMPTY_CART: CustomerCart = {
                     *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
                     class="flex gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-[#fffaf5] p-4"
                   >
-                    <img [src]="cartItemImage(item)" [alt]="item.product?.productName || 'Cart item'" class="h-20 w-20 rounded-2xl object-cover" />
+                    <img
+                      [src]="cartItemImage(item)"
+                      [alt]="item.product?.productName || 'Cart item'"
+                      loading="lazy"
+                      decoding="async"
+                      class="h-20 w-20 rounded-2xl object-cover"
+                    />
 
                     <div class="min-w-0 flex-1">
                       <div class="flex items-start justify-between gap-4">
@@ -130,7 +197,7 @@ const EMPTY_CART: CustomerCart = {
               </section>
             </div>
 
-            <aside class="space-y-5">
+            <aside class="hidden space-y-5 lg:block lg:sticky lg:top-6 lg:self-start">
               <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6">
                 <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Payment Summary</p>
                 <h2 class="mt-2 text-2xl font-medium tracking-tight text-slate-900">Secure checkout</h2>
@@ -224,8 +291,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const defaultAddress = this.addresses.find((address) => address.isDefault);
         this.selectedAddressId = defaultAddress?._id || this.addresses[0]?._id || '';
       },
-      error: () => {
+      error: (error) => {
         this.isLoading = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to load checkout details right now.',
+          'error'
+        );
       }
     });
   }
@@ -290,8 +361,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
         razorpay.open();
       },
-      error: () => {
+      error: (error) => {
         this.clearPendingPaymentState();
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
       }
     });
   }
@@ -311,8 +386,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           this.cartService.resetCart();
           this.router.navigate(['/orders']);
         },
-        error: () => {
+        error: (error) => {
           this.clearPendingPaymentState();
+          this.errorService.showToast(
+            this.errorService.extractErrorMessage(error) || 'Payment verification failed. Please try again.',
+            'error'
+          );
         }
       });
   }
@@ -434,6 +513,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   itemsSubtotal(): number {
     return (this.cart.cartItems || []).reduce(
       (total, item) => total + Number(item.priceAtAddition || 0) * Number(item.quantity || 0),
+      0
+    );
+  }
+
+  cartItemCount(): number {
+    return (this.cart.cartItems || []).reduce(
+      (total, item) => total + Number(item.quantity || 0),
       0
     );
   }

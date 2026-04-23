@@ -6,6 +6,17 @@ import { environment } from '../../../environments/environment';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../models/customer.models';
 import { ApiService } from './api.service';
 
+export interface CatalogQueryParams {
+  q?: string;
+  category?: string;
+  brand?: string;
+  availability?: 'all' | 'in-stock' | 'out-of-stock';
+  rating?: string;
+  minPrice?: string | number;
+  maxPrice?: string | number;
+  sortBy?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,8 +25,16 @@ export class CatalogService {
 
   constructor(private api: ApiService) {}
 
-  getCatalogProducts(page = 1, limit = 12): Observable<any> {
-    const params = new HttpParams().set('page', page).set('limit', limit);
+  getCatalogProducts(page = 1, limit = 12, query?: CatalogQueryParams): Observable<any> {
+    let params = new HttpParams().set('page', page).set('limit', limit);
+
+    Object.entries(query || {}).forEach(([key, value]) => {
+      if (value === undefined || value === null || String(value).trim() === '') {
+        return;
+      }
+
+      params = params.set(key, String(value));
+    });
 
     return this.api
       .get(`${this.productUrl}/get-all-products`, { params })
@@ -46,16 +65,10 @@ export class CatalogService {
   searchProducts(
     query: string,
     page = 1,
-    limit = 12
+    limit = 12,
+    options: Omit<CatalogQueryParams, 'q'> = {}
   ): Observable<any> {
-    const params = new HttpParams()
-      .set('q', query.trim())
-      .set('page', page)
-      .set('limit', limit);
-
-    return this.api
-      .get(`${this.productUrl}/search`, { params })
-      .pipe(map((response: any) => this.normalizeProductCollection(response)));
+    return this.getCatalogProducts(page, limit, { ...options, q: query.trim() });
   }
 
   getProductDetails(productId: string): Observable<any> {

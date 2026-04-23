@@ -5,13 +5,14 @@ import { HeaderComponent } from './header.component';
 describe('HeaderComponent', () => {
   let authService: any;
   let cartService: any;
+  let vendorService: any;
   let router: any;
   let appRefreshService: any;
   let currentUser$: BehaviorSubject<any>;
   let cart$: BehaviorSubject<any>;
 
   function createComponent(): HeaderComponent {
-    return new HeaderComponent(authService, cartService, router, appRefreshService);
+    return new HeaderComponent(authService, cartService, vendorService, router, appRefreshService);
   }
 
   beforeEach(() => {
@@ -29,6 +30,10 @@ describe('HeaderComponent', () => {
       getCart: vi.fn(() => of({ data: { cart: { cartItems: [] } } })),
       resetCart: vi.fn(),
       cart$: cart$.asObservable()
+    };
+
+    vendorService = {
+      getVendorNotifications: vi.fn(() => of({ summary: { unreadNotifications: 0 } }))
     };
 
     router = { navigate: vi.fn() };

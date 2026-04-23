@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
+import { ErrorService } from '../../core/services/error.service';
 import {
   CustomerCart,
   CustomerCartItem,
@@ -57,7 +58,7 @@ const EMPTY_CART: CustomerCart = {
                 <p class="mt-3 text-sm font-medium text-slate-500">
                   Browse products and add a variant to start building your order.
                 </p>
-                <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
+                <a routerLink="/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
               </div>
             </div>
 
@@ -71,6 +72,8 @@ const EMPTY_CART: CustomerCart = {
                     <img
                       [src]="cartItemImage(item)"
                       [alt]="item.product?.productName || 'Cart item'"
+                      loading="lazy"
+                      decoding="async"
                       class="h-28 w-28 rounded-[1.5rem] object-cover"
                     />
 
@@ -191,7 +194,8 @@ export class CartComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private cartService: CartService
+    private cartService: CartService,
+    private errorService: ErrorService
   ) {}
 
   ngOnInit(): void {
@@ -244,6 +248,10 @@ export class CartComponent implements OnInit {
       },
       error: (error) => {
         this.cartLoading = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to load your cart right now.',
+          'error'
+        );
       }
     });
   }
@@ -262,7 +270,12 @@ export class CartComponent implements OnInit {
       next: (response) => {
         this.cartMessage = response?.message || 'Cart updated.';
       },
-      error: () => {}
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to update this cart item right now.',
+          'error'
+        );
+      }
     });
   }
 
@@ -277,7 +290,12 @@ export class CartComponent implements OnInit {
       next: (response) => {
         this.cartMessage = response?.message || 'Item removed from cart.';
       },
-      error: () => {}
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to remove this item right now.',
+          'error'
+        );
+      }
     });
   }
 
@@ -288,7 +306,12 @@ export class CartComponent implements OnInit {
       next: (response) => {
         this.cartMessage = response?.message || 'Cart cleared successfully.';
       },
-      error: () => {}
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to clear the cart right now.',
+          'error'
+        );
+      }
     });
   }
 

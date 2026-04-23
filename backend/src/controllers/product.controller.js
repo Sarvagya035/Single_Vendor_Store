@@ -582,20 +582,174 @@ const getProductById = asyncHandler(async (req, res) => {
 });
 
 const getAllProducts = asyncHandler(async (req, res) => {
+    const {
+        q = "",
+        category = "",
+        brand = "",
+        minPrice = "",
+        maxPrice = "",
+        availability = "all",
+        rating = "all",
+        sortBy = "relevance",
+        page = 1,
+        limit = 12
+    } = req.query;
 
-    const products = await Product.find({})
-        .populate("category", "name") 
-        .populate("vendor", "shopName vendorLogo") 
-        .sort("-createdAt"); 
+    const trimmedQuery = String(q || "").trim();
+    const trimmedCategory = String(category || "").trim();
+    const trimmedBrand = String(brand || "").trim();
+    const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-    if (!products || products.length === 0) {
-        return res.status(200).json(
-            new ApiResponse(200, [], "No products found in the store")
-        );
+    const pipeline = [
+        {
+            $match: {
+                isActive: true
+            }
+        },
+        {
+            $lookup: {
+                from: "categories",
+                localField: "category",
+                foreignField: "_id",
+                as: "categoryDetails"
+            }
+        },
+        {
+            $unwind: {
+                path: "$categoryDetails",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $addFields: {
+                hasInStockVariant: {
+                    $gt: [
+                        {
+                            $size: {
+                                $filter: {
+                                    input: "$variants",
+                                    as: "variant",
+                                    cond: { $gt: ["$$variant.productStock", 0] }
+                                }
+                            }
+                        },
+                        0
+                    ]
+                }
+            }
+        }
+    ];
+
+    if (trimmedQuery) {
+        const queryRegex = { $regex: escapeRegex(trimmedQuery), $options: "i" };
+        pipeline.push({
+            $match: {
+                $or: [
+                    { productName: queryRegex },
+                    { brand: queryRegex },
+                    { "categoryDetails.name": queryRegex },
+                    { "categoryDetails.slug": queryRegex },
+                    { "variants.sku": queryRegex },
+                    { "variants.attributes.$**": queryRegex }
+                ]
+            }
+        });
     }
 
+    if (trimmedCategory) {
+        const categoryMatch = { $regex: escapeRegex(trimmedCategory), $options: "i" };
+        const categoryFilters = [
+            { "categoryDetails.name": categoryMatch },
+            { "categoryDetails.slug": categoryMatch }
+        ];
+
+        if (mongoose.Types.ObjectId.isValid(trimmedCategory)) {
+            categoryFilters.push({ category: new mongoose.Types.ObjectId(trimmedCategory) });
+        }
+
+        pipeline.push({
+            $match: {
+                $or: categoryFilters
+            }
+        });
+    }
+
+    if (trimmedBrand) {
+        pipeline.push({
+            $match: {
+                brand: { $regex: escapeRegex(trimmedBrand), $options: "i" }
+            }
+        });
+    }
+
+    if (minPrice !== "" || maxPrice !== "") {
+        const priceQuery = {};
+        if (minPrice !== "") priceQuery.$gte = Number(minPrice);
+        if (maxPrice !== "") priceQuery.$lte = Number(maxPrice);
+
+        pipeline.push({
+            $match: {
+                basePrice: priceQuery
+            }
+        });
+    }
+
+    if (rating !== "all") {
+        const normalizedRating = Number(rating);
+        if (Number.isFinite(normalizedRating)) {
+            pipeline.push({
+                $match: {
+                    averageRating: { $gte: normalizedRating }
+                }
+            });
+        }
+    }
+
+    if (availability === "in-stock") {
+        pipeline.push({
+            $match: {
+                hasInStockVariant: true
+            }
+        });
+    } else if (availability === "out-of-stock") {
+        pipeline.push({
+            $match: {
+                hasInStockVariant: false
+            }
+        });
+    }
+
+    switch (sortBy) {
+        case "price-asc":
+            pipeline.push({ $sort: { basePrice: 1, createdAt: -1 } });
+            break;
+        case "price-desc":
+            pipeline.push({ $sort: { basePrice: -1, createdAt: -1 } });
+            break;
+        case "rating-desc":
+            pipeline.push({ $sort: { averageRating: -1, numberOfReviews: -1, createdAt: -1 } });
+            break;
+        case "popular":
+            pipeline.push({ $sort: { numberOfReviews: -1, averageRating: -1, createdAt: -1 } });
+            break;
+        case "newest":
+            pipeline.push({ $sort: { createdAt: -1 } });
+            break;
+        default:
+            pipeline.push({ $sort: { createdAt: -1 } });
+            break;
+    }
+
+    const aggregate = Product.aggregate(pipeline);
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10)
+    };
+
+    const result = await Product.aggregatePaginate(aggregate, options);
+
     return res.status(200).json(
-        new ApiResponse(200, products, "Products fetched for landing page")
+        new ApiResponse(200, result, "Products fetched successfully")
     );
 });
 

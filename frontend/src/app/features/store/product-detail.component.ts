@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -83,19 +83,19 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               </p>
             </div>
 
-            <div *ngIf="relatedProducts.length; else noRelatedProducts" class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div *ngIf="visibleRelatedProducts().length; else noRelatedProducts" class="mt-6 grid grid-cols-3 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               <article
-                *ngFor="let related of relatedProducts; trackBy: trackByProductId"
+                *ngFor="let related of visibleRelatedProducts(); trackBy: trackByProductId"
                 role="link"
                 tabindex="0"
                 (click)="openProduct(related)"
                 (keydown.enter)="openProduct(related)"
                 (keydown.space)="$event.preventDefault(); openProduct(related)"
-                class="group relative rounded-[1.6rem] border border-[#e7dac9] bg-[#fff7ed]/50 p-4 shadow-[0_16px_40px_rgba(111,78,55,0.05)] transition hover:-translate-y-1 hover:border-[#d4a017] hover:bg-white hover:shadow-[0_24px_60px_rgba(111,78,55,0.1)]"
+                class="group relative rounded-[1.6rem] border border-[#e7dac9] bg-[#fff7ed]/50 p-2 shadow-[0_16px_40px_rgba(111,78,55,0.05)] transition hover:-translate-y-1 hover:border-[#d4a017] hover:bg-white hover:shadow-[0_24px_60px_rgba(111,78,55,0.1)] sm:p-4"
               >
                 <button
                   type="button"
-                  class="absolute right-4 top-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600"
+                  class="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600 sm:right-4 sm:top-4 sm:h-11 sm:w-11"
                   [disabled]="wishlistBusyId === related._id"
                   [attr.aria-label]="isWishlistedProduct(related) ? 'Remove from wishlist' : 'Save to wishlist'"
                   (click)="$event.stopPropagation(); toggleRelatedWishlist(related)"
@@ -114,26 +114,28 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                   <img
                     [src]="productImage(related)"
                     [alt]="related.productName"
+                    loading="lazy"
+                    decoding="async"
                     class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                   />
                 </div>
 
-                <div class="mt-4 space-y-3">
+                <div class="mt-2 space-y-2 sm:mt-4 sm:space-y-3">
                   <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                      <p class="truncate text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-400">
+                      <p class="truncate text-[9px] font-extrabold uppercase tracking-[0.2em] text-slate-400 sm:text-[11px]">
                         {{ related.brand || 'Dry fruit pack' }}
                       </p>
-                      <h3 class="mt-1 line-clamp-2 text-lg font-extrabold text-slate-900">
+                      <h3 class="mt-1 line-clamp-2 text-[11px] font-extrabold text-slate-900 sm:text-lg">
                         {{ related.productName }}
                       </h3>
                     </div>
-                    <span class="shrink-0 rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-extrabold text-[#6f4e37] shadow-sm ring-1 ring-[#e7dac9]">
+                    <span class="shrink-0 rounded-full bg-[#f5e6d3] px-2 py-0.5 text-[10px] font-extrabold text-[#6f4e37] shadow-sm ring-1 ring-[#e7dac9] sm:px-3 sm:py-1 sm:text-xs">
                       {{ formatCurrency(related.displayVariant?.finalPrice || related.basePrice || 0) }}
                     </span>
                   </div>
 
-                  <p class="text-sm font-semibold text-slate-500">
+                  <p class="text-[10px] font-semibold text-slate-500 sm:text-sm">
                     {{ related.categoryDetails?.name || 'Dry fruits & nuts' }}
                   </p>
                 </div>
@@ -149,191 +151,231 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </ng-template>
           </section>
 
-          <section class="mt-10 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
-              <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-5 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Ratings & Reviews</p>
-                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">What customers are saying</h2>
+          <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+            <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Ratings & Reviews</p>
+                <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Customer Reviews</h2>
+              </div>
+              <button
+                type="button"
+                class="inline-flex items-center justify-center rounded-full bg-[#f08a00] px-5 py-3 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(240,138,0,0.22)] transition hover:-translate-y-0.5 hover:bg-[#e07d00]"
+                [attr.aria-expanded]="showReviewForm"
+                (click)="toggleReviewForm()"
+              >
+                {{ showReviewForm ? 'Hide Review Form' : 'Write a Review' }}
+              </button>
+            </div>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-[170px_1fr]">
+              <div class="rounded-[1.75rem] border border-[#f1e4d4] bg-[#fffaf0] px-5 py-6">
+                <p class="text-5xl font-extrabold leading-none text-[#d97706]">{{ formatRating(product.averageRating || 0) }}</p>
+                <div class="mt-2 flex items-center gap-1 text-amber-400">
+                  <span
+                    *ngFor="let star of reviewStarSlots; trackBy: trackByNumber"
+                    class="text-sm"
+                    [class.text-amber-400]="isStarFilled(product.averageRating || 0, star)"
+                    [class.text-slate-300]="!isStarFilled(product.averageRating || 0, star)"
+                  >
+                    ★
+                  </span>
                 </div>
-                <div class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed] px-4 py-3 text-right">
-                  <p class="text-3xl font-extrabold text-slate-900">{{ formatRating(product.averageRating || 0) }}</p>
-                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">{{ product.numberOfReviews || 0 }} reviews</p>
-                </div>
+                <p class="mt-2 text-sm font-medium text-slate-500">{{ reviewTotalCount() }} reviews</p>
               </div>
 
-              <div class="mt-5 grid gap-3">
-                <div *ngFor="let row of ratingBreakdown()" class="flex items-center gap-4">
-                  <p class="w-12 text-sm font-extrabold text-slate-700">{{ row.star }} star</p>
-                  <div class="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
+              <div class="space-y-3 pt-1">
+                <div *ngFor="let row of ratingBreakdown()" class="grid grid-cols-[52px_1fr_32px] items-center gap-3">
+                  <p class="text-sm font-medium text-slate-600">{{ row.star }} star</p>
+                  <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
                     <div class="h-full rounded-full bg-amber-400 transition-all" [style.width.%]="row.percentage"></div>
                   </div>
-                  <p class="w-12 text-right text-sm font-bold text-slate-500">{{ row.count }}</p>
-                </div>
-              </div>
-
-              <div class="mt-8 space-y-4">
-                <article
-                  *ngFor="let review of reviews; trackBy: trackByReview"
-                  class="rounded-[1.75rem] border border-[#e7dac9] bg-gradient-to-br from-white to-[#fff7ed]/80 p-5 shadow-[0_10px_30px_rgba(111,78,55,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(111,78,55,0.07)]"
-                >
-                  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div class="flex flex-wrap items-center gap-3">
-                        <p class="text-base font-extrabold text-slate-900">{{ review.title || 'Customer review' }}</p>
-                        <span class="rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-extrabold uppercase tracking-[0.18em] text-[#6f4e37]">
-                          {{ formatRating(review.rating || 0) }}/5
-                        </span>
-                      </div>
-                      <p class="mt-2 text-sm font-semibold text-slate-600">{{ reviewAuthor(review) }}</p>
-                    </div>
-                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{{ formatDate(review.updatedAt || review.createdAt) }}</p>
-                  </div>
-
-                  <p class="mt-4 text-sm leading-7 text-slate-600">{{ review.commentBody || 'No review text provided.' }}</p>
-
-                  <div *ngIf="review.reviewImages?.length" class="mt-4 flex flex-wrap gap-3">
-                    <a
-                      *ngFor="let image of review.reviewImages"
-                      [href]="image"
-                      target="_blank"
-                      rel="noreferrer"
-                      class="inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-600 transition hover:border-[#d4a017] hover:text-slate-900"
-                    >
-                      <span class="h-2 w-2 rounded-full bg-[#d4a017]"></span>
-                      View image
-                    </a>
-                  </div>
-
-                  <div *ngIf="isOwnReview(review)" class="mt-5 flex items-center gap-3">
-                    <button
-                      type="button"
-                      class="rounded-full border border-[#e7dac9] bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-700 transition hover:border-[#d4a017] hover:text-slate-900"
-                      (click)="editReview(review)"
-                    >
-                      Edit Review
-                    </button>
-                  </div>
-                </article>
-
-                <div *ngIf="!reviews.length" class="rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fff7ed] px-6 py-10 text-center">
-                  <h3 class="text-xl font-extrabold text-slate-900">No reviews yet</h3>
-                  <p class="mt-3 text-sm font-medium text-slate-500">Be the first customer to share feedback for this product.</p>
+                  <p class="text-right text-sm font-medium text-slate-500">{{ row.count }}</p>
                 </div>
               </div>
             </div>
 
-            <aside #reviewFormSection class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
-              <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
-                <div class="border-b border-[#f1e4d4] pb-5">
-                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Write A Review</p>
-                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Share your experience</h2>
-                  <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-                    Reviews are allowed only after this product has been delivered to you.
-                  </p>
+            <div class="mt-8 space-y-6">
+              <article
+                *ngFor="let review of reviews; trackBy: trackByReview"
+                class="border-t border-[#f1e4d4] pt-6 first:border-t-0 first:pt-0"
+              >
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div class="flex items-center gap-1 text-amber-400">
+                      <span
+                        *ngFor="let star of reviewStarSlots; trackBy: trackByNumber"
+                        class="text-sm"
+                        [class.text-amber-400]="isStarFilled(review.rating || 0, star)"
+                        [class.text-slate-300]="!isStarFilled(review.rating || 0, star)"
+                      >
+                        ★
+                      </span>
+                    </div>
+                    <p class="mt-2 text-base font-semibold text-slate-900">{{ review.title || 'Customer review' }}</p>
+                    <p class="mt-1 text-sm text-slate-600">by {{ reviewAuthor(review) }}</p>
+                  </div>
+                  <p class="text-xs font-medium text-slate-500">{{ formatDate(review.updatedAt || review.createdAt) }}</p>
                 </div>
 
-                <form class="mt-6 space-y-4" (ngSubmit)="submitReview()">
-                  <div *ngIf="isEditingReview" class="rounded-2xl border border-amber-100 bg-[#fff7ed] px-4 py-3">
-                    <div class="flex items-center justify-between gap-3">
-                      <div>
-                        <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Edit mode</p>
-                        <p class="mt-1 text-sm font-semibold text-slate-700">You are updating your existing review.</p>
-                      </div>
-                      <button
-                        type="button"
-                        class="rounded-full border border-amber-200 bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700 transition hover:border-amber-300 hover:text-amber-800"
-                        (click)="cancelReviewEdit()"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
+                <p class="mt-3 text-sm leading-7 text-slate-700">{{ review.commentBody || 'No review text provided.' }}</p>
 
-                  <label class="block">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Rating</span>
-                    <select
-                      [(ngModel)]="reviewForm.rating"
-                      name="rating"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option *ngFor="let star of ratingOptions" [ngValue]="star">{{ star }} / 5</option>
-                    </select>
-                  </label>
-
-                  <label class="block">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Title</span>
-                    <input
-                      [(ngModel)]="reviewForm.title"
-                      name="title"
-                      type="text"
-                      maxlength="120"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      placeholder="Summarize your experience"
-                    />
-                  </label>
-
-                  <label class="block">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review</span>
-                    <textarea
-                      [(ngModel)]="reviewForm.commentBody"
-                      name="commentBody"
-                      rows="5"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      placeholder="What stood out? Quality, packaging, delivery, value..."
-                    ></textarea>
-                  </label>
-
-                  <label class="block">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review images</span>
-                    <input
-                      #reviewImagesInput
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png,image/webp"
-                      multiple
-                      (change)="onReviewImagesSelected($event)"
-                      class="mt-2 w-full cursor-pointer rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    />
-                    <p class="mt-2 text-xs font-semibold text-slate-500">
-                      Upload up to 5 images. JPG, PNG, and WEBP only.
-                    </p>
-                    <div *ngIf="reviewImageFiles.length" class="mt-3 flex flex-wrap gap-2">
-                      <span
-                        *ngFor="let file of reviewImageFiles; trackBy: trackByReviewFile"
-                        class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700"
-                      >
-                        {{ file.name }}
-                      </span>
-                    </div>
-                    <div *ngIf="reviewForm.reviewImages?.length" class="mt-3 flex flex-wrap gap-2">
-                      <span
-                        *ngFor="let image of reviewForm.reviewImages"
-                        class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600"
-                      >
-                        Existing image
-                      </span>
-                    </div>
-                  </label>
-
-                  <button
-                    type="submit"
-                    [disabled]="isSubmittingReview || !product"
-                    class="btn-primary w-full !py-3 disabled:cursor-not-allowed disabled:opacity-60"
+                <div *ngIf="review.reviewImages?.length" class="mt-4 flex flex-wrap gap-3">
+                  <a
+                    *ngFor="let image of review.reviewImages"
+                    [href]="image"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-600 transition hover:border-[#d4a017] hover:text-slate-900"
                   >
-                    {{ isSubmittingReview ? 'Saving Review...' : (isEditingReview ? 'Update Review' : 'Submit Review') }}
-                  </button>
-                </form>
-              </ng-container>
+                    <span class="h-2 w-2 rounded-full bg-[#d4a017]"></span>
+                    View image
+                  </a>
+                </div>
 
-              <ng-template #guestReviewPrompt>
+                <div class="mt-4 flex flex-wrap items-center gap-4 text-sm font-medium text-slate-500">
+                  <button type="button" class="transition hover:text-slate-900">Helpful</button>
+                  <span *ngIf="isOwnReview(review)" class="text-slate-300">|</span>
+                  <button
+                    *ngIf="isOwnReview(review)"
+                    type="button"
+                    class="rounded-full border border-[#e7dac9] bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-700 transition hover:border-[#d4a017] hover:text-slate-900"
+                    (click)="editReview(review)"
+                  >
+                    Edit Review
+                  </button>
+                </div>
+              </article>
+
+              <div *ngIf="!reviews.length" class="rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fff7ed] px-6 py-10 text-center">
+                <h3 class="text-xl font-extrabold text-slate-900">No reviews yet</h3>
+                <p class="mt-3 text-sm font-medium text-slate-500">Be the first customer to share feedback for this product.</p>
+              </div>
+            </div>
+          </section>
+
+          <section *ngIf="showReviewForm" #reviewFormSection class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+            <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
+              <div class="border-b border-[#f1e4d4] pb-5">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Write A Review</p>
+                    <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Share your experience</h2>
+                    <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                      Reviews are allowed only after this product has been delivered to you.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    class="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                    (click)="toggleReviewForm()"
+                  >
+                    Hide
+                  </button>
+                </div>
+              </div>
+
+              <form class="mt-6 space-y-4" (ngSubmit)="submitReview()">
+                <div *ngIf="isEditingReview" class="rounded-2xl border border-amber-100 bg-[#fff7ed] px-4 py-3">
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Edit mode</p>
+                      <p class="mt-1 text-sm font-semibold text-slate-700">You are updating your existing review.</p>
+                    </div>
+                    <button
+                      type="button"
+                      class="rounded-full border border-amber-200 bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700 transition hover:border-amber-300 hover:text-amber-800"
+                      (click)="cancelReviewEdit()"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+
+                <label class="block">
+                  <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Rating</span>
+                  <select
+                    [(ngModel)]="reviewForm.rating"
+                    name="rating"
+                    class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                  >
+                    <option *ngFor="let star of ratingOptions" [ngValue]="star">{{ star }} / 5</option>
+                  </select>
+                </label>
+
+                <label class="block">
+                  <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Title</span>
+                  <input
+                    [(ngModel)]="reviewForm.title"
+                    name="title"
+                    type="text"
+                    maxlength="120"
+                    class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                    placeholder="Summarize your experience"
+                  />
+                </label>
+
+                <label class="block">
+                  <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review</span>
+                  <textarea
+                    [(ngModel)]="reviewForm.commentBody"
+                    name="commentBody"
+                    rows="5"
+                    class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                    placeholder="What stood out? Quality, packaging, delivery, value..."
+                  ></textarea>
+                </label>
+
+                <label class="block">
+                  <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review images</span>
+                  <input
+                    #reviewImagesInput
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    multiple
+                    (change)="onReviewImagesSelected($event)"
+                    class="mt-2 w-full cursor-pointer rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                  />
+                  <p class="mt-2 text-xs font-semibold text-slate-500">
+                    Upload up to 5 images. JPG, PNG, and WEBP only.
+                  </p>
+                  <div *ngIf="reviewImageFiles.length" class="mt-3 flex flex-wrap gap-2">
+                    <span
+                      *ngFor="let file of reviewImageFiles; trackBy: trackByReviewFile"
+                      class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700"
+                    >
+                      {{ file.name }}
+                    </span>
+                  </div>
+                  <div *ngIf="reviewForm.reviewImages?.length" class="mt-3 flex flex-wrap gap-2">
+                    <span
+                      *ngFor="let image of reviewForm.reviewImages"
+                      class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600"
+                    >
+                      Existing image
+                    </span>
+                  </div>
+                </label>
+
+                <button
+                  type="submit"
+                  [disabled]="isSubmittingReview || !product"
+                  class="btn-primary w-full !py-3 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {{ isSubmittingReview ? 'Saving Review...' : (isEditingReview ? 'Update Review' : 'Submit Review') }}
+                </button>
+              </form>
+            </ng-container>
+
+            <ng-template #guestReviewPrompt>
+              <div class="flex h-full flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fffaf5] px-6 py-10 text-center">
                 <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review access</p>
                 <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Sign in to leave a review</h2>
                 <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                   Guest visitors can read product details and reviews, but only signed-in customers can write one.
                 </p>
                 <a routerLink="/login" class="btn-primary mt-6 inline-flex !px-6 !py-3">Go To Login</a>
-              </ng-template>
-            </aside>
+              </div>
+            </ng-template>
           </section>
         </ng-container>
       </section>
@@ -347,6 +389,7 @@ export class ProductDetailComponent implements OnInit {
   wishlistedProductIds = new Set<string>();
   loading = false;
   successMessage = '';
+  isMobileViewport = false;
   selectedVariantId = '';
   selectedImage = '';
   quantity = 1;
@@ -361,6 +404,8 @@ export class ProductDetailComponent implements OnInit {
   isEditingReview = false;
   reviewImageFiles: File[] = [];
   ratingOptions = [5, 4, 3, 2, 1];
+  reviewStarSlots = [1, 2, 3, 4, 5];
+  showReviewForm = false;
   reviewForm: ProductReviewForm = {
     productId: '',
     title: '',
@@ -383,6 +428,8 @@ export class ProductDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.updateViewportState();
+
     this.authService.currentUser$.subscribe((user) => {
       this.user = user;
       if (this.isCustomer()) {
@@ -449,7 +496,17 @@ export class ProductDetailComponent implements OnInit {
         this.reviews = reviews;
         this.reviewStats = reviewStats;
         this.relatedProducts = this.product
-          ? this.findSimilarProducts(this.product, catalogProducts?.data || [], landingProducts?.data || [])
+          ? this.findSimilarProducts(
+              this.product,
+              Array.isArray(catalogProducts?.data?.docs)
+                ? catalogProducts.data.docs
+                : Array.isArray(catalogProducts?.data)
+                  ? catalogProducts.data
+                  : [],
+              Array.isArray(landingProducts?.data)
+                ? landingProducts.data
+                : []
+            )
           : [];
 
         const initialVariant = this.product?.displayVariant || this.product?.variants?.[0];
@@ -460,8 +517,17 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (error) => {
         this.loading = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to load the product right now.',
+          'error'
+        );
       }
     });
+  }
+
+  @HostListener('window:resize')
+  handleResize(): void {
+    this.updateViewportState();
   }
 
   selectedVariant(): CustomerCatalogVariant | undefined {
@@ -546,6 +612,10 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (error) => {
         this.isAdding = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to add this item to the cart right now.',
+          'error'
+        );
       }
     });
   }
@@ -575,8 +645,12 @@ export class ProductDetailComponent implements OnInit {
         this.quantity = 1;
         this.router.navigate(['/checkout']);
       },
-      error: () => {
+      error: (error) => {
         this.isBuying = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
       }
     });
   }
@@ -605,8 +679,12 @@ export class ProductDetailComponent implements OnInit {
           'success'
         );
       },
-      error: () => {
+      error: (error) => {
         this.isWishlistBusy = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to update wishlist right now.',
+          'error'
+        );
       }
     });
   }
@@ -723,8 +801,13 @@ export class ProductDetailComponent implements OnInit {
     return this.reviewStats.find((entry) => entry._id === star)?.count || 0;
   }
 
+  reviewTotalCount(): number {
+    const statsTotal = this.reviewStats.reduce((sum, entry) => sum + (entry.count || 0), 0);
+    return statsTotal || this.reviews.length || this.product?.numberOfReviews || 0;
+  }
+
   ratingBreakdown(): Array<{ star: number; count: number; percentage: number }> {
-    const total = this.reviews.length || 1;
+    const total = this.reviewTotalCount() || 1;
 
     return [5, 4, 3, 2, 1].map((star) => {
       const count = this.reviewCountForStar(star);
@@ -734,6 +817,14 @@ export class ProductDetailComponent implements OnInit {
         percentage: Math.round((count / total) * 100)
       };
     });
+  }
+
+  isStarFilled(rating: number, star: number): boolean {
+    return star <= Math.round(Number(rating || 0));
+  }
+
+  trackByNumber(_: number, value: number): number {
+    return value;
   }
 
   formatRating(value: number): string {
@@ -750,6 +841,22 @@ export class ProductDetailComponent implements OnInit {
       month: 'short',
       year: 'numeric'
     }).format(new Date(value));
+  }
+
+  scrollToReviewForm(): void {
+    this.showReviewForm = true;
+    setTimeout(() => {
+      this.reviewFormSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  toggleReviewForm(): void {
+    this.showReviewForm = !this.showReviewForm;
+    if (this.showReviewForm) {
+      setTimeout(() => {
+        this.reviewFormSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
   }
 
   submitReview(): void {
@@ -793,13 +900,15 @@ export class ProductDetailComponent implements OnInit {
         this.isSubmittingReview = false;
         this.successMessage = this.isEditingReview ? 'Review updated successfully.' : 'Review submitted successfully.';
         this.resetReviewForm();
+        this.showReviewForm = false;
         this.errorService.showToast('Review submitted and form cleared.', 'success');
         if (this.product?._id) {
           this.loadProduct(this.product._id, true);
         }
       },
-      error: (error) => {
+      error: () => {
         this.isSubmittingReview = false;
+        this.errorService.showToast('Unable to save your review right now.', 'error');
       }
     });
   }
@@ -820,15 +929,24 @@ export class ProductDetailComponent implements OnInit {
     return product._id;
   }
 
+  visibleRelatedProducts(): CustomerCatalogProduct[] {
+    return this.isMobileViewport ? this.relatedProducts.slice(0, 3) : this.relatedProducts;
+  }
+
   onReviewImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files || []);
     this.reviewImageFiles = files.slice(0, 5);
   }
 
+  private updateViewportState(): void {
+    this.isMobileViewport = typeof window !== 'undefined' ? window.innerWidth < 640 : false;
+  }
+
   editReview(review: ProductReview): void {
     this.isEditingReview = true;
     this.successMessage = '';
+    this.showReviewForm = true;
     this.reviewForm = {
       productId: this.product?._id || '',
       title: review.title || '',
