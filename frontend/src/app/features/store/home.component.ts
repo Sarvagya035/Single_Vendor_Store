@@ -240,8 +240,8 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
       <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
         <div class="overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
           <img
-            src="/assets/banner-test.png"
-            alt="Landing banner"
+            src="/assets/banner%20-2%20.png"
+            alt="Featured landing banner"
             class="h-auto w-full object-cover"
           />
         </div>
@@ -317,6 +317,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       title: 'Explore our fresh banner showcase.',
       subtitle: 'A new banner highlight added to the landing page carousel.',
       image: '/assets/banner-test.png'
+    },
+    {
+      eyebrow: 'Featured banner',
+      title: 'Discover our new seasonal banner.',
+      subtitle: 'Meet the latest hero image now rotating through the landing page slider.',
+      image: '/assets/new-one.png'
     }
   ];
   readonly homeReviews = [
