@@ -60,7 +60,7 @@ import {
                 </div>
               </div>
 
-              <div *ngIf="galleryImages.length > 1" class="grid grid-cols-4 gap-3 sm:grid-cols-5">
+              <div *ngIf="galleryImages.length > 1" class="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
                 <button
                   *ngFor="let image of galleryImages; let index = index; trackBy: trackByImage"
                   type="button"

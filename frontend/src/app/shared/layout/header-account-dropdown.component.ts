@@ -193,7 +193,7 @@ export class HeaderAccountDropdownComponent {
   }
 
   panelClasses(): string {
-    const width = this.desktop ? 'w-[320px]' : 'w-[290px]';
+    const width = this.desktop ? 'w-[min(92vw,320px)]' : 'w-[min(92vw,290px)]';
     const tone: Record<HeaderDropdownTheme, string> = {
       customer: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#eadcc9] bg-white p-3 shadow-[0_24px_60px_rgba(47,27,20,0.16)] transition-all duration-200`,
       vendor: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`,

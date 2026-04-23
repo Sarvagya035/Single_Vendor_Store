@@ -47,12 +47,12 @@ interface WizardStep {
           </app-page-header>
         </div>
 
-        <div class="grid gap-3 px-4 py-4 sm:px-5 lg:grid-cols-5 lg:px-6">
+        <div class="flex gap-3 overflow-x-auto px-4 py-4 sm:px-5 lg:grid lg:grid-cols-5 lg:overflow-visible lg:px-6">
           <button
             *ngFor="let step of steps; let i = index; trackBy: trackByStep"
             type="button"
             (click)="goToStep(i)"
-            class="rounded-[1.4rem] border px-4 py-4 text-left transition"
+            class="min-w-[11rem] flex-none rounded-[1.4rem] border px-4 py-4 text-left transition lg:min-w-0"
             [ngClass]="i === currentStep ? 'border-amber-300 bg-white text-slate-900 shadow-sm' : i < currentStep ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-white/70 bg-white/70 text-slate-500'"
           >
             <p class="vendor-stat-label">Step {{ i + 1 }}</p>

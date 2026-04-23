@@ -40,7 +40,7 @@ import {
         </div>
 
         <div *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
-          <div class="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div class="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
             <app-vendor-form-section eyebrow="Inventory Summary" title="Current product">
               <div class="space-y-5">
                 <div class="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white">
@@ -69,7 +69,7 @@ import {
 
               <div class="space-y-4" *ngIf="product.variants?.length">
                 <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
-                  <div class="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.65fr))_auto] lg:items-end">
+                  <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.65fr))_auto] lg:items-end">
                     <div class="space-y-2">
                       <p class="text-lg font-black text-slate-900">{{ variantAttributeSummaryLabel(variant) }}</p>
                       <p class="text-sm font-semibold text-slate-500">{{ variant.sku || 'SKU pending' }}</p>

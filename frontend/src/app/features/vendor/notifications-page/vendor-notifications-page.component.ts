@@ -146,7 +146,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
                 </p>
               </div>
 
-              <div class="flex min-w-[220px] flex-col gap-3">
+              <div class="flex flex-col gap-3 xl:min-w-[220px]">
                 <a
                   [routerLink]="resolveActionLink(notification)"
                   class="btn-primary !px-5 !py-3 text-center"

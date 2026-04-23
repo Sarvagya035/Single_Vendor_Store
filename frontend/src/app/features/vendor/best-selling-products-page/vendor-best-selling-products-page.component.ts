@@ -82,7 +82,7 @@ interface BestSellingProductRow {
             Search by product name, brand, category, or sale note. The ranking updates instantly.
           </p>
         
-        <div class="grid gap-4 pt-5 lg:grid-cols-[minmax(0,1.5fr)_260px]">
+        <div class="grid gap-4 pt-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1.5fr)_260px]">
           <label class="block">
             <span class="mb-2 ml-1 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Search</span>
             <div class="flex items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 shadow-inner focus-within:border-amber-300 focus-within:ring-4 focus-within:ring-amber-100">
@@ -192,7 +192,7 @@ interface BestSellingProductRow {
                 </div>
               </div>
 
-              <div class="min-w-[240px] xl:text-right">
+              <div class="xl:min-w-[240px] xl:text-right">
                 <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Sales share</p>
                 <p class="mt-2 text-3xl font-black tracking-tight text-slate-900">{{ product.salesShare.toFixed(1) }}%</p>
                 <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">

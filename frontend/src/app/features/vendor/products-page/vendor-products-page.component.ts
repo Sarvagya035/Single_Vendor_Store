@@ -93,7 +93,7 @@ import {
             </div>
 
             <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-              <label class="block min-w-[150px]">
+              <label class="block w-full sm:min-w-[150px]">
                 <select
                   [(ngModel)]="selectedCategory"
                   (ngModelChange)="applyFilters()"
@@ -106,7 +106,7 @@ import {
                 </select>
               </label>
 
-              <label class="block min-w-[130px]">
+              <label class="block w-full sm:min-w-[130px]">
                 <select
                   [(ngModel)]="selectedStatus"
                   (ngModelChange)="applyFilters()"

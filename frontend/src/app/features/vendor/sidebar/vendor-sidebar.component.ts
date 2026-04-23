@@ -26,12 +26,12 @@ interface VendorSidebarItem {
   template: `
     <aside>
       <div class="glass-card flex flex-col p-3 lg:min-h-[calc(100vh-7rem)]">
-        <nav class="mt-3 space-y-2.5">
+        <nav class="mt-3 flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-2.5 lg:overflow-visible lg:pb-0">
           @for (item of sidebarItems; track item.view) {
             @if (item.view !== 'shipments' || showShipments) {
               <a
                 [routerLink]="item.link"
-                class="block w-full rounded-xl border px-3 py-2.5 text-left transition-all"
+                class="flex min-w-max flex-none rounded-xl border px-3 py-2.5 text-left transition-all lg:block lg:w-full"
                 [ngClass]="activeView === item.view ? item.activeClasses : item.inactiveClasses"
               >
                 <div class="flex items-center gap-2.5">

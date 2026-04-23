@@ -159,7 +159,7 @@ interface ProductMessage {
                 {{ messageFor(product._id)?.text }}
               </div>
 
-              <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+              <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
                 <section class="rounded-[1.5rem] border border-slate-200 bg-white p-5">
                   <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
                     <div>
@@ -213,12 +213,12 @@ interface ProductMessage {
                   </p>
                   <h3 class="mt-2 text-xl font-black text-slate-900">Add variant</h3>
                 </div>
-                <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+                <div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                   <input
                     [(ngModel)]="variantCreateForms[product._id].attributesText"
                     [name]="'new-attributes-' + product._id"
                     placeholder="Color:Black, Size:XL"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 md:col-span-2 xl:col-span-2"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 md:col-span-2 lg:col-span-2"
                   />
                   <input
                     type="number"
@@ -245,7 +245,7 @@ interface ProductMessage {
                     placeholder="Stock"
                     class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                   />
-                  <div class="md:col-span-2 xl:col-span-5">
+                  <div class="md:col-span-2 lg:col-span-5">
                     <input
                       type="file"
                       accept="image/*"
@@ -259,7 +259,7 @@ interface ProductMessage {
                       }}
                     </p>
                   </div>
-                  <div class="md:col-span-2 xl:col-span-5">
+                  <div class="md:col-span-2 lg:col-span-5">
                     <button
                       type="button"
                       (click)="addVariant(product)"
@@ -286,7 +286,7 @@ interface ProductMessage {
                     *ngFor="let variant of product.variants; trackBy: trackByVariantId"
                     class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5"
                   >
-                    <div class="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.8fr))]">
+                    <div class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.8fr))]">
                       <div class="space-y-3">
                         <div class="flex items-center gap-4">
                           <div class="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100">

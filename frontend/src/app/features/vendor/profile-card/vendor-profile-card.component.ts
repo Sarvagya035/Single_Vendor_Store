@@ -7,7 +7,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="grid gap-5 p-4 sm:p-5 xl:grid-cols-[minmax(0,1.9fr)_minmax(320px,0.95fr)] lg:p-6">
+    <section class="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.9fr)_minmax(320px,0.95fr)] lg:p-6">
       <article class="overflow-hidden rounded-[1.75rem] border border-[#e7dac9] bg-white shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
         <div class="p-5 sm:p-6">
           <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">

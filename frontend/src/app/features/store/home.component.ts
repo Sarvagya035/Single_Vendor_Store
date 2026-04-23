@@ -200,10 +200,10 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
 
           <div class="mt-8 overflow-hidden">
             <div class="flex w-max gap-5 animate-review-marquee hover:[animation-play-state:paused]">
-              <article
-                *ngFor="let review of marqueeReviews; trackBy: trackByHomeReview"
-                class="w-[320px] flex-shrink-0 rounded-[1.6rem] border border-[#eadcc9] bg-[#fffaf5] p-5 shadow-[0_14px_34px_rgba(47,27,20,0.05)]"
-              >
+                <article
+                  *ngFor="let review of marqueeReviews; trackBy: trackByHomeReview"
+                  class="w-[min(320px,78vw)] flex-shrink-0 rounded-[1.6rem] border border-[#eadcc9] bg-[#fffaf5] p-5 shadow-[0_14px_34px_rgba(47,27,20,0.05)]"
+                >
                 <div class="flex items-start gap-4">
                   <img
                     [src]="review.image"

@@ -8,7 +8,7 @@ import { VendorProductOptionForm } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50/80 p-5 md:grid-cols-[0.8fr_1.2fr_auto] md:items-end">
+    <div class="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50/80 p-5 sm:grid-cols-2 md:grid-cols-[0.8fr_1.2fr_auto] md:items-end">
       <div class="space-y-2">
         <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Option Name</label>
         <input

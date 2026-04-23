@@ -74,7 +74,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   </div>
                 </div>
 
-                <div class="flex min-w-[220px] flex-col items-start gap-3 xl:items-end">
+                <div class="flex flex-col items-start gap-3 xl:min-w-[220px] xl:items-end">
                   <p class="text-2xl font-black text-slate-900">{{ formatCurrency(orderTotal(order)) }}</p>
                   <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Order total</p>
                 </div>

@@ -183,7 +183,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </div>
 
-            <div class="flex min-w-[220px] flex-col items-start gap-3 xl:items-end">
+            <div class="flex flex-col items-start gap-3 xl:min-w-[220px] xl:items-end">
               <button
                 type="button"
                 class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100"

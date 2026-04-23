@@ -127,7 +127,7 @@ import { OrderService } from '../../core/services/order.service';
                 </div>
               </div>
 
-              <div class="flex min-w-[240px] flex-col gap-4 xl:items-end">
+              <div class="flex flex-col gap-4 xl:min-w-[240px] xl:items-end">
                 <div class="text-right">
                   <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">Total</p>
                   <p class="mt-2 text-3xl font-medium tracking-tight text-slate-900">{{ formatCurrency(displayOrderTotal(order)) }}</p>
