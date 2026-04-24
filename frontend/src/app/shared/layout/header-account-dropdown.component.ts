@@ -29,7 +29,7 @@ type HeaderDropdownTheme = 'customer' | 'vendor' | 'admin';
             *ngIf="avatarUrl"
             [src]="avatarUrl"
             [alt]="displayName + ' avatar'"
-            [class]="desktop ? 'h-11 w-11 rounded-full object-cover ring-2 ring-white' : 'h-10 w-10 rounded-full object-cover'"
+            [class]="desktop ? 'h-11 w-11 rounded-full object-cover ring-2 ring-white' : 'header-avatar'"
           />
           <div *ngIf="!avatarUrl" [class]="avatarClasses()">
             {{ initials }}
@@ -46,6 +46,7 @@ type HeaderDropdownTheme = 'customer' | 'vendor' | 'admin';
         </div>
 
         <svg
+          *ngIf="desktop"
           class="h-4 w-4 text-slate-400 transition duration-200"
           [ngClass]="open ? chevronOpenClass() : 'rotate-0'"
           fill="none"
@@ -130,9 +131,9 @@ export class HeaderAccountDropdownComponent {
 
   mobileTriggerClasses(): string {
     const themeClasses: Record<HeaderDropdownTheme, string> = {
-      customer: 'inline-flex items-center gap-2 rounded-full border border-[#eadcc9] bg-white px-2.5 py-2 shadow-[0_12px_28px_rgba(47,27,20,0.08)] transition hover:border-[#d4a017]',
-      vendor: 'inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-2.5 py-2 shadow-[0_16px_32px_rgba(111,78,55,0.12)] transition-all duration-200 hover:border-[#d4a017]',
-      admin: 'inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-2.5 py-2 shadow-[0_16px_32px_rgba(111,78,55,0.12)] transition-all duration-200 hover:border-[#d4a017]'
+      customer: 'header-icon transition hover:border-[#d4a017]',
+      vendor: 'header-icon transition-all duration-200 hover:border-[#d4a017]',
+      admin: 'header-icon transition-all duration-200 hover:border-[#d4a017]'
     };
     return themeClasses[this.theme];
   }
@@ -148,9 +149,9 @@ export class HeaderAccountDropdownComponent {
     }
 
     const mobileClasses: Record<HeaderDropdownTheme, string> = {
-      customer: 'flex h-10 w-10 items-center justify-center rounded-full text-sm font-black uppercase text-white',
-      vendor: 'flex h-10 w-10 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white',
-      admin: 'flex h-10 w-10 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white'
+      customer: 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-black uppercase text-white',
+      vendor: 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white',
+      admin: 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white'
     };
     return mobileClasses[this.theme];
   }

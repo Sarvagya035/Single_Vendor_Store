@@ -49,7 +49,7 @@ interface BestSellingProductRow {
           />
         </div>
 
-        <div class="vendor-grid-4 px-4 py-4 sm:px-5 lg:px-6">
+        <div class="vendor-grid-4 vendor-section-body">
           <article class="vendor-stat-card">
             <p class="vendor-stat-label">Total Revenue</p>
             <p class="vendor-stat-value">{{ formatCurrency(analytics.summary.totalRevenue) }}</p>
@@ -75,7 +75,7 @@ interface BestSellingProductRow {
           </article>
         </div>
 
-        <div class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+        <div class="border-t border-slate-200 vendor-section-body lg:py-6">
           <p class="vendor-stat-label">Search & Filter</p>
           <h2 class="vendor-panel-title">Find a product</h2>
           <p class="mt-2 text-sm font-medium text-slate-500">
@@ -113,7 +113,7 @@ interface BestSellingProductRow {
 
         </div>
 
-        <div class="flex flex-wrap gap-2 px-4 pb-4 sm:px-5 lg:px-6">
+        <div class="flex flex-wrap gap-2 vendor-section-body pb-4">
           <span class="rounded-full border border-[#e7dac9] bg-[#fff7ed] px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#6f4e37]">
             Showing {{ visibleProducts.length }} result{{ visibleProducts.length === 1 ? '' : 's' }}
           </span>
@@ -127,12 +127,12 @@ interface BestSellingProductRow {
           </button>
         </div>
 
-        <div *ngIf="isLoading" class="px-4 py-14 text-center sm:px-5 lg:px-6">
+        <div *ngIf="isLoading" class="vendor-section-body py-14 text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading top selling products...</p>
         </div>
 
-        <div *ngIf="!isLoading && !visibleProducts.length" class="px-4 py-16 text-center sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && !visibleProducts.length" class="vendor-section-body py-16 text-center">
           <h2 class="vendor-empty-title">No best sellers yet</h2>
           <p class="mx-auto mt-3 max-w-xl text-sm font-medium leading-7 text-slate-500">
             Once paid orders are available, your highest performing products will appear here with sales and catalog details.
@@ -140,7 +140,7 @@ interface BestSellingProductRow {
           <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Go to Products</a>
         </div>
 
-        <div *ngIf="!isLoading && visibleProducts.length" class="grid gap-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && visibleProducts.length" class="grid gap-4 border-t border-slate-200 vendor-section-body">
           <article
             *ngFor="let product of visibleProducts; trackBy: trackByProduct"
             class="vendor-mobile-card transition hover:bg-[#fffaf4]"

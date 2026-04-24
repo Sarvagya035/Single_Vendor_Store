@@ -25,7 +25,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </app-page-header>
         </div>
 
-        <div class="vendor-grid-4 px-4 py-4 sm:px-5 lg:px-6">
+        <div class="vendor-grid-4 vendor-section-body">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label !text-amber-700">Total Orders</p>
             <p class="vendor-stat-value">{{ totalOrdersCount }}</p>
@@ -44,7 +44,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </article>
         </div>
 
-        <div class="border-b border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
+        <div class="border-b border-slate-200 vendor-section-body lg:py-5">
           <div class="relative w-full max-w-none lg:max-w-2xl">
             <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
@@ -59,7 +59,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 px-4 py-4 sm:px-5 lg:px-6">
+        <div class="flex flex-wrap gap-2 vendor-section-body">
           <button
             *ngFor="let tab of statusTabs"
             type="button"
@@ -73,15 +73,15 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </button>
         </div>
 
-        <div *ngIf="successMessage" class="border-t border-slate-200 px-4 py-3 text-sm font-semibold text-amber-800 sm:px-5 lg:px-6">
+        <div *ngIf="successMessage" class="border-t border-slate-200 vendor-section-body py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
-        <div *ngIf="isLoading" class="border-t border-slate-200 px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">
+        <div *ngIf="isLoading" class="border-t border-slate-200 vendor-section-body py-10 text-sm font-semibold text-slate-500">
           Loading vendor orders...
         </div>
 
-        <div *ngIf="!isLoading && filteredOrders.length === 0" class="border-t border-slate-200 px-4 py-12 text-center sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && filteredOrders.length === 0" class="border-t border-slate-200 vendor-section-body py-12 text-center">
           <h2 class="vendor-empty-title">
             {{ orders.length ? 'No orders match this filter' : 'No vendor orders yet' }}
           </h2>
@@ -102,7 +102,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
       </div>
 
-        <div *ngIf="filteredOrders.length" class="space-y-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
+        <div *ngIf="filteredOrders.length" class="space-y-4 border-t border-slate-200 vendor-section-body">
           <article
             *ngFor="let order of filteredOrders; trackBy: trackByOrder"
             class="vendor-mobile-card cursor-pointer transition hover:border-[#e7dac9] hover:shadow-[0_16px_40px_rgba(111,78,55,0.08)] sm:px-5 sm:py-5"

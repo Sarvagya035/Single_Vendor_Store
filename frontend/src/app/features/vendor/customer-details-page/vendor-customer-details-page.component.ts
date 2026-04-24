@@ -29,11 +29,11 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </app-page-header>
         </div>
 
-      <div *ngIf="isLoading" class="px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
+      <div *ngIf="isLoading" class="vendor-section-body py-10 text-sm font-semibold text-slate-500">
         Loading customer details...
       </div>
 
-      <div *ngIf="!isLoading && customer" class="vendor-content border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+      <div *ngIf="!isLoading && customer" class="vendor-content border-t border-slate-200 vendor-section-body lg:py-6">
         <div class="vendor-grid-2 lg:grid-cols-[0.9fr_1.1fr]">
           <section class="vendor-mobile-card p-6 lg:p-8">
             <div class="flex items-center gap-4">
@@ -317,7 +317,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
       </div>
       </div>
 
-      <div *ngIf="!isLoading && !customer" class="px-6 py-12 text-center lg:px-8">
+      <div *ngIf="!isLoading && !customer" class="vendor-section-body py-12 text-center">
         <h2 class="vendor-empty-title">Customer not found</h2>
         <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
           The customer you selected may have been removed or the link is invalid.

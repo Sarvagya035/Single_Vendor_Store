@@ -6,6 +6,7 @@ import { AppRefreshService } from '../../core/services/app-refresh.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { VendorService } from '../../core/services/vendor.service';
+import { VendorMobileNavService } from '../../features/vendor/vendor-mobile-nav.service';
 import { HeaderAccountDropdownComponent, HeaderDropdownItem } from './header-account-dropdown.component';
 import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
@@ -124,14 +125,16 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             </ng-container>
           </div>
 
-          <div class="flex items-center gap-3 md:hidden">
+          <div class="flex items-center gap-2 sm:gap-3 md:hidden">
             <a
               *ngIf="isCustomer()"
               routerLink="/cart"
-              class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700"
+              class="header-icon"
             >
-              Cart
-              <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
+              <span class="sr-only">Cart</span>
+              <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-2 6h13m-5-6v6m-4-6v6" />
+              </svg>
             </a>
 
             <app-header-account-dropdown
@@ -148,24 +151,10 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               (itemSelected)="handleCustomerItem($event)"
             />
 
-            <app-header-account-dropdown
-              *ngIf="user && isVendor()"
-              theme="vendor"
-              [desktop]="false"
-              [open]="isVendorDropdownOpen"
-              [avatarUrl]="avatarUrl()"
-              [initials]="userInitials()"
-              [displayName]="displayName()"
-              [email]="user?.email || ''"
-              [items]="vendorMenuItems"
-              (toggle)="toggleVendorDropdown($event)"
-              (itemSelected)="handleVendorItem($event)"
-            />
-
             <a
               *ngIf="user && (isVendor() || isAdmin())"
               routerLink="/vendor/notifications"
-              class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+              class="header-icon relative text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
               aria-label="Open vendor notifications"
               title="Notifications"
             >
@@ -185,11 +174,25 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               </span>
             </a>
 
+            <app-header-account-dropdown
+              *ngIf="user && isVendor()"
+              theme="vendor"
+              [desktop]="false"
+              [open]="isVendorDropdownOpen"
+              [avatarUrl]="avatarUrl()"
+              [initials]="userInitials()"
+              [displayName]="displayName()"
+              [email]="user?.email || ''"
+              [items]="vendorMenuItems"
+              (toggle)="toggleVendorDropdown($event)"
+              (itemSelected)="handleVendorItem($event)"
+            />
+
             <button
               type="button"
-              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2.5 text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
-              (click)="toggleMenu()"
-              aria-label="Toggle menu"
+              class="header-icon relative text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              (click)="onMobileMenuButtonClick()"
+              [attr.aria-label]="mobileMenuButtonLabel()"
               data-mobile-menu-trigger
             >
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,7 +266,8 @@ export class HeaderComponent implements OnInit {
     private cartService: CartService,
     private vendorService: VendorService,
     private router: Router,
-    private appRefreshService: AppRefreshService
+    private appRefreshService: AppRefreshService,
+    private vendorMobileNav: VendorMobileNavService
   ) {}
 
   private readonly apiOrigin = (() => {
@@ -341,9 +345,25 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleMenu() {
+    if (this.isVendorRoute()) {
+      this.closeDropdown();
+      this.closeVendorDropdown();
+      this.isMenuOpen = false;
+      this.vendorMobileNav.toggle();
+      return;
+    }
+
     this.closeDropdown();
     this.closeVendorDropdown();
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  onMobileMenuButtonClick(): void {
+    this.toggleMenu();
+  }
+
+  mobileMenuButtonLabel(): string {
+    return this.isVendorRoute() ? 'Open vendor navigation' : 'Toggle menu';
   }
 
   closeMobileMenu(): void {
@@ -375,6 +395,7 @@ export class HeaderComponent implements OnInit {
     this.isMenuOpen = false;
     this.closeDropdown();
     this.closeVendorDropdown();
+    this.vendorMobileNav.close();
   }
 
   hasAvatar(): boolean {
@@ -506,6 +527,10 @@ export class HeaderComponent implements OnInit {
         this.vendorNotificationCount = 0;
       }
     });
+  }
+
+  private isVendorRoute(): boolean {
+    return this.router.url.includes('/vendor');
   }
 
 }

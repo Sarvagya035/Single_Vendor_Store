@@ -46,7 +46,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </p>
         </div>
 
-        <div *ngIf="!isLoading && customer && order" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+        <div *ngIf="!isLoading && customer && order" class="border-t border-slate-200 vendor-section-body lg:py-6">
           <div class="space-y-6">
             <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
               <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">

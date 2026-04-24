@@ -41,7 +41,7 @@ interface VendorCustomerRow {
           </app-page-header>
         </div>
 
-        <div class="vendor-grid-3 px-4 py-4 sm:px-5 lg:px-6">
+        <div class="vendor-grid-3 vendor-section-body">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label !text-amber-700">Total Customers</p>
             <p class="vendor-stat-value">{{ customerRows.length }}</p>
@@ -56,7 +56,7 @@ interface VendorCustomerRow {
           </article>
         </div>
 
-        <div class="border-b border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
+        <div class="border-b border-slate-200 vendor-section-body lg:py-5">
           <div class="relative">
             <svg
               class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
@@ -77,11 +77,11 @@ interface VendorCustomerRow {
           </div>
         </div>
 
-        <div *ngIf="isLoading" class="px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
+        <div *ngIf="isLoading" class="vendor-section-body py-10 text-sm font-semibold text-slate-500">
           Loading customer accounts...
         </div>
 
-        <div *ngIf="!isLoading && filteredCustomers.length === 0" class="px-6 py-12 text-center lg:px-8">
+        <div *ngIf="!isLoading && filteredCustomers.length === 0" class="vendor-section-body py-12 text-center">
           <h2 class="vendor-empty-title">No customers found</h2>
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
             Try a different search term or wait for new customer signups.
@@ -92,13 +92,13 @@ interface VendorCustomerRow {
           <table class="min-w-full border-separate border-spacing-0">
             <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">
-                <th class="px-6 py-5 font-semibold lg:px-8">Customer</th>
-                <th class="px-6 py-5 font-semibold">Email</th>
-                <th class="px-6 py-5 font-semibold">Orders</th>
-                <th class="px-6 py-5 font-semibold">Total Spent</th>
-                <th class="px-6 py-5 font-semibold">Status</th>
-                <th class="px-6 py-5 font-semibold">Joined</th>
-                <th class="px-6 py-5 font-semibold text-right lg:px-8">Actions</th>
+                <th class="vendor-table-head-cell font-semibold">Customer</th>
+                <th class="vendor-table-head-cell font-semibold">Email</th>
+                <th class="vendor-table-head-cell font-semibold">Orders</th>
+                <th class="vendor-table-head-cell font-semibold">Total Spent</th>
+                <th class="vendor-table-head-cell font-semibold">Status</th>
+                <th class="vendor-table-head-cell font-semibold">Joined</th>
+                <th class="vendor-table-head-cell font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -106,7 +106,7 @@ interface VendorCustomerRow {
                 *ngFor="let customer of filteredCustomers; trackBy: trackByCustomer"
                 class="border-t border-slate-200 bg-white transition hover:bg-[#fffaf4]"
               >
-                <td class="border-t border-slate-200 px-6 py-5 lg:px-8">
+                <td class="border-t border-slate-200 vendor-table-cell">
                   <div class="flex items-center gap-4">
                     <div
                       class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-black uppercase text-white"
@@ -122,11 +122,11 @@ interface VendorCustomerRow {
                   </div>
                 </td>
 
-                <td class="border-t border-slate-200 px-6 py-5 text-sm font-medium text-[#9c5f39]">
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-medium text-[#9c5f39]">
                   {{ customer.user.email || 'No email provided' }}
                 </td>
 
-                <td class="border-t border-slate-200 px-6 py-5">
+                <td class="border-t border-slate-200 vendor-table-cell">
                   <div class="inline-flex items-center gap-2 text-sm font-black text-slate-900">
                     <svg
                       class="h-4 w-4 text-[#8a5f44]"
@@ -143,11 +143,11 @@ interface VendorCustomerRow {
                   </div>
                 </td>
 
-                <td class="border-t border-slate-200 px-6 py-5 text-sm font-black text-slate-900">
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-black text-slate-900">
                   {{ formatCurrency(customer.totalSpent) }}
                 </td>
 
-                <td class="border-t border-slate-200 px-6 py-5">
+                <td class="border-t border-slate-200 vendor-table-cell">
                   <span
                     class="inline-flex rounded-full px-3 py-1 text-xs font-black"
                     [ngClass]="customer.status === 'Active'
@@ -158,11 +158,11 @@ interface VendorCustomerRow {
                   </span>
                 </td>
 
-                <td class="border-t border-slate-200 px-6 py-5 text-sm font-medium text-[#9c5f39]">
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-medium text-[#9c5f39]">
                   {{ customer.joinedAt }}
                 </td>
 
-                <td class="border-t border-slate-200 px-6 py-5 text-right lg:px-8">
+                <td class="border-t border-slate-200 vendor-table-cell text-right">
                   <button
                     type="button"
                     class="inline-flex items-center gap-2 rounded-full bg-[#7c5646] px-4 py-2.5 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
@@ -181,7 +181,7 @@ interface VendorCustomerRow {
           </table>
         </div>
 
-        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="grid gap-4 px-4 pb-4 lg:hidden sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="grid gap-4 px-5 pb-5 sm:px-6 lg:hidden">
           <article
             *ngFor="let customer of filteredCustomers; trackBy: trackByCustomer"
             class="vendor-mobile-card"

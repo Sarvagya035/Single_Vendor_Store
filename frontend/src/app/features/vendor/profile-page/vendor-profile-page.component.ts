@@ -31,12 +31,12 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           <app-page-header eyebrow="Store Profile" title="Vendor profile" titleClass="!text-[1.8rem] md:!text-[2.2rem]" />
         </div>
 
-        <div *ngIf="isLoading" class="flex flex-col items-center gap-4 px-6 py-20">
+        <div *ngIf="isLoading" class="vendor-section-body flex flex-col items-center gap-4 py-20">
           <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="font-medium text-slate-500">Loading store data...</p>
         </div>
 
-        <div *ngIf="!isLoading && vendor" class="border-t border-slate-200">
+        <div *ngIf="!isLoading && vendor" class="border-t border-slate-200 vendor-section-body">
           <app-vendor-profile-card
             [vendor]="vendor"
             [logoPreview]="logoPreview"

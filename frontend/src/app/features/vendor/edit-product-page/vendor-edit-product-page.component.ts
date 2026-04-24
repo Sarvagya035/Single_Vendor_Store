@@ -51,7 +51,7 @@ import {
           <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</a>
         </div>
 
-        <form *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6" (ngSubmit)="saveProduct()">
+        <form *ngIf="!isLoading && product" class="border-t border-slate-200 vendor-section-body lg:py-6" (ngSubmit)="saveProduct()">
           <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
               <div class="border-b border-slate-100 pb-4">

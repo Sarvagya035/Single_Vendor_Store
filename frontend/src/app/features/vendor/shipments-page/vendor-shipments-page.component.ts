@@ -63,7 +63,7 @@ interface ShipmentCardView {
           </app-page-header>
         </div>
 
-        <div *ngIf="summary" class="vendor-grid-3 px-4 py-4 sm:px-5 lg:px-6">
+        <div *ngIf="summary" class="vendor-grid-3 vendor-section-body">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label">Total</p>
             <p class="vendor-stat-value">{{ summary.totalShipments }}</p>
@@ -78,7 +78,7 @@ interface ShipmentCardView {
           </article>
         </div>
 
-        <div *ngIf="successMessage" class="border-t border-slate-200 px-4 py-3 text-sm font-semibold text-emerald-800 sm:px-5 lg:px-6">
+        <div *ngIf="successMessage" class="border-t border-slate-200 vendor-section-body py-3 text-sm font-semibold text-emerald-800">
           {{ successMessage }}
         </div>
 
@@ -86,14 +86,14 @@ interface ShipmentCardView {
           Loading shipment records...
         </div>
 
-        <div *ngIf="!isLoading && shipments.length === 0" class="border-t border-slate-200 px-4 py-12 text-center sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && shipments.length === 0" class="border-t border-slate-200 vendor-section-body py-12 text-center">
           <h2 class="vendor-empty-title">No shipments yet</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">
             Shipment records will appear here after payment verification creates them.
           </p>
         </div>
 
-        <div *ngIf="shipments.length" class="space-y-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
+        <div *ngIf="shipments.length" class="space-y-4 border-t border-slate-200 vendor-section-body">
           <article
             *ngFor="let shipment of shipments; trackBy: trackByShipment"
             class="vendor-mobile-card"

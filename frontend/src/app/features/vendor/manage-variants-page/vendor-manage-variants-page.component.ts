@@ -47,7 +47,7 @@ import {
           <p class="mt-4 text-sm font-medium text-slate-500">Loading variants...</p>
         </div>
 
-        <div *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+        <div *ngIf="!isLoading && product" class="border-t border-slate-200 vendor-section-body lg:py-6">
           <div class="grid gap-6">
             <div class="vendor-grid-3">
               <article class="vendor-stat-card">

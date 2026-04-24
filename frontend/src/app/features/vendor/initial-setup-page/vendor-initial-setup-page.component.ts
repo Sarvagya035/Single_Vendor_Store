@@ -19,8 +19,8 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </app-page-header>
         </div>
 
-        <div *ngIf="submitted" class="px-4 py-10 sm:px-5 lg:px-6 lg:py-12">
-          <div class="mx-auto max-w-3xl rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm sm:p-14">
+        <div *ngIf="submitted" class="vendor-section-body py-10 lg:py-12">
+          <div class="w-full rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm sm:p-14">
             <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-amber-600/10 text-4xl font-black text-amber-700">
               ✓
             </div>
@@ -41,7 +41,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </div>
 
-        <form *ngIf="!submitted" (ngSubmit)="onSubmit()" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+        <form *ngIf="!submitted" (ngSubmit)="onSubmit()" class="border-t border-slate-200 vendor-section-body lg:py-6">
           <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
             <section class="w-full min-w-0 space-y-6">
               <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">

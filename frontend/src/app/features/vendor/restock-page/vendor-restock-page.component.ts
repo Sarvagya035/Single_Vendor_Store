@@ -39,7 +39,7 @@ import {
           <p class="mt-4 text-sm font-medium text-slate-500">Loading inventory details...</p>
         </div>
 
-        <div *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+        <div *ngIf="!isLoading && product" class="border-t border-slate-200 vendor-section-body lg:py-6">
           <div class="vendor-grid-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
             <app-vendor-form-section eyebrow="Inventory Summary" title="Current product">
               <div class="space-y-5">

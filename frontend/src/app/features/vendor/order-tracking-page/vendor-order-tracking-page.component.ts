@@ -44,7 +44,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           Loading vendor tracking details...
         </div>
 
-        <div *ngIf="!isLoading && order" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+        <div *ngIf="!isLoading && order" class="border-t border-slate-200 vendor-section-body lg:py-6">
           <div class="vendor-content">
             <section class="rounded-[1.85rem] border border-slate-200 bg-white p-5 shadow-[0_16px_40px_rgba(47,27,20,0.05)] sm:p-6 lg:p-7">
               <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">

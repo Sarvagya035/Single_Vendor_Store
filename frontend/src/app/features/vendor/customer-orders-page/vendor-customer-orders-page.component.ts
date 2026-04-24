@@ -32,7 +32,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           Loading customer order history...
         </div>
 
-        <div *ngIf="!isLoading && customer" class="px-4 py-4 sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && customer" class="vendor-section-body">
           <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div class="flex items-center gap-4">
             <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-xl font-black text-slate-500">
@@ -54,7 +54,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </div>
 
-        <div class="vendor-grid-3 mt-5">
+        <div class="vendor-grid-3 vendor-section-body">
           <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
             <p class="vendor-stat-label !text-amber-700">Total Orders</p>
             <p class="mt-3 text-3xl font-black text-slate-900">{{ customerOrders.length }}</p>
@@ -77,14 +77,14 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </p>
         </div>
 
-        <div *ngIf="!isLoading && customerOrders.length === 0 && customer" class="border-t border-slate-200 px-4 py-16 text-center sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && customerOrders.length === 0 && customer" class="border-t border-slate-200 vendor-section-body py-16 text-center">
           <h2 class="vendor-empty-title">No customer orders yet</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">
             This customer has not placed any orders yet.
           </p>
         </div>
 
-        <div *ngIf="!isLoading && customerOrders.length > 0" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && customerOrders.length > 0" class="border-t border-slate-200 vendor-section-body">
         <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p class="vendor-stat-label">Search</p>

@@ -34,7 +34,7 @@ import {
           </app-page-header>
         </div>
 
-        <div class="vendor-grid-3 px-4 py-4 sm:px-5 lg:px-6">
+        <div class="vendor-grid-3 vendor-section-body">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label !text-amber-700">Total Products</p>
             <p class="vendor-stat-value">{{ totalDocs }}</p>
@@ -49,7 +49,7 @@ import {
           </article>
         </div>
 
-        <div class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
+        <div class="border-t border-slate-200 vendor-section-body lg:py-5">
           <div class="flex flex-col gap-4">
             <div class="flex flex-col gap-3">
               <div>
@@ -158,12 +158,12 @@ import {
           </div>
         </div>
 
-        <div *ngIf="isLoading" class="px-6 py-20 text-center lg:px-8">
+        <div *ngIf="isLoading" class="vendor-section-body text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading vendor products...</p>
         </div>
 
-        <div *ngIf="!isLoading && filteredProducts.length === 0" class="px-6 py-20 text-center lg:px-8">
+        <div *ngIf="!isLoading && filteredProducts.length === 0" class="vendor-section-body text-center">
           <h3 class="vendor-empty-title">No products found</h3>
           <p class="mx-auto mt-3 max-w-xl text-sm font-medium leading-relaxed text-slate-500">
             Try a different search or filter, or add a new product to start building out your storefront catalog.
@@ -174,7 +174,7 @@ import {
         </div>
 
         <div *ngIf="!isLoading && filteredProducts.length > 0" class="vendor-table-wrap hidden lg:block">
-          <div class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-[#fffaf5] px-6 py-5 text-sm font-semibold text-slate-500">
+          <div class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-[#fffaf5] vendor-table-head-cell text-sm font-semibold text-slate-500">
             <span>Product</span>
             <span>Category</span>
             <span>Variants</span>
@@ -185,7 +185,7 @@ import {
 
           <article
             *ngFor="let product of filteredProducts; trackBy: trackByProductId"
-            class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-white px-6 py-5 transition hover:bg-[#fffaf4] last:border-b-0"
+            class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-white vendor-table-cell transition hover:bg-[#fffaf4] last:border-b-0"
           >
             <div class="flex min-w-0 items-center gap-4">
               <div class="h-14 w-14 overflow-hidden rounded-full bg-[#f5ede5]">
@@ -348,7 +348,7 @@ import {
 
         <div
           *ngIf="!isLoading && totalPages > 1"
-          class="flex flex-col gap-4 border-t border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between lg:px-8"
+          class="flex flex-col gap-4 border-t border-slate-200 vendor-section-body sm:flex-row sm:items-center sm:justify-between"
         >
           <p class="text-sm font-semibold text-slate-500">
             Showing <span class="font-black text-slate-900">{{ products.length }}</span> of

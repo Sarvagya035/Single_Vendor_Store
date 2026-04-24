@@ -18,6 +18,7 @@ import { VendorService } from '../../../core/services/vendor.service';
 import { VendorSidebarComponent } from '../sidebar/vendor-sidebar.component';
 import { VendorDashboardView } from '../../../core/models/vendor.models';
 import { OrderService } from '../../../core/services/order.service';
+import { VendorMobileNavService } from '../vendor-mobile-nav.service';
 
 @Component({
   selector: 'app-vendor-shell',
@@ -34,27 +35,10 @@ import { OrderService } from '../../../core/services/order.service';
           [orderCount]="orderCount"
           [shipmentCount]="shipmentCount"
           [showShipments]="true"
-          [mobileOpen]="mobileSidebarOpen"
-          (closeMobile)="closeMobileSidebar()"
         />
       </aside>
 
       <main class="vendor-main min-w-0">
-        <div class="mb-4 flex items-center justify-between gap-3 rounded-[1.5rem] border border-slate-200 bg-white/90 px-5 py-4 shadow-sm lg:hidden">
-          <div class="min-w-0">
-            <p class="vendor-stat-label">Vendor area</p>
-            <h2 class="mt-2 truncate text-lg font-black text-slate-900">{{ activeViewLabel }}</h2>
-          </div>
-          <button
-            type="button"
-            class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50"
-            (click)="toggleMobileSidebar()"
-            aria-label="Open vendor navigation"
-          >
-            Menu
-          </button>
-        </div>
-
         <section class="vendor-page vendor-content min-w-0 lg:pt-0">
           @if (isNavigating()) {
             <div class="rounded-[1.5rem] border border-amber-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
@@ -73,6 +57,50 @@ import { OrderService } from '../../../core/services/order.service';
           </div>
         </section>
       </main>
+
+      <div *ngIf="isVendorMobileNavOpen" class="fixed inset-0 z-50 lg:hidden">
+        <button
+          type="button"
+          class="absolute inset-0 bg-slate-950/40"
+          aria-label="Close vendor navigation"
+          (click)="closeVendorMobileNav()"
+        ></button>
+
+        <aside
+          class="absolute right-0 top-0 h-full w-[min(88vw,22rem)] overflow-y-auto bg-white p-4 shadow-2xl"
+        >
+          <div class="mb-5 flex items-center justify-between border-b border-slate-200 pb-4">
+            <div>
+              <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                Vendor Navigation
+              </p>
+              <h2 class="text-lg font-black text-slate-900">
+                Menu
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              class="rounded-full border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700"
+              (click)="closeVendorMobileNav()"
+            >
+              Close
+            </button>
+          </div>
+
+          <app-vendor-sidebar
+            class="block"
+            [activeView]="activeView"
+            [productCount]="productCount"
+            [categoryCount]="categoryCount"
+            [customerCount]="customerCount"
+            [orderCount]="orderCount"
+            [shipmentCount]="shipmentCount"
+            [showShipments]="true"
+            (closeMobile)="closeVendorMobileNav()"
+          />
+        </aside>
+      </div>
     </div>
   `
 })
@@ -84,9 +112,9 @@ export class VendorShellComponent implements OnInit {
   shipmentCount = 0;
   currentRoles: string[] = [];
   readonly isNavigating = signal(false);
-  mobileSidebarOpen = false;
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly vendorMobileNav = inject(VendorMobileNavService);
 
   constructor(
     private vendorService: VendorService,
@@ -185,12 +213,12 @@ export class VendorShellComponent implements OnInit {
       .subscribe((event) => {
         if (event instanceof NavigationStart) {
           this.isNavigating.set(true);
-          this.mobileSidebarOpen = false;
+          this.vendorMobileNav.close();
           return;
         }
 
         this.isNavigating.set(false);
-        this.mobileSidebarOpen = false;
+        this.vendorMobileNav.close();
       });
 
     this.appRefreshService.refresh$.subscribe((scope) => {
@@ -201,12 +229,20 @@ export class VendorShellComponent implements OnInit {
 
   }
 
-  toggleMobileSidebar(): void {
-    this.mobileSidebarOpen = !this.mobileSidebarOpen;
+  get isVendorMobileNavOpen(): boolean {
+    return this.vendorMobileNav.isOpen();
   }
 
-  closeMobileSidebar(): void {
-    this.mobileSidebarOpen = false;
+  openVendorMobileNav(): void {
+    this.vendorMobileNav.open();
+  }
+
+  closeVendorMobileNav(): void {
+    this.vendorMobileNav.close();
+  }
+
+  toggleVendorMobileNav(): void {
+    this.vendorMobileNav.toggle();
   }
 
   loadSummary(): void {

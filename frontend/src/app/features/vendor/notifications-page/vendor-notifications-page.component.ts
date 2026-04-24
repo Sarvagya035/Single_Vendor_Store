@@ -30,7 +30,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
         </app-page-header>
         </div>
 
-        <div class="vendor-grid-4 px-4 py-4 sm:px-5 lg:px-6">
+        <div class="vendor-grid-4 vendor-section-body">
         <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Unread</p>
           <p class="vendor-stat-value">{{ summary.unreadNotifications }}</p>
@@ -49,7 +49,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
         </article>
         </div>
 
-        <div class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
+        <div class="border-t border-slate-200 vendor-section-body lg:py-5">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="flex flex-wrap gap-2">
               <button
@@ -89,24 +89,24 @@ type NotificationFilter = 'all' | 'unread' | 'active';
           </div>
         </div>
 
-        <div *ngIf="successMessage" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
+        <div *ngIf="successMessage" class="border-t border-slate-200 vendor-section-body py-4">
           <div class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
             {{ successMessage }}
           </div>
         </div>
 
-        <div *ngIf="isLoading" class="border-t border-slate-200 px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">
+        <div *ngIf="isLoading" class="border-t border-slate-200 vendor-section-body py-10 text-sm font-semibold text-slate-500">
           Loading notifications...
         </div>
 
-        <div *ngIf="!isLoading && filteredNotifications.length === 0" class="border-t border-slate-200 px-4 py-12 text-center sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && filteredNotifications.length === 0" class="border-t border-slate-200 vendor-section-body py-12 text-center">
           <h2 class="vendor-empty-title">No active notifications right now</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">
             Resolved low-stock alerts disappear automatically after restock.
           </p>
         </div>
 
-        <div *ngIf="filteredNotifications.length" class="grid gap-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
+        <div *ngIf="filteredNotifications.length" class="grid gap-4 border-t border-slate-200 vendor-section-body">
           <article
             *ngFor="let notification of filteredNotifications; trackBy: trackByNotification"
             class="vendor-mobile-card transition hover:bg-[#fffaf4]"

@@ -47,7 +47,7 @@ import {
           <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</a>
         </div>
 
-        <div *ngIf="!isLoading && product" class="vendor-grid-2 px-4 py-4 sm:px-5 lg:px-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div *ngIf="!isLoading && product" class="vendor-grid-2 vendor-section-body lg:grid-cols-[1.1fr_0.9fr]">
           <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <div class="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div class="space-y-4">
@@ -152,12 +152,12 @@ import {
           <table class="min-w-full border-separate border-spacing-0">
             <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">
-                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Variant</th>
-                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Attributes</th>
-                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Price</th>
-                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Final Price</th>
-                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Stock</th>
-                <th class="px-4 py-5 font-semibold sm:px-5 lg:px-6">Status</th>
+                <th class="vendor-table-head-cell font-semibold">Variant</th>
+                <th class="vendor-table-head-cell font-semibold">Attributes</th>
+                <th class="vendor-table-head-cell font-semibold">Price</th>
+                <th class="vendor-table-head-cell font-semibold">Final Price</th>
+                <th class="vendor-table-head-cell font-semibold">Stock</th>
+                <th class="vendor-table-head-cell font-semibold">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -165,7 +165,7 @@ import {
                 *ngFor="let variant of product.variants; trackBy: trackByVariant"
                 class="border-t border-slate-200 bg-white transition hover:bg-[#fffaf4]"
               >
-                <td class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6">
+                <td class="border-t border-slate-200 vendor-table-cell">
                   <div class="flex items-center gap-4">
                     <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white">
                       <img *ngIf="variant.variantImage" [src]="variant.variantImage" [alt]="variant.sku || 'Variant image'" class="h-full w-full object-cover" />
@@ -180,23 +180,23 @@ import {
                   </div>
                 </td>
 
-                <td class="border-t border-slate-200 px-4 py-5 text-sm font-medium text-[#9c5f39] sm:px-5 lg:px-6">
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-medium text-[#9c5f39]">
                   {{ variantAttributeText(variant) }}
                 </td>
 
-                <td class="border-t border-slate-200 px-4 py-5 text-sm font-black text-slate-900 sm:px-5 lg:px-6">
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-black text-slate-900">
                   {{ formatCurrency(variant.productPrice) }}
                 </td>
 
-                <td class="border-t border-slate-200 px-4 py-5 text-sm font-black text-slate-900 sm:px-5 lg:px-6">
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-black text-slate-900">
                   {{ formatCurrency(variant.finalPrice) }}
                 </td>
 
-                <td class="border-t border-slate-200 px-4 py-5 text-sm font-black text-slate-900 sm:px-5 lg:px-6">
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-black text-slate-900">
                   {{ variant.productStock || 0 }}
                 </td>
 
-                <td class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6">
+                <td class="border-t border-slate-200 vendor-table-cell">
                   <span
                     class="inline-flex rounded-full px-3 py-1 text-xs font-black"
                     [ngClass]="variant.isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-[#f2ebe7] text-[#8c6c5d]'"

@@ -47,7 +47,7 @@ interface WizardStep {
           </app-page-header>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 px-4 py-4 sm:grid-cols-2 sm:px-5 lg:grid-cols-5 lg:px-6">
+        <div class="grid grid-cols-1 gap-3 vendor-section-body sm:grid-cols-2 lg:grid-cols-5">
           <button
             *ngFor="let step of steps; let i = index; trackBy: trackByStep"
             type="button"
@@ -70,12 +70,12 @@ interface WizardStep {
           </button>
         </div>
         
-        <div *ngIf="isLoadingCategories" class="border-t border-slate-200 px-6 py-20 text-center">
+        <div *ngIf="isLoadingCategories" class="border-t border-slate-200 vendor-section-body py-20 text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading categories...</p>
         </div>
 
-        <form *ngIf="!isLoadingCategories" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6" (ngSubmit)="submitProduct()">
+        <form *ngIf="!isLoadingCategories" class="border-t border-slate-200 vendor-section-body lg:py-6" (ngSubmit)="submitProduct()">
           <div *ngIf="currentStep === 0" class="vendor-grid-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 1" title="Basic info">
               <div class="grid gap-5 md:grid-cols-2">

@@ -61,22 +61,6 @@ import { RouterModule } from '@angular/router';
           >
             My Addresses
           </a>
-          <a
-            *ngIf="isVendor"
-            routerLink="/vendor/dashboard"
-            (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-[#6f4e37] hover:bg-[#fff3e4]"
-          >
-            Vendor Dashboard
-          </a>
-          <a
-            *ngIf="isVendor"
-            routerLink="/vendor/orders"
-            (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
-          >
-            Orders
-          </a>
 
           <div class="border-t border-[#eadcc9] pt-4">
             <button

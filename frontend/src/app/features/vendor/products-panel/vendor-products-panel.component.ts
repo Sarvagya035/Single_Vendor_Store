@@ -32,7 +32,7 @@ interface ProductMessage {
   template: `
     <section class="w-full min-w-0 space-y-6">
       <div class="glass-card overflow-hidden">
-        <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
+        <div class="border-b border-slate-200 vendor-section-body lg:py-6">
           <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
@@ -43,7 +43,7 @@ interface ProductMessage {
           </div>
         </div>
 
-        <div class="space-y-5 px-6 py-6 lg:px-8">
+        <div class="space-y-5 vendor-section-body">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <input
               type="text"
