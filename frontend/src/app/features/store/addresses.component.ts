@@ -9,7 +9,7 @@ import { CustomerAddressBookComponent } from '../customer/address-book/customer-
   imports: [CommonModule, RouterModule, CustomerAddressBookComponent],
   template: `
     <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-      <div class="mx-auto w-full max-w-7xl">
+      <div class="app-shell-width">
         <div class="vendor-page-shell overflow-hidden">
           <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">

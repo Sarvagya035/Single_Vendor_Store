@@ -169,9 +169,17 @@
   @apply px-5 py-4 sm:px-6 lg:px-8;
 }
 
-.vendor-table-cell {
-  @apply px-5 py-5 sm:px-6 lg:px-8;
-}
+  .vendor-table-cell {
+    @apply px-5 py-5 sm:px-6 lg:px-8;
+  }
+
+  .app-card-body {
+    @apply p-5 sm:p-6 lg:p-7;
+  }
+
+  .app-card-tight {
+    @apply p-4 sm:p-5 lg:p-6;
+  }
 
   .vendor-content {
     @apply w-full min-w-0 space-y-5;

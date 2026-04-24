@@ -7,7 +7,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
   standalone: true,
   imports: [CommonModule],
   template: `
-    <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
+    <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white app-card-tight shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
       <div class="flex items-center gap-4">
         <div class="relative h-[4.75rem] w-[4.75rem] shrink-0 overflow-hidden rounded-2xl bg-[#7b5b4d]">
           <img
@@ -41,7 +41,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
       </div>
     </article>
 
-    <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
+    <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white app-card-tight shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
       <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.78-9.72a.75.75 0 0 0-1.06-1.06L9.25 10.69 7.78 9.22a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4Z" clip-rule="evenodd" />
@@ -81,7 +81,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
       </div>
     </article>
 
-    <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
+    <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white app-card-tight shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
       <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-600">
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-6m3 6V7m3 10v-3m4 7H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9l7 7v9a2 2 0 0 1-2 2Z" />

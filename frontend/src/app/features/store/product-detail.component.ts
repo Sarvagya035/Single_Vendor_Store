@@ -25,7 +25,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
   imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent],
   template: `
     <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
-      <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+      <section class="app-shell-width py-8 lg:py-10">
         <a routerLink="/products" class="inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 transition hover:text-slate-900">
           <span>&larr;</span>
           Back to products
@@ -38,7 +38,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
         </div>
 
         <ng-container *ngIf="product && !loading">
-          <div class="mt-8 rounded-[2rem] border border-[#eadcc9] bg-white/90 p-3 shadow-[0_24px_60px_rgba(47,27,20,0.08)] sm:p-6 lg:p-7">
+          <div class="mt-8 rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-tight shadow-[0_24px_60px_rgba(47,27,20,0.08)]">
             <div class="grid gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:gap-8">
               <app-product-gallery
                 [productName]="product.productName"
@@ -72,7 +72,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </div>
           </div>
 
-          <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+          <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
             <div class="flex flex-col gap-2 border-b border-[#f1e4d4] pb-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Similar products</p>
@@ -151,7 +151,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </ng-template>
           </section>
 
-          <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+          <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
             <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Ratings & Reviews</p>
@@ -253,7 +253,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </div>
           </section>
 
-          <section *ngIf="showReviewForm" #reviewFormSection class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+          <section *ngIf="showReviewForm" #reviewFormSection class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
             <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
               <div class="border-b border-[#f1e4d4] pb-5">
                 <div class="flex items-start justify-between gap-4">

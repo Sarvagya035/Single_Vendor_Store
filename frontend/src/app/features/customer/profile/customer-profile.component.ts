@@ -26,7 +26,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
   ],
   template: `
     <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-      <div class="mx-auto w-full max-w-7xl">
+      <div class="app-shell-width">
         <div class="vendor-page-shell overflow-hidden">
           <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
             <app-page-header eyebrow="Account Center" title="Customer profile" titleClass="!text-[1.9rem] sm:!text-[2.2rem]" />
@@ -47,7 +47,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
             {{ error }}
           </div>
 
-          <div *ngIf="user" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 xl:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
+          <div *ngIf="user" class="grid gap-5 bg-[#fffdfa] app-card-body xl:grid-cols-[minmax(0,1.75fr)_360px]">
             <div class="min-w-0">
               <app-customer-personal-details
                 [user]="user"

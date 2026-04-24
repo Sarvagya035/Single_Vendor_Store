@@ -23,7 +23,7 @@ const EMPTY_CART: CustomerCart = {
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-      <div class="mx-auto w-full max-w-7xl">
+      <div class="app-shell-width">
         <div class="vendor-page-shell overflow-hidden">
           <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -65,7 +65,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </div>
 
-          <div *ngIf="successMessage" class="mx-4 mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800 sm:mx-5 lg:mx-6">
+        <div *ngIf="successMessage" class="mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800">
             {{ successMessage }}
           </div>
 

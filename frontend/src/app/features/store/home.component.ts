@@ -34,7 +34,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
           ></div>
 
           <div class="absolute inset-0">
-            <div class="mx-auto flex h-full w-full max-w-7xl items-end px-4 pb-6 sm:px-6 lg:px-8 lg:pb-10">
+            <div class="app-shell-width flex h-full items-end pb-6 lg:pb-10">
               <div class="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-start">
                 <a
                   routerLink="/products"
@@ -68,7 +68,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
         </div>
       </div>
 
-      <section class="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+      <section class="app-shell-width pt-8">
         <div class="grid gap-3 rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-4 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:grid-cols-2 lg:grid-cols-4">
           <div *ngFor="let highlight of trustHighlights; trackBy: trackByHighlight" class="flex items-center gap-3 rounded-[1.35rem] bg-[#fff9f2] px-4 py-3">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6f4e37,#8b5e3c)] text-white shadow-[0_12px_24px_rgba(111,78,55,0.18)]">
@@ -84,7 +84,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
         </div>
       </section>
 
-      <section id="categories" class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 scroll-mt-6">
+      <section id="categories" class="app-shell-width py-10 scroll-mt-6">
         <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
           <div class="px-4 pb-6 pt-8 sm:px-6 lg:px-8">
             <div>
@@ -201,7 +201,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
         </div>
       </section>
 
-      <section id="about" class="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8 scroll-mt-6">
+      <section id="about" class="app-shell-width pb-14 scroll-mt-6">
         <div class="rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-8 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:px-6 lg:px-8">
           <div class="text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Customer reviews</p>
@@ -252,7 +252,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
         </div>
       </section>
 
-      <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+      <section class="app-shell-width pb-10">
         <div class="overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
           <img
             src="/assets/banner%20-2%20.png"
@@ -264,7 +264,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
         </div>
       </section>
 
-      <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+      <section class="app-shell-width pb-10">
         <div class="grid gap-6 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_0.95fr]">
           <div class="flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-10">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">About Us</p>

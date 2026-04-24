@@ -16,7 +16,7 @@ import { OrderService } from '../../core/services/order.service';
   imports: [CommonModule, RouterModule],
   template: `
     <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-      <div class="mx-auto w-full max-w-7xl">
+      <div class="app-shell-width">
         <div class="vendor-page-shell overflow-hidden">
           <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -37,8 +37,8 @@ import { OrderService } from '../../core/services/order.service';
 
         <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading tracking details...</div>
 
-        <div *ngIf="!isLoading && order" class="bg-[#fffdfa] p-4 sm:p-5 lg:p-6">
-          <div class="rounded-[2.25rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)] sm:p-8">
+        <div *ngIf="!isLoading && order" class="bg-[#fffdfa] app-card-body">
+          <div class="rounded-[2.25rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
             <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
               <div>
                 <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Order</p>
@@ -74,7 +74,7 @@ import { OrderService } from '../../core/services/order.service';
               </div>
             </div>
 
-            <div class="mt-8 rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] px-5 py-5">
+            <div class="mt-8 rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] app-card-tight">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
                 <div class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-600 text-white">
                   <span class="text-lg font-medium">✓</span>

@@ -10,7 +10,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
   imports: [CommonModule, FormsModule],
   template: `
     <div class="overflow-hidden">
-      <div class="flex flex-col gap-4 border-b border-[#eee2d4] bg-[#fffaf5] px-4 py-5 sm:px-5 sm:py-6 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+      <div class="flex flex-col gap-4 border-b border-[#eee2d4] bg-[#fffaf5] app-card-body lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-700">Saved Addresses</p>
           <h3 class="mt-2 text-[1.45rem] font-medium tracking-tight text-slate-900">Manage delivery destinations</h3>
@@ -28,7 +28,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
         </button>
       </div>
 
-      <div class="space-y-4 bg-[#fffdfa] p-4 sm:p-5 lg:p-6">
+      <div class="space-y-4 bg-[#fffdfa] app-card-body">
         <div
           *ngIf="successMessage"
           class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
@@ -36,7 +36,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           {{ successMessage }}
         </div>
 
-        <div *ngIf="showForm" class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(111,78,55,0.06)] sm:p-6">
+        <div *ngIf="showForm" class="rounded-[1.5rem] border border-[#e7dac9] bg-white app-card-tight shadow-[0_18px_40px_rgba(111,78,55,0.06)]">
           <div class="flex items-center justify-between gap-4">
             <div>
               <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">
@@ -167,7 +167,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           Loading addresses...
         </div>
 
-        <div *ngIf="!loading && addresses.length === 0" class="rounded-[1.75rem] border border-dashed border-[#e7dac9] bg-white/70 px-6 py-12 text-center">
+        <div *ngIf="!loading && addresses.length === 0" class="rounded-[1.75rem] border border-dashed border-[#e7dac9] bg-white/70 app-card-body text-center">
           <p class="text-lg font-medium text-slate-900">No saved addresses yet</p>
           <p class="mt-2 text-sm font-medium text-slate-500">
             Add your first delivery address to get started.
@@ -177,7 +177,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
         <div *ngIf="addresses.length" class="grid gap-4">
           <article
             *ngFor="let address of addresses; trackBy: trackByAddress"
-            class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(111,78,55,0.06)] sm:p-6"
+            class="rounded-[1.5rem] border border-[#e7dac9] bg-white app-card-tight shadow-[0_18px_40px_rgba(111,78,55,0.06)]"
           >
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="space-y-3">

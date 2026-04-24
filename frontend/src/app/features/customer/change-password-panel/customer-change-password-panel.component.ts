@@ -18,7 +18,7 @@ import { UserService } from '../../../core/services/user.service';
       ></button>
 
       <div class="relative z-[101] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_30px_80px_rgba(111,78,55,0.2)]">
-        <div class="border-b border-[#f1e4d4] bg-[linear-gradient(180deg,#fffaf5_0%,#fffdf9_100%)] px-6 py-5 sm:px-8">
+        <div class="border-b border-[#f1e4d4] bg-[linear-gradient(180deg,#fffaf5_0%,#fffdf9_100%)] app-card-body">
           <div class="flex items-start justify-between gap-4">
             <div>
               <p class="text-[11px] font-medium uppercase tracking-[0.28em] text-amber-700">Security</p>
@@ -38,7 +38,7 @@ import { UserService } from '../../../core/services/user.service';
           </div>
         </div>
 
-        <div class="space-y-8 bg-[#fffdfa] p-6 sm:p-8">
+        <div class="space-y-8 bg-[#fffdfa] app-card-body">
           <form class="space-y-6" (ngSubmit)="onSubmit()">
             <div class="space-y-2">
               <label for="oldPassword" class="ml-1 text-[10px] font-medium uppercase tracking-[0.1em] text-slate-400">

@@ -23,7 +23,7 @@ const EMPTY_CART: CustomerCart = {
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
       <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-        <div class="mx-auto w-full max-w-7xl">
+        <div class="app-shell-width">
           <div class="vendor-page-shell overflow-hidden">
             <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -36,14 +36,14 @@ const EMPTY_CART: CustomerCart = {
 
             <div
               *ngIf="cartMessage"
-              class="mx-4 mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800 sm:mx-5 lg:mx-6"
+              class="mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800"
             >
               {{ cartMessage }}
             </div>
 
             <div
               *ngIf="cart.alerts"
-              class="mx-4 mt-4 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-700 sm:mx-5 lg:mx-6"
+              class="mt-4 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-700"
             >
               {{ cart.alerts }}
             </div>
@@ -53,7 +53,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
 
             <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] px-4 py-6 sm:px-5 lg:px-6">
-                <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-6 py-12 text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:px-8 sm:py-16">
+              <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white app-card-body text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
                 <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
                 <p class="mt-3 text-sm font-medium text-slate-500">
                   Browse products and add a variant to start building your order.
@@ -62,11 +62,11 @@ const EMPTY_CART: CustomerCart = {
               </div>
             </div>
 
-            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 lg:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
+            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] app-card-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <article
                   *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
-                  class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6"
+                  class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]"
                 >
                   <div class="flex flex-col gap-4 sm:flex-row">
                     <img
@@ -131,7 +131,7 @@ const EMPTY_CART: CustomerCart = {
               </div>
 
               <aside class="space-y-5">
-                <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6">
+                <div class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
                   <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Summary</p>
 
                   <div class="mt-6 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4 text-sm text-slate-700">
@@ -168,10 +168,10 @@ const EMPTY_CART: CustomerCart = {
 
     <ng-template #guestState>
       <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-        <div class="mx-auto w-full max-w-7xl">
+        <div class="app-shell-width">
           <div class="vendor-page-shell overflow-hidden">
             <div class="bg-[#fffdfa] px-4 py-16 sm:px-5 lg:px-6">
-              <div class="mx-auto max-w-3xl rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+              <div class="mx-auto max-w-3xl rounded-[2rem] border border-dashed border-[#e7dac9] bg-white app-card-body text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
                 <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
                 <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Sign in to view your cart</h1>
                 <p class="app-page-description !mt-3">

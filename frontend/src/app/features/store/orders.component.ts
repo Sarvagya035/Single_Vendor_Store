@@ -11,7 +11,7 @@ import { OrderService } from '../../core/services/order.service';
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-      <div class="mx-auto w-full max-w-7xl">
+      <div class="app-shell-width">
         <div class="vendor-page-shell overflow-hidden">
           <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -27,12 +27,12 @@ import { OrderService } from '../../core/services/order.service';
           </div>
           </div>
 
-        <div *ngIf="successMessage" class="mx-4 mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800 sm:mx-5 lg:mx-6">
+        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
-        <div class="border-t border-slate-200 bg-[#fffdfa] p-4 sm:p-5 lg:p-6">
-        <div class="rounded-[1.75rem] border border-[#eadcc9] bg-white p-5 shadow-[0_20px_60px_rgba(111,78,55,0.06)] sm:p-6">
+        <div class="border-t border-slate-200 bg-[#fffdfa] app-card-body">
+        <div class="rounded-[1.75rem] border border-[#eadcc9] bg-white app-card-body shadow-[0_20px_60px_rgba(111,78,55,0.06)]">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p class="text-xs font-medium uppercase tracking-[0.28em] text-slate-400">Search Orders</p>
@@ -75,7 +75,7 @@ import { OrderService } from '../../core/services/order.service';
         <div *ngIf="isLoading" class="px-4 pb-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading your orders...</div>
 
         <div *ngIf="!isLoading && orders.length === 0" class="px-4 pb-10 sm:px-5 lg:px-6">
-        <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center">
+        <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white app-card-body text-center">
           <h2 class="text-2xl font-medium text-slate-900">No orders yet</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">Your completed checkouts will appear here.</p>
           <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Start Shopping</a>
@@ -83,7 +83,7 @@ import { OrderService } from '../../core/services/order.service';
         </div>
 
         <div *ngIf="!isLoading && orders.length > 0 && filteredOrders.length === 0" class="px-4 pb-10 sm:px-5 lg:px-6">
-        <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_16px_40px_rgba(111,78,55,0.04)]">
+        <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white app-card-body text-center shadow-[0_16px_40px_rgba(111,78,55,0.04)]">
           <h2 class="text-2xl font-medium text-slate-900">No matching orders</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">
             Try a different order number, item name, city, or status.
@@ -92,10 +92,10 @@ import { OrderService } from '../../core/services/order.service';
         </div>
         </div>
 
-        <div *ngIf="filteredOrders.length" class="grid gap-5 px-4 pb-4 sm:px-5 sm:pb-5 lg:px-6 lg:pb-6">
+        <div *ngIf="filteredOrders.length" class="grid gap-5 app-card-body">
           <article
             *ngFor="let order of filteredOrders; trackBy: trackByOrder"
-            class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(111,78,55,0.09)]"
+            class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(111,78,55,0.09)]"
           >
             <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
               <div class="min-w-0 flex-1">

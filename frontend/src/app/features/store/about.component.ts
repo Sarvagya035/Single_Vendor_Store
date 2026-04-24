@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
       <div class="pointer-events-none absolute left-0 top-0 h-80 w-80 rounded-full bg-[#f5e6d3]/50 blur-[120px]"></div>
       <div class="pointer-events-none absolute right-0 top-24 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
-      <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <section class="app-shell-width py-12 lg:py-16">
         <div class="grid gap-8 md:grid-cols-2 lg:gap-10 lg:items-center">
           <div class="relative z-10 space-y-8">
             <div class="space-y-4">
@@ -91,7 +91,7 @@ import { RouterModule } from '@angular/router';
         </div>
       </section>
 
-      <section class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+      <section class="app-shell-width pb-12">
         <div class="grid gap-4 lg:grid-cols-2">
           <article class="app-card p-6 sm:p-8">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Our services</p>
@@ -154,7 +154,7 @@ import { RouterModule } from '@angular/router';
         </div>
       </section>
 
-      <section class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+      <section class="app-shell-width pb-12">
         <div class="grid gap-4 rounded-[2rem] border border-[#eadcc9] bg-white p-6 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Our promise</p>

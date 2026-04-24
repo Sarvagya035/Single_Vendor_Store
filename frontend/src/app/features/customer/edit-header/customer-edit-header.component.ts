@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="border-b border-[#eee2d4] bg-[linear-gradient(180deg,#fffaf5_0%,#fffdf9_100%)] px-4 py-5 sm:px-5 lg:px-6">
+    <div class="border-b border-[#eee2d4] bg-[linear-gradient(180deg,#fffaf5_0%,#fffdf9_100%)] app-card-body">
       <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p class="app-page-eyebrow !text-amber-700">Account Settings</p>

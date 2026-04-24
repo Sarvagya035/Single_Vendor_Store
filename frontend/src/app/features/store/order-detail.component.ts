@@ -18,8 +18,8 @@ import { OrderService } from '../../core/services/order.service';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-      <div class="mx-auto w-full max-w-7xl">
-        <div *ngIf="successMessage" class="mx-4 mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800 sm:mx-5 lg:mx-6">
+      <div class="app-shell-width">
+        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
@@ -27,7 +27,7 @@ import { OrderService } from '../../core/services/order.service';
 
         <div *ngIf="!isLoading && order as currentOrder" [ngClass]="isVendorView() ? 'mt-0' : 'mt-8'">
           <ng-container *ngIf="isVendorView(); else customerOrderLayout">
-            <section class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm overflow-hidden sm:p-6 lg:p-7">
+            <section class="rounded-[2rem] border border-slate-200 bg-white app-card-body shadow-sm overflow-hidden">
               <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div class="min-w-0 flex-1">
                   <p class="vendor-stat-label">Vendor Order</p>
@@ -62,7 +62,7 @@ import { OrderService } from '../../core/services/order.service';
 
               <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
                 <div class="space-y-6">
-                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#fffaf4] p-5 sm:p-6">
+                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#fffaf4] app-card-tight">
                     <div class="flex items-end justify-between gap-4 border-b border-slate-200 pb-4">
                       <div>
                         <p class="vendor-stat-label">Order Items</p>
@@ -101,7 +101,7 @@ import { OrderService } from '../../core/services/order.service';
                     </div>
                   </section>
 
-                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#2f1b14] p-5 text-white sm:p-6">
+                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#2f1b14] app-card-tight text-white">
                     <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Vendor Summary</p>
                     <div class="mt-5 grid gap-3 sm:grid-cols-3">
                       <div class="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
@@ -288,7 +288,7 @@ import { OrderService } from '../../core/services/order.service';
                   </div>
                 </div>
 
-                <div class="grid gap-6 px-6 py-6 sm:px-7 lg:grid-cols-[minmax(0,1fr)_340px]">
+                <div class="grid gap-6 app-card-body lg:grid-cols-[minmax(0,1fr)_340px]">
                   <div class="space-y-6">
                     <section class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fffaf4] p-5 sm:p-6">
                       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
@@ -439,7 +439,7 @@ import { OrderService } from '../../core/services/order.service';
                   </div>
 
                   <aside class="space-y-6">
-                    <section class="rounded-[1.75rem] border border-[#e7dac9] bg-white p-6">
+                    <section class="rounded-[1.75rem] border border-[#e7dac9] bg-white app-card-body">
                       <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Delivery</p>
                       <h3 class="mt-2 text-2xl font-medium text-slate-900">Shipping address</h3>
                       <p class="mt-4 text-sm font-medium leading-7 text-slate-600">
@@ -451,7 +451,7 @@ import { OrderService } from '../../core/services/order.service';
                       <p class="mt-2 text-sm font-semibold text-slate-700">{{ order.shippingAddress?.phone || '-' }}</p>
                     </section>
 
-                    <section class="rounded-[1.75rem] border border-[#e7dac9] bg-[#2f1b14] p-6 text-white shadow-[0_18px_50px_rgba(111,78,55,0.16)]">
+                    <section class="rounded-[1.75rem] border border-[#e7dac9] bg-[#2f1b14] app-card-body text-white shadow-[0_18px_50px_rgba(111,78,55,0.16)]">
                       <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
                         {{ isVendorView() ? 'Vendor Summary' : 'Bill Summary' }}
                       </p>

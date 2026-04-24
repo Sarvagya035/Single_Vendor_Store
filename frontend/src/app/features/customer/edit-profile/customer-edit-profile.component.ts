@@ -20,7 +20,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
   ],
   template: `
     <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-      <div class="mx-auto w-full max-w-7xl">
+      <div class="app-shell-width">
         <div class="vendor-page-shell overflow-hidden">
           <app-customer-edit-header />
 

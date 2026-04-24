@@ -10,8 +10,8 @@ import { CustomerWishlist, CustomerWishlistProduct } from '../../core/models/cus
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section class="mx-auto min-h-[calc(100vh-72px)] max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-      <div class="rounded-[2rem] border border-[#eadcc9] bg-white/90 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.06)] sm:p-8">
+    <section class="app-shell-width min-h-[calc(100vh-72px)] py-8 lg:py-10">
+      <div class="rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-body shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
         <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.26em] text-amber-700">Saved items</p>
@@ -45,7 +45,7 @@ import { CustomerWishlist, CustomerWishlistProduct } from '../../core/models/cus
             tabindex="0"
             class="cursor-pointer overflow-hidden rounded-[1.4rem] border border-[#e7dac9] bg-[#fffaf5] shadow-[0_12px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]"
           >
-            <div class="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
+            <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
               <div class="block shrink-0">
                 <div class="h-24 w-full overflow-hidden rounded-[1.2rem] bg-slate-100 sm:h-20 sm:w-20">
                   <img
