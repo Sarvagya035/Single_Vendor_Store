@@ -24,9 +24,9 @@ interface LandingCategoryNode extends CustomerLandingCategory {
       </div>
 
       <section class="relative h-full w-full px-3 py-3 sm:px-4 lg:px-6 lg:py-6">
-        <div class="h-full min-h-[calc(100vh-88px)] overflow-hidden rounded-[2rem] border border-white/70 bg-white/90 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+        <div class="h-full min-h-[calc(100vh-88px)] rounded-[2rem] border border-white/70 bg-white/90 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur">
 
-          <div class="grid min-h-[calc(100vh-150px)] gap-0 lg:grid-cols-[320px_1fr]">
+          <div class="grid min-h-[calc(100vh-150px)] w-full min-w-0 gap-0 lg:grid-cols-[320px_1fr]">
             <aside class="hidden border-b border-slate-200 bg-slate-50/80 px-4 py-5 lg:sticky lg:top-6 lg:block lg:h-[calc(100vh-120px)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:bg-slate-50/90">
               <div class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                 <div class="flex items-center justify-between gap-3">
@@ -303,7 +303,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
               </div>
             </div>
 
-            <main class="bg-white px-4 py-5 sm:px-6 lg:px-6">
+            <main class="w-full min-w-0 bg-white px-4 py-5 sm:px-6 lg:px-6">
               <div class="mb-5 border-b border-slate-200 pb-5">
                 <div>
                   <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Dry fruit catalog</p>
@@ -425,7 +425,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 {{ catalogMessage }}
               </div>
 
-              <div *ngIf="loadingProducts" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 sm:gap-4 lg:gap-5">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
                   <div class="mt-4 h-4 w-3/4 rounded-full bg-slate-200"></div>
@@ -449,7 +449,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </button>
                 </div>
 
-                <div *ngIf="products.length > 0" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 sm:gap-4 lg:gap-5">
                   <article
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
                     role="link"
@@ -457,7 +457,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                     (click)="openProduct(product)"
                     (keydown.enter)="openProduct(product)"
                     (keydown.space)="$event.preventDefault(); openProduct(product)"
-                    class="group relative rounded-[1.8rem] border border-slate-200 bg-white p-2 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)] md:p-3 lg:p-4"
+                    class="product-card group relative transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
                   >
                     <button
                       type="button"
@@ -476,137 +476,98 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       <span *ngIf="wishlistBusyId === product._id" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
                     </button>
 
-                    <div class="aspect-square overflow-hidden rounded-[1.2rem] border border-slate-200 bg-slate-100 md:rounded-[1.25rem]">
+                    <div class="overflow-hidden rounded-[1rem] border border-slate-200 bg-slate-100">
                       <img
                         [src]="productImage(product)"
                         [alt]="product.productName"
                         loading="lazy"
                         decoding="async"
-                        class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        class="product-card-image transition duration-300 group-hover:scale-105"
                       />
                     </div>
 
-                    <div class="mt-2 space-y-2 md:mt-3 md:space-y-2 lg:mt-4 lg:space-y-3">
-                      <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                          <p class="truncate text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 sm:text-[10px] lg:text-[11px]">
+                    <div class="space-y-2 pt-2">
+                      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                        <div class="min-w-0 flex-1">
+                          <p class="truncate text-[10px] font-black uppercase tracking-[0.14em] text-slate-400 sm:text-xs">
                             {{ product.brand || 'Dry fruit pack' }}
                           </p>
-                          <h2 class="mt-1 line-clamp-2 text-[10px] font-black leading-4 text-slate-900 sm:text-[11px] lg:text-lg">
+                          <h2 class="product-card-title">
                             {{ product.productName }}
                           </h2>
                         </div>
-                        <span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-black text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-2.5 sm:py-1 sm:text-[10px] lg:px-3 lg:text-xs">
+                        <span class="shrink-0 self-start rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-black text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-2.5 sm:py-1 sm:text-[10px] lg:px-3 lg:text-xs">
                           {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
                         </span>
                       </div>
 
-                      <p class="text-[9px] font-semibold text-slate-500 sm:text-[10px] lg:text-sm">
+                      <p class="product-card-meta">
                         {{ product.categoryDetails?.name || 'General Category' }}
                       </p>
 
-                      <div class="flex items-center gap-2 text-[9px] sm:text-[10px] lg:text-sm">
-                        <span *ngIf="productOriginalPrice(product)" class="text-sm font-bold text-slate-400 line-through">
+                      <div class="flex flex-wrap items-center gap-1 text-xs">
+                        <span *ngIf="productOriginalPrice(product)" class="whitespace-nowrap text-[10px] font-bold text-slate-400 line-through sm:text-xs">
                           {{ productOriginalPrice(product) }}
                         </span>
-                        <span class="text-[10px] font-black text-slate-900 sm:text-[11px] lg:text-base">
+                        <span class="whitespace-nowrap text-[10px] font-black text-slate-900 sm:text-xs lg:text-base">
                           {{ productDiscountedPrice(product) }}
                         </span>
                       </div>
 
-                      <div class="flex items-center justify-between pt-1 text-[9px] font-black sm:text-[10px] lg:text-sm">
-                        <span class="text-slate-500">
+                      <div class="product-card-footer pt-1 text-[10px] font-black sm:text-xs lg:text-sm">
+                        <span class="min-w-0 truncate text-slate-500">
                           {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
                         </span>
-                        <span class="text-amber-800 transition group-hover:translate-x-1 group-hover:text-amber-900">
+                        <a
+                          [routerLink]="['/products', product._id]"
+                          (click)="$event.stopPropagation()"
+                          class="inline-flex w-full items-center justify-center rounded-full border border-amber-200 bg-amber-50 px-2 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-amber-800 transition hover:border-amber-300 hover:bg-amber-100 sm:w-auto sm:text-xs"
+                        >
                           View Product
-                        </span>
+                        </a>
                       </div>
                     </div>
                   </article>
                 </div>
 
-                <div *ngIf="catalogTotalItems > pageSize" class="mt-6 flex flex-col gap-4 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div *ngIf="catalogTotalItems > pageSize" class="pagination-wrap mt-6">
                   <p class="text-sm font-semibold text-slate-500">
                     Showing {{ paginationStartIndex() }}-{{ paginationEndIndex() }} of {{ totalProductCount() }} products
                   </p>
 
-                  <div class="flex items-center gap-2 sm:gap-3">
+                  <div class="pagination-nav mt-4">
                     <button
                       type="button"
-                      class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
+                      class="pagination-button pagination-button-mobile"
                       [disabled]="currentPage === 1"
                       (click)="changePage(currentPage - 1)"
                     >
                       Prev
                     </button>
 
-                    <ng-container *ngIf="visiblePages().length <= 5; else compactPager">
-                      <button
-                        *ngFor="let page of visiblePages(); trackBy: trackByPage"
-                        type="button"
-                        class="min-w-9 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition sm:min-w-10 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.bg-amber-700]="page === currentPage"
-                        [class.text-white]="page === currentPage"
-                        [class.bg-white]="page !== currentPage"
-                        [class.text-slate-600]="page !== currentPage"
-                        [class.border]="page !== currentPage"
-                        [class.border-slate-200]="page !== currentPage"
-                        (click)="changePage(page)"
-                      >
-                        {{ page }}
-                      </button>
-                    </ng-container>
-
-                    <ng-template #compactPager>
-                      <button
-                        type="button"
-                        class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.border-amber-300]="currentPage > 2"
-                        [class.bg-amber-50]="currentPage > 2"
-                        [class.text-amber-800]="currentPage > 2"
-                        [disabled]="currentPage <= 2"
-                        (click)="changePage(currentPage - 2)"
-                      >
-                        ...
-                      </button>
-
-                      <button
-                        *ngFor="let page of visiblePages(); trackBy: trackByPage"
-                        type="button"
-                        class="min-w-9 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition sm:min-w-10 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.bg-amber-700]="page === currentPage"
-                        [class.text-white]="page === currentPage"
-                        [class.bg-white]="page !== currentPage"
-                        [class.text-slate-600]="page !== currentPage"
-                        [class.border]="page !== currentPage"
-                        [class.border-slate-200]="page !== currentPage"
-                        (click)="changePage(page)"
-                      >
-                        {{ page }}
-                      </button>
-
-                      <button
-                        type="button"
-                        class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.border-amber-300]="currentPage < totalPages - 1"
-                        [class.bg-amber-50]="currentPage < totalPages - 1"
-                        [class.text-amber-800]="currentPage < totalPages - 1"
-                        [disabled]="currentPage >= totalPages - 1"
-                        (click)="changePage(currentPage + 2)"
-                      >
-                        ...
-                      </button>
-                    </ng-template>
-
                     <button
                       type="button"
-                      class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
+                      class="pagination-button pagination-button-mobile"
                       [disabled]="currentPage === totalPages"
                       (click)="changePage(currentPage + 1)"
                     >
                       Next
                     </button>
+                  </div>
+
+                  <div class="pagination-pages">
+                      <button
+                        *ngFor="let page of visiblePages(); trackBy: trackByPage"
+                        type="button"
+                        class="pagination-button pagination-button-page"
+                        [class.pagination-button-active]="page === currentPage"
+                        [class.bg-white]="page !== currentPage"
+                        [class.text-slate-600]="page !== currentPage"
+                        [class.border-slate-200]="page !== currentPage"
+                        (click)="changePage(page)"
+                      >
+                        {{ page }}
+                      </button>
                   </div>
                 </div>
               </ng-container>

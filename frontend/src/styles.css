@@ -218,6 +218,54 @@
     @apply rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)];
   }
 
+  .product-card {
+    @apply w-full min-w-0 overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white p-2 shadow-sm sm:p-3;
+  }
+
+  .product-card-image {
+    @apply w-full aspect-square rounded-[1rem] object-cover;
+  }
+
+  .product-card-title {
+    @apply mt-1 min-h-[2.25rem] text-xs font-black leading-5 text-slate-900 line-clamp-2 sm:mt-2 sm:text-sm;
+  }
+
+  .product-card-meta {
+    @apply mt-1 truncate text-[10px] uppercase tracking-[0.14em] text-slate-500 sm:text-xs;
+  }
+
+  .product-card-footer {
+    @apply mt-2 flex flex-col gap-2 sm:mt-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .pagination-wrap {
+    @apply w-full min-w-0 rounded-[1.5rem] border border-slate-200 bg-white p-4;
+  }
+
+  .pagination-nav {
+    @apply flex w-full items-center justify-between gap-3 sm:hidden;
+  }
+
+  .pagination-pages {
+    @apply mt-3 flex flex-wrap items-center justify-center gap-2 sm:mt-0 sm:flex sm:items-center sm:justify-center sm:gap-2;
+  }
+
+  .pagination-button {
+    @apply h-9 min-w-9 rounded-full px-3 text-xs font-black uppercase tracking-[0.12em] transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .pagination-button-page {
+    @apply border border-slate-200 bg-white text-slate-600;
+  }
+
+  .pagination-button-active {
+    @apply border-amber-700 bg-amber-700 text-white;
+  }
+
+  .pagination-button-mobile {
+    @apply flex-1 border border-slate-200 bg-white px-3 text-xs text-slate-600;
+  }
+
   .header-icon {
     @apply flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm;
   }
