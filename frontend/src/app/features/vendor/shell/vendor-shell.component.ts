@@ -25,7 +25,7 @@ import { OrderService } from '../../../core/services/order.service';
   imports: [CommonModule, RouterModule, VendorSidebarComponent],
   template: `
     <div class="vendor-theme min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_38%,#fff9f2_100%)] pt-4 pb-12">
-      <main class="mx-auto w-full max-w-[1440px] px-4 sm:px-5 lg:px-8">
+      <main class="w-full px-4 sm:px-5 lg:px-6 xl:px-8">
         <div class="grid gap-4 md:gap-5 lg:grid-cols-[228px_minmax(0,1fr)] lg:items-start">
           <app-vendor-sidebar
             [activeView]="activeView"
