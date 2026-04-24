@@ -27,15 +27,17 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
   template: `
     <div class="vendor-theme vendor-app-layout">
       <aside class="vendor-sidebar-wrap">
-        <app-vendor-sidebar
-          [activeView]="activeView"
-          [productCount]="productCount"
-          [categoryCount]="categoryCount"
-          [customerCount]="customerCount"
-          [orderCount]="orderCount"
-          [shipmentCount]="shipmentCount"
-          [showShipments]="true"
-        />
+        <div class="vendor-sidebar-card">
+          <app-vendor-sidebar
+            [activeView]="activeView"
+            [productCount]="productCount"
+            [categoryCount]="categoryCount"
+            [customerCount]="customerCount"
+            [orderCount]="orderCount"
+            [shipmentCount]="shipmentCount"
+            [showShipments]="true"
+          />
+        </div>
       </aside>
 
       <main class="vendor-main min-w-0">

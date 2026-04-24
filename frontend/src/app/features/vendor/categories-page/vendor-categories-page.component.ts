@@ -13,31 +13,29 @@ import { ToastType } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule, VendorCategoriesPanelComponent, PageHeaderComponent, ToastBannerComponent],
   template: `
-    <section class="vendor-content">
-      <div class="vendor-section">
-        <div class="vendor-page-header">
-          <app-page-header
-            eyebrow="Vendor Category Management"
-            title="Manage your store categories"
-            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
-          />
-        </div>
-
-        <app-vendor-categories-panel
-          [categories]="categories"
-          [isLoading]="isCategorySyncing"
-          [isCreating]="isCreatingCategory"
-          [isUpdating]="isUpdatingCategory"
-          [createForm]="categoryCreateForm"
-          [createError]="categoryCreateError"
-          [createImageName]="selectedCategoryImage?.name || ''"
-          (selectCreateImage)="onCategoryImageSelected($event)"
-          (submitCreate)="createCategory($event)"
-          (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
-          (deleteCategory)="deleteCategory($event)"
-          (refresh)="loadCategories()"
+    <section class="vendor-page vendor-container">
+      <div class="vendor-page-header">
+        <app-page-header
+          eyebrow="Vendor Category Management"
+          title="Manage your store categories"
+          titleClass="!text-[1.8rem] md:!text-[2.2rem]"
         />
       </div>
+
+      <app-vendor-categories-panel
+        [categories]="categories"
+        [isLoading]="isCategorySyncing"
+        [isCreating]="isCreatingCategory"
+        [isUpdating]="isUpdatingCategory"
+        [createForm]="categoryCreateForm"
+        [createError]="categoryCreateError"
+        [createImageName]="selectedCategoryImage?.name || ''"
+        (selectCreateImage)="onCategoryImageSelected($event)"
+        (submitCreate)="createCategory($event)"
+        (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
+        (deleteCategory)="deleteCategory($event)"
+        (refresh)="loadCategories()"
+      />
 
       <app-toast-banner [visible]="toast.visible" [message]="toast.message" [type]="toast.type" />
     </section>

@@ -151,158 +151,6 @@ interface LandingCategoryNode extends CustomerLandingCategory {
               </div>
             </aside>
 
-            <div *ngIf="isMobileFiltersOpen" class="fixed inset-0 z-50 lg:hidden" aria-modal="true" role="dialog">
-              <button
-                type="button"
-                class="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]"
-                aria-label="Close filters"
-                (click)="closeMobileFilters()"
-              ></button>
-
-              <div class="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-hidden rounded-t-[2rem] border-t border-slate-200 bg-white shadow-[0_-24px_80px_rgba(15,23,42,0.18)]">
-                <div class="flex items-center justify-between border-b border-slate-200 px-4 py-4">
-                  <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Filters</p>
-                    <h3 class="mt-1 text-lg font-black text-slate-900">Refine results</h3>
-                  </div>
-                  <button
-                    type="button"
-                    class="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 hover:bg-white"
-                    (click)="closeMobileFilters()"
-                  >
-                    Done
-                  </button>
-                </div>
-
-                <div class="max-h-[calc(88vh-72px)] overflow-y-auto px-4 py-4">
-                  <div class="rounded-[1.6rem] border border-slate-200 bg-slate-50/80 p-4 shadow-sm">
-                    <div class="space-y-4">
-                      <label class="block">
-                        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
-                        <select
-                          [(ngModel)]="selectedCategorySlug"
-                          name="mobileSelectedCategorySlug"
-                          (ngModelChange)="onCatalogFilterChange()"
-                          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                        >
-                          <option value="all">All categories</option>
-                          <option *ngFor="let category of sidebarCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
-                            {{ categoryLabel(category) }}
-                          </option>
-                        </select>
-                      </label>
-
-                      <p class="text-[11px] font-semibold leading-5 text-slate-500">
-                        Parent categories include all of their child category products.
-                      </p>
-
-                      <label class="block">
-                        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Brand</span>
-                        <select
-                          [(ngModel)]="selectedBrand"
-                          name="mobileSelectedBrand"
-                          (ngModelChange)="onCatalogFilterChange()"
-                          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                        >
-                          <option value="all">All brands</option>
-                          <option *ngFor="let brand of brandOptions(); trackBy: trackByValue" [value]="brand">
-                            {{ brand }}
-                          </option>
-                        </select>
-                      </label>
-
-                      <label class="block">
-                        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Sort by</span>
-                        <select
-                          [(ngModel)]="sortBy"
-                          name="mobileSidebarSortBy"
-                          (ngModelChange)="onCatalogFilterChange()"
-                          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                        >
-                          <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
-                            {{ option.label }}
-                          </option>
-                        </select>
-                      </label>
-
-                      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <label class="block">
-                          <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Min price</span>
-                          <input
-                            [(ngModel)]="minPrice"
-                            name="mobileMinPrice"
-                            (ngModelChange)="onCatalogFilterChange()"
-                            type="number"
-                            min="0"
-                            placeholder="0"
-                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                          />
-                        </label>
-
-                        <label class="block">
-                          <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Max price</span>
-                          <input
-                            [(ngModel)]="maxPrice"
-                            name="mobileMaxPrice"
-                            (ngModelChange)="onCatalogFilterChange()"
-                            type="number"
-                            min="0"
-                            placeholder="Any"
-                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                          />
-                        </label>
-                      </div>
-
-                      <label class="block">
-                        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Availability</span>
-                        <select
-                          [(ngModel)]="availabilityFilter"
-                          name="mobileAvailabilityFilter"
-                          (ngModelChange)="onCatalogFilterChange()"
-                          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                        >
-                          <option *ngFor="let option of availabilityOptions; trackBy: trackByFilterOption" [value]="option.value">
-                            {{ option.label }}
-                          </option>
-                        </select>
-                      </label>
-
-                      <label class="block">
-                        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Minimum rating</span>
-                        <select
-                          [(ngModel)]="ratingFilter"
-                          name="mobileRatingFilter"
-                          (ngModelChange)="onCatalogFilterChange()"
-                          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                        >
-                          <option *ngFor="let option of ratingOptions; trackBy: trackByFilterOption" [value]="option.value">
-                            {{ option.label }}
-                          </option>
-                        </select>
-                      </label>
-                    </div>
-
-                    <div class="mt-5 flex items-center gap-3">
-                      <button
-                        type="button"
-                        class="btn-secondary flex-1 !px-4 !py-3 text-sm"
-                        (click)="resetFilters()"
-                      >
-                        Reset
-                      </button>
-                      <button
-                        type="button"
-                        class="btn-primary flex-1 !px-4 !py-3 text-sm"
-                        (click)="closeMobileFilters()"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <main class="w-full min-w-0 bg-white px-4 py-5 sm:px-6 lg:px-6">
               <div class="mb-5 border-b border-slate-200 pb-5">
                 <div>
@@ -340,7 +188,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                     <button
                       type="button"
                       class="btn-primary justify-between !px-4 !py-3 text-sm"
-                      (click)="openMobileFilters()"
+                      (click)="openFilters()"
                     >
                       <span>Filters</span>
                       <span class="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-black tracking-[0.14em]">
@@ -530,10 +378,10 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </article>
                 </div>
 
-                <div *ngIf="catalogTotalItems > pageSize" class="pagination-wrap mt-6">
-                  <p class="text-sm font-semibold text-slate-500">
-                    Showing {{ paginationStartIndex() }}-{{ paginationEndIndex() }} of {{ totalProductCount() }} products
-                  </p>
+              <div *ngIf="catalogTotalItems > pageSize" class="pagination-wrap mt-6">
+                <p class="text-sm font-semibold text-slate-500">
+                  Showing {{ paginationStartIndex() }}-{{ paginationEndIndex() }} of {{ totalProductCount() }} products
+                </p>
 
                   <div class="pagination-nav mt-4">
                     <button
@@ -575,6 +423,157 @@ interface LandingCategoryNode extends CustomerLandingCategory {
           </div>
         </div>
       </section>
+
+      <div *ngIf="isMobileFiltersOpen" class="fixed inset-0 z-[100] lg:hidden" aria-modal="true" role="dialog">
+        <button
+          type="button"
+          class="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]"
+          aria-label="Close filters"
+          (click)="closeFilters()"
+        ></button>
+
+        <aside class="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[2rem] bg-white p-4 shadow-2xl">
+          <div class="sticky top-0 z-10 mb-4 flex items-center justify-between border-b border-slate-200 bg-white pb-3">
+            <div>
+              <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Filters</p>
+              <h2 class="text-lg font-black text-slate-900">Refine results</h2>
+            </div>
+
+            <button
+              type="button"
+              class="rounded-full border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              (click)="closeFilters()"
+            >
+              Close
+            </button>
+          </div>
+
+          <div class="rounded-[1.6rem] border border-slate-200 bg-slate-50/80 p-4 shadow-sm">
+            <div class="space-y-4">
+              <label class="block">
+                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
+                <select
+                  [(ngModel)]="selectedCategorySlug"
+                  name="mobileSelectedCategorySlug"
+                  (ngModelChange)="onCatalogFilterChange()"
+                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                >
+                  <option value="all">All categories</option>
+                  <option *ngFor="let category of sidebarCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
+                    {{ categoryLabel(category) }}
+                  </option>
+                </select>
+              </label>
+
+              <p class="text-[11px] font-semibold leading-5 text-slate-500">
+                Parent categories include all of their child category products.
+              </p>
+
+              <label class="block">
+                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Brand</span>
+                <select
+                  [(ngModel)]="selectedBrand"
+                  name="mobileSelectedBrand"
+                  (ngModelChange)="onCatalogFilterChange()"
+                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                >
+                  <option value="all">All brands</option>
+                  <option *ngFor="let brand of brandOptions(); trackBy: trackByValue" [value]="brand">
+                    {{ brand }}
+                  </option>
+                </select>
+              </label>
+
+              <label class="block">
+                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Sort by</span>
+                <select
+                  [(ngModel)]="sortBy"
+                  name="mobileSidebarSortBy"
+                  (ngModelChange)="onCatalogFilterChange()"
+                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                >
+                  <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </label>
+
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <label class="block">
+                  <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Min price</span>
+                  <input
+                    [(ngModel)]="minPrice"
+                    name="mobileMinPrice"
+                    (ngModelChange)="onCatalogFilterChange()"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                  />
+                </label>
+
+                <label class="block">
+                  <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Max price</span>
+                  <input
+                    [(ngModel)]="maxPrice"
+                    name="mobileMaxPrice"
+                    (ngModelChange)="onCatalogFilterChange()"
+                    type="number"
+                    min="0"
+                    placeholder="Any"
+                    class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                  />
+                </label>
+              </div>
+
+              <label class="block">
+                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Availability</span>
+                <select
+                  [(ngModel)]="availabilityFilter"
+                  name="mobileAvailabilityFilter"
+                  (ngModelChange)="onCatalogFilterChange()"
+                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                >
+                  <option *ngFor="let option of availabilityOptions; trackBy: trackByFilterOption" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </label>
+
+              <label class="block">
+                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Minimum rating</span>
+                <select
+                  [(ngModel)]="ratingFilter"
+                  name="mobileRatingFilter"
+                  (ngModelChange)="onCatalogFilterChange()"
+                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                >
+                  <option *ngFor="let option of ratingOptions; trackBy: trackByFilterOption" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </label>
+            </div>
+
+            <div class="mt-5 flex items-center gap-3">
+              <button
+                type="button"
+                class="btn-secondary flex-1 !px-4 !py-3 text-sm"
+                (click)="resetFilters()"
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                class="btn-primary flex-1 !px-4 !py-3 text-sm"
+                (click)="closeFilters()"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   `
 })
@@ -692,11 +691,23 @@ export class ProductsPageComponent implements OnInit {
   }
 
   openMobileFilters(): void {
+    this.openFilters();
+  }
+
+  openFilters(): void {
     this.isMobileFiltersOpen = true;
   }
 
   closeMobileFilters(): void {
+    this.closeFilters();
+  }
+
+  closeFilters(): void {
     this.isMobileFiltersOpen = false;
+  }
+
+  toggleFilters(): void {
+    this.isMobileFiltersOpen = !this.isMobileFiltersOpen;
   }
 
   @HostListener('document:keydown.escape')

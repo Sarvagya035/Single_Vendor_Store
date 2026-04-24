@@ -259,28 +259,32 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
       </section>
 
       <section class="storefront-section pb-10">
-        <div class="storefront-container">
-          <div class="relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
-            <div class="overflow-hidden rounded-[1.5rem] bg-slate-100">
-              <img
-                src="/assets/n%20bulk.png"
-                alt="Bulk showcase"
-                loading="lazy"
-                decoding="async"
-                class="h-auto w-full object-cover"
-              />
-            </div>
-            <div class="absolute inset-x-0 bottom-0 flex justify-center p-4 sm:p-6">
-              <a
-                routerLink="/contact"
-                class="inline-flex items-center justify-center rounded-full bg-[#fff4e6] px-5 py-3 text-sm font-semibold text-[#6f4e37] shadow-[0_14px_30px_rgba(47,27,20,0.12)] ring-1 ring-[#eadcc9] transition hover:-translate-y-0.5 hover:bg-[#fff0dc]"
-              >
-                Contact Us
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+  <div class="storefront-container">
+    <div class="relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
+      
+      <div class="overflow-hidden rounded-[1.5rem] bg-slate-100">
+        <img
+          src="/assets/n%20bulk.png"
+          alt="Bulk showcase"
+          loading="lazy"
+          decoding="async"
+          class="h-auto w-full object-cover"
+        />
+      </div>
+
+      <!-- Button aligned under text -->
+      <div class="absolute left-[9%] top-[64%] flex sm:left-[15%] sm:top-[64%]">
+        <a
+          routerLink="/contact"
+          class="inline-flex items-center justify-center rounded-full bg-[#fff4e6] px-3 py-2 text-xs sm:px-5 sm:py-3 sm:text-sm font-semibold text-[#6f4e37] shadow-[0_14px_30px_rgba(47,27,20,0.12)] ring-1 ring-[#eadcc9] transition hover:-translate-y-0.5 hover:bg-[#fff0dc] sm:px-5 sm:py-3 sm:text-sm"
+        >
+          Contact Us
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
 
       <section class="storefront-section pb-10">
         <div class="storefront-container">

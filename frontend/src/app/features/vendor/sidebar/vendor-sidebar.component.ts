@@ -21,10 +21,10 @@ interface VendorSidebarItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   host: {
-    class: 'block min-w-0'
+    class: 'block h-full min-w-0'
   },
   template: `
-    <nav class="space-y-2">
+    <nav class="flex h-full flex-col gap-2">
           @for (item of sidebarItems; track item.view) {
             @if (item.view !== 'shipments' || showShipments) {
               <a
