@@ -55,7 +55,7 @@ interface ProductMessage {
               <button
                 type="button"
                 (click)="selectedCategory = 'all'"
-                class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition"
+                class="w-full rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition sm:w-auto"
                 [ngClass]="
                   selectedCategory === 'all'
                     ? 'border border-amber-300 bg-amber-50 text-slate-900 ring-2 ring-amber-200'
@@ -68,7 +68,7 @@ interface ProductMessage {
                 *ngFor="let category of categories"
                 type="button"
                 (click)="selectedCategory = category"
-                class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition"
+                class="w-full rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition sm:w-auto"
                 [ngClass]="
                   selectedCategory === category
                     ? 'border border-amber-300 bg-amber-50 text-slate-900 ring-2 ring-amber-200'
@@ -264,7 +264,7 @@ interface ProductMessage {
                       type="button"
                       (click)="addVariant(product)"
                       [disabled]="isBusy('add-variant-' + product._id)"
-                      class="btn-primary !px-6 !py-3"
+                      class="btn-primary w-full !px-6 !py-3 sm:w-auto"
                     >
                       {{
                         isBusy('add-variant-' + product._id) ? 'Adding Variant...' : 'Add Variant'

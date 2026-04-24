@@ -80,7 +80,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
 
             <button
               type="button"
-              class="btn-primary !px-5 !py-3"
+              class="btn-primary w-full !px-5 !py-3 sm:w-auto"
               [disabled]="!summary.unreadNotifications || isMarkingAllRead"
               (click)="markAllRead()"
             >
@@ -149,13 +149,13 @@ type NotificationFilter = 'all' | 'unread' | 'active';
               <div class="flex flex-col gap-3 lg:min-w-[220px]">
                 <a
                   [routerLink]="resolveActionLink(notification)"
-                  class="btn-primary !px-5 !py-3 text-center"
+                  class="btn-primary w-full !px-5 !py-3 text-center sm:w-auto"
                 >
                   Restock now
                 </a>
                 <button
                   type="button"
-                  class="btn-secondary !px-5 !py-3"
+                  class="btn-secondary w-full !px-5 !py-3 sm:w-auto"
                   [disabled]="notification.isRead || markingId === notification._id"
                   (click)="markAsRead(notification)"
                 >

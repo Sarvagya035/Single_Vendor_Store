@@ -96,7 +96,7 @@ interface CategoryCreateForm {
             <div *ngIf="createError" class="lg:col-span-2 text-sm font-semibold text-rose-600">{{ createError }}</div>
 
             <div class="lg:col-span-2">
-              <button type="submit" [disabled]="isCreating" class="btn-primary !px-5 !py-3">
+              <button type="submit" [disabled]="isCreating" class="btn-primary w-full !px-5 !py-3 sm:w-auto">
                 {{ isCreating ? 'Creating Category...' : 'Save Category' }}
               </button>
             </div>
@@ -241,7 +241,7 @@ interface CategoryCreateForm {
                 <input type="checkbox" [ngModel]="editForm.isActive" (ngModelChange)="updateEditField('isActive', $event)" class="h-4 w-4 rounded border-slate-300 text-amber-700 focus:ring-amber-600">
                 Active category
               </label>
-              <button type="button" (click)="submitUpdate.emit({ categoryId: category._id, payload: editForm })" [disabled]="isUpdating" class="btn-primary !px-5 !py-2.5">
+              <button type="button" (click)="submitUpdate.emit({ categoryId: category._id, payload: editForm })" [disabled]="isUpdating" class="btn-primary w-full !px-5 !py-2.5 sm:w-auto">
                 {{ isUpdating ? 'Saving...' : 'Save Changes' }}
               </button>
             </div>

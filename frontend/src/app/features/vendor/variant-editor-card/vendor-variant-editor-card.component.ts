@@ -14,12 +14,12 @@ import { VendorProductVariantForm } from '../../../core/models/vendor.models';
           <p class="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">Variant {{ index + 1 }}</p>
           <h3 class="mt-2 text-xl font-black text-slate-900">Variant details</h3>
         </div>
-        <button type="button" (click)="remove.emit(index)" class="btn-secondary !border-rose-100 !text-rose-600 hover:!bg-rose-50">
+        <button type="button" (click)="remove.emit(index)" class="btn-secondary w-full !border-rose-100 !text-rose-600 hover:!bg-rose-50 sm:w-auto">
           Remove Variant
         </button>
       </div>
 
-      <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div class="space-y-2 md:col-span-2 xl:col-span-4">
           <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Attributes</label>
           <input

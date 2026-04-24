@@ -78,7 +78,7 @@ import {
                   <input type="file" accept="image/*" class="hidden" (change)="onNewVariantImageSelected($event)" />
                 </label>
               </div>
-              <button type="button" (click)="addVariant()" [disabled]="isAddingVariant" class="btn-primary mt-5 !px-6 !py-3 disabled:opacity-60">
+              <button type="button" (click)="addVariant()" [disabled]="isAddingVariant" class="btn-primary mt-5 w-full !px-6 !py-3 disabled:opacity-60 sm:w-auto">
                 {{ isAddingVariant ? 'Adding Variant...' : 'Add Variant' }}
               </button>
             </app-vendor-form-section>
@@ -131,10 +131,10 @@ import {
                   </div>
 
                   <div class="mt-5 flex flex-col gap-3 sm:flex-row">
-                    <button type="button" (click)="saveVariant(variant)" [disabled]="busySaveId === variant._id" class="btn-primary !px-6 !py-3 disabled:opacity-60">
+                    <button type="button" (click)="saveVariant(variant)" [disabled]="busySaveId === variant._id" class="btn-primary w-full !px-6 !py-3 disabled:opacity-60 sm:w-auto">
                       {{ busySaveId === variant._id ? 'Saving...' : 'Save Variant' }}
                     </button>
-                    <button type="button" (click)="resetVariantForm(variant)" class="btn-secondary !px-6 !py-3">Reset</button>
+                    <button type="button" (click)="resetVariantForm(variant)" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Reset</button>
                   </div>
                 </article>
               </div>

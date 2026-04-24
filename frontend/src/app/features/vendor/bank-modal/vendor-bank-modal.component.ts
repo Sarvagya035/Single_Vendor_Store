@@ -84,7 +84,7 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
           </div>
 
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <button type="submit" [disabled]="isSaving" class="btn-primary !px-8 !py-4">
+            <button type="submit" [disabled]="isSaving" class="btn-primary w-full !px-8 !py-4 sm:w-auto">
               {{ isSaving ? 'Saving Bank Details...' : 'Update Bank Details' }}
             </button>
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">

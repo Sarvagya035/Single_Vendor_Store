@@ -26,7 +26,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
               <span *ngIf="!logoPreview && !vendor?.vendorLogo">{{ vendor?.shopName?.charAt(0) }}</span>
             </div>
             <input id="vendor-logo-input" type="file" accept="image/*" class="hidden" (change)="selectLogo.emit($event)">
-            <label for="vendor-logo-input" class="btn-secondary cursor-pointer !w-full !py-4">
+            <label for="vendor-logo-input" class="btn-secondary cursor-pointer w-full !py-4">
               {{ selectedLogoName ? 'Replace Selected Logo' : 'Choose New Logo' }}
             </label>
             <p class="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
@@ -38,7 +38,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
             type="button"
             (click)="submit.emit()"
             [disabled]="!selectedLogoName || isUploading"
-            class="btn-primary !w-full !py-4"
+            class="btn-primary w-full !py-4"
           >
             {{ isUploading ? 'Uploading Logo...' : 'Update Store Logo' }}
           </button>

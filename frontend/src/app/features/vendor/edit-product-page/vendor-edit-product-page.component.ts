@@ -48,7 +48,7 @@ import {
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
             We couldn't load that product. It may have been deleted or the link may be outdated.
           </p>
-          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Return to Products</a>
+          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</a>
         </div>
 
         <form *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6" (ngSubmit)="saveProduct()">
@@ -89,8 +89,8 @@ import {
                 </label>
 
                 <div class="flex flex-col gap-3 sm:flex-row md:col-span-2">
-                  <button type="submit" [disabled]="isSubmitting" class="btn-primary !px-8 !py-4">{{ isSubmitting ? 'Saving Changes...' : 'Save Changes' }}</button>
-                  <button type="button" (click)="cancel()" class="btn-secondary !px-8 !py-4">Cancel</button>
+                  <button type="submit" [disabled]="isSubmitting" class="btn-primary w-full !px-8 !py-4 sm:w-auto">{{ isSubmitting ? 'Saving Changes...' : 'Save Changes' }}</button>
+                  <button type="button" (click)="cancel()" class="btn-secondary w-full !px-8 !py-4 sm:w-auto">Cancel</button>
                 </div>
               </div>
             </section>

@@ -276,7 +276,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                     </div>
                   </div>
 
-                  <label for="logoInput" class="btn-secondary cursor-pointer !px-6 !py-3">
+                  <label for="logoInput" class="btn-secondary cursor-pointer w-full !px-6 !py-3 sm:w-auto">
                     Choose Logo
                   </label>
                   <input
@@ -304,7 +304,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               <button
                 type="submit"
                 [disabled]="isLoading"
-                class="btn-primary !w-full !py-5 text-lg shadow-2xl shadow-amber-200/60"
+                class="btn-primary w-full !py-5 text-lg shadow-2xl shadow-amber-200/60"
               >
                 {{ isLoading ? 'Creating Store...' : 'Create Store Account' }}
               </button>

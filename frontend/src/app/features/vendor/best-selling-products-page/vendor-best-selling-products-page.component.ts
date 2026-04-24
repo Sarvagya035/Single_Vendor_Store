@@ -137,7 +137,7 @@ interface BestSellingProductRow {
           <p class="mx-auto mt-3 max-w-xl text-sm font-medium leading-7 text-slate-500">
             Once paid orders are available, your highest performing products will appear here with sales and catalog details.
           </p>
-          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Go to Products</a>
+          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Go to Products</a>
         </div>
 
         <div *ngIf="!isLoading && visibleProducts.length" class="grid gap-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">

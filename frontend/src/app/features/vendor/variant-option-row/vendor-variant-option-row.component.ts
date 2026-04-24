@@ -31,7 +31,7 @@ import { VendorProductOptionForm } from '../../../core/models/vendor.models';
         >
       </div>
 
-      <button type="button" (click)="remove.emit(index)" class="btn-secondary !border-rose-100 !text-rose-600 hover:!bg-rose-50">
+      <button type="button" (click)="remove.emit(index)" class="btn-secondary w-full !border-rose-100 !text-rose-600 hover:!bg-rose-50 sm:w-auto">
         Remove
       </button>
     </div>

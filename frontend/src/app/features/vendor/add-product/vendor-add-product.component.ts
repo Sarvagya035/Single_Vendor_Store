@@ -43,7 +43,7 @@ interface WizardStep {
       <div class="vendor-page-shell overflow-hidden">
         <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
           <app-page-header eyebrow="Vendor Products" title="Add Product" titleClass="!text-[1.8rem] md:!text-[2.2rem]">
-            <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
+            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
           </app-page-header>
         </div>
 
@@ -119,7 +119,7 @@ interface WizardStep {
                 <label class="flex cursor-pointer flex-col items-center rounded-[1.8rem] border-2 border-dashed border-slate-300 bg-slate-50/80 px-6 py-10 text-center">
                   <span class="text-lg font-black text-slate-900">Drag files here or choose images</span>
                   <span class="mt-2 text-sm font-medium text-slate-500">The first image becomes the main catalog preview.</span>
-                  <span class="btn-primary mt-5 !px-6 !py-3">Choose Images</span>
+                  <span class="btn-primary mt-5 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Choose Images</span>
                   <input type="file" accept="image/*" multiple class="hidden" (change)="onMainImagesSelected($event)" />
                 </label>
 
@@ -149,7 +149,7 @@ interface WizardStep {
 
           <div *ngIf="currentStep === 2" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 3" title="Variant options" [hasAction]="true" headerLayout="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <button section-action type="button" (click)="addOption()" class="btn-secondary !py-3">Add Option</button>
+              <button section-action type="button" (click)="addOption()" class="btn-secondary w-full !py-3 sm:w-auto">Add Option</button>
               <div class="space-y-4">
                 <app-vendor-variant-option-row *ngFor="let option of variantOptions; let i = index" [option]="option" [index]="i" (remove)="removeOption($event)" />
               </div>
@@ -174,8 +174,8 @@ interface WizardStep {
           <div *ngIf="currentStep === 3" class="space-y-6">
             <app-vendor-form-section eyebrow="Step 4" title="Variants" [hasAction]="true" headerLayout="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div section-action class="flex flex-wrap gap-3">
-                <button type="button" (click)="generateVariants()" class="btn-secondary !py-3">Auto Generate</button>
-                <button type="button" (click)="addManualVariant()" class="btn-secondary !py-3">Add Manual Variant</button>
+                <button type="button" (click)="generateVariants()" class="btn-secondary w-full !py-3 sm:w-auto">Auto Generate</button>
+                <button type="button" (click)="addManualVariant()" class="btn-secondary w-full !py-3 sm:w-auto">Add Manual Variant</button>
               </div>
               <div *ngIf="variants.length === 0" class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm font-medium text-slate-500">
                 Generate variants from the option step or add one manually.

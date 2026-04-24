@@ -27,10 +27,10 @@ import {
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="Review this product exactly as a vendor record, with images, pricing, stock, and variants, without any customer purchase actions."
           >
-            <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary !px-6 !py-3">Edit</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary !px-6 !py-3">Restock</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-primary !px-6 !py-3">Manage Variants</a>
+            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Edit</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Restock</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-primary w-full !px-6 !py-3 sm:w-auto">Manage Variants</a>
           </app-page-header>
         </div>
 
@@ -44,7 +44,7 @@ import {
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
             We could not load this vendor product. It may have been removed or the link may be outdated.
           </p>
-          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Return to Products</a>
+          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</a>
         </div>
 
         <div *ngIf="!isLoading && product" class="grid gap-6 px-4 py-4 sm:px-5 lg:px-6 lg:grid-cols-[1.1fr_0.9fr]">

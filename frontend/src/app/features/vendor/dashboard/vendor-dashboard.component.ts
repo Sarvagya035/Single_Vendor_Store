@@ -128,11 +128,11 @@ interface DashboardProduct {
               </div>
 
               <div class="mt-4 flex flex-wrap gap-3">
-                <button type="button" class="btn-secondary !px-5 !py-3" [disabled]="isDownloadingReport" (click)="downloadCustomReport('csv')">
+                <button type="button" class="btn-secondary w-full !px-5 !py-3 sm:w-auto" [disabled]="isDownloadingReport" (click)="downloadCustomReport('csv')">
                   {{ isDownloadingReport ? 'Preparing report...' : 'Download CSV' }}
                 </button>
 
-                <button type="button" class="btn-primary !px-5 !py-3" [disabled]="isDownloadingReport" (click)="downloadCustomReport('pdf')">
+                <button type="button" class="btn-primary w-full !px-5 !py-3 sm:w-auto" [disabled]="isDownloadingReport" (click)="downloadCustomReport('pdf')">
                   {{ isDownloadingReport ? 'Preparing report...' : 'Download PDF' }}
                 </button>
               </div>

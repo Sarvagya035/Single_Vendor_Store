@@ -28,7 +28,7 @@ import {
             title="Product Management Dashboard"
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <a routerLink="/vendor/products/add" class="btn-primary !px-7 !py-3.5">
+            <a routerLink="/vendor/products/add" class="btn-primary w-full !px-7 !py-3.5 sm:w-auto">
               Add Product
             </a>
           </app-page-header>
@@ -168,7 +168,7 @@ import {
           <p class="mx-auto mt-3 max-w-xl text-sm font-medium leading-relaxed text-slate-500">
             Try a different search or filter, or add a new product to start building out your storefront catalog.
           </p>
-          <a routerLink="/vendor/products/add" class="btn-primary mt-6 inline-flex !px-6 !py-3">
+          <a routerLink="/vendor/products/add" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">
             Add Product
           </a>
         </div>
