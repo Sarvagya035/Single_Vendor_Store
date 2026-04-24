@@ -20,15 +20,13 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
           style="background-size: cover; background-position: center; background-repeat: no-repeat;"
         >
           <div
-            class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out"
+            class="absolute inset-0 bg-cover bg-center bg-no-repeat"
             [style.background-image]="'url(' + currentHeroSlide().image + ')'"
-            [class.opacity-0]="heroIsTransitioning"
-            [class.opacity-100]="!heroIsTransitioning"
           ></div>
 
           <div
             *ngIf="transitionHeroSlide"
-            class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-500 ease-in-out"
+            class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-900 ease-[cubic-bezier(0.22,1,0.36,1)]"
             [class.opacity-100]="heroIsTransitioning"
             [style.background-image]="'url(' + transitionHeroSlide.image + ')'"
           ></div>
@@ -53,7 +51,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                   <button
                     *ngFor="let slide of heroSlides; let index = index; trackBy: trackByHeroSlide"
                     type="button"
-                    class="h-2.5 rounded-full transition-all duration-300"
+                    class="h-2.5 rounded-full transition-[width,background-color,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     [class.w-10]="index === heroSlideIndex"
                     [class.w-2.5]="index !== heroSlideIndex"
                     [class.bg-white]="index === heroSlideIndex"
@@ -457,6 +455,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: () => this.authService.clearCurrentUser()
     });
 
+    this.preloadHeroSlides();
     this.loadLandingProducts();
     this.loadLandingCategories();
     this.startHeroCarousel();
@@ -563,7 +562,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.heroSlideTimer = setInterval(() => {
       this.setHeroSlide(this.heroSlideIndex + 1);
-    }, 4200);
+    }, 5200);
   }
 
   private transitionToSlide(nextIndex: number): void {
@@ -579,7 +578,18 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.heroSlideIndex = nextIndex;
       this.heroIsTransitioning = false;
       this.transitionHeroSlide = null;
-    }, 520);
+    }, 940);
+  }
+
+  private preloadHeroSlides(): void {
+    this.heroSlides.forEach((slide) => {
+      if (!slide?.image) {
+        return;
+      }
+
+      const img = new Image();
+      img.src = slide.image;
+    });
   }
 
   featuredProducts(): CustomerCatalogProduct[] {
