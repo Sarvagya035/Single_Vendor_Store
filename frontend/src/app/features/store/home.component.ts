@@ -260,14 +260,24 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
 
       <section class="storefront-section pb-10">
         <div class="storefront-container">
-          <div class="overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
-          <img
-            src="/assets/banner%20-2%20.png"
-            alt="Featured landing banner"
-            loading="lazy"
-            decoding="async"
-            class="h-auto w-full object-cover"
-          />
+          <div class="relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
+            <div class="overflow-hidden rounded-[1.5rem] bg-slate-100">
+              <img
+                src="/assets/n%20bulk.png"
+                alt="Bulk showcase"
+                loading="lazy"
+                decoding="async"
+                class="h-auto w-full object-cover"
+              />
+            </div>
+            <div class="absolute inset-x-0 bottom-0 flex justify-center p-4 sm:p-6">
+              <a
+                routerLink="/contact"
+                class="inline-flex items-center justify-center rounded-full bg-[#fff4e6] px-5 py-3 text-sm font-semibold text-[#6f4e37] shadow-[0_14px_30px_rgba(47,27,20,0.12)] ring-1 ring-[#eadcc9] transition hover:-translate-y-0.5 hover:bg-[#fff0dc]"
+              >
+                Contact Us
+              </a>
+            </div>
           </div>
         </div>
       </section>
