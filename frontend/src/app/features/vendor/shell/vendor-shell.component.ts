@@ -24,8 +24,8 @@ import { OrderService } from '../../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule, VendorSidebarComponent],
   template: `
-    <div class="vendor-theme min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_38%,#fff9f2_100%)] pt-4 pb-12">
-      <main class="w-full px-4 sm:px-5 lg:px-6 xl:px-8">
+    <div class="vendor-theme min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_38%,#fff9f2_100%)] pt-2 pb-8">
+      <main class="w-full px-2 sm:px-3 lg:px-4">
         <div class="grid gap-4 md:gap-5 lg:grid-cols-[228px_minmax(0,1fr)] lg:items-start">
           <app-vendor-sidebar
             [activeView]="activeView"
@@ -37,7 +37,7 @@ import { OrderService } from '../../../core/services/order.service';
             [showShipments]="true"
           />
 
-          <section class="space-y-6">
+          <section class="space-y-6 lg:pt-2">
             @if (isNavigating()) {
               <div class="rounded-[1.5rem] border border-amber-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
                 <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
