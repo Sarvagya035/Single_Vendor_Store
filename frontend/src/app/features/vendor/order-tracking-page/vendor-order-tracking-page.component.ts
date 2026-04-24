@@ -17,15 +17,15 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   standalone: true,
   imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Order Tracking"
             title="Vendor shipment tracking"
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
+            <div class="vendor-page-actions w-full sm:w-auto">
               <a [routerLink]="orderLink" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">Open Order</a>
               <a routerLink="/vendor/orders" class="btn-primary w-full !px-5 !py-3 sm:w-auto">Back To Orders</a>
               <button
@@ -45,7 +45,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         </div>
 
         <div *ngIf="!isLoading && order" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
-          <div class="space-y-6">
+          <div class="vendor-content">
             <section class="rounded-[1.85rem] border border-slate-200 bg-white p-5 shadow-[0_16px_40px_rgba(47,27,20,0.05)] sm:p-6 lg:p-7">
               <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div class="min-w-0 flex-1">
@@ -73,7 +73,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </div>
               </div>
 
-              <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div class="vendor-grid-4 mt-6">
                 <article class="rounded-[1.4rem] border border-[#eadcc9] bg-[#fffaf4] p-4">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Courier</p>
                   <p class="mt-3 text-lg font-black text-slate-900">{{ shipment?.courierName || 'DHL' }}</p>
@@ -136,8 +136,8 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </section>
 
-            <div class="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
-              <section class="space-y-6">
+            <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
+              <section class="vendor-content">
                 <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                   <div class="flex items-end justify-between gap-4 border-b border-slate-200 pb-4">
                     <div>

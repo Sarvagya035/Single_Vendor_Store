@@ -24,37 +24,54 @@ import { OrderService } from '../../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule, VendorSidebarComponent],
   template: `
-    <div class="vendor-theme min-h-screen bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_38%,#fff9f2_100%)] pt-2 pb-8">
-      <main class="w-full px-2 sm:px-3 lg:px-4">
-        <div class="grid gap-4 md:gap-5 lg:grid-cols-[228px_minmax(0,1fr)] lg:items-start">
-          <app-vendor-sidebar
-            [activeView]="activeView"
-            [productCount]="productCount"
-            [categoryCount]="categoryCount"
-            [customerCount]="customerCount"
-            [orderCount]="orderCount"
-            [shipmentCount]="shipmentCount"
-            [showShipments]="true"
-          />
+    <div class="vendor-theme vendor-app-layout">
+      <aside class="vendor-sidebar-wrap">
+        <app-vendor-sidebar
+          [activeView]="activeView"
+          [productCount]="productCount"
+          [categoryCount]="categoryCount"
+          [customerCount]="customerCount"
+          [orderCount]="orderCount"
+          [shipmentCount]="shipmentCount"
+          [showShipments]="true"
+          [mobileOpen]="mobileSidebarOpen"
+          (closeMobile)="closeMobileSidebar()"
+        />
+      </aside>
 
-          <section class="space-y-6 lg:pt-2">
-            @if (isNavigating()) {
-              <div class="rounded-[1.5rem] border border-amber-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
-                <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
-                  <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
-                </div>
-              </div>
-            }
-
-            <div
-              class="transition-all duration-300 ease-out"
-              [class.opacity-60]="isNavigating()"
-              [class.translate-y-1]="isNavigating()"
-            >
-              <router-outlet />
-            </div>
-          </section>
+      <main class="vendor-main min-w-0">
+        <div class="mb-4 flex items-center justify-between gap-3 rounded-[1.5rem] border border-slate-200 bg-white/90 px-5 py-4 shadow-sm lg:hidden">
+          <div class="min-w-0">
+            <p class="vendor-stat-label">Vendor area</p>
+            <h2 class="mt-2 truncate text-lg font-black text-slate-900">{{ activeViewLabel }}</h2>
+          </div>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50"
+            (click)="toggleMobileSidebar()"
+            aria-label="Open vendor navigation"
+          >
+            Menu
+          </button>
         </div>
+
+        <section class="vendor-page vendor-content min-w-0 lg:pt-0">
+          @if (isNavigating()) {
+            <div class="rounded-[1.5rem] border border-amber-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
+              <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
+              </div>
+            </div>
+          }
+
+          <div
+            class="transition-all duration-300 ease-out"
+            [class.opacity-60]="isNavigating()"
+            [class.translate-y-1]="isNavigating()"
+          >
+            <router-outlet />
+          </div>
+        </section>
       </main>
     </div>
   `
@@ -67,6 +84,7 @@ export class VendorShellComponent implements OnInit {
   shipmentCount = 0;
   currentRoles: string[] = [];
   readonly isNavigating = signal(false);
+  mobileSidebarOpen = false;
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -114,6 +132,22 @@ export class VendorShellComponent implements OnInit {
     return 'products';
   }
 
+  get activeViewLabel(): string {
+    const labels: Record<VendorDashboardView, string> = {
+      dashboard: 'Dashboard',
+      profile: 'Store Profile',
+      'best-selling-products': 'Best Sellers',
+      products: 'Products',
+      categories: 'Categories',
+      customers: 'Customers',
+      orders: 'Orders',
+      notifications: 'Notifications',
+      shipments: 'Shipments'
+    };
+
+    return labels[this.activeView] || 'Vendor area';
+  }
+
   get isAdminUser(): boolean {
     return this.currentRoles.includes('admin');
   }
@@ -151,10 +185,12 @@ export class VendorShellComponent implements OnInit {
       .subscribe((event) => {
         if (event instanceof NavigationStart) {
           this.isNavigating.set(true);
+          this.mobileSidebarOpen = false;
           return;
         }
 
         this.isNavigating.set(false);
+        this.mobileSidebarOpen = false;
       });
 
     this.appRefreshService.refresh$.subscribe((scope) => {
@@ -163,6 +199,14 @@ export class VendorShellComponent implements OnInit {
       }
     });
 
+  }
+
+  toggleMobileSidebar(): void {
+    this.mobileSidebarOpen = !this.mobileSidebarOpen;
+  }
+
+  closeMobileSidebar(): void {
+    this.mobileSidebarOpen = false;
   }
 
   loadSummary(): void {

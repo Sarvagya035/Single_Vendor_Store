@@ -7,7 +7,11 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div *ngIf="open" class="border-t border-[#eadcc9] bg-[#fffaf5] animate-in slide-in-from-top duration-200 md:hidden" data-mobile-menu-panel>
+    <div
+      *ngIf="open"
+      class="max-h-[calc(100vh-4.5rem)] overflow-y-auto border-t border-[#eadcc9] bg-[#fffaf5] animate-in slide-in-from-top duration-200 md:hidden"
+      data-mobile-menu-panel
+    >
       <div class="space-y-2 px-4 pt-2 pb-6">
         <ng-container *ngIf="showPublicNavLinks">
           <a *ngIf="!loggedIn" routerLink="/" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Home</a>

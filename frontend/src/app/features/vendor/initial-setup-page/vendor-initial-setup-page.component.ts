@@ -11,9 +11,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header eyebrow="First-time bootstrap" title="Create your store account" titleClass="!text-[1.8rem] md:!text-[2.2rem]" description="Use this page once to register the store owner, store profile, and payout details." >
             <a routerLink="/login" class="btn-secondary w-full !py-3 sm:w-auto">Back to Login</a>
           </app-page-header>
@@ -42,8 +42,8 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         </div>
 
         <form *ngIf="!submitted" (ngSubmit)="onSubmit()" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
-          <div class="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-            <section class="space-y-6">
+          <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+            <section class="w-full min-w-0 space-y-6">
               <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                 <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                   Account Details

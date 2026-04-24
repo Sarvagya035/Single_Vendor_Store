@@ -20,9 +20,9 @@ import {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Vendor Products"
             title="Product Management Dashboard"
@@ -34,7 +34,7 @@ import {
           </app-page-header>
         </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-2 lg:grid-cols-3 lg:px-6">
+        <div class="vendor-grid-3 px-4 py-4 sm:px-5 lg:px-6">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label !text-amber-700">Total Products</p>
             <p class="vendor-stat-value">{{ totalDocs }}</p>
@@ -59,7 +59,7 @@ import {
             </div>
 
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div class="relative w-full lg:max-w-[calc(100%-150px)]">
+              <div class="relative w-full lg:flex-1">
                 <svg
                   class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
                   fill="none"
@@ -74,9 +74,9 @@ import {
                   [(ngModel)]="searchQuery"
                   (ngModelChange)="onSearchChange()"
                   placeholder="Search by name, brand, SKU, or category..."
-                class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
-              />
-            </div>
+                  class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                />
+              </div>
 
               <button
                 type="button"
@@ -173,7 +173,7 @@ import {
           </a>
         </div>
 
-        <div *ngIf="!isLoading && filteredProducts.length > 0" class="hidden lg:block">
+        <div *ngIf="!isLoading && filteredProducts.length > 0" class="vendor-table-wrap hidden lg:block">
           <div class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-[#fffaf5] px-6 py-5 text-sm font-semibold text-slate-500">
             <span>Product</span>
             <span>Category</span>
@@ -270,7 +270,7 @@ import {
         <div *ngIf="!isLoading && filteredProducts.length > 0" class="grid gap-4 p-4 lg:hidden">
           <article
             *ngFor="let product of filteredProducts; trackBy: trackByProductId"
-            class="rounded-[1.6rem] border border-slate-200 bg-white p-4"
+            class="vendor-mobile-card"
           >
             <div class="flex items-start gap-4">
               <div class="h-14 w-14 overflow-hidden rounded-full bg-[#f5ede5]">
@@ -293,7 +293,7 @@ import {
                   </span>
                 </div>
 
-                <div class="mt-4 grid grid-cols-2 gap-3 text-sm font-semibold text-slate-600">
+                <div class="mt-4 grid grid-cols-1 gap-3 text-sm font-semibold text-slate-600 sm:grid-cols-2">
                   <p><span class="font-black text-slate-900">Category:</span> {{ product.categoryDetails?.name || 'Uncategorized' }}</p>
                   <p><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
                   <p>
@@ -329,7 +329,7 @@ import {
 
                 <div
                   *ngIf="openActionMenuId === product._id"
-                  class="absolute right-0 top-full z-20 mt-2 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                  class="absolute right-0 top-full z-20 mt-2 w-full min-w-[10rem] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
                 >
                   <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
                     Restock

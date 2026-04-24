@@ -13,9 +13,9 @@ import { ToastType } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule, VendorCategoriesPanelComponent, PageHeaderComponent, ToastBannerComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Vendor Category Management"
             title="Manage your store categories"

@@ -25,9 +25,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
     PageHeaderComponent
   ],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header eyebrow="Store Profile" title="Vendor profile" titleClass="!text-[1.8rem] md:!text-[2.2rem]" />
         </div>
 

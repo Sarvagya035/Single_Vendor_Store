@@ -15,9 +15,9 @@ type NotificationFilter = 'all' | 'unread' | 'active';
   standalone: true,
   imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
         <app-page-header
           eyebrow="Notifications"
           title="Notification center"
@@ -30,7 +30,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
         </app-page-header>
         </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
+        <div class="vendor-grid-4 px-4 py-4 sm:px-5 lg:px-6">
         <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Unread</p>
           <p class="vendor-stat-value">{{ summary.unreadNotifications }}</p>
@@ -109,7 +109,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
         <div *ngIf="filteredNotifications.length" class="grid gap-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
           <article
             *ngFor="let notification of filteredNotifications; trackBy: trackByNotification"
-            class="rounded-[1.5rem] border border-slate-200 bg-white p-5 transition hover:bg-[#fffaf4]"
+            class="vendor-mobile-card transition hover:bg-[#fffaf4]"
             [class.opacity-75]="notification.isRead"
           >
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

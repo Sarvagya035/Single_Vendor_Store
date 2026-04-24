@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="vendor-page-shell border-dashed p-16 text-center space-y-6">
+    <div class="vendor-section border-dashed p-16 text-center space-y-6">
       <div class="text-6xl animate-float">🏪</div>
       <div>
         <h2 class="vendor-empty-title">No active store found</h2>

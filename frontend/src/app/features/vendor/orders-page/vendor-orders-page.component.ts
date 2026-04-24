@@ -11,9 +11,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   standalone: true,
   imports: [CommonModule, FormsModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Order Management"
             title="Vendor Orders"
@@ -25,7 +25,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </app-page-header>
         </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
+        <div class="vendor-grid-4 px-4 py-4 sm:px-5 lg:px-6">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label !text-amber-700">Total Orders</p>
             <p class="vendor-stat-value">{{ totalOrdersCount }}</p>
@@ -105,7 +105,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         <div *ngIf="filteredOrders.length" class="space-y-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
           <article
             *ngFor="let order of filteredOrders; trackBy: trackByOrder"
-            class="cursor-pointer rounded-[1.5rem] border border-slate-200 bg-white px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-[#e7dac9] hover:shadow-[0_16px_40px_rgba(111,78,55,0.08)] sm:px-5 sm:py-5"
+            class="vendor-mobile-card cursor-pointer transition hover:border-[#e7dac9] hover:shadow-[0_16px_40px_rgba(111,78,55,0.08)] sm:px-5 sm:py-5"
             (click)="openOrder(order)"
           >
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

@@ -13,9 +13,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   standalone: true,
   imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Customer Order"
             [title]="customer ? customerLabel() + ' order detail' : 'Customer order detail'"
@@ -58,7 +58,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                     </span>
                   </div>
 
-                  <div class="mt-4 grid gap-4 md:grid-cols-3">
+              <div class="vendor-grid-3 mt-4">
                     <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Customer</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ customerLabel() }}</p>

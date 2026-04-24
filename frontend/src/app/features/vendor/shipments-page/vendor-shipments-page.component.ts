@@ -49,9 +49,9 @@ interface ShipmentCardView {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Shipments"
             title="Shipment management"
@@ -63,7 +63,7 @@ interface ShipmentCardView {
           </app-page-header>
         </div>
 
-        <div *ngIf="summary" class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-3 lg:px-6">
+        <div *ngIf="summary" class="vendor-grid-3 px-4 py-4 sm:px-5 lg:px-6">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label">Total</p>
             <p class="vendor-stat-value">{{ summary.totalShipments }}</p>
@@ -96,7 +96,7 @@ interface ShipmentCardView {
         <div *ngIf="shipments.length" class="space-y-4 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6">
           <article
             *ngFor="let shipment of shipments; trackBy: trackByShipment"
-            class="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-[0_12px_34px_rgba(47,27,20,0.05)]"
+            class="vendor-mobile-card"
           >
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div class="min-w-0 flex-1">

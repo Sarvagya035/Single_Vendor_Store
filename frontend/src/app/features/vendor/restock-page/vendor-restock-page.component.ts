@@ -19,9 +19,9 @@ import {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Inventory Management"
             title="Manage Inventory / Restock"
@@ -40,7 +40,7 @@ import {
         </div>
 
         <div *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
-          <div class="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div class="vendor-grid-2 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
             <app-vendor-form-section eyebrow="Inventory Summary" title="Current product">
               <div class="space-y-5">
                 <div class="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white">

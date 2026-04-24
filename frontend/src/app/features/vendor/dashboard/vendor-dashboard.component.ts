@@ -38,186 +38,188 @@ interface DashboardProduct {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p class="app-page-eyebrow">Dashboard</p>
-              <h1 class="app-page-title">Vendor Overview</h1>
-            </div>
+    <section class="vendor-page vendor-container">
+      <div class="vendor-dashboard-section border-b border-slate-200">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div class="min-w-0">
+            <p class="app-page-eyebrow">Dashboard</p>
+            <h1 class="app-page-title">Vendor Overview</h1>
+          </div>
 
-            <div class="flex flex-wrap gap-3">
-              <a routerLink="/vendor/products/add" class="btn-primary w-full !px-6 !py-3 sm:w-auto">+ Add Product</a>
-              <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Products</a>
-              <a routerLink="/vendor/best-selling-products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Best Sellers</a>
-            </div>
+          <div class="vendor-page-actions">
+            <a routerLink="/vendor/products/add" class="btn-primary w-full !px-6 !py-3 sm:w-auto">+ Add Product</a>
+            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Products</a>
+            <a routerLink="/vendor/best-selling-products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Best Sellers</a>
           </div>
         </div>
+      </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-2 lg:grid-cols-4 lg:px-6">
+      <div class="vendor-dashboard-section border-b border-slate-200">
+        <div class="vendor-dashboard-grid">
           <article *ngFor="let metric of metrics" class="vendor-stat-card transition hover:-translate-y-0.5" [ngClass]="metricCardClass(metric.tone)">
             <p class="vendor-stat-label">{{ metric.label }}</p>
             <p class="vendor-stat-value">{{ metric.value }}</p>
             <p class="vendor-stat-copy !mt-3 !text-[15px] !text-current">{{ metric.change }}</p>
           </article>
         </div>
+      </div>
 
-        <div class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <div class="vendor-section-head">
-            <p class="vendor-stat-label">Reports</p>
-            <h2 class="vendor-panel-title">Download Sales Reports</h2>
-            <p class="mt-2 text-sm font-medium text-slate-500">
-              Export weekly, monthly, or custom order reports as CSV or PDF.
-            </p>
-          </div>
+      <div class="vendor-dashboard-section border-t border-slate-200">
+        <div class="vendor-section-head">
+          <p class="vendor-stat-label">Reports</p>
+          <h2 class="vendor-panel-title">Download Sales Reports</h2>
+          <p class="mt-2 text-sm font-medium text-slate-500">
+            Export weekly, monthly, or custom order reports as CSV or PDF.
+          </p>
+        </div>
 
-          <div class="grid gap-6 pt-5 lg:grid-cols-[1.05fr_0.95fr]">
-            <div class="space-y-4">
-              <div>
-                <p class="text-sm font-black uppercase tracking-[0.18em] text-slate-400">Quick exports</p>
-                <p class="mt-2 text-sm font-medium text-slate-500">
-                  One-click downloads for the most common report ranges.
-                </p>
-              </div>
-
-              <div class="grid gap-3 sm:grid-cols-2">
-                <button type="button" class="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-amber-200 hover:bg-[#fffaf4]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('weekly', 'csv')">
-                  <span class="block text-sm font-black text-slate-900">Weekly CSV</span>
-                  <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Spreadsheet</span>
-                </button>
-
-                <button type="button" class="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-[#e7dac9] hover:bg-[#fef6eb]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('weekly', 'pdf')">
-                  <span class="block text-sm font-black text-slate-900">Weekly PDF</span>
-                  <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Printable</span>
-                </button>
-
-                <button type="button" class="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-amber-200 hover:bg-[#fffaf4]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('monthly', 'csv')">
-                  <span class="block text-sm font-black text-slate-900">Monthly CSV</span>
-                  <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Spreadsheet</span>
-                </button>
-
-                <button type="button" class="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-[#e7dac9] hover:bg-[#fef6eb]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('monthly', 'pdf')">
-                  <span class="block text-sm font-black text-slate-900">Monthly PDF</span>
-                  <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Printable</span>
-                </button>
-              </div>
+        <div class="vendor-dashboard-report-grid pt-5">
+          <div class="min-w-0 space-y-4">
+            <div>
+              <p class="text-sm font-black uppercase tracking-[0.18em] text-slate-400">Quick exports</p>
+              <p class="mt-2 text-sm font-medium text-slate-500">
+                One-click downloads for the most common report ranges.
+              </p>
             </div>
 
-            <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fffaf4] p-4 sm:p-5">
-              <div class="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p class="text-sm font-black uppercase tracking-[0.18em] text-amber-700">Custom range</p>
-                  <h3 class="mt-1 text-xl font-black text-slate-900">Choose your dates</h3>
-                </div>
-                <span class="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-amber-700">
-                  CSV / PDF
-                </span>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <button type="button" class="min-h-[5.5rem] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-amber-200 hover:bg-[#fffaf4]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('weekly', 'csv')">
+                <span class="block text-sm font-black text-slate-900">Weekly CSV</span>
+                <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Spreadsheet</span>
+              </button>
+
+              <button type="button" class="min-h-[5.5rem] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-[#e7dac9] hover:bg-[#fef6eb]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('weekly', 'pdf')">
+                <span class="block text-sm font-black text-slate-900">Weekly PDF</span>
+                <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Printable</span>
+              </button>
+
+              <button type="button" class="min-h-[5.5rem] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-amber-200 hover:bg-[#fffaf4]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('monthly', 'csv')">
+                <span class="block text-sm font-black text-slate-900">Monthly CSV</span>
+                <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Spreadsheet</span>
+              </button>
+
+              <button type="button" class="min-h-[5.5rem] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-[#e7dac9] hover:bg-[#fef6eb]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('monthly', 'pdf')">
+                <span class="block text-sm font-black text-slate-900">Monthly PDF</span>
+                <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Printable</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="min-w-0 rounded-[1.5rem] border border-[#e7dac9] bg-[#fffaf4] p-5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-black uppercase tracking-[0.18em] text-amber-700">Custom range</p>
+                <h3 class="mt-1 text-xl font-black text-slate-900">Choose your dates</h3>
               </div>
+              <span class="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-amber-700">
+                CSV / PDF
+              </span>
+            </div>
 
-              <div class="mt-4 grid gap-4 sm:grid-cols-2">
-                <label class="space-y-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Start date</span>
-                  <input type="date" [(ngModel)]="customReportStartDate" class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:ring-2 focus:ring-amber-600/30">
-                </label>
+            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label class="min-w-0 space-y-2">
+                <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Start date</span>
+                <input type="date" [(ngModel)]="customReportStartDate" class="block w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:ring-2 focus:ring-amber-600/30">
+              </label>
 
-                <label class="space-y-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">End date</span>
-                  <input type="date" [(ngModel)]="customReportEndDate" class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:ring-2 focus:ring-amber-600/30">
-                </label>
-              </div>
+              <label class="min-w-0 space-y-2">
+                <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">End date</span>
+                <input type="date" [(ngModel)]="customReportEndDate" class="block w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:ring-2 focus:ring-amber-600/30">
+              </label>
+            </div>
 
-              <div class="mt-4 flex flex-wrap gap-3">
-                <button type="button" class="btn-secondary w-full !px-5 !py-3 sm:w-auto" [disabled]="isDownloadingReport" (click)="downloadCustomReport('csv')">
-                  {{ isDownloadingReport ? 'Preparing report...' : 'Download CSV' }}
-                </button>
+            <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+              <button type="button" class="btn-secondary w-full !px-5 !py-3 sm:w-auto" [disabled]="isDownloadingReport" (click)="downloadCustomReport('csv')">
+                {{ isDownloadingReport ? 'Preparing report...' : 'Download CSV' }}
+              </button>
 
-                <button type="button" class="btn-primary w-full !px-5 !py-3 sm:w-auto" [disabled]="isDownloadingReport" (click)="downloadCustomReport('pdf')">
-                  {{ isDownloadingReport ? 'Preparing report...' : 'Download PDF' }}
-                </button>
-              </div>
+              <button type="button" class="btn-primary w-full !px-5 !py-3 sm:w-auto" [disabled]="isDownloadingReport" (click)="downloadCustomReport('pdf')">
+                {{ isDownloadingReport ? 'Preparing report...' : 'Download PDF' }}
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <div class="vendor-section-head">
-            <p class="vendor-stat-label">Recent Orders</p>
-            <h2 class="vendor-panel-title">Fulfillment Snapshot</h2>
+      <div class="vendor-dashboard-section border-t border-slate-200">
+        <div class="vendor-section-head">
+          <p class="vendor-stat-label">Recent Orders</p>
+          <h2 class="vendor-panel-title">Fulfillment Snapshot</h2>
+        </div>
+
+        <div *ngIf="isLoading" class="px-0 py-8 text-sm font-semibold text-slate-500">
+          Loading live order activity...
+        </div>
+
+        <div *ngIf="!isLoading && recentOrders.length === 0" class="px-0 py-10 text-sm font-semibold text-slate-500">
+          Orders for your store will appear here once customers start checking out.
+        </div>
+
+        <div *ngIf="recentOrders.length" class="divide-y divide-slate-100">
+          <article *ngFor="let order of recentOrders" class="flex flex-col gap-4 px-0 py-5 md:flex-row md:items-center md:justify-between">
+            <div class="min-w-0">
+              <p class="text-sm font-black text-slate-900">{{ order.id }} • {{ order.itemCount }} item(s)</p>
+              <p class="mt-1 break-words text-sm font-medium text-slate-500">{{ order.item }}</p>
+            </div>
+            <div class="flex items-center gap-4">
+              <p class="text-sm font-black text-slate-900">{{ order.total }}</p>
+              <span class="rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="orderStatusClass(order.status)">
+                {{ order.status }}
+              </span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="vendor-dashboard-section vendor-dashboard-report-grid">
+        <section class="w-full min-w-0 space-y-5">
+          <div>
+            <div>
+              <p class="vendor-stat-label">Quick Actions</p>
+              <h2 class="vendor-panel-title">What Do You Want To Do?</h2>
+            </div>
+          </div>
+
+          <div class="grid gap-3">
+            <a *ngFor="let action of quickActions" [routerLink]="action.link" class="min-w-0 rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 transition hover:border-[#e7dac9] hover:bg-[#fffaf4]">
+              <p class="text-sm font-black text-slate-900">{{ action.title }}</p>
+              <p class="mt-1 break-words text-sm font-medium text-slate-500">{{ action.description }}</p>
+            </a>
+          </div>
+        </section>
+
+        <section class="w-full min-w-0 space-y-5">
+          <div>
+            <div>
+              <p class="vendor-stat-label">Top Performers</p>
+              <h2 class="vendor-panel-title">Best Selling Products</h2>
+            </div>
           </div>
 
           <div *ngIf="isLoading" class="px-0 py-8 text-sm font-semibold text-slate-500">
-            Loading live order activity...
+            Loading product activity...
           </div>
 
-          <div *ngIf="!isLoading && recentOrders.length === 0" class="px-0 py-10 text-sm font-semibold text-slate-500">
-            Orders for your store will appear here once customers start checking out.
+          <div *ngIf="!isLoading && topProducts.length === 0" class="px-0 py-10 text-sm font-semibold text-slate-500">
+            Product sales will show up here once paid orders are available.
           </div>
 
-          <div *ngIf="recentOrders.length" class="divide-y divide-slate-100">
-            <article *ngFor="let order of recentOrders" class="flex flex-col gap-4 px-0 py-5 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p class="text-sm font-black text-slate-900">{{ order.id }} • {{ order.itemCount }} item(s)</p>
-                <p class="mt-1 text-sm font-medium text-slate-500">{{ order.item }}</p>
+          <div *ngIf="topProducts.length" class="space-y-3">
+            <article *ngFor="let product of topProducts" class="min-w-0 rounded-[1.5rem] border border-slate-200 bg-white p-4">
+              <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="text-sm font-black text-slate-900">{{ product.name }}</p>
+                  <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Sold {{ product.units }} unit(s)</p>
+                </div>
+                <p class="text-sm font-black text-amber-800">{{ product.value }}</p>
               </div>
-              <div class="flex items-center gap-4">
-                <p class="text-sm font-black text-slate-900">{{ order.total }}</p>
-                <span class="rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="orderStatusClass(order.status)">
-                  {{ order.status }}
-                </span>
-              </div>
+              <p class="mt-3 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
             </article>
+            <a routerLink="/vendor/best-selling-products" class="mt-4 inline-flex rounded-2xl border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50">
+              View full best sellers
+            </a>
           </div>
-        </div>
-
-        <div class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <div class="grid gap-6 lg:grid-cols-[1.35fr_0.95fr]">
-            <section class="space-y-6">
-              <div>
-                <p class="vendor-stat-label">Quick Actions</p>
-                <h2 class="vendor-panel-title">What Do You Want To Do?</h2>
-              </div>
-
-              <div class="grid gap-3">
-                <a *ngFor="let action of quickActions" [routerLink]="action.link" class="rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 transition hover:border-[#e7dac9] hover:bg-[#fffaf4]">
-                  <p class="text-sm font-black text-slate-900">{{ action.title }}</p>
-                  <p class="mt-1 text-sm font-medium text-slate-500">{{ action.description }}</p>
-                </a>
-              </div>
-            </section>
-
-            <section class="space-y-6">
-              <div>
-                <p class="vendor-stat-label">Top Performers</p>
-                <h2 class="vendor-panel-title">Best Selling Products</h2>
-              </div>
-
-              <div *ngIf="isLoading" class="px-0 py-8 text-sm font-semibold text-slate-500">
-                Loading product activity...
-              </div>
-
-              <div *ngIf="!isLoading && topProducts.length === 0" class="px-0 py-10 text-sm font-semibold text-slate-500">
-                Product sales will show up here once paid orders are available.
-              </div>
-
-              <div *ngIf="topProducts.length" class="space-y-3">
-                <article *ngFor="let product of topProducts" class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                  <div class="flex items-start justify-between gap-4">
-                    <div>
-                      <p class="text-sm font-black text-slate-900">{{ product.name }}</p>
-                      <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Sold {{ product.units }} unit(s)</p>
-                    </div>
-                    <p class="text-sm font-black text-amber-800">{{ product.value }}</p>
-                  </div>
-                  <p class="mt-3 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
-                </article>
-                <a routerLink="/vendor/best-selling-products" class="mt-4 inline-flex rounded-2xl border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50">
-                  View full best sellers
-                </a>
-              </div>
-            </section>
-          </div>
-        </div>
+        </section>
       </div>
     </section>
   `

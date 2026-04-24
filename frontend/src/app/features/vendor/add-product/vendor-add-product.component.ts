@@ -39,9 +39,9 @@ interface WizardStep {
     PageHeaderComponent,
   ],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header eyebrow="Vendor Products" title="Add Product" titleClass="!text-[1.8rem] md:!text-[2.2rem]">
             <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
           </app-page-header>
@@ -76,7 +76,7 @@ interface WizardStep {
         </div>
 
         <form *ngIf="!isLoadingCategories" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6" (ngSubmit)="submitProduct()">
-          <div *ngIf="currentStep === 0" class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+          <div *ngIf="currentStep === 0" class="vendor-grid-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 1" title="Basic info">
               <div class="grid gap-5 md:grid-cols-2">
                 <label class="space-y-2 md:col-span-2">
@@ -113,7 +113,7 @@ interface WizardStep {
             </app-vendor-form-section>
           </div>
 
-          <div *ngIf="currentStep === 1" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+          <div *ngIf="currentStep === 1" class="vendor-grid-2 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 2" title="Images">
               <div class="space-y-5">
                 <label class="flex cursor-pointer flex-col items-center rounded-[1.8rem] border-2 border-dashed border-slate-300 bg-slate-50/80 px-6 py-10 text-center">
@@ -147,7 +147,7 @@ interface WizardStep {
             </app-vendor-form-section>
           </div>
 
-          <div *ngIf="currentStep === 2" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+          <div *ngIf="currentStep === 2" class="vendor-grid-2 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 3" title="Variant options" [hasAction]="true" headerLayout="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <button section-action type="button" (click)="addOption()" class="btn-secondary w-full !py-3 sm:w-auto">Add Option</button>
               <div class="space-y-4">
@@ -192,7 +192,7 @@ interface WizardStep {
             </app-vendor-form-section>
           </div>
 
-          <div *ngIf="currentStep === 4" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+          <div *ngIf="currentStep === 4" class="vendor-grid-2 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 5" title="Review & submit">
               <div class="space-y-5">
                 <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">

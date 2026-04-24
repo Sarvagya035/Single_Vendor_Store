@@ -193,13 +193,23 @@ export class HeaderAccountDropdownComponent {
   }
 
   panelClasses(): string {
-    const width = this.desktop ? 'w-[min(92vw,320px)]' : 'w-[min(92vw,290px)]';
-    const tone: Record<HeaderDropdownTheme, string> = {
-      customer: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#eadcc9] bg-white p-3 shadow-[0_24px_60px_rgba(47,27,20,0.16)] transition-all duration-200`,
-      vendor: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`,
-      admin: `absolute right-0 top-[calc(100%+12px)] ${width} origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200`
+    if (!this.desktop) {
+      const mobileTone: Record<HeaderDropdownTheme, string> = {
+        customer: 'rounded-[1.5rem] border border-[#eadcc9] bg-white p-3 shadow-[0_24px_60px_rgba(47,27,20,0.16)]',
+        vendor: 'rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur',
+        admin: 'rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur'
+      };
+
+      return `fixed left-3 right-3 top-[72px] z-[230] max-h-[calc(100vh-5rem)] overflow-y-auto ${mobileTone[this.theme]}`;
+    }
+
+    const desktopTone: Record<HeaderDropdownTheme, string> = {
+      customer: 'absolute right-0 top-[calc(100%+12px)] w-[min(92vw,320px)] origin-top-right rounded-[1.5rem] border border-[#eadcc9] bg-white p-3 shadow-[0_24px_60px_rgba(47,27,20,0.16)] transition-all duration-200',
+      vendor: 'absolute right-0 top-[calc(100%+12px)] w-[min(92vw,320px)] origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200',
+      admin: 'absolute right-0 top-[calc(100%+12px)] w-[min(92vw,320px)] origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200'
     };
-    return tone[this.theme];
+
+    return desktopTone[this.theme];
   }
 
   rowLinkClasses(tone: 'default' | 'accent' | 'danger'): string {

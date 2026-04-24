@@ -27,9 +27,9 @@ import {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Variant Management"
             title="Manage Variants"
@@ -49,7 +49,7 @@ import {
 
         <div *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
           <div class="grid gap-6">
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="vendor-grid-3">
               <article class="vendor-stat-card">
                 <p class="vendor-stat-label">Product</p>
                 <p class="vendor-stat-value !text-2xl">{{ product.productName }}</p>
@@ -68,7 +68,7 @@ import {
             </div>
 
             <app-vendor-form-section eyebrow="Add Variant" title="Create a new variant">
-              <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.75fr))_auto]">
+              <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.75fr))_auto]">
                 <input [(ngModel)]="newVariant.attributesText" name="new-attributes" placeholder="Weight:500g, Type:Roasted" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                 <input type="number" [(ngModel)]="newVariant.productPrice" name="new-price" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                 <input type="number" [(ngModel)]="newVariant.discountPercentage" name="new-discount" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
@@ -88,7 +88,7 @@ import {
                 No variants exist for this product yet.
               </div>
 
-              <div class="grid gap-5 lg:grid-cols-2" *ngIf="product.variants?.length">
+              <div class="vendor-grid-2 lg:grid-cols-2" *ngIf="product.variants?.length">
                 <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.6rem] border border-slate-200 bg-slate-50/70 p-5">
                   <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div class="flex min-w-0 items-center gap-4">

@@ -15,7 +15,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         />
       </div>
 
-      <div class="grid grid-cols-3 gap-2 md:grid-cols-4 md:gap-3" *ngIf="images.length > 1">
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 md:gap-3" *ngIf="images.length > 1">
         <button
           *ngFor="let image of images; trackBy: trackByImage"
           type="button"

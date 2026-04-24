@@ -30,7 +30,7 @@ interface ProductMessage {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, VendorProductCardComponent, VendorProductQuickActionsComponent],
   template: `
-    <section class="space-y-6">
+    <section class="w-full min-w-0 space-y-6">
       <div class="glass-card overflow-hidden">
         <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
           <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">

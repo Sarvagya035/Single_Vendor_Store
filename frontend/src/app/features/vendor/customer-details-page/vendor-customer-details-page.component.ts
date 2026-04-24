@@ -14,9 +14,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   standalone: true,
   imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Customer Details"
             title="Customer Profile"
@@ -33,9 +33,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         Loading customer details...
       </div>
 
-      <div *ngIf="!isLoading && customer" class="space-y-6 border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
-        <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
+      <div *ngIf="!isLoading && customer" class="vendor-content border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
+        <div class="vendor-grid-2 lg:grid-cols-[0.9fr_1.1fr]">
+          <section class="vendor-mobile-card p-6 lg:p-8">
             <div class="flex items-center gap-4">
               <div class="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-2xl font-black text-slate-500">
                 <img *ngIf="customer.avatar; else initialsBlock" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
@@ -77,7 +77,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             </dl>
           </section>
 
-          <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
+          <section class="vendor-mobile-card p-6 lg:p-8">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
               <div>
                 <p class="vendor-stat-label">Activity</p>
@@ -103,7 +103,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </section>
         </div>
 
-        <section *ngIf="loadingProduct || selectedProduct" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
+        <section *ngIf="loadingProduct || selectedProduct" class="vendor-mobile-card p-6 lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Product Preview</p>
@@ -171,7 +171,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </section>
 
-        <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
+        <section class="vendor-mobile-card p-6 lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Order History</p>
@@ -195,7 +195,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </p>
         </section>
 
-        <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
+        <section class="vendor-mobile-card p-6 lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Buying Pattern</p>
@@ -260,7 +260,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </section>
 
-        <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
+        <section class="vendor-mobile-card p-6 lg:p-8">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Wishlist</p>

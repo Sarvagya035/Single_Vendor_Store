@@ -18,9 +18,9 @@ import {
   standalone: true,
   imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Vendor Product View"
             title="Product Details"
@@ -47,7 +47,7 @@ import {
           <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</a>
         </div>
 
-        <div *ngIf="!isLoading && product" class="grid gap-6 px-4 py-4 sm:px-5 lg:px-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div *ngIf="!isLoading && product" class="vendor-grid-2 px-4 py-4 sm:px-5 lg:px-6 lg:grid-cols-[1.1fr_0.9fr]">
           <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <div class="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div class="space-y-4">
@@ -108,7 +108,7 @@ import {
           </div>
         </section>
 
-        <section class="space-y-6">
+        <section class="w-full min-w-0 space-y-6">
           <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Product images</p>
             <h3 class="mt-2 text-2xl font-black text-slate-900">Gallery summary</h3>
@@ -148,7 +148,7 @@ import {
           </p>
         </div>
 
-        <div *ngIf="product.variants?.length" class="overflow-x-auto pt-5">
+        <div *ngIf="product.variants?.length" class="vendor-table-wrap pt-5">
           <table class="min-w-full border-separate border-spacing-0">
             <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">

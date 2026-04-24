@@ -16,7 +16,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
   template: `
     <div class="sticky top-0 z-50">
       <div *ngIf="showAnnouncementBar()" class="overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] text-white">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="app-shell-width">
           <div class="flex h-11 items-center overflow-hidden">
             <div class="flex w-max items-center gap-4 whitespace-nowrap animate-announcement-marquee hover:[animation-play-state:paused]">
               <ng-container *ngFor="let message of announcementTicker; let last = last">
@@ -31,17 +31,17 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
       </div>
 
       <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-lg">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div class="flex h-20 items-center justify-between">
+        <div class="app-shell-width">
+          <div class="flex h-16 items-center justify-between md:h-20">
           <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
             <img
               src="/assets/divya%20logo.webp"
               alt="Divya logo"
-              class="h-17 w-auto object-contain transition-transform group-hover:scale-110"
+              class="h-12 w-auto object-contain transition-transform group-hover:scale-110 sm:h-14 lg:h-16"
             />
           </a>
 
-          <div class="hidden items-center space-x-6 md:flex">
+          <div class="hidden items-center gap-4 md:flex lg:gap-6">
             <ng-container *ngIf="showPublicNavLinks()">
               <a *ngIf="!isCustomer()" routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
               <a routerLink="/products" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Products</a>
@@ -61,7 +61,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               <a
                 *ngIf="isVendor() || isAdmin()"
                 routerLink="/vendor/notifications"
-                class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
                 aria-label="Open vendor notifications"
                 title="Notifications"
               >
@@ -98,7 +98,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             <ng-container *ngIf="isCustomer()">
               <a
                 routerLink="/cart"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
               >
                 Cart
                 <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
@@ -216,7 +216,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
         (logout)="onMobileLogout()"
       />
       <div *ngIf="isNavigating" class="pointer-events-none border-b border-[#e7dac9] bg-white/75 px-4 py-3 backdrop-blur">
-        <div class="mx-auto max-w-7xl">
+        <div class="app-shell-width px-0">
           <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
           </div>

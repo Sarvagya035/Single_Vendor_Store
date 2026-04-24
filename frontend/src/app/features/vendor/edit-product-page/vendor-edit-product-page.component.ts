@@ -23,9 +23,9 @@ import {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="vendor-page-shell overflow-hidden">
-        <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Vendor Products"
             title="Edit Product Details"
@@ -52,7 +52,7 @@ import {
         </div>
 
         <form *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6" (ngSubmit)="saveProduct()">
-          <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+          <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
               <div class="border-b border-slate-100 pb-4">
                 <p class="vendor-stat-label">Customer Facing</p>

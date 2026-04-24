@@ -14,9 +14,9 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
         (click)="open.emit()"
         (keydown.enter)="open.emit()"
         (keydown.space)="open.emit(); $event.preventDefault()"
-        class="grid w-full gap-4 px-5 py-5 text-left lg:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))_auto] lg:items-center"
+        class="grid w-full gap-4 px-5 py-5 text-left sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))_auto] lg:items-center"
       >
-        <div class="flex items-center gap-4">
+        <div class="flex min-w-0 items-center gap-4 sm:col-span-2 lg:col-span-1">
           <div class="h-16 w-16 overflow-hidden rounded-2xl bg-slate-100">
             <img
               *ngIf="imageUrl"
@@ -67,7 +67,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
             {{ product.isActive ? 'Active' : 'Inactive' }}
           </span>
         </div>
-        <div class="flex flex-wrap items-center justify-end gap-2">
+        <div class="flex flex-wrap items-center justify-end gap-2 sm:col-span-2 lg:col-span-1">
           <button
             type="button"
             (click)="$event.stopPropagation(); edit.emit()"

@@ -6,7 +6,7 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="app-surface p-8">
+    <section class="vendor-section p-6 sm:p-8">
       <div class="border-b border-slate-100 pb-4" [ngClass]="headerLayout">
         <div>
           <p class="vendor-stat-label">{{ eyebrow }}</p>
