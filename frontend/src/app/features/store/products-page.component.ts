@@ -273,7 +273,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 {{ catalogMessage }}
               </div>
 
-              <div *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 sm:gap-4 lg:gap-5">
+              <div *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
                   <div class="mt-4 h-4 w-3/4 rounded-full bg-slate-200"></div>
@@ -297,7 +297,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </button>
                 </div>
 
-                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 sm:gap-4 lg:gap-5">
+                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
                   <article
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
                     role="link"
@@ -366,13 +366,15 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                         <span class="min-w-0 truncate text-slate-500">
                           {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
                         </span>
-                        <a
-                          [routerLink]="['/products', product._id]"
-                          (click)="$event.stopPropagation()"
-                          class="inline-flex w-full items-center justify-center rounded-full border border-amber-200 bg-amber-50 px-2 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-amber-800 transition hover:border-amber-300 hover:bg-amber-100 sm:w-auto sm:text-xs"
-                        >
-                          View Product
-                        </a>
+                        <div class="flex w-full justify-end sm:w-auto sm:flex-1">
+                          <a
+                            [routerLink]="['/products', product._id]"
+                            (click)="$event.stopPropagation()"
+                            class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-full border border-amber-300 bg-[#fff8e6] px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#8a4f20] transition hover:bg-[#fff0c2] sm:min-w-[120px] sm:w-auto sm:px-4 sm:py-2 sm:text-center sm:text-xs sm:tracking-[0.12em]"
+                          >
+                            View Product
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </article>
