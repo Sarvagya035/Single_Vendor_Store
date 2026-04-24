@@ -45,7 +45,13 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             <ng-container *ngIf="showPublicNavLinks()">
               <a *ngIf="!isCustomer()" routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
               <a routerLink="/products" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Products</a>
-              <a routerLink="/products" [queryParams]="{ category: 'combos' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Combos</a>
+              <a
+                routerLink="/products"
+                [queryParams]="{ category: 'combos' }"
+                class="nav-link rounded-none bg-transparent px-0 font-semibold text-[#6f4e37] shadow-none hover:bg-transparent hover:text-amber-700"
+                >
+                Combos
+              </a>
               <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
               <a routerLink="/about-us" class="nav-link" routerLinkActive="text-amber-700 after:w-full">About Us</a>
               <a routerLink="/contact" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Contact Us</a>

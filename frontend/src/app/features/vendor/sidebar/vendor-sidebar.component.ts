@@ -25,13 +25,13 @@ interface VendorSidebarItem {
   },
   template: `
     <aside>
-      <div class="glass-card flex flex-col p-3 lg:min-h-[calc(100vh-7rem)]">
-        <nav class="mt-3 flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-2.5 lg:overflow-visible lg:pb-0">
+      <div class="glass-card flex flex-col p-3 md:p-4 lg:min-h-[calc(100vh-7rem)]">
+        <nav class="mt-2 flex gap-2 overflow-x-auto pb-2 lg:block lg:space-y-2.5 lg:overflow-visible lg:pb-0">
           @for (item of sidebarItems; track item.view) {
             @if (item.view !== 'shipments' || showShipments) {
               <a
                 [routerLink]="item.link"
-                class="flex min-w-max flex-none rounded-xl border px-3 py-2.5 text-left transition-all lg:block lg:w-full"
+                class="flex min-w-[10.5rem] flex-none rounded-xl border px-3 py-2.5 text-left transition-all lg:block lg:w-full lg:min-w-0"
                 [ngClass]="activeView === item.view ? item.activeClasses : item.inactiveClasses"
               >
                 <div class="flex items-center gap-2.5">
@@ -98,7 +98,7 @@ interface VendorSidebarItem {
                   </span>
 
                   <div class="min-w-0 flex-1">
-                    <p class="text-[0.92rem] font-medium tracking-[-0.01em]">{{ item.label }}</p>
+                    <p class="text-[0.9rem] font-medium tracking-[-0.01em]">{{ item.label }}</p>
                   </div>
 
                   @if (item.showCount !== false && item.count !== undefined) {

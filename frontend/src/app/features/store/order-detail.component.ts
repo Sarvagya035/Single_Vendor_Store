@@ -37,9 +37,9 @@ import { OrderService } from '../../core/services/order.service';
                   </p>
                 </div>
 
-                <div class="flex flex-wrap gap-3">
-                  <a [routerLink]="backLink" class="btn-secondary !px-5 !py-3">Back To Orders</a>
-                  <a *ngIf="currentOrder._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary !px-5 !py-3">
+                <div class="flex flex-col gap-3 sm:flex-row">
+                  <a [routerLink]="backLink" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Back To Orders</a>
+                  <a *ngIf="currentOrder._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">
                     Track Order
                   </a>
                 </div>
@@ -60,7 +60,7 @@ import { OrderService } from '../../core/services/order.service';
                 </article>
               </div>
 
-              <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
+              <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
                 <div class="space-y-6">
                   <section class="rounded-[1.75rem] border border-slate-200 bg-[#fffaf4] p-5 sm:p-6">
                     <div class="flex items-end justify-between gap-4 border-b border-slate-200 pb-4">
@@ -222,7 +222,7 @@ import { OrderService } from '../../core/services/order.service';
                             *ngFor="let event of shipment.trackingEvents; trackBy: trackByEvent"
                             class="rounded-[1.2rem] border border-slate-200 bg-white p-4"
                           >
-                            <div class="flex items-start justify-between gap-4">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                               <div>
                                 <p class="text-sm font-black text-slate-900">{{ event.status }}</p>
                                 <p class="mt-1 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
@@ -271,15 +271,15 @@ import { OrderService } from '../../core/services/order.service';
                       </p>
                     </div>
 
-                    <div class="flex flex-wrap gap-3">
-                      <a [routerLink]="backLink" class="btn-secondary !px-5 !py-3">Back To Orders</a>
-                      <a *ngIf="order._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary !px-5 !py-3">
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                      <a [routerLink]="backLink" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Back To Orders</a>
+                      <a *ngIf="order._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">
                         Track Order
                       </a>
                       <button
                         *ngIf="canCancel()"
                         type="button"
-                        class="rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-medium text-rose-600 transition hover:bg-rose-100"
+                        class="w-full rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-medium text-rose-600 transition hover:bg-rose-100 sm:w-auto"
                         (click)="cancelOrder()"
                       >
                         Cancel Order
@@ -288,7 +288,7 @@ import { OrderService } from '../../core/services/order.service';
                   </div>
                 </div>
 
-                <div class="grid gap-6 px-6 py-6 sm:px-7 xl:grid-cols-[minmax(0,1fr)_340px]">
+                <div class="grid gap-6 px-6 py-6 sm:px-7 lg:grid-cols-[minmax(0,1fr)_340px]">
                   <div class="space-y-6">
                     <section class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fffaf4] p-5 sm:p-6">
                       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
@@ -376,7 +376,7 @@ import { OrderService } from '../../core/services/order.service';
                               *ngFor="let event of shipment.trackingEvents; trackBy: trackByEvent"
                               class="rounded-[1.2rem] border border-[#e7dac9] bg-white p-4"
                             >
-                              <div class="flex items-start justify-between gap-4">
+                              <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                                 <div>
                                   <p class="text-sm font-medium text-slate-900">{{ event.status }}</p>
                                   <p class="mt-1 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
@@ -419,14 +419,14 @@ import { OrderService } from '../../core/services/order.service';
                           *ngFor="let item of visibleItems; trackBy: trackByItem"
                           class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5"
                         >
-                          <div class="flex items-start justify-between gap-4">
+                          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                               <p class="text-lg font-black text-slate-900">{{ item.name || 'Order item' }}</p>
                               <p class="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
                                 {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
                               </p>
                             </div>
-                            <div class="text-right">
+                            <div class="text-left sm:text-right">
                               <p class="text-base font-black text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
                               <p class="mt-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(item.orderItemStatus)">
                                 {{ item.orderItemStatus || 'Processing' }}

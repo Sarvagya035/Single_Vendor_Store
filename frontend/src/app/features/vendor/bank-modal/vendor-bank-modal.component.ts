@@ -8,14 +8,14 @@ import { VendorBankDetailsForm } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div *ngIf="open" class="fixed inset-0 z-50 flex items-center justify-center bg-[#2f1b14]/45 px-4">
-      <div class="glass-card w-full max-w-2xl p-8 shadow-2xl">
-        <div class="flex items-start justify-between gap-4 border-b border-[#f1e4d4] pb-4">
+    <div *ngIf="open" class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#2f1b14]/45 px-4 py-4 sm:items-center">
+      <div class="glass-card my-auto w-full max-w-2xl max-h-[calc(100vh-2rem)] overflow-y-auto p-5 shadow-2xl sm:p-8">
+        <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p class="vendor-stat-label !text-amber-700">Bank Details</p>
             <h3 class="vendor-panel-title">Update Payout Information</h3>
           </div>
-          <button type="button" (click)="close.emit()" class="btn-secondary !px-4 !py-2 text-xs">
+          <button type="button" (click)="close.emit()" class="btn-secondary w-full !px-4 !py-2 text-xs sm:w-auto">
             Close
           </button>
         </div>

@@ -21,9 +21,9 @@ import { CustomerAddressBookComponent } from '../customer/address-book/customer-
                 </p>
               </div>
 
-              <div class="flex flex-wrap gap-3">
-                <a routerLink="/profile" class="btn-secondary !px-5 !py-3">Back To Profile</a>
-                <a routerLink="/cart" class="btn-primary !px-5 !py-3">Go To Cart</a>
+              <div class="flex flex-col gap-3 sm:flex-row">
+                <a routerLink="/profile" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Back To Profile</a>
+                <a routerLink="/cart" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Go To Cart</a>
               </div>
             </div>
           </div>

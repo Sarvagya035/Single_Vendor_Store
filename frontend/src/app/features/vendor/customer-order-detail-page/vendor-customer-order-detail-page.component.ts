@@ -20,9 +20,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             eyebrow="Customer Order"
             [title]="customer ? customerLabel() + ' order detail' : 'Customer order detail'"
             description="Inspect the full order in the context of this customer."
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button type="button" (click)="goBack()" class="btn-secondary !py-3">
+            <button type="button" (click)="goBack()" class="btn-secondary w-full !py-3 sm:w-auto">
               Back to Order History
             </button>
           </app-page-header>
@@ -49,7 +49,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         <div *ngIf="!isLoading && customer && order" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
           <div class="space-y-6">
             <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
-              <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+              <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-3">
                     <p class="text-lg font-black text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
@@ -74,7 +74,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   </div>
                 </div>
 
-                <div class="flex flex-col items-start gap-3 xl:min-w-[220px] xl:items-end">
+                <div class="flex flex-col items-start gap-3 lg:min-w-[220px] lg:items-end">
                   <p class="text-2xl font-black text-slate-900">{{ formatCurrency(orderTotal(order)) }}</p>
                   <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Order total</p>
                 </div>
@@ -92,7 +92,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </p>
               </div>
 
-              <div class="mt-5 grid gap-4">
+        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <article
                   *ngFor="let item of order.orderItems || []; trackBy: trackByOrderItem"
                   class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4"

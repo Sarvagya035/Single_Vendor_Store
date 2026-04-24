@@ -29,12 +29,12 @@ interface VendorCustomerRow {
           <app-page-header
             eyebrow="Customer Directory"
             title="Registered Customers"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
             <button
               type="button"
               (click)="reloadCustomers()"
-              class="btn-secondary !px-5 !py-2.5"
+              class="btn-secondary w-full !px-5 !py-2.5 sm:w-auto"
             >
               {{ isLoading ? 'Refreshing...' : 'Refresh Customers' }}
             </button>
@@ -88,7 +88,7 @@ interface VendorCustomerRow {
           </p>
         </div>
 
-        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="overflow-x-auto">
+        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="hidden lg:block">
           <table class="min-w-full border-separate border-spacing-0">
             <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">
@@ -179,6 +179,72 @@ interface VendorCustomerRow {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="grid gap-4 px-4 pb-4 lg:hidden sm:px-5 lg:px-6">
+          <article
+            *ngFor="let customer of filteredCustomers; trackBy: trackByCustomer"
+            class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]"
+          >
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div class="flex items-start gap-4">
+                <div
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-black uppercase text-white"
+                  [ngClass]="customer.avatarClass"
+                >
+                  {{ initials(customer.user) }}
+                </div>
+
+                <div class="min-w-0">
+                  <p class="truncate text-base font-black text-slate-900">
+                    {{ customer.user.fullName || customer.user.username || customer.user.email || 'Customer' }}
+                  </p>
+                  <p class="mt-1 break-words text-sm font-medium text-[#9c5f39]">
+                    {{ customer.user.email || 'No email provided' }}
+                  </p>
+                </div>
+              </div>
+
+              <span
+                class="inline-flex w-fit rounded-full px-3 py-1 text-xs font-black"
+                [ngClass]="customer.status === 'Active'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-[#f2ebe7] text-[#8c6c5d]'"
+              >
+                {{ customer.status }}
+              </span>
+            </div>
+
+            <div class="mt-4 grid gap-3 sm:grid-cols-2">
+              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Orders</p>
+                <p class="mt-2 text-sm font-black text-slate-900">{{ customer.orderCount }}</p>
+              </div>
+              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Total Spent</p>
+                <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(customer.totalSpent) }}</p>
+              </div>
+              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4 sm:col-span-2">
+                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Joined</p>
+                <p class="mt-2 text-sm font-black text-slate-900">{{ customer.joinedAt }}</p>
+              </div>
+            </div>
+
+            <div class="mt-4 flex justify-end">
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-full bg-[#7c5646] px-4 py-2.5 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
+                title="Open customer details"
+                (click)="openCustomerDetails(customer); $event.stopPropagation()"
+              >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0c-1.8 4.5-6 8-12 8S1.8 16.5 0 12c1.8-4.5 6-8 12-8s10.2 3.5 12 8Z" />
+                  <circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle>
+                </svg>
+                View Profile
+              </button>
+            </div>
+          </article>
         </div>
       </div>
     </section>

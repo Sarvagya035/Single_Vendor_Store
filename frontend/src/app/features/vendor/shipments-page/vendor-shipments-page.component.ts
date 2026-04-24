@@ -55,9 +55,9 @@ interface ShipmentCardView {
           <app-page-header
             eyebrow="Shipments"
             title="Shipment management"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button type="button" (click)="loadShipments()" [disabled]="isLoading" class="btn-secondary !py-3">
+            <button type="button" (click)="loadShipments()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
               {{ isLoading ? 'Refreshing...' : 'Refresh Shipments' }}
             </button>
           </app-page-header>
@@ -122,7 +122,7 @@ interface ShipmentCardView {
                   </div>
                 </div>
 
-                <div class="mt-5 grid gap-4 md:grid-cols-4">
+                <div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Courier</p>
                     <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.courierName || 'DHL' }}</p>

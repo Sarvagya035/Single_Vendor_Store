@@ -14,7 +14,7 @@ import { ErrorService } from '../../core/services/error.service';
       <div class="pointer-events-none absolute right-0 top-24 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
       <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div class="grid gap-10 lg:grid-cols-[0.92fr_1.08fr]">
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-[0.92fr_1.08fr]">
           <div class="relative z-10 space-y-8">
             <div class="space-y-4">
               <p class="app-page-eyebrow">Contact us</p>
@@ -24,7 +24,7 @@ import { ErrorService } from '../../core/services/error.service';
               </p>
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <article class="app-card p-5">
                 <div class="flex items-start gap-4">
                   <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#fff7ed] text-xl">📞</div>
@@ -84,9 +84,9 @@ import { ErrorService } from '../../core/services/error.service';
                   </p>
                 </div>
 
-                <div class="flex flex-wrap gap-3">
-                  <a [href]="phoneHref" class="btn-secondary !px-5 !py-3 text-sm">Call now</a>
-                  <a [href]="whatsappHref" target="_blank" rel="noopener noreferrer" class="btn-primary !px-5 !py-3 text-sm">WhatsApp</a>
+                <div class="flex flex-col gap-3 sm:flex-row">
+                  <a [href]="phoneHref" class="btn-secondary w-full justify-center !px-5 !py-3 text-sm sm:w-auto">Call now</a>
+                  <a [href]="whatsappHref" target="_blank" rel="noopener noreferrer" class="btn-primary w-full justify-center !px-5 !py-3 text-sm sm:w-auto">WhatsApp</a>
                 </div>
               </div>
             </div>
@@ -192,7 +192,7 @@ import { ErrorService } from '../../core/services/error.service';
       </section>
 
       <section class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-        <div class="grid gap-4 lg:grid-cols-3">
+        <div class="grid gap-4 md:grid-cols-3">
           <article class="app-card p-6">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Dry fruits</p>
             <p class="mt-3 text-sm font-medium leading-7 text-slate-500">

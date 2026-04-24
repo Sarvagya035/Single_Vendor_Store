@@ -17,15 +17,15 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           <app-page-header
             eyebrow="Order Management"
             title="Vendor Orders"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary !px-5 !py-2.5">
+            <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary w-full !px-5 !py-2.5 sm:w-auto">
               {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
             </button>
           </app-page-header>
         </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 lg:grid-cols-4 lg:px-6">
+        <div class="grid gap-4 px-4 py-4 sm:px-5 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label !text-amber-700">Total Orders</p>
             <p class="vendor-stat-value">{{ totalOrdersCount }}</p>
@@ -45,7 +45,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         </div>
 
         <div class="border-b border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
-          <div class="relative w-full max-w-2xl">
+          <div class="relative w-full max-w-none lg:max-w-2xl">
             <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
             </svg>
@@ -127,7 +127,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   </div>
                 </div>
 
-                <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Products</p>
                     <p class="mt-2 text-sm font-medium text-slate-900">{{ orderProductsText(order) }}</p>

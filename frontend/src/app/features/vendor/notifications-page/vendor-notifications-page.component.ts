@@ -22,15 +22,15 @@ type NotificationFilter = 'all' | 'unread' | 'active';
           eyebrow="Notifications"
           title="Notification center"
           description="Track low-stock alerts and keep product availability under control from one place."
-          titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+          titleClass="!text-[1.8rem] md:!text-[2.2rem]"
         >
-          <button type="button" (click)="reload()" [disabled]="isLoading" class="btn-secondary !py-3">
+          <button type="button" (click)="reload()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
             {{ isLoading ? 'Refreshing...' : 'Refresh Notifications' }}
           </button>
         </app-page-header>
         </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-4 lg:px-6">
+        <div class="grid gap-4 px-4 py-4 sm:px-5 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
         <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
           <p class="vendor-stat-label">Unread</p>
           <p class="vendor-stat-value">{{ summary.unreadNotifications }}</p>
@@ -126,7 +126,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
 
                 <p class="mt-3 text-sm font-medium text-slate-600">{{ notification.message }}</p>
 
-                <div class="mt-4 grid gap-3 md:grid-cols-3">
+                <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                     <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Product</p>
                     <p class="mt-2 text-sm font-black text-slate-900">{{ notification.productName }}</p>
@@ -146,7 +146,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
                 </p>
               </div>
 
-              <div class="flex flex-col gap-3 xl:min-w-[220px]">
+              <div class="flex flex-col gap-3 lg:min-w-[220px]">
                 <a
                   [routerLink]="resolveActionLink(notification)"
                   class="btn-primary !px-5 !py-3 text-center"

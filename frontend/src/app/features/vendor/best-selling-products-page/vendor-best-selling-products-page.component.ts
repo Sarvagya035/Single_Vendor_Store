@@ -45,11 +45,11 @@ interface BestSellingProductRow {
           <app-page-header
             eyebrow="Top Performers"
             title="Best Selling Products"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           />
         </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-2 xl:grid-cols-4 lg:px-6">
+        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-2 lg:grid-cols-4 lg:px-6">
           <article class="vendor-stat-card">
             <p class="vendor-stat-label">Total Revenue</p>
             <p class="vendor-stat-value">{{ formatCurrency(analytics.summary.totalRevenue) }}</p>
@@ -82,7 +82,7 @@ interface BestSellingProductRow {
             Search by product name, brand, category, or sale note. The ranking updates instantly.
           </p>
         
-        <div class="grid gap-4 pt-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1.5fr)_260px]">
+        <div class="grid gap-4 pt-5 md:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_260px]">
           <label class="block">
             <span class="mb-2 ml-1 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Search</span>
             <div class="flex items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 shadow-inner focus-within:border-amber-300 focus-within:ring-4 focus-within:ring-amber-100">
@@ -145,7 +145,7 @@ interface BestSellingProductRow {
             *ngFor="let product of visibleProducts; trackBy: trackByProduct"
             class="rounded-[1.5rem] border border-slate-200 bg-white p-5 transition hover:bg-[#fffaf4]"
           >
-            <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div class="flex min-w-0 flex-1 gap-4">
                 <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-slate-100">
                   <img *ngIf="product.image; else productFallback" [src]="product.image" [alt]="product.displayName" class="h-full w-full object-cover" />
@@ -171,7 +171,7 @@ interface BestSellingProductRow {
                     {{ product.description }}
                   </p>
 
-                  <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-[1.4rem] border border-slate-200 bg-slate-50/80 p-4">
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Sold</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ product.soldUnits }} unit{{ product.soldUnits === 1 ? '' : 's' }}</p>
@@ -192,7 +192,7 @@ interface BestSellingProductRow {
                 </div>
               </div>
 
-              <div class="xl:min-w-[240px] xl:text-right">
+              <div class="lg:min-w-[240px] lg:text-right">
                 <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Sales share</p>
                 <p class="mt-2 text-3xl font-black tracking-tight text-slate-900">{{ product.salesShare.toFixed(1) }}%</p>
                 <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
@@ -202,7 +202,7 @@ interface BestSellingProductRow {
                   ></div>
                 </div>
 
-                <div class="mt-4 flex flex-wrap gap-2 xl:justify-end">
+                <div class="mt-4 flex flex-wrap gap-2 lg:justify-end">
                   <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-600">
                     {{ product.categoryName }}
                   </span>
@@ -215,7 +215,7 @@ interface BestSellingProductRow {
                   Added {{ formatDate(product.createdAt) }}
                 </p>
 
-                <div class="mt-4 flex flex-wrap gap-3 xl:justify-end">
+                <div class="mt-4 flex flex-wrap gap-3 lg:justify-end">
                   <a
                     *ngIf="product.product?._id"
                     [routerLink]="['/vendor/products', product.product?._id, 'view']"

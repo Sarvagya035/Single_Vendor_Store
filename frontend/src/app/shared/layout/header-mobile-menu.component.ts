@@ -12,7 +12,14 @@ import { RouterModule } from '@angular/router';
         <ng-container *ngIf="showPublicNavLinks">
           <a *ngIf="!loggedIn" routerLink="/" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Home</a>
           <a routerLink="/products" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Products</a>
-          <a routerLink="/products" [queryParams]="{ category: 'combos' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Combos</a>
+          <a
+            routerLink="/products"
+            [queryParams]="{ category: 'combos' }"
+            (click)="close.emit()"
+            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+          >
+            Combos
+          </a>
           <a routerLink="/products" [queryParams]="{ category: 'gifting' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Gifting Collection</a>
           <a routerLink="/about-us" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">About Us</a>
           <a routerLink="/contact" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Contact Us</a>

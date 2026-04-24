@@ -53,7 +53,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
 
             <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] px-4 py-6 sm:px-5 lg:px-6">
-              <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-6 py-12 text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:px-8 sm:py-16">
                 <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
                 <p class="mt-3 text-sm font-medium text-slate-500">
                   Browse products and add a variant to start building your order.
@@ -62,7 +62,7 @@ const EMPTY_CART: CustomerCart = {
               </div>
             </div>
 
-            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 xl:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
+            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 lg:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
               <div class="space-y-5">
                 <article
                   *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
@@ -74,7 +74,7 @@ const EMPTY_CART: CustomerCart = {
                       [alt]="item.product?.productName || 'Cart item'"
                       loading="lazy"
                       decoding="async"
-                      class="h-28 w-28 rounded-[1.5rem] object-cover"
+                      class="h-24 w-full rounded-[1.5rem] object-cover sm:h-28 sm:w-28"
                     />
 
                     <div class="min-w-0 flex-1">
@@ -98,7 +98,7 @@ const EMPTY_CART: CustomerCart = {
                       </div>
 
                       <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex items-center rounded-xl border border-[#e7dac9] bg-[#fffaf5]">
+                        <div class="flex w-full items-center rounded-xl border border-[#e7dac9] bg-[#fffaf5] sm:w-auto">
                           <button
                             type="button"
                             class="px-4 py-3 text-base font-medium text-[#6f4e37]"
@@ -106,7 +106,7 @@ const EMPTY_CART: CustomerCart = {
                           >
                             -
                           </button>
-                          <span class="min-w-12 text-center text-sm font-medium text-slate-900">
+                          <span class="min-w-12 flex-1 text-center text-sm font-medium text-slate-900">
                             {{ item.quantity || 0 }}
                           </span>
                           <button

@@ -19,7 +19,7 @@ import { ToastType } from '../../../core/models/vendor.models';
           <app-page-header
             eyebrow="Vendor Category Management"
             title="Manage your store categories"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           />
         </div>
 

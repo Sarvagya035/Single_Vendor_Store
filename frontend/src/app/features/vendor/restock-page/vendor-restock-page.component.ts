@@ -25,12 +25,12 @@ import {
           <app-page-header
             eyebrow="Inventory Management"
             title="Manage Inventory / Restock"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="This page is only for stock updates. Product details and variant editing stay separate so inventory work stays fast and focused."
           >
-            <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary !px-6 !py-3">Edit Product</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-secondary !px-6 !py-3">Manage Variants</a>
+            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Edit Product</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Variants</a>
           </app-page-header>
         </div>
 
@@ -95,7 +95,7 @@ import {
                       </div>
                     </div>
 
-                    <button type="button" (click)="restockVariant(variant)" [disabled]="!variant._id || busyVariantId === variant._id" class="btn-primary !px-6 !py-3 disabled:opacity-60">
+                    <button type="button" (click)="restockVariant(variant)" [disabled]="!variant._id || busyVariantId === variant._id" class="btn-primary w-full !px-6 !py-3 disabled:opacity-60">
                       {{ busyVariantId === variant._id ? 'Updating...' : 'Update Stock' }}
                     </button>
                   </div>

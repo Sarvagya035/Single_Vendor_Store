@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
       <div class="pointer-events-none absolute right-0 top-24 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
       <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div class="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+        <div class="grid gap-8 md:grid-cols-2 lg:gap-10 lg:items-center">
           <div class="relative z-10 space-y-8">
             <div class="space-y-4">
               <p class="app-page-eyebrow">About us</p>
@@ -22,20 +22,20 @@ import { RouterModule } from '@angular/router';
               </p>
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-3">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <article class="app-card p-5">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Rating</p>
-                <p class="mt-3 text-3xl font-bold text-slate-900">4.9</p>
+                <p class="mt-3 text-2xl font-bold text-slate-900 md:text-3xl">4.9</p>
                 <p class="mt-1 text-sm font-medium text-slate-500">Star customer rating</p>
               </article>
               <article class="app-card p-5">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Selection</p>
-                <p class="mt-3 text-3xl font-bold text-slate-900">Wide</p>
+                <p class="mt-3 text-2xl font-bold text-slate-900 md:text-3xl">Wide</p>
                 <p class="mt-1 text-sm font-medium text-slate-500">Dry fruits to bakery</p>
               </article>
               <article class="app-card p-5">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Focus</p>
-                <p class="mt-3 text-3xl font-bold text-slate-900">Fresh</p>
+                <p class="mt-3 text-2xl font-bold text-slate-900 md:text-3xl">Fresh</p>
                 <p class="mt-1 text-sm font-medium text-slate-500">Quality every day</p>
               </article>
             </div>
@@ -59,7 +59,7 @@ import { RouterModule } from '@angular/router';
                   <img
                     src="/assets/shop-image.webp"
                     alt="Divya Dryfruit House storefront"
-                    class="h-[300px] w-full object-contain object-center sm:h-[380px]"
+                    class="h-[240px] w-full object-contain object-center sm:h-[320px] lg:h-[380px]"
                   />
                 </div>
               </div>
@@ -99,7 +99,7 @@ import { RouterModule } from '@angular/router';
             <p class="mt-4 text-sm font-medium leading-7 text-slate-500">
               We bring you dry fruits, spices, herbs, and bakery delights designed to make healthy living easier and more enjoyable.
             </p>
-            <div class="mt-6 grid gap-3 sm:grid-cols-2">
+            <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div class="rounded-[1.25rem] bg-[#fffaf5] p-4">
                 <p class="text-sm font-bold text-slate-900">DryFruits</p>
                 <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
@@ -164,9 +164,9 @@ import { RouterModule } from '@angular/router';
             </p>
           </div>
 
-          <div class="flex flex-wrap gap-3">
-            <a routerLink="/products" class="btn-secondary !px-5 !py-3 text-sm">Browse products</a>
-            <a routerLink="/contact" class="btn-primary !px-5 !py-3 text-sm">Contact us</a>
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <a routerLink="/products" class="btn-secondary w-full justify-center !px-5 !py-3 text-sm sm:w-auto">Browse products</a>
+            <a routerLink="/contact" class="btn-primary w-full justify-center !px-5 !py-3 text-sm sm:w-auto">Contact us</a>
           </div>
         </div>
       </section>

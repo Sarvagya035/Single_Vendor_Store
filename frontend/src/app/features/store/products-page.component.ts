@@ -92,7 +92,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                     </select>
                   </label>
 
-                  <div class="grid grid-cols-2 gap-3">
+                  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <label class="block">
                       <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Min price</span>
                       <input
@@ -307,9 +307,12 @@ interface LandingCategoryNode extends CustomerLandingCategory {
               <div class="mb-5 border-b border-slate-200 pb-5">
                 <div>
                   <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Dry fruit catalog</p>
-                  <h1 class="mt-1 text-3xl font-black tracking-tight text-slate-900">Shop all products</h1>
+                  <h1 class="mt-1 text-2xl font-black tracking-tight text-slate-900 md:text-3xl">Shop all products</h1>
                   <p class="mt-2 text-sm font-medium text-slate-500">
                     {{ pageSubtitle() }}
+                  </p>
+                  <p *ngIf="selectedCategoryDescription()" class="mt-2 max-w-3xl text-sm font-medium leading-7 text-slate-600">
+                    {{ selectedCategoryDescription() }}
                   </p>
                 </div>
 
@@ -422,7 +425,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 {{ catalogMessage }}
               </div>
 
-              <div *ngIf="loadingProducts" class="grid grid-cols-3 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div *ngIf="loadingProducts" class="grid grid-cols-3 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
                   <div class="mt-4 h-4 w-3/4 rounded-full bg-slate-200"></div>
@@ -446,7 +449,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </button>
                 </div>
 
-                <div *ngIf="products.length > 0" class="grid grid-cols-3 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div *ngIf="products.length > 0" class="grid grid-cols-3 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   <article
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
                     role="link"
@@ -454,7 +457,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                     (click)="openProduct(product)"
                     (keydown.enter)="openProduct(product)"
                     (keydown.space)="$event.preventDefault(); openProduct(product)"
-                    class="group relative rounded-[1.8rem] border border-slate-200 bg-white p-2 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)] sm:p-4"
+                    class="group relative rounded-[1.8rem] border border-slate-200 bg-white p-2 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)] md:p-3 lg:p-4"
                   >
                     <button
                       type="button"
@@ -473,7 +476,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       <span *ngIf="wishlistBusyId === product._id" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
                     </button>
 
-                    <div class="aspect-square overflow-hidden rounded-[1.3rem] border border-slate-200 bg-slate-100">
+                    <div class="aspect-square overflow-hidden rounded-[1.2rem] border border-slate-200 bg-slate-100 md:rounded-[1.25rem]">
                       <img
                         [src]="productImage(product)"
                         [alt]="product.productName"
@@ -483,35 +486,35 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                       />
                     </div>
 
-                    <div class="mt-2 space-y-2 sm:mt-4 sm:space-y-3">
+                    <div class="mt-2 space-y-2 md:mt-3 md:space-y-2 lg:mt-4 lg:space-y-3">
                       <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
-                          <p class="truncate text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 sm:text-[11px]">
+                          <p class="truncate text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 sm:text-[10px] lg:text-[11px]">
                             {{ product.brand || 'Dry fruit pack' }}
                           </p>
-                          <h2 class="mt-1 line-clamp-2 text-[11px] font-black text-slate-900 sm:text-lg">
+                          <h2 class="mt-1 line-clamp-2 text-[10px] font-black leading-4 text-slate-900 sm:text-[11px] lg:text-lg">
                             {{ product.productName }}
                           </h2>
                         </div>
-                        <span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-3 sm:py-1 sm:text-xs">
+                        <span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-black text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-2.5 sm:py-1 sm:text-[10px] lg:px-3 lg:text-xs">
                           {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
                         </span>
                       </div>
 
-                      <p class="text-[10px] font-semibold text-slate-500 sm:text-sm">
+                      <p class="text-[9px] font-semibold text-slate-500 sm:text-[10px] lg:text-sm">
                         {{ product.categoryDetails?.name || 'General Category' }}
                       </p>
 
-                      <div class="flex items-center gap-2 text-[10px] sm:text-sm">
+                      <div class="flex items-center gap-2 text-[9px] sm:text-[10px] lg:text-sm">
                         <span *ngIf="productOriginalPrice(product)" class="text-sm font-bold text-slate-400 line-through">
                           {{ productOriginalPrice(product) }}
                         </span>
-                        <span class="text-[11px] font-black text-slate-900 sm:text-base">
+                        <span class="text-[10px] font-black text-slate-900 sm:text-[11px] lg:text-base">
                           {{ productDiscountedPrice(product) }}
                         </span>
                       </div>
 
-                      <div class="flex items-center justify-between pt-1 text-[10px] font-black sm:text-sm">
+                      <div class="flex items-center justify-between pt-1 text-[9px] font-black sm:text-[10px] lg:text-sm">
                         <span class="text-slate-500">
                           {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
                         </span>
@@ -1049,6 +1052,18 @@ export class ProductsPageComponent implements OnInit {
         ? `Browsing ${selectedCategory.name} with filters applied.`
         : `Browsing ${selectedCategory.name}.`
       : 'Browse premium dry fruits by type or search for a specific pack.';
+  }
+
+  selectedCategoryDescription(): string {
+    if (this.selectedCategorySlug === 'all' || this.viewMode === 'search') {
+      return '';
+    }
+
+    const selectedCategory = this.catalogCategories.find(
+      (category) => this.normalizeCategoryKey(category.slug || category.name) === this.normalizeCategoryKey(this.selectedCategorySlug)
+    );
+
+    return String(selectedCategory?.description || '').trim();
   }
 
   trackByCategoryId(_: number, category: CustomerLandingCategory): string {

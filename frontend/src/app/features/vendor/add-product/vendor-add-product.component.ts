@@ -42,21 +42,31 @@ interface WizardStep {
     <section class="space-y-6">
       <div class="vendor-page-shell overflow-hidden">
         <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <app-page-header eyebrow="Vendor Products" title="Add Product" titleClass="!text-[1.9rem] sm:!text-[2.2rem]">
+          <app-page-header eyebrow="Vendor Products" title="Add Product" titleClass="!text-[1.8rem] md:!text-[2.2rem]">
             <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
           </app-page-header>
         </div>
 
-        <div class="flex gap-3 overflow-x-auto px-4 py-4 sm:px-5 lg:grid lg:grid-cols-5 lg:overflow-visible lg:px-6">
+        <div class="grid grid-cols-1 gap-3 px-4 py-4 sm:grid-cols-2 sm:px-5 lg:grid-cols-5 lg:px-6">
           <button
             *ngFor="let step of steps; let i = index; trackBy: trackByStep"
             type="button"
             (click)="goToStep(i)"
-            class="min-w-[11rem] flex-none rounded-[1.4rem] border px-4 py-4 text-left transition lg:min-w-0"
+            class="min-w-0 rounded-[1.4rem] border px-4 py-4 text-left transition sm:min-h-[5.5rem]"
             [ngClass]="i === currentStep ? 'border-amber-300 bg-white text-slate-900 shadow-sm' : i < currentStep ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-white/70 bg-white/70 text-slate-500'"
           >
-            <p class="vendor-stat-label">Step {{ i + 1 }}</p>
-            <h2 class="mt-2 text-sm font-bold text-slate-900">{{ step.title }}</h2>
+            <div class="flex items-center gap-3 sm:block">
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-xs font-black transition"
+                [ngClass]="i === currentStep ? 'border-amber-300 bg-amber-100 text-amber-800' : i < currentStep ? 'border-emerald-200 bg-emerald-100 text-emerald-700' : 'border-slate-200 bg-white text-slate-500'"
+              >
+                {{ i + 1 }}
+              </span>
+              <div class="min-w-0">
+                <p class="vendor-stat-label">Step {{ i + 1 }}</p>
+                <h2 class="mt-1 text-sm font-bold text-slate-900">{{ step.title }}</h2>
+              </div>
+            </div>
           </button>
         </div>
         
@@ -66,7 +76,7 @@ interface WizardStep {
         </div>
 
         <form *ngIf="!isLoadingCategories" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6" (ngSubmit)="submitProduct()">
-          <div *ngIf="currentStep === 0" class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+          <div *ngIf="currentStep === 0" class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 1" title="Basic info">
               <div class="grid gap-5 md:grid-cols-2">
                 <label class="space-y-2 md:col-span-2">
@@ -103,7 +113,7 @@ interface WizardStep {
             </app-vendor-form-section>
           </div>
 
-          <div *ngIf="currentStep === 1" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+          <div *ngIf="currentStep === 1" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 2" title="Images">
               <div class="space-y-5">
                 <label class="flex cursor-pointer flex-col items-center rounded-[1.8rem] border-2 border-dashed border-slate-300 bg-slate-50/80 px-6 py-10 text-center">
@@ -113,7 +123,7 @@ interface WizardStep {
                   <input type="file" accept="image/*" multiple class="hidden" (change)="onMainImagesSelected($event)" />
                 </label>
 
-                <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <article *ngFor="let preview of imagePreviews; let i = index; trackBy: trackByPreview" class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white">
                     <div class="aspect-square bg-slate-100"><img [src]="preview.url" [alt]="preview.file.name" class="h-full w-full object-cover" /></div>
                     <div class="p-4">
@@ -137,7 +147,7 @@ interface WizardStep {
             </app-vendor-form-section>
           </div>
 
-          <div *ngIf="currentStep === 2" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+          <div *ngIf="currentStep === 2" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 3" title="Variant options" [hasAction]="true" headerLayout="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <button section-action type="button" (click)="addOption()" class="btn-secondary !py-3">Add Option</button>
               <div class="space-y-4">
@@ -182,7 +192,7 @@ interface WizardStep {
             </app-vendor-form-section>
           </div>
 
-          <div *ngIf="currentStep === 4" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
+          <div *ngIf="currentStep === 4" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 5" title="Review & submit">
               <div class="space-y-5">
                 <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
@@ -219,9 +229,9 @@ interface WizardStep {
           </div>
 
           <div class="mt-6 flex flex-col gap-3 rounded-[1.8rem] border border-slate-200 bg-white px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-            <button type="button" (click)="previousStep()" [disabled]="currentStep === 0" class="btn-secondary !px-6 !py-3 disabled:opacity-50">Previous</button>
-            <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Step {{ currentStep + 1 }} of {{ steps.length }}</p>
-            <button *ngIf="currentStep < steps.length - 1" type="button" (click)="nextStep()" class="btn-primary !px-6 !py-3">Next</button>
+            <button type="button" (click)="previousStep()" [disabled]="currentStep === 0" class="btn-secondary w-full !px-6 !py-3 disabled:opacity-50 sm:w-auto">Previous</button>
+            <p class="text-center text-xs font-black uppercase tracking-[0.18em] text-slate-400 sm:text-left">Step {{ currentStep + 1 }} of {{ steps.length }}</p>
+            <button *ngIf="currentStep < steps.length - 1" type="button" (click)="nextStep()" class="btn-primary w-full !px-6 !py-3 sm:w-auto">Next</button>
           </div>
         </form>
       </div>

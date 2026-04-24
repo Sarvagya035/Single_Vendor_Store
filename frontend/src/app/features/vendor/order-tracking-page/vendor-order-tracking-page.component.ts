@@ -23,16 +23,16 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           <app-page-header
             eyebrow="Order Tracking"
             title="Vendor shipment tracking"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <div class="flex flex-wrap gap-3">
-              <a [routerLink]="orderLink" class="btn-secondary !px-5 !py-3">Open Order</a>
-              <a routerLink="/vendor/orders" class="btn-primary !px-5 !py-3">Back To Orders</a>
+            <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
+              <a [routerLink]="orderLink" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">Open Order</a>
+              <a routerLink="/vendor/orders" class="btn-primary w-full !px-5 !py-3 sm:w-auto">Back To Orders</a>
               <button
                 *ngIf="canRefreshShipment()"
                 type="button"
                 (click)="refreshShipment()"
-                class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 text-sm font-black text-amber-800 transition hover:bg-amber-100"
+                class="w-full rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 text-sm font-black text-amber-800 transition hover:bg-amber-100 sm:w-auto"
               >
                 Refresh Tracking
               </button>
@@ -47,7 +47,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         <div *ngIf="!isLoading && order" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
           <div class="space-y-6">
             <section class="rounded-[1.85rem] border border-slate-200 bg-white p-5 shadow-[0_16px_40px_rgba(47,27,20,0.05)] sm:p-6 lg:p-7">
-              <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+              <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-3">
                     <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">
@@ -65,7 +65,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   </p>
                 </div>
 
-                <div class="flex flex-col items-start gap-3 xl:items-end">
+                <div class="flex flex-col items-start gap-3 lg:items-end">
                   <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(trackingStage)">
                     {{ trackingStage }}
                   </span>
@@ -73,7 +73,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </div>
               </div>
 
-              <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <article class="rounded-[1.4rem] border border-[#eadcc9] bg-[#fffaf4] p-4">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Courier</p>
                   <p class="mt-3 text-lg font-black text-slate-900">{{ shipment?.courierName || 'DHL' }}</p>
@@ -116,7 +116,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 <div class="mt-5 rounded-[1.5rem] border border-slate-200 bg-[#fffaf4] p-4 sm:p-5">
                   <div class="relative">
                     <div class="absolute left-6 right-6 top-6 hidden h-[2px] bg-[#d9e7df] md:block"></div>
-                    <div class="grid gap-4 md:grid-cols-4">
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                       <div *ngFor="let step of trackingSteps; trackBy: trackByStep" class="relative z-10 rounded-[1.2rem] bg-white p-4 text-center shadow-[0_10px_24px_rgba(47,27,20,0.04)]">
                         <div
                           class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-4 text-sm font-black shadow-sm"
@@ -136,7 +136,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </section>
 
-            <div class="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
+            <div class="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
               <section class="space-y-6">
                 <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                   <div class="flex items-end justify-between gap-4 border-b border-slate-200 pb-4">
@@ -225,7 +225,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                         {{ order.shippingAddress?.address || 'Address unavailable' }}
                       </p>
                     </div>
-                    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
                       <div class="rounded-[1.3rem] border border-[#eadcc9] bg-[#fffaf4] p-4">
                         <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">City</p>
                         <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress?.city || '-' }}</p>

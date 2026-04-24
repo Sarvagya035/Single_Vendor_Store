@@ -80,7 +80,7 @@ const getCategoryTree = asyncHandler(async (req, res) => {
 // 3. Get All Active Categories (Public - for landing page cards/sections)
 const getAllCategoriesForLandingPage = asyncHandler(async (req, res) => {
     const categories = await Category.find({ isActive: true })
-        .select("name slug image level parentCategory")
+        .select("name slug description image level parentCategory")
         .sort({ level: 1, name: 1 });
 
     return res.status(200).json(

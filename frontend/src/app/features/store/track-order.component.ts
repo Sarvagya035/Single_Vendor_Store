@@ -28,9 +28,9 @@ import { OrderService } from '../../core/services/order.service';
             </p>
           </div>
 
-          <div class="flex gap-3">
-            <a [routerLink]="orderLink" class="btn-secondary !px-5 !py-3">Open Order</a>
-            <a routerLink="/orders" class="btn-primary !px-5 !py-3">Back To Orders</a>
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <a [routerLink]="orderLink" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Open Order</a>
+            <a routerLink="/orders" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Back To Orders</a>
           </div>
         </div>
           </div>
@@ -56,7 +56,7 @@ import { OrderService } from '../../core/services/order.service';
             <div class="mt-6">
               <div class="relative">
                 <div class="absolute left-0 right-0 top-6 h-[2px] bg-[#d9e7df]"></div>
-                <div class="grid grid-cols-4 gap-2">
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-2">
                   <div *ngFor="let step of trackingSteps; trackBy: trackByStep" class="relative z-10 text-center">
                     <div
                       class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-4 text-sm font-medium shadow-sm"
@@ -97,9 +97,9 @@ import { OrderService } from '../../core/services/order.service';
 
               <article
                 *ngFor="let item of visibleItems; trackBy: trackByItem"
-                class="flex gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-white p-4 sm:p-5"
+                class="flex flex-col gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-white p-4 sm:flex-row sm:p-5"
               >
-                <div class="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#eadfce] bg-[#fffaf4]">
+                <div class="flex h-24 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#eadfce] bg-[#fffaf4] sm:h-28 sm:w-28">
                   <img
                     *ngIf="item.variantImage; else noImage"
                     [src]="item.variantImage"

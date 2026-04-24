@@ -14,7 +14,7 @@ import { OrderService } from '../../core/services/order.service';
       <div class="mx-auto w-full max-w-7xl">
         <div class="vendor-page-shell overflow-hidden">
           <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-2xl">
               <p class="app-page-eyebrow !text-amber-700">Order History</p>
               <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My orders</h1>
@@ -133,13 +133,13 @@ import { OrderService } from '../../core/services/order.service';
                   <p class="mt-2 text-3xl font-medium tracking-tight text-slate-900">{{ formatCurrency(displayOrderTotal(order)) }}</p>
                 </div>
 
-                <div class="flex flex-wrap gap-3 xl:justify-end">
-                  <a [routerLink]="['/track-order', order._id]" class="btn-primary !px-5 !py-3">Track</a>
-                  <a [routerLink]="['/orders', order._id]" class="btn-secondary !px-5 !py-3">View Details</a>
+                <div class="flex flex-col gap-3 sm:flex-row xl:justify-end">
+                  <a [routerLink]="['/track-order', order._id]" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Track</a>
+                  <a [routerLink]="['/orders', order._id]" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">View Details</a>
                   <button
                     *ngIf="canCancel(order)"
                     type="button"
-                    class="rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-medium text-rose-600 transition hover:bg-rose-100"
+                    class="w-full rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-medium text-rose-600 transition hover:bg-rose-100 sm:w-auto"
                     (click)="cancelOrder(order)"
                   >
                     Cancel Order

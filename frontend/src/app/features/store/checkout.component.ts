@@ -40,7 +40,7 @@ const EMPTY_CART: CustomerCart = {
           </div>
 
           <div class="border-b border-slate-200 bg-gradient-to-r from-white via-[#fffaf5] to-white px-4 py-4 sm:px-5 lg:px-6">
-            <div class="grid gap-3 rounded-[1.4rem] border border-[#eadcc9] bg-white p-4 shadow-[0_12px_32px_rgba(111,78,55,0.05)] sm:grid-cols-3">
+            <div class="grid gap-3 rounded-[1.4rem] border border-[#eadcc9] bg-white p-4 shadow-[0_12px_32px_rgba(111,78,55,0.05)] md:grid-cols-3">
               <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
                 <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">1</span>
                 <div>
@@ -114,7 +114,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </div>
 
-          <div *ngIf="!isLoading && cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 xl:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
+          <div *ngIf="!isLoading && cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 lg:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
             <div class="space-y-5">
               <section class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6">
                 <div class="flex flex-col gap-3 border-b border-[#f1e4d4] pb-4 sm:flex-row sm:items-end sm:justify-between">
@@ -132,7 +132,7 @@ const EMPTY_CART: CustomerCart = {
                 <div *ngIf="addresses.length" class="mt-5 grid gap-4">
                   <label
                     *ngFor="let address of addresses; trackBy: trackByAddress"
-                    class="flex cursor-pointer gap-4 rounded-[1.5rem] border p-5 transition"
+                    class="flex cursor-pointer flex-col gap-4 rounded-[1.5rem] border p-5 transition sm:flex-row"
                     [ngClass]="selectedAddressId === address._id ? 'border-[#d4a017] bg-[#fffaf5] shadow-[0_10px_25px_rgba(111,78,55,0.06)]' : 'border-[#e7dac9] bg-white hover:border-[#d4a017]'"
                   >
                     <input
@@ -168,14 +168,14 @@ const EMPTY_CART: CustomerCart = {
                 <div class="mt-5 space-y-4">
                   <article
                     *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
-                    class="flex gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-[#fffaf5] p-4"
+                    class="flex flex-col gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-[#fffaf5] p-4 sm:flex-row"
                   >
                     <img
                       [src]="cartItemImage(item)"
                       [alt]="item.product?.productName || 'Cart item'"
                       loading="lazy"
                       decoding="async"
-                      class="h-20 w-20 rounded-2xl object-cover"
+                      class="h-20 w-full rounded-2xl object-cover sm:w-20"
                     />
 
                     <div class="min-w-0 flex-1">

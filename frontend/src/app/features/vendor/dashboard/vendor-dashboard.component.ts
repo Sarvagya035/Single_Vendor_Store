@@ -48,14 +48,14 @@ interface DashboardProduct {
             </div>
 
             <div class="flex flex-wrap gap-3">
-              <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
-              <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Manage Products</a>
-              <a routerLink="/vendor/best-selling-products" class="btn-secondary !px-6 !py-3">Best Sellers</a>
+              <a routerLink="/vendor/products/add" class="btn-primary w-full !px-6 !py-3 sm:w-auto">+ Add Product</a>
+              <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Products</a>
+              <a routerLink="/vendor/best-selling-products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Best Sellers</a>
             </div>
           </div>
         </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-2 xl:grid-cols-4 lg:px-6">
+        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-2 lg:grid-cols-4 lg:px-6">
           <article *ngFor="let metric of metrics" class="vendor-stat-card transition hover:-translate-y-0.5" [ngClass]="metricCardClass(metric.tone)">
             <p class="vendor-stat-label">{{ metric.label }}</p>
             <p class="vendor-stat-value">{{ metric.value }}</p>
@@ -171,7 +171,7 @@ interface DashboardProduct {
         </div>
 
         <div class="border-t border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <div class="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
+          <div class="grid gap-6 lg:grid-cols-[1.35fr_0.95fr]">
             <section class="space-y-6">
               <div>
                 <p class="vendor-stat-label">Quick Actions</p>

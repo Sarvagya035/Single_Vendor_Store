@@ -38,8 +38,8 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
         </div>
 
         <ng-container *ngIf="product && !loading">
-          <div class="mt-8 rounded-[2rem] border border-[#eadcc9] bg-white/90 p-4 shadow-[0_24px_60px_rgba(47,27,20,0.08)] sm:p-6 lg:p-7">
-            <div class="grid gap-8 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
+          <div class="mt-8 rounded-[2rem] border border-[#eadcc9] bg-white/90 p-3 shadow-[0_24px_60px_rgba(47,27,20,0.08)] sm:p-6 lg:p-7">
+            <div class="grid gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:gap-8">
               <app-product-gallery
                 [productName]="product.productName"
                 [activeImage]="activeImage()"
@@ -83,7 +83,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               </p>
             </div>
 
-            <div *ngIf="visibleRelatedProducts().length; else noRelatedProducts" class="mt-6 grid grid-cols-3 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div *ngIf="visibleRelatedProducts().length; else noRelatedProducts" class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               <article
                 *ngFor="let related of visibleRelatedProducts(); trackBy: trackByProductId"
                 role="link"
@@ -91,7 +91,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                 (click)="openProduct(related)"
                 (keydown.enter)="openProduct(related)"
                 (keydown.space)="$event.preventDefault(); openProduct(related)"
-                class="group relative rounded-[1.6rem] border border-[#e7dac9] bg-[#fff7ed]/50 p-2 shadow-[0_16px_40px_rgba(111,78,55,0.05)] transition hover:-translate-y-1 hover:border-[#d4a017] hover:bg-white hover:shadow-[0_24px_60px_rgba(111,78,55,0.1)] sm:p-4"
+                class="group relative rounded-[1.6rem] border border-[#e7dac9] bg-[#fff7ed]/50 p-3 shadow-[0_16px_40px_rgba(111,78,55,0.05)] transition hover:-translate-y-1 hover:border-[#d4a017] hover:bg-white hover:shadow-[0_24px_60px_rgba(111,78,55,0.1)] sm:p-4"
               >
                 <button
                   type="button"
@@ -168,8 +168,8 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </div>
 
             <div class="mt-6 grid gap-6 lg:grid-cols-[170px_1fr]">
-              <div class="rounded-[1.75rem] border border-[#f1e4d4] bg-[#fffaf0] px-5 py-6">
-                <p class="text-5xl font-extrabold leading-none text-[#d97706]">{{ formatRating(product.averageRating || 0) }}</p>
+              <div class="rounded-[1.75rem] border border-[#f1e4d4] bg-[#fffaf0] px-5 py-6 text-center lg:text-left">
+                <p class="text-4xl font-extrabold leading-none text-[#d97706] sm:text-5xl">{{ formatRating(product.averageRating || 0) }}</p>
                 <div class="mt-2 flex items-center gap-1 text-amber-400">
                   <span
                     *ngFor="let star of reviewStarSlots; trackBy: trackByNumber"
@@ -184,7 +184,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
               </div>
 
               <div class="space-y-3 pt-1">
-                <div *ngFor="let row of ratingBreakdown()" class="grid grid-cols-[52px_1fr_32px] items-center gap-3">
+                <div *ngFor="let row of ratingBreakdown()" class="grid grid-cols-[44px_minmax(0,1fr)_28px] items-center gap-2 sm:grid-cols-[52px_1fr_32px] sm:gap-3">
                   <p class="text-sm font-medium text-slate-600">{{ row.star }} star</p>
                   <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
                     <div class="h-full rounded-full bg-amber-400 transition-all" [style.width.%]="row.percentage"></div>

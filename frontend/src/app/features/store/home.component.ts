@@ -34,22 +34,22 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
           ></div>
 
           <div class="absolute inset-0">
-            <div class="mx-auto flex h-full w-full max-w-7xl items-end px-4 pb-8 sm:px-6 lg:px-8 lg:pb-10">
-              <div class="flex flex-wrap items-center gap-3">
+            <div class="mx-auto flex h-full w-full max-w-7xl items-end px-4 pb-6 sm:px-6 lg:px-8 lg:pb-10">
+              <div class="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-start">
                 <a
                   routerLink="/products"
-                  class="inline-flex items-center justify-center rounded-full bg-[#3f2418] px-6 py-3 text-sm font-semibold tracking-[0.04em] text-white shadow-[0_14px_30px_rgba(63,36,24,0.25)] transition hover:-translate-y-0.5 hover:bg-[#2f1b14]"
+                  class="inline-flex w-full items-center justify-center rounded-full bg-[#3f2418] px-6 py-3 text-sm font-semibold tracking-[0.04em] text-white shadow-[0_14px_30px_rgba(63,36,24,0.25)] transition hover:-translate-y-0.5 hover:bg-[#2f1b14] sm:w-auto"
                 >
                   Shop Now
                 </a>
                 <a
                   href="#categories"
-                  class="inline-flex items-center justify-center rounded-full border border-[#3f2418] bg-white/90 px-6 py-3 text-sm font-semibold tracking-[0.04em] text-[#3f2418] shadow-[0_12px_28px_rgba(63,36,24,0.12)] transition hover:-translate-y-0.5 hover:bg-white"
+                  class="inline-flex w-full items-center justify-center rounded-full border border-[#3f2418] bg-white/90 px-6 py-3 text-sm font-semibold tracking-[0.04em] text-[#3f2418] shadow-[0_12px_28px_rgba(63,36,24,0.12)] transition hover:-translate-y-0.5 hover:bg-white sm:w-auto"
                 >
                   View Categories
                 </a>
 
-                <div class="ml-2 flex items-center gap-2 rounded-full bg-black/10 px-3 py-2 backdrop-blur-sm">
+                <div class="mx-auto flex items-center gap-2 rounded-full bg-black/10 px-3 py-2 backdrop-blur-sm sm:mx-0 sm:ml-2">
                   <button
                     *ngFor="let slide of heroSlides; let index = index; trackBy: trackByHeroSlide"
                     type="button"
@@ -93,7 +93,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                 <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Shop by category</h3>
               </div>
 
-              <div class="grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div class="grid grid-cols-3 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 <a
                   *ngFor="let category of catalogCategories; trackBy: trackByCategoryId"
                   [routerLink]="['/products']"
@@ -111,9 +111,9 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                       class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     />
                   </div>
-                  <div class="space-y-1 p-2 sm:p-4">
-                    <h4 class="truncate text-xs font-semibold text-slate-900 sm:text-lg">{{ category.name }}</h4>
-                    <p class="text-[10px] font-medium text-slate-500 sm:text-sm">{{ categoryCount(category) }} item{{ categoryCount(category) === 1 ? '' : 's' }}</p>
+                  <div class="space-y-1 p-2 md:p-3">
+                    <h4 class="truncate text-[10px] font-semibold text-slate-900 sm:text-xs lg:text-sm">{{ category.name }}</h4>
+                    <p class="text-[9px] font-medium text-slate-500 sm:text-[10px] lg:text-sm">{{ categoryCount(category) }} item{{ categoryCount(category) === 1 ? '' : 's' }}</p>
                   </div>
                 </a>
               </div>
@@ -125,7 +125,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                 <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
               </div>
 
-              <div class="grid grid-cols-3 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div class="grid grid-cols-3 gap-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
                 <article
                   *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
                   role="link"
@@ -133,7 +133,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                   (click)="openProduct(product)"
                   (keydown.enter)="openProduct(product)"
                   (keydown.space)="$event.preventDefault(); openProduct(product)"
-                  class="group relative rounded-[1.6rem] border border-slate-200 bg-white p-2 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)] sm:p-4"
+                    class="group relative rounded-[1.6rem] border border-slate-200 bg-white p-2 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)] md:p-3 lg:p-4"
                 >
                   <button
                     type="button"
@@ -152,7 +152,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                     <span *ngIf="wishlistBusyId === product._id" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
                   </button>
 
-                  <div class="aspect-square overflow-hidden rounded-[1.25rem] border border-slate-200 bg-slate-100">
+                  <div class="aspect-square overflow-hidden rounded-[1.2rem] border border-slate-200 bg-slate-100 md:rounded-[1.25rem]">
                     <img
                       [src]="productImage(product)"
                       [alt]="product.productName"
@@ -162,18 +162,27 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                     />
                   </div>
 
-                  <div class="mt-2 space-y-2 sm:mt-4 sm:space-y-3">
+                  <div class="mt-2 space-y-2 md:mt-3 md:space-y-2 lg:mt-4 lg:space-y-3">
                     <div class="flex items-start justify-between gap-3">
                       <div class="min-w-0">
-                        <p class="truncate text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 sm:text-[11px]">{{ product.brand || 'Premium Pack' }}</p>
-                        <h4 class="mt-1 line-clamp-2 text-[11px] font-semibold text-slate-900 sm:text-lg">{{ product.productName }}</h4>
+                        <p class="truncate text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 sm:text-[10px] lg:text-[11px]">{{ product.brand || 'Premium Pack' }}</p>
+                        <h4 class="mt-1 line-clamp-2 text-[10px] font-semibold leading-4 text-slate-900 sm:text-[11px] lg:text-lg">{{ product.productName }}</h4>
                       </div>
-                      <span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-3 sm:py-1 sm:text-xs">
+                      <span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-2.5 sm:py-1 sm:text-[10px] lg:px-3 lg:text-xs">
                         {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
                       </span>
                     </div>
 
-                    <p class="text-[10px] font-semibold text-slate-500 sm:text-sm">{{ product.categoryDetails?.name || 'Dry fruits & nuts' }}</p>
+                    <p class="text-[9px] font-semibold text-slate-500 sm:text-[10px] lg:text-sm">{{ product.categoryDetails?.name || 'Dry fruits & nuts' }}</p>
+
+                    <div class="flex items-center justify-between pt-1 text-[9px] font-black sm:text-[10px] lg:text-sm">
+                      <span class="text-slate-500">
+                        {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
+                      </span>
+                      <span class="text-amber-800 transition group-hover:translate-x-1 group-hover:text-amber-900">
+                        View Product
+                      </span>
+                    </div>
                   </div>
                 </article>
               </div>

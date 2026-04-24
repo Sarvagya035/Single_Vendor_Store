@@ -26,16 +26,16 @@ interface CategoryCreateForm {
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p class="app-page-eyebrow">Category Management</p>
-              <h3 class="app-page-title !text-[1.9rem] sm:!text-[2.2rem]">Category Tree</h3>
+              <h3 class="app-page-title !text-[1.8rem] md:!text-[2.2rem]">Category Tree</h3>
               <p class="app-page-description !mt-2 !max-w-2xl">
                 Manage your category hierarchy. Click the arrow to expand/collapse subcategories.
               </p>
             </div>
             <div class="flex flex-wrap gap-3">
-              <button type="button" (click)="toggleCreateForm()" class="btn-secondary !px-5 !py-3">
+              <button type="button" (click)="toggleCreateForm()" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">
                 {{ showCreateForm ? 'Close Form' : 'Add Category' }}
               </button>
-              <button type="button" (click)="refresh.emit()" [disabled]="isLoading" class="btn-secondary !py-3">
+              <button type="button" (click)="refresh.emit()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
                 {{ isLoading ? 'Refreshing...' : 'Refresh Categories' }}
               </button>
             </div>
@@ -166,7 +166,7 @@ interface CategoryCreateForm {
               {{ category.isActive === false ? 'Inactive' : 'Active' }}
             </span>
 
-            <div class="flex items-center gap-2 opacity-0 transition group-hover:opacity-100" (click)="$event.stopPropagation()">
+            <div class="flex items-center gap-2 opacity-100 transition lg:opacity-0 lg:group-hover:opacity-100" (click)="$event.stopPropagation()">
               <button
                 type="button"
                 (click)="toggleEdit(category)"

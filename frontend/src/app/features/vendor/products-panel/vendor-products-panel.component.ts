@@ -39,17 +39,17 @@ interface ProductMessage {
                 Product Management
               </h2>
             </div>
-            <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
+            <a routerLink="/vendor/products/add" class="btn-primary w-full !px-6 !py-3 sm:w-auto">+ Add Product</a>
           </div>
         </div>
 
         <div class="space-y-5 px-6 py-6 lg:px-8">
-          <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <input
               type="text"
               [(ngModel)]="searchQuery"
               placeholder="Search by product name, brand, or category"
-              class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 xl:max-w-md"
+              class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 lg:max-w-md"
             />
             <div class="flex flex-wrap gap-2">
               <button

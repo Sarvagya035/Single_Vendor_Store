@@ -33,12 +33,12 @@ import {
           <app-page-header
             eyebrow="Variant Management"
             title="Manage Variants"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="Edit product combinations here without mixing inventory-only changes into the product details page."
           >
-            <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary !px-6 !py-3">Edit Product</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary !px-6 !py-3">Restock</a>
+            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Edit Product</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Restock</a>
           </app-page-header>
         </div>
 
@@ -49,7 +49,7 @@ import {
 
         <div *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6">
           <div class="grid gap-6">
-            <div class="grid gap-4 md:grid-cols-3">
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <article class="vendor-stat-card">
                 <p class="vendor-stat-label">Product</p>
                 <p class="vendor-stat-value !text-2xl">{{ product.productName }}</p>
@@ -68,7 +68,7 @@ import {
             </div>
 
             <app-vendor-form-section eyebrow="Add Variant" title="Create a new variant">
-              <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.75fr))_auto]">
+              <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.75fr))_auto]">
                 <input [(ngModel)]="newVariant.attributesText" name="new-attributes" placeholder="Weight:500g, Type:Roasted" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                 <input type="number" [(ngModel)]="newVariant.productPrice" name="new-price" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                 <input type="number" [(ngModel)]="newVariant.discountPercentage" name="new-discount" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />

@@ -24,7 +24,7 @@ import {
           <app-page-header
             eyebrow="Vendor Product View"
             title="Product Details"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="Review this product exactly as a vendor record, with images, pricing, stock, and variants, without any customer purchase actions."
           >
             <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
@@ -47,7 +47,7 @@ import {
           <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Return to Products</a>
         </div>
 
-        <div *ngIf="!isLoading && product" class="grid gap-6 px-4 py-4 sm:px-5 lg:px-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div *ngIf="!isLoading && product" class="grid gap-6 px-4 py-4 sm:px-5 lg:px-6 lg:grid-cols-[1.1fr_0.9fr]">
           <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <div class="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div class="space-y-4">

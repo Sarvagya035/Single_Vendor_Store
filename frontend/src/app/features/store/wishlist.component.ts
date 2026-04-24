@@ -15,10 +15,10 @@ import { CustomerWishlist, CustomerWishlistProduct } from '../../core/models/cus
         <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.26em] text-amber-700">Saved items</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">My Wishlist</h1>
+            <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">My Wishlist</h1>
           </div>
 
-          <a routerLink="/products" class="btn-secondary !px-5 !py-3">
+          <a routerLink="/products" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">
             Continue Shopping
           </a>
         </div>
@@ -47,7 +47,7 @@ import { CustomerWishlist, CustomerWishlistProduct } from '../../core/models/cus
           >
             <div class="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
               <div class="block shrink-0">
-                <div class="h-24 w-24 overflow-hidden rounded-[1.2rem] bg-slate-100 sm:h-20 sm:w-20">
+                <div class="h-24 w-full overflow-hidden rounded-[1.2rem] bg-slate-100 sm:h-20 sm:w-20">
                   <img
                     [src]="productImage(item)"
                     [alt]="item.productName || 'Wishlist product'"

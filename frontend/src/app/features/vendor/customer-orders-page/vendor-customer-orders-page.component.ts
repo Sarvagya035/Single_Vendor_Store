@@ -20,9 +20,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           <app-page-header
             eyebrow="Customer Orders"
             [title]="customer ? customerLabel() + ' order history' : 'Customer order history'"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button type="button" (click)="goBack()" class="btn-secondary !py-3">
+            <button type="button" (click)="goBack()" class="btn-secondary w-full !py-3 sm:w-auto">
               Back to Customer
             </button>
           </app-page-header>
@@ -33,7 +33,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         </div>
 
         <div *ngIf="!isLoading && customer" class="px-4 py-4 sm:px-5 lg:px-6">
-        <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+          <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div class="flex items-center gap-4">
             <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-xl font-black text-slate-500">
               <img *ngIf="customer.avatar; else customerInitials" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
@@ -54,7 +54,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </div>
 
-        <div class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
             <p class="vendor-stat-label !text-amber-700">Total Orders</p>
             <p class="mt-3 text-3xl font-black text-slate-900">{{ customerOrders.length }}</p>
@@ -139,7 +139,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           class="cursor-pointer rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)]"
           (click)="openOrder(order)"
         >
-          <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+          <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-3">
                 <p class="text-lg font-black text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
@@ -183,7 +183,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </div>
 
-            <div class="flex flex-col items-start gap-3 xl:min-w-[220px] xl:items-end">
+            <div class="flex flex-col items-start gap-3 lg:min-w-[220px] lg:items-end">
               <button
                 type="button"
                 class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100"

@@ -121,6 +121,7 @@ export interface CustomerLandingCategory {
   _id: string;
   name: string;
   slug: string;
+  description?: string;
   image?: string;
   level?: number;
   parentCategory?: string | null;

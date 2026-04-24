@@ -10,7 +10,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
     <section class="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.9fr)_minmax(320px,0.95fr)] lg:p-6">
       <article class="overflow-hidden rounded-[1.75rem] border border-[#e7dac9] bg-white shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
         <div class="p-5 sm:p-6">
-          <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
               <div class="relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-[1rem] bg-[#7b5b4d] sm:h-20 sm:w-20">
                 <img
@@ -58,7 +58,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
             <button
               type="button"
               (click)="editDetails.emit()"
-              class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#7b5b4d] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#694b3e]"
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#7b5b4d] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#694b3e] md:w-auto"
             >
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 2.651 2.651M7.5 16.5 4 20l3.5-3.5m0 0L17.25 6.75a1.875 1.875 0 1 0-2.652-2.652L4.848 13.848A4.5 4.5 0 0 0 3.75 16.5v3.75h3.75A4.5 4.5 0 0 0 12 19.152Z" />
@@ -101,7 +101,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
         </div>
 
         <div class="border-t border-[#eee2d4] px-5 py-5 sm:px-6">
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center gap-2">
               <svg class="h-4 w-4 text-[#7b5b4d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -113,7 +113,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
             <button
               type="button"
               (click)="editBank.emit()"
-              class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#7b5b4d] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#694b3e]"
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#7b5b4d] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#694b3e] md:w-auto"
             >
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 2.651 2.651M7.5 16.5 4 20l3.5-3.5m0 0L17.25 6.75a1.875 1.875 0 1 0-2.652-2.652L4.848 13.848A4.5 4.5 0 0 0 3.75 16.5v3.75h3.75A4.5 4.5 0 0 0 12 19.152Z" />

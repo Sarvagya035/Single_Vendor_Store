@@ -28,7 +28,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
     <section class="space-y-6">
       <div class="vendor-page-shell overflow-hidden">
         <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <app-page-header eyebrow="Store Profile" title="Vendor profile" titleClass="!text-[1.9rem] sm:!text-[2.2rem]" />
+          <app-page-header eyebrow="Store Profile" title="Vendor profile" titleClass="!text-[1.8rem] md:!text-[2.2rem]" />
         </div>
 
         <div *ngIf="isLoading" class="flex flex-col items-center gap-4 px-6 py-20">

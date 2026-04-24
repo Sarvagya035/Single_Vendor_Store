@@ -26,7 +26,7 @@ import {
           <app-page-header
             eyebrow="Vendor Products"
             title="Product Management Dashboard"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
             <a routerLink="/vendor/products/add" class="btn-primary !px-7 !py-3.5">
               Add Product
@@ -34,7 +34,7 @@ import {
           </app-page-header>
         </div>
 
-        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-3 lg:px-6">
+        <div class="grid gap-4 px-4 py-4 sm:px-5 md:grid-cols-2 lg:grid-cols-3 lg:px-6">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label !text-amber-700">Total Products</p>
             <p class="vendor-stat-value">{{ totalDocs }}</p>
@@ -58,8 +58,8 @@ import {
               </div>
             </div>
 
-            <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-              <div class="relative w-full xl:max-w-[calc(100%-150px)]">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div class="relative w-full lg:max-w-[calc(100%-150px)]">
                 <svg
                   class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
                   fill="none"
@@ -74,15 +74,15 @@ import {
                   [(ngModel)]="searchQuery"
                   (ngModelChange)="onSearchChange()"
                   placeholder="Search by name, brand, SKU, or category..."
-                  class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
-                />
-              </div>
+                class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+              />
+            </div>
 
               <button
                 type="button"
                 (click)="loadVendorProducts(currentPage)"
                 [disabled]="isLoading"
-                class="inline-flex items-center justify-center gap-2 rounded-2xl border border-transparent bg-[#f7f3ef] px-5 py-3.5 text-sm font-bold text-slate-900 transition hover:bg-[#efe7df] disabled:opacity-60"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-transparent bg-[#f7f3ef] px-5 py-3.5 text-sm font-bold text-slate-900 transition hover:bg-[#efe7df] disabled:opacity-60 lg:w-auto"
               >
                 <svg class="h-4 w-4 text-[#7c5646]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M20 11a8.5 8.5 0 1 0 1.5 4.8" />
@@ -282,7 +282,7 @@ import {
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                   <div class="min-w-0">
-                    <h3 class="truncate text-lg font-black text-slate-900">{{ product.productName }}</h3>
+                <h3 class="truncate text-base font-black text-slate-900 md:text-lg">{{ product.productName }}</h3>
                     <p class="mt-1 text-sm font-semibold text-slate-600">{{ product.brand || 'Generic' }}</p>
                   </div>
                   <span

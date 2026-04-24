@@ -29,12 +29,12 @@ import {
           <app-page-header
             eyebrow="Vendor Products"
             title="Edit Product Details"
-            titleClass="!text-[1.9rem] sm:!text-[2.2rem]"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="This page is only for customer-facing product information. Inventory and variant operations live in their own dedicated workspaces."
           >
-            <a routerLink="/vendor/products" class="btn-secondary !px-6 !py-3">Back to Products</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary !px-6 !py-3">Go to Restock</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-secondary !px-6 !py-3">Manage Variants</a>
+            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Go to Restock</a>
+            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Variants</a>
           </app-page-header>
         </div>
 
@@ -52,7 +52,7 @@ import {
         </div>
 
         <form *ngIf="!isLoading && product" class="border-t border-slate-200 px-4 py-4 sm:px-5 lg:px-6 lg:py-6" (ngSubmit)="saveProduct()">
-          <div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+          <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
               <div class="border-b border-slate-100 pb-4">
                 <p class="vendor-stat-label">Customer Facing</p>
