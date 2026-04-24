@@ -14,26 +14,26 @@ import { RouterModule } from '@angular/router';
     >
       <div class="space-y-2 px-4 pt-2 pb-6">
         <ng-container *ngIf="showPublicNavLinks">
-          <a *ngIf="!loggedIn" routerLink="/" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Home</a>
-          <a routerLink="/products" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Products</a>
+          <a *ngIf="!loggedIn" routerLink="/" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Home</a>
+          <a routerLink="/products" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Products</a>
           <a
             routerLink="/products"
             [queryParams]="{ category: 'combos' }"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+            class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
           >
             Combos
           </a>
-          <a routerLink="/products" [queryParams]="{ category: 'gifting' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Gifting Collection</a>
-          <a routerLink="/about-us" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">About Us</a>
-          <a routerLink="/contact" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Contact Us</a>
+          <a routerLink="/products" [queryParams]="{ category: 'gifting' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Gifting Collection</a>
+          <a routerLink="/about-us" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">About Us</a>
+          <a routerLink="/contact" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Contact Us</a>
         </ng-container>
 
         <ng-container *ngIf="loggedIn; else guestLinks">
           <a
           routerLink="/profile"
           (click)="close.emit()"
-          class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+          class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
         >
           Profile
         </a>
@@ -41,7 +41,7 @@ import { RouterModule } from '@angular/router';
             *ngIf="!isAdmin && !isVendor"
             routerLink="/orders"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+            class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
           >
             My Orders
           </a>
@@ -49,7 +49,7 @@ import { RouterModule } from '@angular/router';
             *ngIf="!isAdmin && !isVendor"
             routerLink="/wishlist"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+            class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
           >
             My Wishlist
           </a>
@@ -57,7 +57,7 @@ import { RouterModule } from '@angular/router';
             *ngIf="!isAdmin && !isVendor"
             routerLink="/addresses"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+            class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
           >
             My Addresses
           </a>
@@ -66,7 +66,7 @@ import { RouterModule } from '@angular/router';
             <button
               type="button"
               (click)="logout.emit()"
-              class="w-full rounded-lg px-3 py-2 text-left text-base font-bold text-rose-600 hover:bg-rose-50"
+              class="w-full rounded-lg px-3 py-2 text-left text-sm font-bold text-rose-600 hover:bg-rose-50"
             >
               Logout
             </button>
@@ -77,14 +77,14 @@ import { RouterModule } from '@angular/router';
           <a
             routerLink="/login"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+            class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
           >
             Login
           </a>
           <a
             routerLink="/register"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-[#6f4e37] hover:bg-[#fff3e4]"
+            class="block rounded-lg px-3 py-2 text-sm font-bold text-[#6f4e37] hover:bg-[#fff3e4]"
           >
             Register
           </a>

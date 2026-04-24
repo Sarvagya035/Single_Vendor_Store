@@ -25,7 +25,8 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
   imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent],
   template: `
     <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
-      <section class="app-shell-width py-8 lg:py-10">
+      <section class="storefront-section py-8 lg:py-10">
+        <div class="storefront-container">
         <a routerLink="/products" class="inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 transition hover:text-slate-900">
           <span>&larr;</span>
           Back to products
@@ -378,6 +379,7 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
             </ng-template>
           </section>
         </ng-container>
+        </div>
       </section>
     </div>
   `

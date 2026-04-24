@@ -15,8 +15,8 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-      <div class="app-shell-width">
+    <section class="storefront-section mt-4 space-y-6">
+      <div class="storefront-container">
         <div class="vendor-page-shell overflow-hidden">
           <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

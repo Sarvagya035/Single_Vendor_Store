@@ -22,8 +22,8 @@ const EMPTY_CART: CustomerCart = {
   imports: [CommonModule, RouterModule],
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
-      <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-        <div class="app-shell-width">
+      <section class="storefront-section mt-4 space-y-6">
+        <div class="storefront-container">
           <div class="vendor-page-shell overflow-hidden">
             <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -167,8 +167,8 @@ const EMPTY_CART: CustomerCart = {
     </ng-container>
 
     <ng-template #guestState>
-      <section class="mt-4 space-y-6 px-4 sm:mt-5 sm:px-6 lg:mt-6 lg:px-8">
-        <div class="app-shell-width">
+      <section class="storefront-section mt-4 space-y-6">
+        <div class="storefront-container">
           <div class="vendor-page-shell overflow-hidden">
             <div class="bg-[#fffdfa] px-4 py-16 sm:px-5 lg:px-6">
               <div class="mx-auto max-w-3xl rounded-[2rem] border border-dashed border-[#e7dac9] bg-white app-card-body text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">

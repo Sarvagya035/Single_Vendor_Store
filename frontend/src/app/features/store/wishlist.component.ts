@@ -10,7 +10,8 @@ import { CustomerWishlist, CustomerWishlistProduct } from '../../core/models/cus
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section class="app-shell-width min-h-[calc(100vh-72px)] py-8 lg:py-10">
+    <section class="storefront-section min-h-[calc(100vh-72px)] py-8 lg:py-10">
+      <div class="storefront-container">
       <div class="rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-body shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
         <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -103,6 +104,7 @@ import { CustomerWishlist, CustomerWishlistProduct } from '../../core/models/cus
             </div>
           </article>
         </div>
+      </div>
       </div>
     </section>
   `

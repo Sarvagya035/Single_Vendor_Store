@@ -47,7 +47,7 @@ import { RouterModule } from '@angular/router';
         </div>
 
         <div class="mt-10 flex flex-col gap-3 border-t border-[#7a5237] pt-6 text-sm text-[#e8d8ca] sm:flex-row sm:items-center sm:justify-between">
-          <p>Built for a smoother dry fruit shopping and store management flow.</p>
+          <p class="text-[#fff4e6]">Built for a smoother dry fruit shopping and store management flow.</p>
           <p class="font-extrabold text-[#fff4e6]">Copyright {{ currentYear }} E-Commerce</p>
         </div>
       </div>

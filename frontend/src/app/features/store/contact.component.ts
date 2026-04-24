@@ -13,7 +13,8 @@ import { ErrorService } from '../../core/services/error.service';
       <div class="pointer-events-none absolute left-0 top-0 h-80 w-80 rounded-full bg-[#f5e6d3]/50 blur-[120px]"></div>
       <div class="pointer-events-none absolute right-0 top-24 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
-      <section class="app-shell-width py-12 lg:py-16">
+      <section class="storefront-section py-12 lg:py-16">
+        <div class="storefront-container">
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-[0.92fr_1.08fr]">
           <div class="relative z-10 space-y-8">
             <div class="space-y-4">
@@ -189,9 +190,11 @@ import { ErrorService } from '../../core/services/error.service';
             </div>
           </div>
         </div>
+        </div>
       </section>
 
-      <section class="app-shell-width pb-12">
+      <section class="storefront-section pb-12">
+        <div class="storefront-container">
         <div class="grid gap-4 md:grid-cols-3">
           <article class="app-card p-6">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Dry fruits</p>
@@ -211,6 +214,7 @@ import { ErrorService } from '../../core/services/error.service';
               Fresh bakery items for celebrations, gifting, and family treats.
             </p>
           </article>
+        </div>
         </div>
       </section>
     </div>

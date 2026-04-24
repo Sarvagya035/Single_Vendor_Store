@@ -68,8 +68,9 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
         </div>
       </div>
 
-      <section class="app-shell-width pt-8">
-        <div class="grid gap-3 rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-4 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:grid-cols-2 lg:grid-cols-4">
+      <section class="storefront-section pt-8">
+        <div class="storefront-container">
+          <div class="grid gap-3 rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-4 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:grid-cols-2 lg:grid-cols-4">
           <div *ngFor="let highlight of trustHighlights; trackBy: trackByHighlight" class="flex items-center gap-3 rounded-[1.35rem] bg-[#fff9f2] px-4 py-3">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6f4e37,#8b5e3c)] text-white shadow-[0_12px_24px_rgba(111,78,55,0.18)]">
               <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -81,11 +82,13 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
               <p class="text-xs font-medium text-slate-500">{{ highlight.description }}</p>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
-      <section id="categories" class="app-shell-width py-10 scroll-mt-6">
-        <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
+      <section id="categories" class="storefront-section py-10 scroll-mt-6">
+        <div class="storefront-container">
+          <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
           <div class="px-4 pb-6 pt-8 sm:px-6 lg:px-8">
             <div>
               <div class="mb-4 text-center">
@@ -93,7 +96,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                 <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Shop by category</h3>
               </div>
 
-              <div class="grid grid-cols-3 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
                 <a
                   *ngFor="let category of catalogCategories; trackBy: trackByCategoryId"
                   [routerLink]="['/products']"
@@ -125,7 +128,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                 <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
               </div>
 
-              <div class="grid grid-cols-3 gap-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
                 <article
                   *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
                   role="link"
@@ -198,11 +201,13 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
 
             </div>
           </div>
+          </div>
         </div>
       </section>
 
-      <section id="about" class="app-shell-width pb-14 scroll-mt-6">
-        <div class="rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-8 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:px-6 lg:px-8">
+      <section id="about" class="storefront-section pb-14 scroll-mt-6">
+        <div class="storefront-container">
+          <div class="group rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-8 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:px-6 lg:px-8">
           <div class="text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Customer reviews</p>
             <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">What our customers say</h3>
@@ -212,7 +217,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
           </div>
 
           <div class="mt-8 overflow-hidden">
-            <div class="flex w-max gap-5 animate-review-marquee hover:[animation-play-state:paused]">
+            <div class="review-marquee-pause flex w-max gap-5 animate-review-marquee">
                 <article
                   *ngFor="let review of marqueeReviews; trackBy: trackByHomeReview"
                   class="w-[min(320px,78vw)] flex-shrink-0 rounded-[1.6rem] border border-[#eadcc9] bg-[#fffaf5] p-5 shadow-[0_14px_34px_rgba(47,27,20,0.05)]"
@@ -249,11 +254,13 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
               </article>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
-      <section class="app-shell-width pb-10">
-        <div class="overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
+      <section class="storefront-section pb-10">
+        <div class="storefront-container">
+          <div class="overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
           <img
             src="/assets/banner%20-2%20.png"
             alt="Featured landing banner"
@@ -261,11 +268,13 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
             decoding="async"
             class="h-auto w-full object-cover"
           />
+          </div>
         </div>
       </section>
 
-      <section class="app-shell-width pb-10">
-        <div class="grid gap-6 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_0.95fr]">
+      <section class="storefront-section pb-10">
+        <div class="storefront-container">
+          <div class="grid gap-6 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_0.95fr]">
           <div class="flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-10">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">About Us</p>
             <h3 class="mt-2 text-2xl font-bold tracking-tight text-slate-900">About Divya Dryfruit House</h3>
@@ -302,6 +311,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                 Friendly service, fair pricing, and a focus on freshness help us build trust with every order.
               </p>
             </div>
+          </div>
           </div>
         </div>
       </section>
