@@ -17,12 +17,12 @@ import { OrderService } from '../../core/services/order.service';
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-2xl">
               <p class="app-page-eyebrow !text-amber-700">Order History</p>
-              <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My orders</h1>
+              <h1 class="app-page-title !mt-2 !text-[1.7rem] sm:!text-[2rem] md:!text-[2.2rem]">My orders</h1>
             </div>
 
-            <div class="flex flex-wrap gap-3">
-              <a routerLink="/cart" class="btn-secondary !px-5 !py-3">Go To Cart</a>
-              <a routerLink="/" class="btn-primary !px-5 !py-3">Continue Shopping</a>
+            <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a routerLink="/cart" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Go To Cart</a>
+              <a routerLink="/" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Continue Shopping</a>
             </div>
           </div>
           </div>
@@ -100,8 +100,8 @@ import { OrderService } from '../../core/services/order.service';
             <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-3">
-                  <p class="text-lg font-medium text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
-                  <span class="rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(order.orderStatus)">
+              <p class="break-all text-lg font-medium text-slate-900 sm:break-normal sm:text-xl">Order #{{ shortOrderId(order._id) }}</p>
+              <span class="rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(order.orderStatus)">
                     {{ order.orderStatus || 'Processing' }}
                   </span>
                 </div>

@@ -10,13 +10,13 @@ import { CustomerUser } from '../../../core/models/customer.models';
     <article class="overflow-hidden rounded-[1.75rem] border border-[#e7dac9] bg-white shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
       <div class="border-b border-[#eee2d4] app-card-body">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f6ede5] text-2xl font-medium text-[#7b5b4d]">
+          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f6ede5] text-xl font-medium text-[#7b5b4d] sm:h-16 sm:w-16 sm:text-2xl">
             {{ user?.username?.charAt(0)?.toUpperCase() || 'C' }}
           </div>
 
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-3">
-              <h2 class="text-[1.45rem] font-medium tracking-tight text-slate-900">{{ user?.username || 'Customer account' }}</h2>
+              <h2 class="text-[1.25rem] font-medium tracking-tight text-slate-900 sm:text-[1.45rem]">{{ user?.username || 'Customer account' }}</h2>
               <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.78-9.72a.75.75 0 0 0-1.06-1.06L9.25 10.69 7.78 9.22a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4Z" clip-rule="evenodd" />
@@ -44,11 +44,11 @@ import { CustomerUser } from '../../../core/models/customer.models';
           <div class="mt-5 grid gap-4 md:grid-cols-2">
             <article class="rounded-[1.2rem] border border-[#eee2d4] bg-[#fffaf5] px-4 py-4">
               <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">Full Name</p>
-              <p class="mt-2 text-[15px] text-slate-900">{{ user?.username || user?.fullName || 'Undisclosed' }}</p>
+              <p class="mt-2 break-words text-[15px] text-slate-900">{{ user?.username || user?.fullName || 'Undisclosed' }}</p>
             </article>
             <article class="rounded-[1.2rem] border border-[#eee2d4] bg-[#fffaf5] px-4 py-4">
               <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">Primary Role</p>
-              <p class="mt-2 text-[15px] text-slate-900">{{ roles }}</p>
+              <p class="mt-2 break-words text-[15px] text-slate-900">{{ roles }}</p>
             </article>
             <article class="rounded-[1.2rem] border border-[#eee2d4] bg-[#fffaf5] px-4 py-4">
               <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">Email Address</p>
@@ -56,7 +56,7 @@ import { CustomerUser } from '../../../core/models/customer.models';
             </article>
             <article class="rounded-[1.2rem] border border-[#eee2d4] bg-[#fffaf5] px-4 py-4">
               <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">Phone Number</p>
-              <p class="mt-2 text-[15px] text-slate-900">{{ user?.phone || 'No phone linked' }}</p>
+              <p class="mt-2 break-words text-[15px] text-slate-900">{{ user?.phone || 'No phone linked' }}</p>
             </article>
           </div>
         </section>

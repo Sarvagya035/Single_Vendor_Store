@@ -15,147 +15,170 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section class="storefront-section mt-4 space-y-6">
+    <section class="storefront-section overflow-x-hidden pt-4 space-y-6 sm:pt-6 lg:pt-8">
       <div class="storefront-container">
         <div class="vendor-page-shell overflow-hidden">
-          <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="app-page-eyebrow !text-amber-700">Track Order</p>
-            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Shipment tracking</h1>
-            <p class="app-page-description !mt-3 !max-w-2xl">
-              Follow courier movement and delivery progress for this order.
-            </p>
-          </div>
-
-          <div class="flex flex-col gap-3 sm:flex-row">
-            <a [routerLink]="orderLink" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Open Order</a>
-            <a routerLink="/orders" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Back To Orders</a>
-          </div>
-        </div>
-          </div>
-
-        <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading tracking details...</div>
-
-        <div *ngIf="!isLoading && order" class="bg-[#fffdfa] app-card-body">
-          <div class="rounded-[2.25rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
-            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
-              <div>
-                <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Order</p>
-                <h2 class="mt-2 text-2xl font-medium text-slate-900">#{{ shortOrderId(order._id) }}</h2>
-                <p class="mt-2 text-sm font-medium text-slate-500">
-                  Placed on {{ formatDate(order.createdAt) }} • {{ itemCount(order) }} item{{ itemCount(order) === 1 ? '' : 's' }}
+          <div class="border-b border-slate-200 px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div class="min-w-0">
+                <p class="app-page-eyebrow !text-amber-700">Track Order</p>
+                <h1 class="app-page-title !mt-2 !text-2xl sm:!text-[2.2rem]">Shipment tracking</h1>
+                <p class="app-page-description !mt-3 !max-w-2xl !text-sm sm:!text-[15px]">
+                  Follow courier movement and delivery progress for this order.
                 </p>
               </div>
 
-              <span class="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(trackingStage)">
-                {{ trackingStage }}
-              </span>
-            </div>
-
-            <div class="mt-6">
-              <div class="relative">
-                <div class="absolute left-0 right-0 top-6 h-[2px] bg-[#d9e7df]"></div>
-                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-2">
-                  <div *ngFor="let step of trackingSteps; trackBy: trackByStep" class="relative z-10 text-center">
-                    <div
-                      class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-4 text-sm font-medium shadow-sm"
-                      [ngClass]="stepCircleClass(step)"
-                    >
-                      <span *ngIf="step.completed">✓</span>
-                      <span *ngIf="!step.completed">{{ step.index + 1 }}</span>
-                    </div>
-                    <p class="mt-3 text-sm font-medium text-slate-900">{{ step.label }}</p>
-                    <p class="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                      {{ step.time || 'Waiting' }}
-                    </p>
-                  </div>
-                </div>
+              <div class="flex flex-col gap-3 sm:flex-row">
+                <a [routerLink]="orderLink" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Open Order</a>
+                <a routerLink="/orders" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Back To Orders</a>
               </div>
             </div>
+          </div>
 
-            <div class="mt-8 rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] app-card-tight">
-              <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-                <div class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-600 text-white">
-                  <span class="text-lg font-medium">✓</span>
-                </div>
+          <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">
+            Loading tracking details...
+          </div>
+
+          <div *ngIf="!isLoading && order" class="bg-[#fffdfa] app-card-body">
+            <div class="rounded-[2.25rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
                 <div class="min-w-0">
-                  <p class="text-lg font-medium text-emerald-700">{{ bannerTitle }}</p>
-                  <p class="mt-2 text-sm font-semibold leading-7 text-slate-700">{{ bannerMessage }}</p>
-                  <p *ngIf="bannerDate" class="mt-2 text-sm font-medium text-slate-500">{{ bannerDate }}</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="my-8 border-t border-dashed border-[#d8c7b4]"></div>
-
-            <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Items</p>
-                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ itemCount(order) }} total</p>
-              </div>
-
-              <article
-                *ngFor="let item of visibleItems; trackBy: trackByItem"
-                class="flex flex-col gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-white p-4 sm:flex-row sm:p-5"
-              >
-                <div class="flex h-24 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#eadfce] bg-[#fffaf4] sm:h-28 sm:w-28">
-                  <img
-                    *ngIf="item.variantImage; else noImage"
-                    [src]="item.variantImage"
-                    [alt]="item.name || 'Order item'"
-                    class="h-full w-full object-cover"
-                  />
-                  <ng-template #noImage>
-                    <div class="text-center">
-                      <p class="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">No image</p>
-                    </div>
-                  </ng-template>
-                </div>
-
-                <div class="min-w-0 flex-1">
-                  <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                    Ordered on {{ formatDate(order.createdAt) }}
+                  <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Order</p>
+                  <h2 class="mt-2 break-all text-2xl font-medium text-slate-900">#{{ shortOrderId(order._id) }}</h2>
+                  <p class="mt-2 text-sm font-medium text-slate-500">
+                    Placed on {{ formatDate(order.createdAt) }} • {{ itemCount(order) }} item{{ itemCount(order) === 1 ? '' : 's' }}
                   </p>
-                  <h3 class="mt-2 text-lg font-medium text-slate-900">{{ item.name || 'Order item' }}</h3>
-                  <p class="mt-2 text-sm font-semibold text-slate-600">Qty - {{ item.quantity || 0 }}</p>
-                  <p class="mt-4 text-xl font-medium text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
                 </div>
-              </article>
-            </div>
 
-            <div class="mt-8 grid gap-4 border-t border-[#f1e4d4] pt-6 md:grid-cols-2">
-              <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
-                <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Shipping Address</p>
-                <p class="mt-3 text-sm font-medium leading-7 text-slate-600">
-                  {{ order.shippingAddress?.address || 'Address unavailable' }}
-                </p>
-                <p class="mt-2 text-sm font-semibold text-slate-700">
-                  {{ order.shippingAddress?.city || '-' }}, {{ order.shippingAddress?.pincode || '-' }}
-                </p>
-                <p class="mt-2 text-sm font-semibold text-slate-700">{{ order.shippingAddress?.phone || '-' }}</p>
+                <span class="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(trackingStage)">
+                  {{ trackingStage }}
+                </span>
               </div>
 
-              <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#2f1b14] p-5 text-white">
-                <p class="text-xs font-medium uppercase tracking-[0.22em] text-slate-400">Payment</p>
-                <div class="mt-4 space-y-3 text-sm font-medium text-slate-300">
-                  <div class="flex items-center justify-between">
-                    <span>Status</span>
-                    <span>{{ order.paymentInfo?.status || 'Pending' }}</span>
+              <div class="mt-6">
+                <div class="space-y-4 md:hidden">
+                  <div *ngFor="let step of trackingSteps; let last = last; trackBy: trackByStep" class="flex items-start gap-3">
+                    <div class="flex flex-col items-center">
+                      <div
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-4 text-sm font-medium shadow-sm"
+                        [ngClass]="stepCircleClass(step)"
+                      >
+                        <span *ngIf="step.completed">✓</span>
+                        <span *ngIf="!step.completed">{{ step.index + 1 }}</span>
+                      </div>
+                      <div *ngIf="!last" class="mt-2 h-full min-h-6 w-px bg-[#d9e7df]"></div>
+                    </div>
+                    <div class="min-w-0 flex-1 pt-1">
+                      <p class="text-sm font-medium text-slate-900">{{ step.label }}</p>
+                      <p class="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        {{ step.time || 'Waiting' }}
+                      </p>
+                    </div>
                   </div>
-                  <div class="flex items-center justify-between">
-                    <span>Courier</span>
-                    <span>{{ shipment?.courierName || 'DHL' }}</span>
+                </div>
+
+                <div class="relative hidden md:block">
+                  <div class="absolute left-0 right-0 top-6 h-[2px] bg-[#d9e7df]"></div>
+                  <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-2">
+                    <div *ngFor="let step of trackingSteps; trackBy: trackByStep" class="relative z-10 text-center">
+                      <div
+                        class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-4 text-sm font-medium shadow-sm"
+                        [ngClass]="stepCircleClass(step)"
+                      >
+                        <span *ngIf="step.completed">✓</span>
+                        <span *ngIf="!step.completed">{{ step.index + 1 }}</span>
+                      </div>
+                      <p class="mt-3 text-sm font-medium text-slate-900">{{ step.label }}</p>
+                      <p class="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        {{ step.time || 'Waiting' }}
+                      </p>
+                    </div>
                   </div>
-                  <div class="flex items-center justify-between">
-                    <span>Tracking</span>
-                    <span>{{ shipment?.trackingNumber || 'Not assigned' }}</span>
+                </div>
+              </div>
+
+              <div class="mt-8 rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] app-card-tight">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+                  <div class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-600 text-white">
+                    <span class="text-lg font-medium">✓</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-lg font-medium text-emerald-700">{{ bannerTitle }}</p>
+                    <p class="mt-2 text-sm font-semibold leading-7 text-slate-700">{{ bannerMessage }}</p>
+                    <p *ngIf="bannerDate" class="mt-2 text-sm font-medium text-slate-500">{{ bannerDate }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="my-8 border-t border-dashed border-[#d8c7b4]"></div>
+
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Items</p>
+                  <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ itemCount(order) }} total</p>
+                </div>
+
+                <article
+                  *ngFor="let item of visibleItems; trackBy: trackByItem"
+                  class="flex flex-col gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-white p-4 sm:flex-row sm:p-5"
+                >
+                  <div class="flex h-24 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#eadfce] bg-[#fffaf4] sm:h-28 sm:w-28">
+                    <img
+                      *ngIf="item.variantImage; else noImage"
+                      [src]="item.variantImage"
+                      [alt]="item.name || 'Order item'"
+                      class="h-full w-full object-cover"
+                    />
+                    <ng-template #noImage>
+                      <div class="text-center">
+                        <p class="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">No image</p>
+                      </div>
+                    </ng-template>
+                  </div>
+
+                  <div class="min-w-0 flex-1">
+                    <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
+                      Ordered on {{ formatDate(order.createdAt) }}
+                    </p>
+                    <h3 class="mt-2 text-lg font-medium text-slate-900">{{ item.name || 'Order item' }}</h3>
+                    <p class="mt-2 text-sm font-semibold text-slate-600">Qty - {{ item.quantity || 0 }}</p>
+                    <p class="mt-4 text-xl font-medium text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="mt-8 grid gap-4 border-t border-[#f1e4d4] pt-6 md:grid-cols-2">
+                <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
+                  <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Shipping Address</p>
+                  <p class="mt-3 text-sm font-medium leading-7 text-slate-600">
+                    {{ order.shippingAddress?.address || 'Address unavailable' }}
+                  </p>
+                  <p class="mt-2 text-sm font-semibold text-slate-700">
+                    {{ order.shippingAddress?.city || '-' }}, {{ order.shippingAddress?.pincode || '-' }}
+                  </p>
+                  <p class="mt-2 text-sm font-semibold text-slate-700">{{ order.shippingAddress?.phone || '-' }}</p>
+                </div>
+
+                <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#2f1b14] p-5 text-white">
+                  <p class="text-xs font-medium uppercase tracking-[0.22em] text-slate-400">Payment</p>
+                  <div class="mt-4 space-y-3 text-sm font-medium text-slate-300">
+                    <div class="flex items-center justify-between">
+                      <span>Status</span>
+                      <span>{{ order.paymentInfo?.status || 'Pending' }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span>Courier</span>
+                      <span>{{ shipment?.courierName || 'DHL' }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span>Tracking</span>
+                      <span>{{ shipment?.trackingNumber || 'Not assigned' }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </section>

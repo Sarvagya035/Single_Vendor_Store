@@ -21,7 +21,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
 
         <button
           type="button"
-          class="btn-primary !py-3 !px-5"
+          class="btn-primary w-full !py-3 !px-5 sm:w-auto"
           (click)="startCreate()"
         >
           {{ showForm && !editingAddressId ? 'Adding Address' : 'Add Address' }}
@@ -154,11 +154,11 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               />
             </label>
 
-            <div class="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-              <button type="submit" class="btn-primary !px-6 !py-3" [disabled]="isSaving">
+            <div class="sm:col-span-2 flex flex-col gap-3 pt-2 sm:flex-row">
+              <button type="submit" class="btn-primary w-full !px-6 !py-3 sm:w-auto" [disabled]="isSaving">
                 {{ isSaving ? 'Saving...' : editingAddressId ? 'Update Address' : 'Save Address' }}
               </button>
-              <button type="button" class="btn-secondary !px-6 !py-3" (click)="cancelForm()">Cancel</button>
+              <button type="button" class="btn-secondary w-full !px-6 !py-3 sm:w-auto" (click)="cancelForm()">Cancel</button>
             </div>
           </form>
         </div>
@@ -200,10 +200,10 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 </div>
               </div>
 
-              <div class="flex flex-wrap gap-3">
+              <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <button
                   type="button"
-                  class="btn-secondary !px-4 !py-2"
+                  class="btn-secondary w-full !px-4 !py-2 sm:w-auto"
                   (click)="startEdit(address)"
                 >
                   Edit
@@ -211,14 +211,14 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 <button
                   *ngIf="!address.isDefault"
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-amber-100 bg-[#fff7ed]/60 text-amber-800"
+                  class="btn-secondary w-full !px-4 !py-2 border-amber-100 bg-[#fff7ed]/60 text-amber-800 sm:w-auto"
                   (click)="setDefault(address)"
                 >
                   Make Default
                 </button>
                 <button
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-rose-100 bg-rose-50/60 text-rose-600"
+                  class="btn-secondary w-full !px-4 !py-2 border-rose-100 bg-rose-50/60 text-rose-600 sm:w-auto"
                   (click)="deleteAddress(address)"
                 >
                   Delete

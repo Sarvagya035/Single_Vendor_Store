@@ -17,7 +17,7 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="storefront-section mt-4 space-y-6">
+    <div class="storefront-section mt-4 space-y-6 overflow-x-hidden">
       <div class="storefront-container">
         <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
@@ -265,7 +265,7 @@ import { OrderService } from '../../core/services/order.service';
                   <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                     <div class="min-w-0">
                       <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Order Overview</p>
-                      <h2 class="mt-2 text-2xl font-medium text-slate-900">Order #{{ shortOrderId(order._id) }}</h2>
+                      <h2 class="mt-2 break-all text-xl font-medium text-slate-900 sm:text-2xl sm:break-normal">Order #{{ shortOrderId(order._id) }}</h2>
                       <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
                         Review the status, shipment progress, items, address, and payment in one unified card.
                       </p>
@@ -294,7 +294,7 @@ import { OrderService } from '../../core/services/order.service';
                       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
                         <div>
                           <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Status</p>
-                          <h3 class="mt-2 text-2xl font-medium text-slate-900">Order progress</h3>
+                          <h3 class="mt-2 text-xl font-medium text-slate-900 sm:text-2xl">Order progress</h3>
                         </div>
                         <span class="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(displayStatus)">
                           {{ displayStatus }}
@@ -320,7 +320,7 @@ import { OrderService } from '../../core/services/order.service';
                       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#f1e4d4] pb-4">
                         <div>
                           <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Tracking</p>
-                          <h3 class="mt-2 text-2xl font-medium text-slate-900">Shipment progress</h3>
+                          <h3 class="mt-2 text-xl font-medium text-slate-900 sm:text-2xl">Shipment progress</h3>
                         </div>
                         <div class="flex items-center gap-2">
                           <span *ngIf="shipment?.isTestMode" class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-amber-800">
@@ -411,7 +411,7 @@ import { OrderService } from '../../core/services/order.service';
                     <section class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fffaf4] p-5 sm:p-6">
                       <div class="border-b border-[#f1e4d4] pb-4">
                         <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Items</p>
-                        <h3 class="mt-2 text-2xl font-black text-slate-900">Purchased products</h3>
+                        <h3 class="mt-2 text-xl font-black text-slate-900 sm:text-2xl">Purchased products</h3>
                       </div>
 
                       <div class="mt-5 space-y-4">
@@ -441,7 +441,7 @@ import { OrderService } from '../../core/services/order.service';
                   <aside class="space-y-6">
                     <section class="rounded-[1.75rem] border border-[#e7dac9] bg-white app-card-body">
                       <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Delivery</p>
-                      <h3 class="mt-2 text-2xl font-medium text-slate-900">Shipping address</h3>
+                      <h3 class="mt-2 text-xl font-medium text-slate-900 sm:text-2xl">Shipping address</h3>
                       <p class="mt-4 text-sm font-medium leading-7 text-slate-600">
                         {{ order.shippingAddress?.address || 'Address unavailable' }}
                       </p>
@@ -468,7 +468,7 @@ import { OrderService } from '../../core/services/order.service';
 
                       <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
                         <span class="text-sm font-bold text-slate-300">{{ isVendorView() ? 'Vendor Total' : 'Total' }}</span>
-                        <span class="text-2xl font-black">{{ formatCurrency(displayTotal) }}</span>
+                        <span class="text-xl font-black sm:text-2xl">{{ formatCurrency(displayTotal) }}</span>
                       </div>
                     </section>
                   </aside>

@@ -12,17 +12,17 @@ import { catchError, finalize, switchMap, EMPTY, of } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-124px)] flex flex-col justify-start relative overflow-hidden px-4 pb-10 pt-2 sm:px-6 lg:px-8 lg:pb-14 lg:pt-4 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
+    <div class="min-h-[calc(100vh-124px)] flex flex-col justify-start relative overflow-hidden px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:pb-14 lg:pt-4 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
       <!-- Background Glow Effects -->
       <div class="absolute top-0 right-1/4 h-[500px] w-[500px] rounded-full bg-[#f5e6d3]/40 blur-[130px] animate-float"></div>
       <div class="absolute bottom-0 left-1/4 h-[500px] w-[500px] rounded-full bg-[#d4a017]/20 blur-[130px] animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2 pt-1 sm:pt-2">
-        <h2 class="text-4xl font-semibold text-slate-900 tracking-tight">Create Account</h2>
+        <h2 class="text-3xl font-semibold text-slate-900 tracking-tight sm:text-4xl">Create Account</h2>
       </div>
 
       <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div class="app-surface p-8 sm:p-10">
+        <div class="app-surface p-6 sm:p-8 lg:p-10">
           <form class="space-y-6" (ngSubmit)="onSubmit()">
             
             <div class="space-y-2">

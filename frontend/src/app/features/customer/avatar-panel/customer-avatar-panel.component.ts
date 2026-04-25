@@ -13,18 +13,18 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
         <h3 class="mt-2 text-xl font-medium text-slate-900">Avatar and preview</h3>
       </div>
 
-      <div class="mt-6 flex flex-col items-center space-y-8">
+      <div class="mt-6 flex flex-col items-center space-y-6 sm:space-y-8">
         <div class="group relative">
           <div class="absolute inset-0 rounded-full bg-[#6f4e37] opacity-10 blur-2xl transition-opacity group-hover:opacity-20"></div>
           <img
             *ngIf="previewUrl || user.avatar"
             [src]="previewUrl || user.avatar"
             alt="Avatar Preview"
-            class="relative h-44 w-44 rounded-full border-4 border-white object-cover shadow-2xl"
+            class="relative h-32 w-32 rounded-full border-4 border-white object-cover shadow-2xl sm:h-40 sm:w-40 lg:h-44 lg:w-44"
           >
           <div
             *ngIf="!previewUrl && !user.avatar"
-            class="relative flex h-44 w-44 items-center justify-center rounded-full border-4 border-white bg-[#6f4e37] text-6xl font-medium text-white shadow-2xl"
+            class="relative flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-[#6f4e37] text-4xl font-medium text-white shadow-2xl sm:h-40 sm:w-40 sm:text-5xl lg:h-44 lg:w-44 lg:text-6xl"
           >
             {{ user.username.charAt(0).toUpperCase() }}
           </div>

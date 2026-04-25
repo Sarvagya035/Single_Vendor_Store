@@ -12,17 +12,17 @@ import { catchError, finalize, EMPTY } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-124px)] flex flex-col justify-start relative overflow-hidden px-4 pb-10 pt-2 sm:px-6 lg:px-8 lg:pb-14 lg:pt-4 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
+    <div class="min-h-[calc(100vh-124px)] flex flex-col justify-start relative overflow-hidden px-4 pb-10 pt-4 sm:px-6 lg:px-8 lg:pb-14 lg:pt-4 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
       <!-- Background Glow Effects -->
       <div class="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-[#f5e6d3]/40 blur-[120px] animate-float"></div>
       <div class="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[#d4a017]/20 blur-[120px] animate-float" style="animation-delay: 2s"></div>
 
       <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2 pt-1 sm:pt-2">
-        <h2 class="text-4xl font-semibold text-slate-900 tracking-tight">Login</h2>
+        <h2 class="text-3xl font-semibold text-slate-900 tracking-tight sm:text-4xl">Login</h2>
       </div>
 
       <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div class="app-surface p-8 sm:p-10">
+        <div class="app-surface p-6 sm:p-8 lg:p-10">
           <div *ngIf="pageMessage" class="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
             {{ pageMessage }}
           </div>
