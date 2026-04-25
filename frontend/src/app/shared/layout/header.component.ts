@@ -36,7 +36,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
       </div>
 
       <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-lg">
-        <div class="app-shell-width">
+        <div class="app-shell-width sm:px-6">
           <div class="flex h-16 items-center justify-between md:h-20">
           <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
             <img
@@ -140,7 +140,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             </ng-container>
           </div>
 
-          <div class="flex items-center gap-2 sm:gap-3 md:hidden">
+          <div class="flex min-w-0 items-center gap-2 sm:gap-3 md:hidden">
             <a
               *ngIf="showStoreCounts()"
               routerLink="/cart"
@@ -150,8 +150,8 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-2 6h13m-5-6v6m-4-6v6" />
               </svg>
-              <span class="absolute -right-1 -top-1 min-w-5 rounded-full bg-[#6f4e37] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
-                {{ cartCount }}
+              <span class="absolute -right-1 -top-1 inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-[#6f4e37] px-1 text-[10px] font-semibold leading-none text-white shadow-sm ring-2 ring-white sm:min-w-[20px] sm:h-[20px] sm:text-[11px]">
+                {{ badgeCount(cartCount) }}
               </span>
             </a>
 
@@ -164,8 +164,8 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z" />
               </svg>
-              <span class="absolute -right-1 -top-1 min-w-5 rounded-full bg-[#c2410c] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
-                {{ wishlistCount }}
+              <span class="absolute -right-1 -top-1 inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-[#c2410c] px-1 text-[10px] font-semibold leading-none text-white shadow-sm ring-2 ring-white sm:min-w-[20px] sm:h-[20px] sm:text-[11px]">
+                {{ badgeCount(wishlistCount) }}
               </span>
             </a>
 
@@ -200,7 +200,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               </svg>
               <span
                 *ngIf="vendorNotificationCount > 0"
-                class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
+                class="absolute -right-1 -top-1 inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-semibold leading-none text-white shadow-sm ring-2 ring-white sm:min-w-[20px] sm:h-[20px] sm:text-[11px]"
               >
                 {{ vendorNotificationCount }}
               </span>
@@ -531,6 +531,11 @@ export class HeaderComponent implements OnInit {
 
   showStoreCounts(): boolean {
     return this.isCustomer() || !this.user;
+  }
+
+  badgeCount(count: number): string {
+    const normalized = Math.max(0, Math.floor(Number(count) || 0));
+    return normalized > 99 ? '99+' : String(normalized);
   }
 
   logoRoute(): string {

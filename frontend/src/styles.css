@@ -285,11 +285,11 @@
   }
 
   .header-icon {
-    @apply flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm;
+    @apply relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm sm:h-11 sm:w-11;
   }
 
   .header-avatar {
-    @apply h-8 w-8 rounded-full object-cover;
+    @apply h-full w-full rounded-full object-cover;
   }
 
   .app-page-shell {

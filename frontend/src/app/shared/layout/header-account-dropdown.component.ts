@@ -131,9 +131,9 @@ export class HeaderAccountDropdownComponent {
 
   mobileTriggerClasses(): string {
     const themeClasses: Record<HeaderDropdownTheme, string> = {
-      customer: 'header-icon transition hover:border-[#d4a017]',
-      vendor: 'header-icon transition-all duration-200 hover:border-[#d4a017]',
-      admin: 'header-icon transition-all duration-200 hover:border-[#d4a017]'
+      customer: 'header-icon overflow-hidden transition hover:border-[#d4a017]',
+      vendor: 'header-icon overflow-hidden transition-all duration-200 hover:border-[#d4a017]',
+      admin: 'header-icon overflow-hidden transition-all duration-200 hover:border-[#d4a017]'
     };
     return themeClasses[this.theme];
   }
@@ -149,9 +149,9 @@ export class HeaderAccountDropdownComponent {
     }
 
     const mobileClasses: Record<HeaderDropdownTheme, string> = {
-      customer: 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-black uppercase text-white',
-      vendor: 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white',
-      admin: 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white'
+      customer: 'flex h-full w-full items-center justify-center rounded-full text-xs font-black uppercase text-white',
+      vendor: 'flex h-full w-full items-center justify-center rounded-full text-xs font-black uppercase tracking-[0.12em] text-white',
+      admin: 'flex h-full w-full items-center justify-center rounded-full text-xs font-black uppercase tracking-[0.12em] text-white'
     };
     return mobileClasses[this.theme];
   }

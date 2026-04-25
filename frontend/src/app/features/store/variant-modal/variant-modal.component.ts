@@ -15,24 +15,24 @@ export interface VariantModalAddToCartEvent {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div *ngIf="open && product" class="fixed inset-0 z-[120]">
+    <div *ngIf="product && (open || isClosing)" class="fixed inset-0 z-[120] overflow-hidden">
       <button
         type="button"
-        class="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]"
-        (click)="close.emit()"
+        [ngClass]="overlayStateClasses()"
+        (click)="requestClose()"
         aria-label="Close variant selector"
       ></button>
 
       <div class="absolute inset-x-0 bottom-0 flex items-end justify-center sm:inset-0 sm:px-4 sm:py-6 sm:items-center">
         <div
-          class="relative z-10 flex max-h-[90vh] w-full flex-col overflow-hidden border border-white/60 bg-white shadow-[0_28px_80px_rgba(15,23,42,0.28)] rounded-t-[2rem] pb-[env(safe-area-inset-bottom)] sm:max-w-lg sm:rounded-[2rem]"
+          [ngClass]="panelStateClasses()"
         >
           <div class="sm:hidden mx-auto mt-3 h-1.5 w-12 rounded-full bg-slate-300/80"></div>
 
           <button
             type="button"
             class="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-amber-200 hover:text-slate-900"
-            (click)="close.emit()"
+            (click)="requestClose()"
             aria-label="Close modal"
           >
             ×
@@ -142,12 +142,12 @@ export interface VariantModalAddToCartEvent {
                 <div class="sticky bottom-0 -mx-4 mt-auto border-t border-slate-200 bg-white/95 px-4 pt-4 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:pt-0">
                   <div class="grid gap-3 sm:grid-cols-2">
                     <button
-                      type="button"
-                      class="btn-secondary w-full !px-5 !py-3.5"
-                      (click)="close.emit()"
-                    >
-                      Cancel
-                    </button>
+                    type="button"
+                    class="btn-secondary w-full !px-5 !py-3.5"
+                    (click)="requestClose()"
+                  >
+                    Cancel
+                  </button>
                     <button
                       type="button"
                       class="btn-primary order-first w-full !px-5 !py-3.5 sm:order-none"
@@ -175,12 +175,26 @@ export class VariantModalComponent implements OnChanges {
 
   selectedVariantId = '';
   quantity = 1;
+  isOpening = false;
+  isClosing = false;
+  private readonly closeDelayMs = 180;
 
   constructor(private variantService: StoreProductVariantService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['product'] || changes['open']) {
+    if (changes['product'] && this.open) {
       this.resetSelection();
+    }
+
+    if (changes['open']) {
+      if (this.open) {
+        this.beginOpenAnimation();
+        return;
+      }
+
+      if (this.product) {
+        this.beginCloseAnimation(false);
+      }
     }
   }
 
@@ -265,6 +279,10 @@ export class VariantModalComponent implements OnChanges {
     });
   }
 
+  requestClose(): void {
+    this.beginCloseAnimation(true);
+  }
+
   trackByVariant(_: number, variant: CustomerCatalogVariant): string {
     return variant._id || variant.sku || this.variantLabel(variant);
   }
@@ -273,6 +291,54 @@ export class VariantModalComponent implements OnChanges {
     const defaultVariant = this.variantService.getDefaultVariant(this.product);
     this.selectedVariantId = defaultVariant?._id || '';
     this.quantity = 1;
+  }
+
+  panelStateClasses(): string {
+    const closing = this.isClosing;
+    const hidden = this.open && !this.isClosing && this.isOpeningPhase();
+
+    return [
+      'relative z-10 flex max-h-[90vh] w-full flex-col overflow-hidden border border-white/60 bg-white shadow-[0_28px_80px_rgba(15,23,42,0.28)] rounded-t-[2rem] pb-[env(safe-area-inset-bottom)] sm:max-w-lg sm:rounded-[2rem] transition-all duration-200 ease-out will-change-transform',
+      hidden || closing
+        ? 'opacity-0 translate-y-6 sm:translate-y-4 sm:scale-95'
+        : 'opacity-100 translate-y-0 sm:scale-100'
+    ].join(' ');
+  }
+
+  overlayStateClasses(): string {
+    return [
+      'absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] transition-opacity duration-200 ease-out',
+      this.isClosing || this.isOpeningPhase() ? 'opacity-0' : 'opacity-100'
+    ].join(' ');
+  }
+
+  private beginOpenAnimation(): void {
+    this.isOpening = true;
+    this.isClosing = false;
+    this.resetSelection();
+    window.requestAnimationFrame(() => {
+      this.isOpening = false;
+    });
+  }
+
+  private beginCloseAnimation(emitClose: boolean): void {
+    if (this.isClosing) {
+      return;
+    }
+
+    this.isOpening = false;
+    this.isClosing = true;
+
+    window.setTimeout(() => {
+      this.isClosing = false;
+      if (emitClose) {
+        this.close.emit();
+      }
+    }, this.closeDelayMs);
+  }
+
+  private isOpeningPhase(): boolean {
+    return this.isOpening;
   }
 
   formatCurrency(amount: number): string {
