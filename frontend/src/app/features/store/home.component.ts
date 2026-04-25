@@ -180,17 +180,18 @@ import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-mod
 
                     <p class="text-[9px] font-semibold text-slate-500 sm:text-[10px] lg:text-sm">{{ product.categoryDetails?.name || 'Dry fruits & nuts' }}</p>
 
-                    <div class="flex items-center justify-between pt-1 text-[9px] font-black sm:text-[10px] lg:text-sm">
-                      <span class="text-slate-500">
+                    <div class="flex items-center justify-between gap-2 pt-1 text-[9px] font-black sm:text-[10px] lg:text-sm">
+                      <span class="min-w-0 truncate text-slate-500">
                         {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
                       </span>
                       <button
                         type="button"
-                        class="inline-flex items-center justify-center rounded-full border border-[#e7dac9] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#6f4e37] transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-900 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                        class="inline-flex h-7 shrink-0 items-center justify-center rounded-full border border-[#e7dac9] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#6f4e37] transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-900 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 sm:h-8 sm:px-3 sm:py-1.5 sm:text-[10px] sm:tracking-[0.12em] lg:h-auto lg:px-3 lg:py-1.5 lg:text-xs lg:tracking-[0.14em]"
                         [disabled]="isProductOutOfStock(product)"
                         (click)="$event.stopPropagation(); onProductCardAction(product)"
                       >
-                        {{ productCardActionLabel(product) }}
+                        <span class="sm:hidden">{{ hasSingleVariant(product) ? 'Add To Cart' : 'OPTIONS' }}</span>
+                        <span class="hidden sm:inline">{{ productCardActionLabel(product) }}</span>
                       </button>
                     </div>
                   </div>
