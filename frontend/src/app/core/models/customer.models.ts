@@ -74,6 +74,8 @@ export interface CustomerCatalogProduct {
   };
   mainImages?: string[];
   basePrice?: number;
+  stock?: number;
+  isActive?: boolean;
   variants?: CustomerCatalogVariant[];
   displayVariant?: CustomerCatalogVariant;
   categoryDetails?: {

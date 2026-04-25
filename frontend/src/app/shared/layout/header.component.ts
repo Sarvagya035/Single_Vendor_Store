@@ -1,10 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, DestroyRef, HostListener, Input, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { fromEvent } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { AppRefreshService } from '../../core/services/app-refresh.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
+import { GuestDataService } from '../../core/services/guest-data.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import { VendorService } from '../../core/services/vendor.service';
 import { VendorMobileNavService } from '../../features/vendor/vendor-mobile-nav.service';
 import { HeaderAccountDropdownComponent, HeaderDropdownItem } from './header-account-dropdown.component';
@@ -96,7 +100,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               />
             </ng-container>
 
-            <ng-container *ngIf="isCustomer()">
+            <ng-container *ngIf="showStoreCounts()">
               <a
                 routerLink="/cart"
                 class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
@@ -104,6 +108,17 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
                 Cart
                 <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
               </a>
+
+              <a
+                routerLink="/wishlist"
+                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
+              >
+                Wishlist
+                <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #c2410c, #f59e0b);">{{ wishlistCount }}</span>
+              </a>
+            </ng-container>
+
+            <ng-container *ngIf="isCustomer()">
 
               <app-header-account-dropdown
                 theme="customer"
@@ -127,7 +142,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
           <div class="flex items-center gap-2 sm:gap-3 md:hidden">
             <a
-              *ngIf="isCustomer()"
+              *ngIf="showStoreCounts()"
               routerLink="/cart"
               class="header-icon"
             >
@@ -135,6 +150,23 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-2 6h13m-5-6v6m-4-6v6" />
               </svg>
+              <span class="absolute -right-1 -top-1 min-w-5 rounded-full bg-[#6f4e37] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                {{ cartCount }}
+              </span>
+            </a>
+
+            <a
+              *ngIf="showStoreCounts()"
+              routerLink="/wishlist"
+              class="header-icon"
+            >
+              <span class="sr-only">Wishlist</span>
+              <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z" />
+              </svg>
+              <span class="absolute -right-1 -top-1 min-w-5 rounded-full bg-[#c2410c] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                {{ wishlistCount }}
+              </span>
             </a>
 
             <app-header-account-dropdown
@@ -229,10 +261,12 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
   `
 })
 export class HeaderComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   user: any = null;
   @Input() isNavigating = false;
   isMenuOpen = false;
   cartCount = 0;
+  wishlistCount = 0;
   vendorNotificationCount = 0;
   isDropdownOpen = false;
   isVendorDropdownOpen = false;
@@ -264,6 +298,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private cartService: CartService,
+    private wishlistService: WishlistService,
+    private guestDataService: GuestDataService,
     private vendorService: VendorService,
     private router: Router,
     private appRefreshService: AppRefreshService,
@@ -283,28 +319,52 @@ export class HeaderComponent implements OnInit {
       this.user = user;
 
       if (this.isCustomer()) {
-        this.cartService.getCart().subscribe({
-          error: () => this.cartService.resetCart()
-        });
+        this.refreshCustomerCounts();
       } else if (this.isVendor() || this.isAdmin()) {
         this.loadVendorNotificationCount();
+        this.cartCount = 0;
+        this.wishlistCount = 0;
       } else {
-        this.cartService.resetCart();
+        this.syncGuestCounts();
         this.vendorNotificationCount = 0;
         this.closeAllMenus();
       }
     });
 
     this.cartService.cart$.subscribe((cart) => {
-      this.cartCount = (cart.cartItems || []).reduce(
-        (total, item) => total + Number(item.quantity || 0),
-        0
-      );
+      if (this.isCustomer()) {
+        this.cartCount = (cart.cartItems || []).reduce(
+          (total, item) => total + Number(item.quantity || 0),
+          0
+        );
+      }
+    });
+
+    this.wishlistService.wishlist$.subscribe((wishlist) => {
+      if (this.isCustomer()) {
+        this.wishlistCount = Array.isArray(wishlist?.products) ? wishlist.products.length : 0;
+      }
     });
 
     this.authService.ensureCurrentUser().subscribe({
       error: () => this.authService.clearCurrentUser()
     });
+
+    fromEvent(window, 'guestCartUpdated')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (!this.isCustomer()) {
+          this.cartCount = this.guestDataService.getGuestCartCount();
+        }
+      });
+
+    fromEvent(window, 'guestWishlistUpdated')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (!this.isCustomer()) {
+          this.wishlistCount = this.guestDataService.getGuestWishlistCount();
+        }
+      });
 
     this.appRefreshService.refresh$.subscribe((scope) => {
       if (scope === 'global' || scope === 'auth') {
@@ -469,6 +529,10 @@ export class HeaderComponent implements OnInit {
     return this.showPublicNavLinks();
   }
 
+  showStoreCounts(): boolean {
+    return this.isCustomer() || !this.user;
+  }
+
   logoRoute(): string {
     if (!this.user) {
       return '/';
@@ -483,12 +547,16 @@ export class HeaderComponent implements OnInit {
       next: () => {
         this.user = null;
         this.cartService.resetCart();
+        this.wishlistService.resetWishlist();
         this.authService.clearCurrentUser();
+        this.syncGuestCounts();
         this.router.navigate(['/']);
       },
       error: (err) => {
         this.cartService.resetCart();
+        this.wishlistService.resetWishlist();
         this.authService.clearCurrentUser();
+        this.syncGuestCounts();
         console.error('Logout failed', err);
       }
     });
@@ -531,6 +599,21 @@ export class HeaderComponent implements OnInit {
 
   private isVendorRoute(): boolean {
     return this.router.url.includes('/vendor');
+  }
+
+  private refreshCustomerCounts(): void {
+    this.cartService.getCart().subscribe({
+      error: () => this.cartService.resetCart()
+    });
+
+    this.wishlistService.getWishlist().subscribe({
+      error: () => this.wishlistService.resetWishlist()
+    });
+  }
+
+  private syncGuestCounts(): void {
+    this.cartCount = this.guestDataService.getGuestCartCount();
+    this.wishlistCount = this.guestDataService.getGuestWishlistCount();
   }
 
 }

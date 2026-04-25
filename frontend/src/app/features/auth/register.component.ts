@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ErrorService } from '../../core/services/error.service';
-import { catchError, finalize, EMPTY } from 'rxjs';
+import { GuestDataService } from '../../core/services/guest-data.service';
+import { catchError, finalize, switchMap, EMPTY, of } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -138,6 +139,7 @@ export class RegisterComponent {
 
   constructor(
     private authService: AuthService,
+    private guestDataService: GuestDataService,
     private router: Router,
     private errorService: ErrorService
   ) { }
@@ -165,6 +167,25 @@ export class RegisterComponent {
     this.authService
       .register({ username: normalizedUsername, email: this.email, phone: this.phone, password: this.password })
       .pipe(
+        switchMap((res) => {
+          if (!res?.success) {
+            this.errorService.showToast(res?.message || 'Registration failed. Please try again.', 'error');
+            return EMPTY;
+          }
+
+          this.errorService.showToast(res.message || 'Registration successful.', 'success');
+
+          return this.authService.login({ email: this.email, password: this.password }).pipe(
+            switchMap(() =>
+              this.guestDataService.mergeGuestDataAfterAuth().pipe(
+                catchError((error) => {
+                  this.errorService.showToast(this.errorService.extractErrorMessage(error), 'warning');
+                  return of(null);
+                })
+              )
+            )
+          );
+        }),
         catchError((error) => {
           this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
           return EMPTY;
@@ -173,13 +194,12 @@ export class RegisterComponent {
           this.isLoading = false;
         })
       )
-      .subscribe((res) => {
-        if (res?.success) {
-          this.errorService.showToast(res.message || 'Registration successful.', 'success');
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 900);
+      .subscribe((mergeResult) => {
+        if (mergeResult?.hasFailures) {
+          this.errorService.showToast(mergeResult.message, 'warning');
         }
+
+        this.router.navigate(['/']);
       });
   }
 

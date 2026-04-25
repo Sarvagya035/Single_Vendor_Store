@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../models/customer.models';
@@ -78,6 +78,29 @@ export class CatalogService {
         map((response: any) => ({
           ...response,
           data: response?.data ? this.normalizeProduct(response.data) : response?.data
+        }))
+      );
+  }
+
+  getProductsByIds(productIds: string[]): Observable<any> {
+    const uniqueProductIds = [...new Set((productIds || []).map((id) => String(id || '').trim()).filter(Boolean))];
+
+    if (uniqueProductIds.length === 0) {
+      return of({
+        success: true,
+        message: 'Products fetched successfully',
+        data: []
+      });
+    }
+
+    return this.api
+      .post(`${environment.apiUrl}/products/bulk`, { productIds: uniqueProductIds })
+      .pipe(
+        map((response: any) => ({
+          ...response,
+          data: Array.isArray(response?.data)
+            ? response.data.map((product: CustomerCatalogProduct) => this.normalizeProduct(product))
+            : []
         }))
       );
   }

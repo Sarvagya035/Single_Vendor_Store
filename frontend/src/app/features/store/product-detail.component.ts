@@ -7,6 +7,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { ErrorService } from '../../core/services/error.service';
+import { GuestDataService } from '../../core/services/guest-data.service';
 import { ReviewService } from '../../core/services/review.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import {
@@ -423,6 +424,7 @@ export class ProductDetailComponent implements OnInit {
     private cartService: CartService,
     private catalogService: CatalogService,
     private errorService: ErrorService,
+    private guestDataService: GuestDataService,
     private wishlistService: WishlistService,
     private reviewService: ReviewService,
     private route: ActivatedRoute,
@@ -437,8 +439,7 @@ export class ProductDetailComponent implements OnInit {
       if (this.isCustomer()) {
         this.loadWishlistState();
       } else {
-        this.wishlistedProductIds = new Set<string>();
-        this.isWishlisted = false;
+        this.loadGuestWishlistState();
       }
       if (this.product?._id) {
         this.syncWishlistState(this.product._id);
@@ -595,11 +596,10 @@ export class ProductDetailComponent implements OnInit {
     }
 
     if (!this.isCustomer()) {
-      this.router.navigate(['/login'], {
-        queryParams: {
-          redirectTo: this.router.url
-        }
-      });
+      this.guestDataService.addToGuestCart(this.product._id, variant._id, this.quantity);
+      this.successMessage = 'Item saved to this device. Sign in to sync your cart.';
+      this.quantity = 1;
+      this.errorService.showToast(this.successMessage, 'success');
       return;
     }
 
@@ -663,11 +663,7 @@ export class ProductDetailComponent implements OnInit {
     }
 
     if (!this.isCustomer()) {
-      this.router.navigate(['/login'], {
-        queryParams: {
-          redirectTo: this.router.url
-        }
-      });
+      this.toggleGuestWishlist(this.product._id);
       return;
     }
 
@@ -697,11 +693,7 @@ export class ProductDetailComponent implements OnInit {
     }
 
     if (!this.isCustomer()) {
-      this.router.navigate(['/login'], {
-        queryParams: {
-          redirectTo: this.router.url
-        }
-      });
+      this.toggleGuestWishlist(product._id);
       return;
     }
 
@@ -1002,7 +994,8 @@ export class ProductDetailComponent implements OnInit {
 
   private syncWishlistState(productId?: string, wishlist?: { products?: CustomerWishlistProduct[] } | null): void {
     if (!productId || !this.isCustomer()) {
-      this.isWishlisted = false;
+      this.syncWishlistSet(this.guestDataService.getGuestWishlist());
+      this.isWishlisted = this.wishlistedProductIds.has(productId || '');
       return;
     }
 
@@ -1040,12 +1033,33 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  private syncWishlistSet(products: CustomerWishlistProduct[]): void {
+  private loadGuestWishlistState(): void {
+    this.syncWishlistSet(this.guestDataService.getGuestWishlist());
+    if (this.product?._id) {
+      this.isWishlisted = this.wishlistedProductIds.has(this.product._id);
+    }
+  }
+
+  private syncWishlistSet(products: Array<{ _id?: string; productId?: string }>): void {
     this.wishlistedProductIds = new Set(
       (products || [])
-        .map((item) => item?._id)
+        .map((item) => item?._id || item?.productId)
         .filter((id): id is string => !!id)
     );
+  }
+
+  private toggleGuestWishlist(productId: string): void {
+    const isCurrentlyWishlisted = this.wishlistedProductIds.has(productId);
+
+    if (isCurrentlyWishlisted) {
+      this.guestDataService.removeFromGuestWishlist(productId);
+      this.errorService.showToast('Removed from guest wishlist.', 'success');
+    } else {
+      this.guestDataService.addToGuestWishlist(productId);
+      this.errorService.showToast('Saved to guest wishlist.', 'success');
+    }
+
+    this.loadGuestWishlistState();
   }
 
   private findSimilarProducts(

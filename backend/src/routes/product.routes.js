@@ -7,6 +7,7 @@ import {
     getAllProducts, 
     getLandingPageProducts, 
     getProductById, 
+    getProductsByIds,
     getVendorProducts, 
     restockVariant, 
     searchProductsDeep, 
@@ -92,6 +93,7 @@ router.route("/get-landing-page-products").get(getLandingPageProducts)
 
 router.route("/public/get-product-by-id/:productId").get(getProductById)
 router.route("/get-product-by-id/:productId").get(getProductById)
+router.route("/bulk").post(getProductsByIds)
 router.route("/get-all-products").get(getAllProducts)
 
 export default router;

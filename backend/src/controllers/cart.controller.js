@@ -1,8 +1,28 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {Product} from "../models/product.model.js"
+import { Product } from "../models/product.model.js";
 import { Cart } from "../models/cart.model.js";
+import { buildSkippedItem, isValidObjectId, normalizeGuestCartItems } from "../utils/guestMerge.utils.js";
+
+async function ensureCart(userId) {
+    try {
+        return await Cart.findOneAndUpdate(
+            { user: userId },
+            { $setOnInsert: { user: userId, cartItems: [], totalCartPrice: 0 } },
+            { new: true, upsert: true, runValidators: true }
+        );
+    } catch (error) {
+        if (error?.code === 11000) {
+            const cart = await Cart.findOne({ user: userId });
+            if (cart) {
+                return cart;
+            }
+        }
+
+        throw error;
+    }
+}
 
 const addToCart = asyncHandler(async (req, res) => {
     const { productId, variantId, quantity } = req.body;
@@ -200,10 +220,97 @@ const clearCart = asyncHandler(async (req, res) => {
     );
 });
 
+const mergeGuestCart = asyncHandler(async (req, res) => {
+    const { items } = req.body || {};
+    const userId = req.user?._id;
+
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    if (!Array.isArray(items)) {
+        throw new ApiError(400, "items must be an array");
+    }
+
+    const guestItems = normalizeGuestCartItems(items);
+    const skippedItems = [];
+
+    if (guestItems.length === 0) {
+        const emptyCart = await ensureCart(userId);
+        return res.status(200).json(
+            Object.assign(
+                new ApiResponse(200, emptyCart, "Guest cart merged successfully"),
+                { skippedItems: [] }
+            )
+        );
+    }
+
+    const cart = await ensureCart(userId);
+
+    for (const guestItem of guestItems) {
+        const { productId, variantId, quantity } = guestItem;
+
+        if (!isValidObjectId(productId) || !isValidObjectId(variantId)) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Invalid product or variant id"));
+            continue;
+        }
+
+        const product = await Product.findById(productId);
+        if (!product || product.isActive === false) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Product unavailable"));
+            continue;
+        }
+
+        const variant = product.variants.id(variantId);
+        if (!variant || variant.isAvailable === false || Number(variant.productStock || 0) <= 0) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Variant unavailable"));
+            continue;
+        }
+
+        const currentItemIndex = cart.cartItems.findIndex(
+            (item) =>
+                item.product?.toString() === productId &&
+                item.variantId?.toString() === variantId
+        );
+
+        const existingQuantity = currentItemIndex > -1 ? Number(cart.cartItems[currentItemIndex].quantity || 0) : 0;
+        const nextQuantity = existingQuantity + Number(quantity || 0);
+
+        if (nextQuantity > Number(variant.productStock || 0)) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Insufficient stock"));
+            continue;
+        }
+
+        if (currentItemIndex > -1) {
+            cart.cartItems[currentItemIndex].quantity = nextQuantity;
+            cart.cartItems[currentItemIndex].priceAtAddition = variant.finalPrice ?? variant.productPrice ?? 0;
+            continue;
+        }
+
+        cart.cartItems.push({
+            product: productId,
+            variantId,
+            quantity,
+            priceAtAddition: variant.finalPrice ?? variant.productPrice ?? 0
+        });
+    }
+
+    await cart.save();
+    await cart.populate("cartItems.product");
+
+    return res.status(200).json(
+        Object.assign(
+            new ApiResponse(200, cart, "Guest cart merged successfully"),
+            { skippedItems }
+        )
+    );
+});
+
 export {
     addToCart,
     getCart,
     updateCartQuantity,
     removeFromCart,
-    clearCart
+    clearCart,
+    mergeGuestCart
 }

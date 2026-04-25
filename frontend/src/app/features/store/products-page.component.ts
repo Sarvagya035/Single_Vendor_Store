@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogQueryParams, CatalogService } from '../../core/services/catalog.service';
 import { ErrorService } from '../../core/services/error.service';
+import { GuestDataService } from '../../core/services/guest-data.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
 import { WishlistService } from '../../core/services/wishlist.service';
 
@@ -632,6 +633,7 @@ export class ProductsPageComponent implements OnInit {
     private authService: AuthService,
     private catalogService: CatalogService,
     private errorService: ErrorService,
+    private guestDataService: GuestDataService,
     private route: ActivatedRoute,
     private router: Router,
     private wishlistService: WishlistService
@@ -643,7 +645,7 @@ export class ProductsPageComponent implements OnInit {
       if (this.isCustomer()) {
         this.loadWishlistState();
       } else {
-        this.wishlistedProductIds = new Set<string>();
+        this.loadGuestWishlistState();
       }
     });
 
@@ -862,7 +864,7 @@ export class ProductsPageComponent implements OnInit {
     }
 
     if (!this.isCustomer()) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      this.toggleGuestWishlist(product._id);
       return;
     }
 
@@ -1193,12 +1195,30 @@ export class ProductsPageComponent implements OnInit {
     });
   }
 
-  private syncWishlistSet(products: { _id?: string }[]): void {
+  private loadGuestWishlistState(): void {
+    this.syncWishlistSet(this.guestDataService.getGuestWishlist());
+  }
+
+  private syncWishlistSet(products: Array<{ _id?: string; productId?: string }>): void {
     this.wishlistedProductIds = new Set(
       (products || [])
-        .map((item) => item?._id)
+        .map((item) => item?._id || item?.productId)
         .filter((id): id is string => !!id)
     );
+  }
+
+  private toggleGuestWishlist(productId: string): void {
+    const isCurrentlyWishlisted = this.wishlistedProductIds.has(productId);
+
+    if (isCurrentlyWishlisted) {
+      this.guestDataService.removeFromGuestWishlist(productId);
+      this.errorService.showToast('Removed from guest wishlist.', 'success');
+    } else {
+      this.guestDataService.addToGuestWishlist(productId);
+      this.errorService.showToast('Saved to guest wishlist.', 'success');
+    }
+
+    this.loadGuestWishlistState();
   }
 
   private toTimestamp(value?: string): number {

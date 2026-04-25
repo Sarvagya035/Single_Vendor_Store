@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ErrorService } from '../../core/services/error.service';
+import { GuestDataService } from '../../core/services/guest-data.service';
 import { catchError, finalize, EMPTY } from 'rxjs';
 
 @Component({
@@ -22,6 +23,9 @@ import { catchError, finalize, EMPTY } from 'rxjs';
 
       <div class="mt-5 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div class="app-surface p-8 sm:p-10">
+          <div *ngIf="pageMessage" class="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+            {{ pageMessage }}
+          </div>
           <form class="space-y-8" (ngSubmit)="onSubmit()">
             
             <div class="space-y-2">
@@ -89,14 +93,17 @@ export class LoginComponent {
   isLoading = false;
   redirectTo = '';
   showPassword = false;
+  pageMessage = '';
 
   constructor(
     private authService: AuthService,
+    private guestDataService: GuestDataService,
     private router: Router,
     private route: ActivatedRoute,
     private errorService: ErrorService
   ) {
     this.redirectTo = this.route.snapshot.queryParamMap.get('redirectTo') || '';
+    this.pageMessage = this.route.snapshot.queryParamMap.get('message') || '';
   }
 
   onSubmit() {
@@ -131,11 +138,33 @@ export class LoginComponent {
         }
 
         if (this.redirectTo && this.redirectTo.startsWith('/')) {
-          this.router.navigateByUrl(this.redirectTo);
+          this.guestDataService.mergeGuestDataAfterAuth().subscribe({
+            next: (mergeResult) => {
+              if (mergeResult?.hasFailures) {
+                this.errorService.showToast(mergeResult.message, 'warning');
+              }
+
+              this.router.navigateByUrl(this.redirectTo);
+            },
+            error: () => {
+              this.router.navigateByUrl(this.redirectTo);
+            }
+          });
           return;
         }
 
-        this.router.navigate(['/']);
+        this.guestDataService.mergeGuestDataAfterAuth().subscribe({
+          next: (mergeResult) => {
+            if (mergeResult?.hasFailures) {
+              this.errorService.showToast(mergeResult.message, 'warning');
+            }
+
+            this.router.navigate(['/']);
+          },
+          error: () => {
+            this.router.navigate(['/']);
+          }
+        });
       });
   }
 }

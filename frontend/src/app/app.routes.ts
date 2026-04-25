@@ -11,8 +11,7 @@ export const routes: Routes = [
   {
     path: 'cart',
     loadComponent: () =>
-      import('./features/store/cart.component').then((m) => m.CartComponent),
-    canActivate: [AuthGuard]
+      import('./features/store/cart.component').then((m) => m.CartComponent)
   },
   {
     path: 'addresses',
@@ -35,8 +34,7 @@ export const routes: Routes = [
   {
     path: 'wishlist',
     loadComponent: () =>
-      import('./features/store/wishlist.component').then((m) => m.WishlistComponent),
-    canActivate: [AuthGuard]
+      import('./features/store/wishlist.component').then((m) => m.WishlistComponent)
   },
   {
     path: 'orders/:orderId',

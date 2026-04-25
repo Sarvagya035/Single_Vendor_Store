@@ -17,6 +17,10 @@ export class AuthService {
 
   constructor(private api: ApiService) { }
 
+  get currentUserSnapshot(): any {
+    return this.currentUserSubject.value;
+  }
+
   register(userData: any): Observable<any> {
     return this.api.post(`${this.apiUrl}/register`, userData, { withCredentials: false });
   }

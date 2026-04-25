@@ -4,6 +4,7 @@ import { Product } from "../models/product.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { buildSkippedItem, isValidObjectId, normalizeGuestWishlistItems } from "../utils/guestMerge.utils.js";
 
 const wishlistProductProjection = "productName mainImages basePrice variants isActive";
 
@@ -97,4 +98,64 @@ async function ensureWishlist(userId) {
     }
 }
 
-export { toggleWishlist, getUserWishlist, getCustomerWishlistForVendor };
+const mergeGuestWishlist = asyncHandler(async (req, res) => {
+    const { items } = req.body || {};
+    const userId = req.user?._id;
+
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    if (!Array.isArray(items)) {
+        throw new ApiError(400, "items must be an array");
+    }
+
+    const guestItems = normalizeGuestWishlistItems(items);
+    const skippedItems = [];
+    const wishlist = await ensureWishlist(userId);
+
+    if (guestItems.length === 0) {
+        const populatedWishlist = await Wishlist.findById(wishlist._id).populate("products", wishlistProductProjection);
+        return res.status(200).json(
+            Object.assign(
+                new ApiResponse(200, populatedWishlist, "Guest wishlist merged successfully"),
+                { skippedItems: [] }
+            )
+        );
+    }
+
+    for (const guestItem of guestItems) {
+        const { productId, variantId } = guestItem;
+
+        if (!isValidObjectId(productId)) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Invalid product id"));
+            continue;
+        }
+
+        const product = await Product.findById(productId).select("_id isActive");
+        if (!product || product.isActive === false) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Product unavailable"));
+            continue;
+        }
+
+        const alreadySaved = wishlist.products.some((item) => item.equals(productId));
+        if (alreadySaved) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Already in wishlist"));
+            continue;
+        }
+
+        wishlist.products.push(productId);
+    }
+
+    await wishlist.save();
+    const populatedWishlist = await Wishlist.findById(wishlist._id).populate("products", wishlistProductProjection);
+
+    return res.status(200).json(
+        Object.assign(
+            new ApiResponse(200, populatedWishlist, "Guest wishlist merged successfully"),
+            { skippedItems }
+        )
+    );
+});
+
+export { toggleWishlist, getUserWishlist, getCustomerWishlistForVendor, mergeGuestWishlist };

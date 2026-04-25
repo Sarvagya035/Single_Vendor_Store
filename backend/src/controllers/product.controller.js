@@ -581,6 +581,42 @@ const getProductById = asyncHandler(async (req, res) => {
     );
 });
 
+const getProductsByIds = asyncHandler(async (req, res) => {
+    const { productIds } = req.body || {};
+
+    if (!Array.isArray(productIds)) {
+        throw new ApiError(400, "productIds must be an array");
+    }
+
+    const validIds = [...new Set(
+        productIds
+            .map((id) => String(id || "").trim())
+            .filter((id) => mongoose.Types.ObjectId.isValid(id))
+    )];
+
+    if (validIds.length === 0) {
+        return res.status(200).json(
+            new ApiResponse(200, [], "Products fetched successfully")
+        );
+    }
+
+    const products = await Product.find({
+        _id: { $in: validIds },
+        isActive: true
+    })
+        .populate("category", "name slug")
+        .populate("vendor", "shopName vendorLogo vendorDescription");
+
+    const productMap = new Map(products.map((product) => [product._id.toString(), product]));
+    const orderedProducts = validIds
+        .map((id) => productMap.get(id))
+        .filter(Boolean);
+
+    return res.status(200).json(
+        new ApiResponse(200, orderedProducts, "Products fetched successfully")
+    );
+});
+
 const getAllProducts = asyncHandler(async (req, res) => {
     const {
         q = "",
@@ -814,6 +850,7 @@ export {
     updateVariantDiscount,
     deleteVariant,
     getProductById,
+    getProductsByIds,
     getAllProducts,
     getLandingPageProducts,
 };
