@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { CartActionService } from '../../core/services/cart-action.service';
 import { CatalogQueryParams, CatalogService } from '../../core/services/catalog.service';
 import { ErrorService } from '../../core/services/error.service';
 import { GuestDataService } from '../../core/services/guest-data.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
+import { StoreProductVariantService } from '../../core/services/store-product-variant.service';
 import { WishlistService } from '../../core/services/wishlist.service';
+import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
 
 interface LandingCategoryNode extends CustomerLandingCategory {
   children: LandingCategoryNode[];
@@ -16,7 +19,7 @@ interface LandingCategoryNode extends CustomerLandingCategory {
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent],
   template: `
     <div class="relative min-h-[calc(100vh-72px)] w-full overflow-hidden bg-slate-50">
       <div class="pointer-events-none absolute inset-0 overflow-hidden">
@@ -368,13 +371,14 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                           {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
                         </span>
                         <div class="flex w-full justify-end sm:w-auto sm:flex-1">
-                          <a
-                            [routerLink]="['/products', product._id]"
-                            (click)="$event.stopPropagation()"
-                            class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-full border border-amber-300 bg-[#fff8e6] px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#8a4f20] transition hover:bg-[#fff0c2] sm:min-w-[120px] sm:w-auto sm:px-4 sm:py-2 sm:text-center sm:text-xs sm:tracking-[0.12em]"
+                          <button
+                            type="button"
+                            [disabled]="isProductOutOfStock(product)"
+                            (click)="$event.stopPropagation(); onProductCardAction(product)"
+                            class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-full border border-amber-300 bg-[#fff8e6] px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#8a4f20] transition hover:bg-[#fff0c2] disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 sm:min-w-[120px] sm:w-auto sm:px-4 sm:py-2 sm:text-center sm:text-xs sm:tracking-[0.12em]"
                           >
-                            View Product
-                          </a>
+                            {{ productCardActionLabel(product) }}
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -577,6 +581,13 @@ interface LandingCategoryNode extends CustomerLandingCategory {
           </div>
         </aside>
       </div>
+      <app-variant-modal
+        [open]="variantModalOpen"
+        [product]="selectedVariantProduct"
+        [isAdding]="variantModalLoading"
+        (close)="closeVariantModal()"
+        (addToCart)="handleVariantModalAddToCart($event)"
+      />
     </div>
   `
 })
@@ -587,6 +598,9 @@ export class ProductsPageComponent implements OnInit {
   products: CustomerCatalogProduct[] = [];
   wishlistedProductIds = new Set<string>();
   wishlistBusyId = '';
+  variantModalOpen = false;
+  variantModalLoading = false;
+  selectedVariantProduct: CustomerCatalogProduct | null = null;
   landingCategories: CustomerLandingCategoryGroup[] = [];
   catalogCategories: CustomerLandingCategory[] = [];
   sidebarCategories: CustomerLandingCategory[] = [];
@@ -631,11 +645,13 @@ export class ProductsPageComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private cartActionService: CartActionService,
     private catalogService: CatalogService,
     private errorService: ErrorService,
     private guestDataService: GuestDataService,
     private route: ActivatedRoute,
     private router: Router,
+    private variantService: StoreProductVariantService,
     private wishlistService: WishlistService
   ) {}
 
@@ -739,6 +755,55 @@ export class ProductsPageComponent implements OnInit {
     this.router.navigate(['/products', product._id]);
   }
 
+  onProductCardAction(product: CustomerCatalogProduct): void {
+    if (!product?._id || this.isProductOutOfStock(product)) {
+      return;
+    }
+
+    if (this.hasSingleVariant(product)) {
+      this.addSingleVariantToCart(product);
+      return;
+    }
+
+    this.openVariantModal(product);
+  }
+
+  openVariantModal(product: CustomerCatalogProduct): void {
+    if (!product?._id || this.isProductOutOfStock(product)) {
+      return;
+    }
+
+    this.selectedVariantProduct = product;
+    this.variantModalOpen = true;
+  }
+
+  closeVariantModal(): void {
+    this.variantModalOpen = false;
+    this.selectedVariantProduct = null;
+    this.variantModalLoading = false;
+  }
+
+  handleVariantModalAddToCart(event: VariantModalAddToCartEvent): void {
+    this.variantModalLoading = true;
+    this.cartActionService.addToCart(event.productId, event.variantId, event.quantity).subscribe({
+      next: (result) => {
+        this.variantModalLoading = false;
+
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          this.closeVariantModal();
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.variantModalLoading = false;
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
+  }
+
   private refreshCatalogListing(): void {
     this.loadingProducts = true;
     this.catalogMessage = '';
@@ -839,11 +904,48 @@ export class ProductsPageComponent implements OnInit {
   }
 
   productImage(product: CustomerCatalogProduct): string {
-    return (
-      product.displayVariant?.variantImage ||
-      product.mainImages?.[0] ||
-      'https://via.placeholder.com/640x480?text=Product'
-    );
+    return this.variantService.getProductImage(product, product.displayVariant || null);
+  }
+
+  isProductOutOfStock(product: CustomerCatalogProduct): boolean {
+    return this.variantService.isProductOutOfStock(product);
+  }
+
+  hasSingleVariant(product: CustomerCatalogProduct): boolean {
+    return this.variantService.hasSingleVariant(product);
+  }
+
+  productCardActionLabel(product: CustomerCatalogProduct): string {
+    if (this.isProductOutOfStock(product)) {
+      return 'Unavailable';
+    }
+
+    return this.hasSingleVariant(product) ? 'Add To Cart' : 'Select Options';
+  }
+
+  private addSingleVariantToCart(product: CustomerCatalogProduct): void {
+    const variant = this.variantService.getDefaultVariant(product);
+    if (!product?._id || !variant?._id) {
+      return;
+    }
+
+    this.variantModalLoading = true;
+    this.cartActionService.addToCart(product._id, variant._id, 1).subscribe({
+      next: (result) => {
+        this.variantModalLoading = false;
+
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.variantModalLoading = false;
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
   }
 
   formatCurrency(amount: number): string {

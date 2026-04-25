@@ -3,16 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { CartActionService } from '../../core/services/cart-action.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { ErrorService } from '../../core/services/error.service';
 import { GuestDataService } from '../../core/services/guest-data.service';
+import { StoreProductVariantService } from '../../core/services/store-product-variant.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
+import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent],
   template: `
     <div class="min-h-[calc(100vh-72px)] bg-slate-50">
       <div class="w-full">
@@ -181,9 +184,14 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                       <span class="text-slate-500">
                         {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
                       </span>
-                      <span class="text-amber-800 transition group-hover:translate-x-1 group-hover:text-amber-900">
-                        View Product
-                      </span>
+                      <button
+                        type="button"
+                        class="inline-flex items-center justify-center rounded-full border border-[#e7dac9] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#6f4e37] transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-900 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                        [disabled]="isProductOutOfStock(product)"
+                        (click)="$event.stopPropagation(); onProductCardAction(product)"
+                      >
+                        {{ productCardActionLabel(product) }}
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -197,6 +205,14 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
                   All Products
                 </a>
               </div>
+
+              <app-variant-modal
+                [open]="variantModalOpen"
+                [product]="selectedVariantProduct"
+                [isAdding]="variantModalLoading"
+                (close)="closeVariantModal()"
+                (addToCart)="handleVariantModalAddToCart($event)"
+              />
 
             </div>
           </div>
@@ -343,6 +359,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   products: CustomerCatalogProduct[] = [];
   wishlistedProductIds = new Set<string>();
   wishlistBusyId = '';
+  variantModalOpen = false;
+  variantModalLoading = false;
+  selectedVariantProduct: CustomerCatalogProduct | null = null;
   landingCategories: CustomerLandingCategoryGroup[] = [];
   catalogCategories: CustomerLandingCategory[] = [];
   readonly heroSlides = [
@@ -435,9 +454,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
+    private cartActionService: CartActionService,
     private catalogService: CatalogService,
     private errorService: ErrorService,
     private guestDataService: GuestDataService,
+    private variantService: StoreProductVariantService,
     private wishlistService: WishlistService,
     private router: Router
   ) {}
@@ -606,6 +627,55 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/products', product._id]);
   }
 
+  onProductCardAction(product: CustomerCatalogProduct): void {
+    if (!product?._id || this.isProductOutOfStock(product)) {
+      return;
+    }
+
+    if (this.hasSingleVariant(product)) {
+      this.addSingleVariantToCart(product);
+      return;
+    }
+
+    this.openVariantModal(product);
+  }
+
+  openVariantModal(product: CustomerCatalogProduct): void {
+    if (!product?._id || this.isProductOutOfStock(product)) {
+      return;
+    }
+
+    this.selectedVariantProduct = product;
+    this.variantModalOpen = true;
+  }
+
+  closeVariantModal(): void {
+    this.variantModalOpen = false;
+    this.selectedVariantProduct = null;
+    this.variantModalLoading = false;
+  }
+
+  handleVariantModalAddToCart(event: VariantModalAddToCartEvent): void {
+    this.variantModalLoading = true;
+    this.cartActionService.addToCart(event.productId, event.variantId, event.quantity).subscribe({
+      next: (result) => {
+        this.variantModalLoading = false;
+
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          this.closeVariantModal();
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.variantModalLoading = false;
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
+  }
+
   categoryImage(category: CustomerLandingCategory): string {
     return category.image || 'https://via.placeholder.com/160x160?text=Category';
   }
@@ -671,7 +741,48 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   productImage(product: CustomerCatalogProduct): string {
-    return product.displayVariant?.variantImage || product.mainImages?.[0] || 'https://via.placeholder.com/640x480?text=Product';
+    return this.variantService.getProductImage(product, product.displayVariant || null);
+  }
+
+  isProductOutOfStock(product: CustomerCatalogProduct): boolean {
+    return this.variantService.isProductOutOfStock(product);
+  }
+
+  hasSingleVariant(product: CustomerCatalogProduct): boolean {
+    return this.variantService.hasSingleVariant(product);
+  }
+
+  productCardActionLabel(product: CustomerCatalogProduct): string {
+    if (this.isProductOutOfStock(product)) {
+      return 'Unavailable';
+    }
+
+    return this.hasSingleVariant(product) ? 'Add To Cart' : 'Select Options';
+  }
+
+  private addSingleVariantToCart(product: CustomerCatalogProduct): void {
+    const variant = this.variantService.getDefaultVariant(product);
+    if (!product?._id || !variant?._id) {
+      return;
+    }
+
+    this.variantModalLoading = true;
+    this.cartActionService.addToCart(product._id, variant._id, 1).subscribe({
+      next: (result) => {
+        this.variantModalLoading = false;
+
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.variantModalLoading = false;
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
   }
 
   trackByCategoryId(_: number, category: CustomerLandingCategory): string {
