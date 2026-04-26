@@ -129,7 +129,7 @@ const logoutUser = asyncHandler(async (req, res) =>{
             }
         },
         {
-            new: true
+            returnDocument: 'after'
         }
     )
 
@@ -209,7 +209,7 @@ const updateUserDetails = asyncHandler(async(req, res) =>{
             $set: updatedUser
         },
         {
-            new: true,
+            returnDocument: 'after',
             runValidators: true
         }
     ).select("-password -refreshToken")
@@ -242,7 +242,7 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
                 avatar: avatar.url
             }
         },
-        {new: true}
+        {returnDocument: 'after'}
     ).select("-password -refreshToken")
 
     return res
@@ -386,7 +386,7 @@ const uploadAvatarImage = asyncHandler(async (req, res) =>{
                 }
             },
             {
-                new: true
+                returnDocument: 'after'
             }
         ).select("-password -refreshToken")
     

@@ -31,7 +31,7 @@ const toggleWishlist = asyncHandler(async (req, res) => {
     const updatedWishlist = await Wishlist.findOneAndUpdate(
         { owner: userId },
         update,
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     ).populate("products", wishlistProductProjection);
 
     return res.status(200).json(
@@ -84,7 +84,7 @@ async function ensureWishlist(userId) {
         return await Wishlist.findOneAndUpdate(
             { owner: userId },
             { $setOnInsert: { owner: userId, products: [] } },
-            { new: true, upsert: true, runValidators: true }
+            { returnDocument: 'after', upsert: true, runValidators: true }
         );
     } catch (error) {
         if (error?.code === 11000) {

@@ -93,7 +93,7 @@ const createOrUpdateLowStockNotification = async (product, variant) => {
                     }
                 }
             },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         return resolved;
@@ -126,7 +126,7 @@ const createOrUpdateLowStockNotification = async (product, variant) => {
             }
         },
         {
-            new: true,
+            returnDocument: 'after',
             upsert: true,
             setDefaultsOnInsert: true
         }

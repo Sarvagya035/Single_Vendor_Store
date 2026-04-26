@@ -10,7 +10,7 @@ async function ensureCart(userId) {
         return await Cart.findOneAndUpdate(
             { user: userId },
             { $setOnInsert: { user: userId, cartItems: [], totalCartPrice: 0 } },
-            { new: true, upsert: true, runValidators: true }
+            { returnDocument: 'after', upsert: true, runValidators: true }
         );
     } catch (error) {
         if (error?.code === 11000) {

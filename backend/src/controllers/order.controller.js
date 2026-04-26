@@ -150,7 +150,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
             { 
                 $inc: { "variants.$.productStock": -item.quantity } 
             },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         if (!updatedProduct) {

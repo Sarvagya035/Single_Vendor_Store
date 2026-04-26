@@ -204,7 +204,7 @@ const verifyVendorStatus = asyncHandler(async (req, res)=>{
                 $addToSet: { role: "vendor" }
             },
             {
-                new: true
+                returnDocument: 'after'
         })
 
         if(!updatedUser){
@@ -450,7 +450,7 @@ const markVendorNotificationRead = asyncHandler(async (req, res) => {
                 readAt: new Date()
             }
         },
-        { new: true }
+        { returnDocument: 'after' }
     );
 
     if (!notification) {
