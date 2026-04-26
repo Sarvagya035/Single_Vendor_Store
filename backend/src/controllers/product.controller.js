@@ -1,102 +1,156 @@
 import mongoose from "mongoose";
+import fs from "fs";
 import { Product } from "../models/product.model.js";
 import { Category } from "../models/category.model.js";
 import { Vendor } from "../models/vendor.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinaryUpload.js";
+import { uploadOnCloudinary, deleteCloudinaryImage } from "../utils/cloudinaryUpload.js";
 import { syncLowStockNotificationsForProduct } from "../utils/vendorNotifications.js";
 
-const createProduct = asyncHandler(async (req, res) => {
-    // 1. Extract basic details
-    const { productName, productDescription, brand, category, variantOptions, variants } = req.body;
+const cleanupTempFiles = async (files) => {
+    const fileGroups = files || {};
+    const allFiles = [
+        ...(fileGroups.mainImages || []),
+        ...(fileGroups.variantImages || []),
+        ...(fileGroups.image || []),
+    ];
 
-    // 2. Validation
-    if ([productName, productDescription, category].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "Required fields are missing");
+    for (const file of allFiles) {
+        if (file?.path && fs.existsSync(file.path)) {
+            try {
+                fs.unlinkSync(file.path);
+            } catch (error) {
+                console.error("Failed to clean temp file:", file.path, error?.message || error);
+            }
+        }
+    }
+};
+
+const parseJsonField = (value, fieldName) => {
+    if (typeof value !== "string") {
+        return value;
     }
 
-    // 3. Check if Category exists
-    const categoryExists = await Category.findById(category);
-    if (!categoryExists) throw new ApiError(404, "Category not found");
-
-    // 4. Check if Vendor is approved (Using req.user from verifyJWT)
-    const vendor = await Vendor.findOne({ user: req.user._id });
-    if (!vendor) {
-        throw new ApiError(404, "Vendor not found");
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        throw new ApiError(400, `Invalid ${fieldName} format`);
     }
+};
 
-    // 5. Handle mainImages Upload (Array)
-    const mainImageFiles = req.files?.mainImages;
-    if (!mainImageFiles || mainImageFiles.length === 0) {
-        throw new ApiError(400, "At least one main product image is required");
-    }
-
-    const mainImageUrls = (await Promise.all(
-        mainImageFiles.map(async (file) => {
-            const uploaded = await uploadOnCloudinary(file.path);
-            return uploaded?.url;
-        })
-    )).filter(url => url != null)
-
-    // 6. Parse and Process Variants
-    // We expect variants as a JSON string from frontend/Postman
-
-    let parsedVariants = JSON.parse(variants);
-    let parsedOptions = JSON.parse(variantOptions);
-
-    // 7. Handle Variant Images (Mapping them to the correct variant)
-    // Multer gives us an array of variantImages in req.files.variantImages
-
-    const variantImageFiles = req.files?.variantImages || [];
-    
-    // We upload them all to Cloudinary first
-
-    const uploadedVariantImages = await Promise.all(
-        variantImageFiles.map(async (file) => {
-            const uploaded = await uploadOnCloudinary(file.path);
-            return {
-                url: uploaded?.url,
-                originalName: file.originalname // We use this to match
-            };
-        })
+const deleteUploadedCloudinaryAssets = async (uploadedAssets = []) => {
+    await Promise.allSettled(
+        uploadedAssets
+            .filter((asset) => asset?.public_id)
+            .map((asset) => deleteCloudinaryImage(asset.public_id))
     );
+};
 
-    // Map the uploaded URLs back to the specific variants
-    // Convention: Frontend sends 'variantImageIndex' to specify which file belongs to which variant
+const createProduct = asyncHandler(async (req, res) => {
+    const { productName, productDescription, brand, category, variantOptions, variants } = req.body;
+    const uploadedCloudinaryAssets = [];
+    let product = null;
 
-    const finalVariants = parsedVariants.map((variant, index) => {
-
-        // If the frontend provided a reference to a specific file index
-        if (variant.imageRef !== undefined && uploadedVariantImages[variant.imageRef]) {
-            variant.variantImage = uploadedVariantImages[variant.imageRef].url;
+    try {
+        if ([productName, productDescription, category, variantOptions, variants].some((field) => !field || String(field).trim() === "")) {
+            throw new ApiError(400, "Required fields are missing");
         }
 
-        if (!variant.sku) {
-            const randomID = Math.floor(1000 + Math.random() * 9000);
-            const cleanName = productName.substring(0, 3).toUpperCase().replace(/\s/g, '');
-            const firstAttr = variant.attributes ? Object.values(variant.attributes)[0] : "VAR";
-            const attrValue = String(firstAttr).substring(0, 3).toUpperCase().replace(/\s/g, '');
-            
-            variant.sku = `${cleanName}-${attrValue}-${randomID}`;
-        } else {
-            variant.sku = variant.sku.trim().toUpperCase();
+        if (!mongoose.Types.ObjectId.isValid(category)) {
+            throw new ApiError(400, "Invalid category");
         }
-        return variant;
-    });
 
-    // 8. Create Product
-    const product = await Product.create({
-        productName,
-        productDescription,
-        brand: brand || "Generic",
-        vendor: vendor._id,
-        category,
-        mainImages: mainImageUrls,
-        variantOptions: parsedOptions,
-        variants: finalVariants
-    });
+        const categoryExists = await Category.findById(category);
+        if (!categoryExists) throw new ApiError(404, "Category not found");
+
+        const vendor = await Vendor.findOne({ user: req.user._id });
+        if (!vendor) {
+            throw new ApiError(404, "Vendor not found");
+        }
+
+        const parsedVariants = parseJsonField(variants, "variants");
+        const parsedOptions = parseJsonField(variantOptions, "variant options");
+
+        if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
+            throw new ApiError(400, "At least one variant is required");
+        }
+
+        if (!parsedOptions || typeof parsedOptions !== "object") {
+            throw new ApiError(400, "Variant options are required");
+        }
+
+        const mainImageFiles = req.files?.mainImages || [];
+        if (!mainImageFiles.length) {
+            throw new ApiError(400, "At least one main product image is required");
+        }
+
+        const mainImageUrls = [];
+        for (const file of mainImageFiles) {
+            const uploaded = await uploadOnCloudinary(file.path);
+            if (!uploaded?.url) {
+                throw new ApiError(400, "Error uploading main product image");
+            }
+
+            uploadedCloudinaryAssets.push(uploaded);
+            mainImageUrls.push(uploaded.url);
+        }
+
+        const variantImageFiles = req.files?.variantImages || [];
+        const uploadedVariantImages = [];
+
+        for (const file of variantImageFiles) {
+            const uploaded = await uploadOnCloudinary(file.path);
+            if (!uploaded?.url) {
+                throw new ApiError(400, "Error uploading variant image");
+            }
+
+            uploadedCloudinaryAssets.push(uploaded);
+            uploadedVariantImages.push({
+                url: uploaded.url,
+                public_id: uploaded.public_id,
+                originalName: file.originalname
+            });
+        }
+
+        const finalVariants = parsedVariants.map((variant) => {
+            const normalizedVariant = { ...variant };
+
+            if (normalizedVariant.imageRef !== undefined && uploadedVariantImages[normalizedVariant.imageRef]) {
+                normalizedVariant.variantImage = uploadedVariantImages[normalizedVariant.imageRef].url;
+            }
+
+            if (!normalizedVariant.sku) {
+                const randomID = Math.floor(1000 + Math.random() * 9000);
+                const cleanName = String(productName).substring(0, 3).toUpperCase().replace(/\s/g, '');
+                const firstAttr = normalizedVariant.attributes ? Object.values(normalizedVariant.attributes)[0] : "VAR";
+                const attrValue = String(firstAttr).substring(0, 3).toUpperCase().replace(/\s/g, '');
+
+                normalizedVariant.sku = `${cleanName}-${attrValue}-${randomID}`;
+            } else {
+                normalizedVariant.sku = String(normalizedVariant.sku).trim().toUpperCase();
+            }
+
+            return normalizedVariant;
+        });
+
+        product = await Product.create({
+            productName: String(productName).trim(),
+            productDescription: String(productDescription).trim(),
+            brand: brand ? String(brand).trim() : "Generic",
+            vendor: vendor._id,
+            category,
+            mainImages: mainImageUrls,
+            variantOptions: parsedOptions,
+            variants: finalVariants
+        });
+    } catch (error) {
+        await deleteUploadedCloudinaryAssets(uploadedCloudinaryAssets);
+        throw error;
+    } finally {
+        await cleanupTempFiles(req.files);
+    }
 
     await syncLowStockNotificationsForProduct(product);
 

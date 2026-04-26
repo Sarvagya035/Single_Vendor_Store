@@ -21,7 +21,7 @@ export interface CatalogQueryParams {
   providedIn: 'root'
 })
 export class CatalogService {
-  private productUrl = `${environment.apiUrl}/product`;
+  private productUrl = `${environment.apiUrl}/products`;
 
   constructor(private api: ApiService) {}
 

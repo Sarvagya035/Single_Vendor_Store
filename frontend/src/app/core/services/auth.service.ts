@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, shareReplay, tap, finalize } from 'rxjs';
+import { BehaviorSubject, Observable, of, shareReplay, tap, finalize, catchError, throwError } from 'rxjs';
 import { HttpContext } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
@@ -48,7 +48,7 @@ export class AuthService {
     return this.api.post(`${this.apiUrl}/logout`, {}).pipe(
       tap((res: any) => {
         if (res.success) {
-          this.currentUserSubject.next(null);
+          this.clearCurrentUser();
         }
       })
     );
@@ -63,8 +63,15 @@ export class AuthService {
           this.currentUserSubject.next(res.data);
           this.setSessionActive(true);
         } else {
-          this.currentUserSubject.next(null);
+          this.clearCurrentUser();
         }
+      }),
+      catchError((error) => {
+        if (error?.status === 401) {
+          this.clearCurrentUser();
+        }
+
+        return throwError(() => error);
       })
     );
   }
@@ -75,7 +82,7 @@ export class AuthService {
 
   refreshToken(): Observable<any> {
     return this.api.post(
-      `${this.apiUrl}/refreshToken`,
+      `${this.apiUrl}/refresh-token`,
       {},
       {
         context: new HttpContext().set(SKIP_AUTH_ERROR_HANDLING, true)

@@ -4,7 +4,6 @@ import { ApiError } from "../utils/ApiError.js"
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_IMAGE_MIME_TYPES = new Set([
     "image/jpeg",
-    "image/jpg",
     "image/png",
     "image/webp",
 ]);
@@ -23,7 +22,7 @@ const fileFilter = (req, file, cb) => {
     if (!ALLOWED_IMAGE_MIME_TYPES.has(file.mimetype)) {
         return cb(new ApiError(
             400,
-            "Invalid file type. Only JPEG, JPG, PNG, and WEBP images are allowed."
+            "Invalid file type. Only JPEG, PNG, and WEBP images are allowed."
         ));
     }
 

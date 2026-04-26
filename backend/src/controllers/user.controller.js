@@ -9,9 +9,51 @@ import fs from "fs"
 import crypto from "crypto"
 import { sendMail } from "../utils/mailer.js"
 
-const options = {
-    httpOnly: true
+const isProduction = process.env.NODE_ENV === "production"
+
+const parseDurationToMs = (value, fallbackMs) => {
+    if (!value || typeof value !== "string") {
+        return fallbackMs
+    }
+
+    const match = value.trim().match(/^(\d+)([smhd])$/i)
+    if (!match) {
+        return fallbackMs
+    }
+
+    const amount = Number(match[1])
+    const unit = match[2].toLowerCase()
+
+    if (!Number.isFinite(amount)) {
+        return fallbackMs
+    }
+
+    const unitToMs = {
+        s: 1000,
+        m: 60 * 1000,
+        h: 60 * 60 * 1000,
+        d: 24 * 60 * 60 * 1000
+    }
+
+    return amount * (unitToMs[unit] || fallbackMs)
 }
+
+const getAuthCookieOptions = (maxAge) => ({
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge,
+    expires: new Date(Date.now() + maxAge),
+    path: "/"
+})
+
+const accessTokenCookieOptions = getAuthCookieOptions(
+    parseDurationToMs(process.env.ACCESS_TOKEN_EXPIRY, 24 * 60 * 60 * 1000)
+)
+
+const refreshTokenCookieOptions = getAuthCookieOptions(
+    parseDurationToMs(process.env.REFRESH_TOKEN_EXPIRY, 10 * 24 * 60 * 60 * 1000)
+)
 
 const generateAccessandRefreshToken = async function(userId){
 
@@ -108,12 +150,13 @@ const loginUser = asyncHandler(async (req, res) =>{
 
     return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, accessTokenCookieOptions)
+    .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
     .json(new ApiResponse(
         200,
         {
-            user: loggedInUser, accessToken, refreshToken
+            user: loggedInUser,
+            accessToken
         },
         "User logged in successfully"
     ))
@@ -133,14 +176,18 @@ const logoutUser = asyncHandler(async (req, res) =>{
         }
     )
 
-    return res.status(200).clearCookie("accessToken").clearCookie("refreshToken").json(new ApiResponse(200, {}, "User Logged out successfully"))
+    return res
+        .status(200)
+        .clearCookie("accessToken", { path: "/" })
+        .clearCookie("refreshToken", { path: "/" })
+        .json(new ApiResponse(200, {}, "User Logged out successfully"))
 })
 
 const refreshAccessToken = asyncHandler(async (req, res) =>{
 
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
-    if(!incomingRefreshToken){
+    if(!incomingRefreshToken || typeof incomingRefreshToken !== "string"){
         throw new ApiError(401, "User is Unauthorized")
     }
 
@@ -162,12 +209,13 @@ const refreshAccessToken = asyncHandler(async (req, res) =>{
         }
 
         const {accessToken, refreshToken} = await generateAccessandRefreshToken(user._id)
+        const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
-        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json(new ApiResponse(
+        return res.status(200).cookie("accessToken", accessToken, accessTokenCookieOptions).cookie("refreshToken", refreshToken, refreshTokenCookieOptions).json(new ApiResponse(
             200,
             {
-                accessToken, 
-                refreshToken
+                accessToken,
+                user: loggedInUser
             },
             "Access token refreshed"
         ))
@@ -283,11 +331,14 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Email is required");
     }
 
+    // Apply rate limiting on this endpoint to prevent password-reset abuse and email enumeration.
     const normalizedEmail = email.trim().toLowerCase();
     const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
-        throw new ApiError(404, "No account found with this email");
+        return res.status(200).json(
+            new ApiResponse(200, {}, "If an account exists, password reset instructions have been sent.")
+        );
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -317,15 +368,19 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
         </div>
     `;
 
-    await sendMail({
-        to: user.email,
-        subject: emailSubject,
-        text: emailText,
-        html: emailHtml
-    });
+    try {
+        await sendMail({
+            to: user.email,
+            subject: emailSubject,
+            text: emailText,
+            html: emailHtml
+        });
+    } catch (error) {
+        console.error("Password reset email failed:", error?.message || error);
+    }
 
     return res.status(200).json(
-        new ApiResponse(200, {}, "Password reset link has been sent to your email.")
+        new ApiResponse(200, {}, "If an account exists, password reset instructions have been sent.")
     );
 });
 

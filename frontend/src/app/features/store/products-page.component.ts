@@ -11,15 +11,28 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
 import { StoreProductVariantService } from '../../core/services/store-product-variant.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
-
-interface LandingCategoryNode extends CustomerLandingCategory {
-  children: LandingCategoryNode[];
-}
+import { ProductCardComponent } from './components/product-card/product-card.component';
+import { CatalogActiveFiltersComponent } from './components/catalog-active-filters/catalog-active-filters.component';
+import { CatalogSearchBarComponent } from './components/catalog-search-bar/catalog-search-bar.component';
+import { CatalogPaginationComponent } from './components/catalog-pagination/catalog-pagination.component';
+import { CatalogFilterFormComponent } from './components/catalog-filter-form/catalog-filter-form.component';
+import {
+  LandingCategoryNode,
+  buildCategoryTree,
+  buildVisibleCategoryList,
+  buildCatalogMessage,
+  buildPageSubtitle,
+  buildSelectedCategoryDescription,
+  collectCategoryKeys,
+  findCategoryNodeBySlug,
+  countProductsForNode,
+  getCategoryProductCount
+} from './utils/catalog.helpers';
 
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent, CatalogActiveFiltersComponent, CatalogSearchBarComponent, CatalogPaginationComponent, CatalogFilterFormComponent],
   template: `
     <div class="relative min-h-[calc(100vh-72px)] w-full overflow-hidden bg-slate-50">
       <div class="pointer-events-none absolute inset-0 overflow-hidden">
@@ -46,112 +59,32 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                     Reset
                   </button>
                 </div>
+                <app-catalog-filter-form
+                  [selectedCategorySlug]="selectedCategorySlug"
+                  [selectedBrand]="selectedBrand"
+                  [sortBy]="sortBy"
+                  [minPrice]="minPrice"
+                  [maxPrice]="maxPrice"
+                  [availabilityFilter]="availabilityFilter"
+                  [ratingFilter]="ratingFilter"
+                  [sidebarCategories]="sidebarCategories"
+                  [brandOptions]="brandOptions()"
+                  [sortOptions]="sortOptions"
+                  [availabilityOptions]="availabilityOptions"
+                  [ratingOptions]="ratingOptions"
+                  (selectedCategorySlugChange)="selectedCategorySlug = $event"
+                  (selectedBrandChange)="selectedBrand = $event"
+                  (sortByChange)="sortBy = $event"
+                  (minPriceChange)="minPrice = $event"
+                  (maxPriceChange)="maxPrice = $event"
+                  (availabilityFilterChange)="availabilityFilter = $event"
+                  (ratingFilterChange)="ratingFilter = $event"
+                  (filterChange)="onCatalogFilterChange()"
+                />
 
-                <div class="mt-4 space-y-4">
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
-                    <select
-                      [(ngModel)]="selectedCategorySlug"
-                      name="selectedCategorySlug"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option value="all">All categories</option>
-                      <option *ngFor="let category of sidebarCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
-                        {{ categoryLabel(category) }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <p class="text-[11px] font-semibold leading-5 text-slate-500">
-                    Parent categories include all of their child category products.
-                  </p>
-
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Brand</span>
-                    <select
-                      [(ngModel)]="selectedBrand"
-                      name="selectedBrand"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option value="all">All brands</option>
-                      <option *ngFor="let brand of brandOptions(); trackBy: trackByValue" [value]="brand">
-                        {{ brand }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Sort by</span>
-                    <select
-                      [(ngModel)]="sortBy"
-                      name="sidebarSortBy"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <label class="block">
-                      <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Min price</span>
-                      <input
-                      [(ngModel)]="minPrice"
-                      name="minPrice"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      type="number"
-                        min="0"
-                        placeholder="0"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      />
-                    </label>
-
-                    <label class="block">
-                      <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Max price</span>
-                      <input
-                      [(ngModel)]="maxPrice"
-                      name="maxPrice"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      type="number"
-                        min="0"
-                        placeholder="Any"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      />
-                    </label>
-                  </div>
-
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Availability</span>
-                    <select
-                      [(ngModel)]="availabilityFilter"
-                      name="availabilityFilter"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option *ngFor="let option of availabilityOptions; trackBy: trackByFilterOption" [value]="option.value">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Minimum rating</span>
-                    <select
-                      [(ngModel)]="ratingFilter"
-                      name="ratingFilter"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option *ngFor="let option of ratingOptions; trackBy: trackByFilterOption" [value]="option.value">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                  </label>
-                </div>
+                <p class="text-[11px] font-semibold leading-5 text-slate-500">
+                  Parent categories include all of their child category products.
+                </p>
               </div>
             </aside>
 
@@ -168,24 +101,12 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </p>
                 </div>
 
-                <form class="relative mt-4 w-full" (ngSubmit)="searchProducts()">
-                  <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-amber-500 focus-within:bg-white">
-                    <span class="text-slate-400">
-                      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="7"></circle>
-                        <path d="m20 20-3.5-3.5"></path>
-                      </svg>
-                    </span>
-                    <input
-                      name="searchQuery"
-                      [(ngModel)]="searchQuery"
-                      (ngModelChange)="onSearchQueryChange($event)"
-                      type="text"
-                      placeholder="Search dry fruits, nuts and healthy packs"
-                      class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400"
-                    />
-                  </div>
-                </form>
+                <app-catalog-search-bar
+                  [searchQuery]="searchQuery"
+                  placeholder="Search dry fruits, nuts and healthy packs"
+                  (searchChange)="onSearchQueryChange($event)"
+                  (searchSubmit)="searchProducts()"
+                />
 
                 <div class="mt-4 grid gap-3 lg:hidden">
                   <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr]">
@@ -215,15 +136,17 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                     </label>
                   </div>
 
-                  <button
-                    *ngIf="hasActiveFilters()"
-                    type="button"
-                    class="rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-left text-xs font-semibold text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
-                    (click)="resetFilters()"
-                  >
-                    Clear active filters
-                  </button>
-                </div>
+                <app-catalog-active-filters
+                  [hasActiveFilters]="hasActiveFilters()"
+                  [selectedBrand]="selectedBrand"
+                  [minPrice]="minPrice"
+                  [maxPrice]="maxPrice"
+                  [availabilityFilter]="availabilityFilter"
+                  [ratingFilter]="ratingFilter"
+                  (clearAll)="resetFilters()"
+                  (removeFilter)="handleActiveFilterRemoval($event)"
+                />
+              </div>
               </div>
 
               <div class="mb-5 flex flex-wrap items-center gap-3 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-3">
@@ -302,130 +225,33 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                 </div>
 
                 <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
-                <article
-                  *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
-                  role="link"
-                  tabindex="0"
-                  (click)="openProduct(product)"
-                  (keydown.enter)="openProduct(product)"
-                  (keydown.space)="$event.preventDefault(); openProduct(product)"
-                  class="product-card group relative flex h-full flex-col transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
-                >
-                    <button
-                      type="button"
-                      class="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600 sm:right-4 sm:top-4 sm:h-11 sm:w-11"
-                      [disabled]="wishlistBusyId === product._id"
-                      [attr.aria-label]="isWishlisted(product) ? 'Remove from wishlist' : 'Save to wishlist'"
-                      (click)="$event.stopPropagation(); toggleWishlist(product)"
-                      [ngClass]="isWishlisted(product) ? 'border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-[0_14px_28px_rgba(244,63,94,0.24)] ring-rose-100' : ''"
-                    >
-                      <svg *ngIf="wishlistBusyId !== product._id && !isWishlisted(product)" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
-                      </svg>
-                      <svg *ngIf="wishlistBusyId !== product._id && isWishlisted(product)" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
-                        <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
-                      </svg>
-                      <span *ngIf="wishlistBusyId === product._id" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
-                    </button>
-
-                    <div class="h-32 overflow-hidden rounded-[1rem] border border-slate-200 bg-slate-100 sm:h-36">
-                      <img
-                        [src]="productImage(product)"
-                        [alt]="product.productName"
-                        loading="lazy"
-                        decoding="async"
-                        class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                      />
-                    </div>
-
-                    <div class="mt-2 flex flex-col gap-1.5 pt-2 md:mt-3 md:gap-2 lg:mt-4 lg:gap-3">
-                      <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                        <div class="min-w-0 flex-1">
-                          <p class="truncate text-[10px] font-black uppercase tracking-[0.14em] text-slate-400 sm:text-xs">
-                            {{ product.brand || 'Dry fruit pack' }}
-                          </p>
-                          <h2 class="mt-1 line-clamp-1 text-[10px] font-semibold leading-4 text-slate-900 sm:text-[11px] lg:text-lg">
-                            {{ product.productName }}
-                          </h2>
-                        </div>
-                        <div class="flex shrink-0 items-start">
-                          <span class="self-start rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-black text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-2.5 sm:py-1 sm:text-[10px] lg:px-3 lg:text-xs">
-                            {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
-                          </span>
-                        </div>
-                      </div>
-
-                      <p class="truncate text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-[10px]">
-                        {{ product.categoryDetails?.name || 'General Category' }}
-                      </p>
-
-                      <div class="flex items-center gap-1 text-xs">
-                        <span *ngIf="productOriginalPrice(product)" class="whitespace-nowrap text-[10px] font-bold text-slate-400 line-through sm:text-xs">
-                          {{ productOriginalPrice(product) }}
-                        </span>
-                        <span class="whitespace-nowrap text-[10px] font-black text-slate-900 sm:text-xs lg:text-base">
-                          {{ productDiscountedPrice(product) }}
-                        </span>
-                      </div>
-
-                      <div class="mt-2 flex items-center justify-between gap-2 text-[10px] font-black sm:text-xs lg:text-sm">
-                        <span class="min-w-0 truncate whitespace-nowrap leading-none text-slate-500">
-                          {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
-                        </span>
-                        <button
-                          type="button"
-                          [disabled]="isProductOutOfStock(product)"
-                          (click)="$event.stopPropagation(); onProductCardAction(product)"
-                          class="inline-flex h-7 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-amber-300 bg-[#fff8e6] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#8a4f20] transition hover:bg-[#fff0c2] disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 sm:h-8 sm:px-3 sm:py-1.5 sm:text-[10px] sm:tracking-[0.12em] lg:h-auto lg:px-4 lg:py-2 lg:text-xs lg:tracking-[0.14em]"
-                        >
-                          <span class="sm:hidden">{{ hasSingleVariant(product) ? 'Add To Cart' : 'OPTIONS' }}</span>
-                          <span class="hidden sm:inline">{{ productCardActionLabel(product) }}</span>
-                        </button>
-                      </div>
-                    </div>
-                  </article>
+                  <app-product-card
+                    *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
+                    [product]="product"
+                    [isWishlisted]="isWishlisted(product)"
+                    [wishlistBusy]="wishlistBusyId === product._id"
+                    [actionLabel]="productCardActionLabel(product)"
+                    [imageUrl]="productImage(product)"
+                    [originalPriceText]="productOriginalPrice(product)"
+                    [discountedPriceText]="productDiscountedPrice(product)"
+                    [variantCount]="(product.variants || []).length"
+                    [isOutOfStock]="isProductOutOfStock(product)"
+                    (productClick)="openProduct($event)"
+                    (wishlistToggle)="toggleWishlist($event)"
+                    (actionClick)="onProductCardAction($event)"
+                  />
                 </div>
 
-              <div *ngIf="catalogTotalItems > pageSize" class="pagination-wrap mt-6">
-                <p class="text-sm font-semibold text-slate-500">
-                  Showing {{ paginationStartIndex() }}-{{ paginationEndIndex() }} of {{ totalProductCount() }} products
-                </p>
-
-                  <div class="pagination-nav mt-4">
-                    <button
-                      type="button"
-                      class="pagination-button pagination-button-mobile"
-                      [disabled]="currentPage === 1"
-                      (click)="changePage(currentPage - 1)"
-                    >
-                      Prev
-                    </button>
-
-                    <button
-                      type="button"
-                      class="pagination-button pagination-button-mobile"
-                      [disabled]="currentPage === totalPages"
-                      (click)="changePage(currentPage + 1)"
-                    >
-                      Next
-                    </button>
-                  </div>
-
-                  <div class="pagination-pages">
-                      <button
-                        *ngFor="let page of visiblePages(); trackBy: trackByPage"
-                        type="button"
-                        class="pagination-button pagination-button-page"
-                        [class.pagination-button-active]="page === currentPage"
-                        [class.bg-white]="page !== currentPage"
-                        [class.text-slate-600]="page !== currentPage"
-                        [class.border-slate-200]="page !== currentPage"
-                        (click)="changePage(page)"
-                      >
-                        {{ page }}
-                      </button>
-                  </div>
-                </div>
+              <app-catalog-pagination
+                [showPagination]="catalogTotalItems > pageSize"
+                [currentPage]="currentPage"
+                [totalPages]="totalPages"
+                [visiblePages]="visiblePages()"
+                [totalProductCount]="totalProductCount()"
+                [startIndex]="paginationStartIndex()"
+                [endIndex]="paginationEndIndex()"
+                (pageChange)="changePage($event)"
+              />
               </ng-container>
             </main>
           </div>
@@ -458,109 +284,32 @@ interface LandingCategoryNode extends CustomerLandingCategory {
 
           <div class="rounded-[1.6rem] border border-slate-200 bg-slate-50/80 p-4 shadow-sm">
             <div class="space-y-4">
-              <label class="block">
-                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
-                <select
-                  [(ngModel)]="selectedCategorySlug"
-                  name="mobileSelectedCategorySlug"
-                  (ngModelChange)="onCatalogFilterChange()"
-                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                >
-                  <option value="all">All categories</option>
-                  <option *ngFor="let category of sidebarCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
-                    {{ categoryLabel(category) }}
-                  </option>
-                </select>
-              </label>
+              <app-catalog-filter-form
+                [selectedCategorySlug]="selectedCategorySlug"
+                [selectedBrand]="selectedBrand"
+                [sortBy]="sortBy"
+                [minPrice]="minPrice"
+                [maxPrice]="maxPrice"
+                [availabilityFilter]="availabilityFilter"
+                [ratingFilter]="ratingFilter"
+                [sidebarCategories]="sidebarCategories"
+                [brandOptions]="brandOptions()"
+                [sortOptions]="sortOptions"
+                [availabilityOptions]="availabilityOptions"
+                [ratingOptions]="ratingOptions"
+                (selectedCategorySlugChange)="selectedCategorySlug = $event"
+                (selectedBrandChange)="selectedBrand = $event"
+                (sortByChange)="sortBy = $event"
+                (minPriceChange)="minPrice = $event"
+                (maxPriceChange)="maxPrice = $event"
+                (availabilityFilterChange)="availabilityFilter = $event"
+                (ratingFilterChange)="ratingFilter = $event"
+                (filterChange)="onCatalogFilterChange()"
+              />
 
               <p class="text-[11px] font-semibold leading-5 text-slate-500">
                 Parent categories include all of their child category products.
               </p>
-
-              <label class="block">
-                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Brand</span>
-                <select
-                  [(ngModel)]="selectedBrand"
-                  name="mobileSelectedBrand"
-                  (ngModelChange)="onCatalogFilterChange()"
-                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                >
-                  <option value="all">All brands</option>
-                  <option *ngFor="let brand of brandOptions(); trackBy: trackByValue" [value]="brand">
-                    {{ brand }}
-                  </option>
-                </select>
-              </label>
-
-              <label class="block">
-                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Sort by</span>
-                <select
-                  [(ngModel)]="sortBy"
-                  name="mobileSidebarSortBy"
-                  (ngModelChange)="onCatalogFilterChange()"
-                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                >
-                  <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
-              </label>
-
-              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label class="block">
-                  <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Min price</span>
-                  <input
-                    [(ngModel)]="minPrice"
-                    name="mobileMinPrice"
-                    (ngModelChange)="onCatalogFilterChange()"
-                    type="number"
-                    min="0"
-                    placeholder="0"
-                    class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                  />
-                </label>
-
-                <label class="block">
-                  <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Max price</span>
-                  <input
-                    [(ngModel)]="maxPrice"
-                    name="mobileMaxPrice"
-                    (ngModelChange)="onCatalogFilterChange()"
-                    type="number"
-                    min="0"
-                    placeholder="Any"
-                    class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                  />
-                </label>
-              </div>
-
-              <label class="block">
-                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Availability</span>
-                <select
-                  [(ngModel)]="availabilityFilter"
-                  name="mobileAvailabilityFilter"
-                  (ngModelChange)="onCatalogFilterChange()"
-                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                >
-                  <option *ngFor="let option of availabilityOptions; trackBy: trackByFilterOption" [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
-              </label>
-
-              <label class="block">
-                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Minimum rating</span>
-                <select
-                  [(ngModel)]="ratingFilter"
-                  name="mobileRatingFilter"
-                  (ngModelChange)="onCatalogFilterChange()"
-                  class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                >
-                  <option *ngFor="let option of ratingOptions; trackBy: trackByFilterOption" [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
-              </label>
             </div>
 
             <div class="mt-5 flex items-center gap-3">
@@ -885,9 +634,9 @@ export class ProductsPageComponent implements OnInit {
       next: (response) => {
         this.loadingCategories = false;
         this.catalogCategories = Array.isArray(response?.data) ? response.data : [];
-        this.catalogCategoryTree = this.buildCategoryTree(this.catalogCategories);
+        this.catalogCategoryTree = buildCategoryTree(this.catalogCategories);
         this.expandedCategoryIds = new Set<string>();
-        this.visibleCatalogCategories = this.buildVisibleCategoryList();
+        this.visibleCatalogCategories = buildVisibleCategoryList(this.catalogCategoryTree, this.expandedCategoryIds);
         this.catalogCategories = [...this.catalogCategories].sort((a, b) => {
           const levelDiff = Number(a.level || 0) - Number(b.level || 0);
           if (levelDiff !== 0) return levelDiff;
@@ -1087,14 +836,7 @@ export class ProductsPageComponent implements OnInit {
   }
 
   categoryCount(category: CustomerLandingCategory): number {
-    const key = this.normalizeCategoryKey(category.slug || category.name);
-    const node = this.findCategoryNodeBySlug(key);
-
-    if (!node) {
-      return 0;
-    }
-
-    return this.countProductsForNode(node);
+    return getCategoryProductCount(category, this.catalogCategoryTree, (node) => this.productsForNode(node));
   }
 
   categoryImage(category: CustomerLandingCategory): string {
@@ -1110,39 +852,21 @@ export class ProductsPageComponent implements OnInit {
   }
 
   pageSubtitle(): string {
-    if (this.viewMode === 'search' && this.searchQuery.trim()) {
-      return this.hasActiveFilters()
-        ? `Showing search results for "${this.searchQuery.trim()}" with active filters.`
-        : `Showing search results for "${this.searchQuery.trim()}".`;
-    }
-
-    if (this.selectedCategorySlug === 'all') {
-      return this.hasActiveFilters()
-        ? 'Browse premium dry fruits with filters and sorting.'
-        : 'Browse premium dry fruits by type or search for a specific pack.';
-    }
-
-    const selectedCategory = this.catalogCategories.find(
-      (category) => this.normalizeCategoryKey(category.slug || category.name) === this.normalizeCategoryKey(this.selectedCategorySlug)
-    );
-
-    return selectedCategory?.name
-      ? this.hasActiveFilters()
-        ? `Browsing ${selectedCategory.name} with filters applied.`
-        : `Browsing ${selectedCategory.name}.`
-      : 'Browse premium dry fruits by type or search for a specific pack.';
+    return buildPageSubtitle({
+      viewMode: this.viewMode,
+      searchQuery: this.searchQuery,
+      selectedCategorySlug: this.selectedCategorySlug,
+      hasActiveFilters: this.hasActiveFilters(),
+      catalogCategories: this.catalogCategories
+    });
   }
 
   selectedCategoryDescription(): string {
-    if (this.selectedCategorySlug === 'all' || this.viewMode === 'search') {
-      return '';
-    }
-
-    const selectedCategory = this.catalogCategories.find(
-      (category) => this.normalizeCategoryKey(category.slug || category.name) === this.normalizeCategoryKey(this.selectedCategorySlug)
-    );
-
-    return String(selectedCategory?.description || '').trim();
+    return buildSelectedCategoryDescription({
+      viewMode: this.viewMode,
+      selectedCategorySlug: this.selectedCategorySlug,
+      catalogCategories: this.catalogCategories
+    });
   }
 
   trackByCategoryId(_: number, category: CustomerLandingCategory): string {
@@ -1165,22 +889,8 @@ export class ProductsPageComponent implements OnInit {
     return page;
   }
 
-  trackByValue(_: number, value: string): string {
-    return value;
-  }
-
   trackBySortOption(_: number, option: { value: string; label: string }): string {
     return option.value;
-  }
-
-  trackByFilterOption(_: number, option: { value: string; label: string }): string {
-    return option.value;
-  }
-
-  categoryLabel(category: CustomerLandingCategory): string {
-    const level = Number(category.level || 0);
-    const indent = level > 0 ? `${'  '.repeat(level)}- ` : '';
-    return `${indent}${category.name}`;
   }
 
   private normalizeCategoryKey(value: string): string {
@@ -1203,6 +913,27 @@ export class ProductsPageComponent implements OnInit {
     this.maxPrice = '';
     this.currentPage = 1;
     this.viewMode = 'landing';
+    this.refreshCatalogListing();
+  }
+
+  handleActiveFilterRemoval(filter: 'selectedBrand' | 'price' | 'availabilityFilter' | 'ratingFilter'): void {
+    switch (filter) {
+      case 'selectedBrand':
+        this.selectedBrand = 'all';
+        break;
+      case 'price':
+        this.minPrice = '';
+        this.maxPrice = '';
+        break;
+      case 'availabilityFilter':
+        this.availabilityFilter = 'all';
+        break;
+      case 'ratingFilter':
+        this.ratingFilter = 'all';
+        break;
+    }
+
+    this.currentPage = 1;
     this.refreshCatalogListing();
   }
 
@@ -1330,56 +1061,11 @@ export class ProductsPageComponent implements OnInit {
   }
 
   private buildCategoryTree(categories: CustomerLandingCategory[]): LandingCategoryNode[] {
-    const nodeMap = new Map<string, LandingCategoryNode>();
-
-    categories.forEach((category) => {
-      nodeMap.set(category._id, {
-        ...category,
-        children: []
-      });
-    });
-
-    const roots: LandingCategoryNode[] = [];
-
-    nodeMap.forEach((node) => {
-      const parentId = node.parentCategory ? String(node.parentCategory) : '';
-      if (parentId && nodeMap.has(parentId)) {
-        nodeMap.get(parentId)?.children.push(node);
-      } else {
-        roots.push(node);
-      }
-    });
-
-    const sortNodes = (nodes: LandingCategoryNode[]): LandingCategoryNode[] => {
-      return nodes
-        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
-        .map((node) => ({
-          ...node,
-          children: sortNodes(node.children || [])
-        }));
-    };
-
-    return sortNodes(roots);
+    return buildCategoryTree(categories);
   }
 
   private buildVisibleCategoryList(): LandingCategoryNode[] {
-    const visible: LandingCategoryNode[] = [];
-
-    const visit = (nodes: LandingCategoryNode[], depth = 0): void => {
-      nodes.forEach((node) => {
-        visible.push({
-          ...node,
-          level: depth
-        });
-
-        if (node.children.length > 0 && this.expandedCategoryIds.has(node._id)) {
-          visit(node.children, depth + 1);
-        }
-      });
-    };
-
-    visit(this.catalogCategoryTree);
-    return visible;
+    return buildVisibleCategoryList(this.catalogCategoryTree, this.expandedCategoryIds);
   }
 
   private toggleCategoryExpansion(category: LandingCategoryNode): void {
@@ -1393,21 +1079,7 @@ export class ProductsPageComponent implements OnInit {
   }
 
   private findCategoryNodeBySlug(slug: string): LandingCategoryNode | null {
-    const targetSlug = this.normalizeCategoryKey(slug);
-    const stack = [...this.catalogCategoryTree];
-
-    while (stack.length > 0) {
-      const current = stack.shift();
-      if (!current) continue;
-
-      if (this.normalizeCategoryKey(current.slug || current.name) === targetSlug) {
-        return current;
-      }
-
-      stack.unshift(...(current.children || []));
-    }
-
-    return null;
+    return findCategoryNodeBySlug(this.catalogCategoryTree, slug);
   }
 
   private getSelectedCategoryKeys(): Set<string> {
@@ -1420,29 +1092,11 @@ export class ProductsPageComponent implements OnInit {
   }
 
   private collectCategoryKeys(node: LandingCategoryNode): Set<string> {
-    const keys = new Set<string>();
-    const visit = (current: LandingCategoryNode): void => {
-      const slug = this.normalizeCatalogKey(current.slug || '');
-      const name = this.normalizeCatalogKey(current.name || '');
-
-      if (slug) keys.add(slug);
-      if (name) keys.add(name);
-
-      (current.children || []).forEach(visit);
-    };
-
-    visit(node);
-    return keys;
+    return collectCategoryKeys(node);
   }
 
   private countProductsForNode(node: LandingCategoryNode): number {
-    const directCount = this.productsForNode(node).length;
-
-    if (!node.children.length) {
-      return directCount;
-    }
-
-    return node.children.reduce((total, child) => total + this.countProductsForNode(child), directCount);
+    return countProductsForNode(node, (targetNode) => this.productsForNode(targetNode));
   }
 
   private refreshSidebarCategories(): void {
@@ -1455,34 +1109,14 @@ export class ProductsPageComponent implements OnInit {
   }
 
   private buildCatalogMessage(query: string): string {
-    const trimmedQuery = String(query || '').trim();
-    const totalItems = this.totalProductCount();
-
-    if (trimmedQuery) {
-      return totalItems
-        ? `${totalItems} product${totalItems === 1 ? '' : 's'} found for "${trimmedQuery}".`
-        : `No products matched "${trimmedQuery}".`;
-    }
-
-    const selectedCategory = this.findCategoryNodeBySlug(this.selectedCategorySlug);
-
-    if (this.selectedCategorySlug === 'all') {
-      if (this.hasActiveFilters()) {
-        return `Showing ${totalItems} filtered product${totalItems === 1 ? '' : 's'} across the catalog.`;
-      }
-
-      return this.landingCategories.length
-        ? `Showing ${totalItems} curated product${totalItems === 1 ? '' : 's'} across ${this.landingCategories.length} categorie${this.landingCategories.length === 1 ? 'y' : 's'}.`
-        : 'Browse premium dry fruits by type or search for a specific pack.';
-    }
-
-    if (selectedCategory?.name) {
-      return this.hasActiveFilters()
-        ? `Browsing ${selectedCategory.name} with ${totalItems} filtered product${totalItems === 1 ? '' : 's'}.`
-        : `Browsing ${selectedCategory.name} with ${totalItems} product${totalItems === 1 ? '' : 's'}.`;
-    }
-
-    return 'Browse premium dry fruits by type or search for a specific pack.';
+    return buildCatalogMessage({
+      query,
+      selectedCategorySlug: this.selectedCategorySlug,
+      totalProductCount: this.totalProductCount(),
+      hasActiveFilters: this.hasActiveFilters(),
+      landingCategoriesCount: this.landingCategories.length,
+      catalogCategoryTree: this.catalogCategoryTree
+    });
   }
 
   private refreshCatalogMessage(): void {

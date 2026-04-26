@@ -17,9 +17,11 @@ const uploadOnCloudinary = async (localFilePath) => {
         const response = await cloudinary.uploader.upload(localFilePath, {
             resource_type: "auto"
         })
-        console.log("File successfully uploaded on cloudinary")
 
-        fs.unlinkSync(localFilePath)
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath)
+        }
+
         return response;
 
     } catch (error) {
@@ -27,9 +29,23 @@ const uploadOnCloudinary = async (localFilePath) => {
         if (localFilePath && fs.existsSync(localFilePath)) {
             fs.unlinkSync(localFilePath);
         }
-        console.error(error)
-        throw new ApiError(500, "File Upload Failed")
+
+        throw new ApiError(500, error?.message || "File Upload Failed")
     }
 }
 
-export { uploadOnCloudinary }
+const deleteCloudinaryImage = async (publicId) => {
+    if (!publicId) {
+        return null
+    }
+
+    try {
+        return await cloudinary.uploader.destroy(publicId, {
+            resource_type: "image"
+        })
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Cloudinary cleanup failed")
+    }
+}
+
+export { uploadOnCloudinary, deleteCloudinaryImage }

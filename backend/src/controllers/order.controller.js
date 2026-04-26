@@ -9,7 +9,6 @@ import { Cart } from "../models/cart.model.js";
 import { Vendor } from "../models/vendor.model.js";
 import { Shipment } from "../models/shipment.model.js";
 import crypto from "crypto";
-import { createShipmentForOrder } from "../services/dhl.service.js";
 import { sendShipmentCreatedEmail } from "../utils/shipmentNotifications.js";
 import { syncLowStockNotificationsForProduct } from "../utils/vendorNotifications.js";
 
@@ -50,6 +49,14 @@ const isExpiredPendingOrder = (order) => {
     }
 
     return Date.now() - createdAt > PENDING_ORDER_EXPIRY_MS;
+};
+
+const getUserRoles = (user) => {
+    if (!user?.role) {
+        return [];
+    }
+
+    return Array.isArray(user.role) ? user.role : [user.role];
 };
 
 const cleanupExpiredPendingOrders = async (userId) => {
@@ -127,7 +134,39 @@ const createOrder = asyncHandler(async (req, res) => {
 const verifyPayment = asyncHandler(async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
 
-    // Step 1: Verify Signature (Standard Crypto Logic)
+    if (!req.user) {
+        throw new ApiError(403, "Unauthorized access");
+    }
+
+    if (!orderId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        throw new ApiError(400, "Missing payment verification details.");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        throw new ApiError(400, "Invalid order id.");
+    }
+
+    // Step 1: Find the Order and verify ownership before trusting payment data
+    const order = await Order.findById(orderId);
+    if (!order) throw new ApiError(404, "Order record not found.");
+
+    if (order.user?.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You can only verify payment for your own order.");
+    }
+
+    if (!order.paymentInfo?.id) {
+        throw new ApiError(400, "Order payment record is missing.");
+    }
+
+    if (order.paymentInfo.status === "Paid") {
+        throw new ApiError(400, "Payment has already been verified for this order.");
+    }
+
+    if (order.paymentInfo.id !== razorpay_order_id) {
+        throw new ApiError(400, "Payment verification failed. Order mismatch detected.");
+    }
+
+    // Step 2: Verify Signature (Standard Crypto Logic)
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET).update(sign).digest("hex");
 
@@ -135,53 +174,100 @@ const verifyPayment = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Payment verification failed. Invalid signature.");
     }
 
-    // Step 2: Find the Order
-    const order = await Order.findById(orderId);
-    if (!order) throw new ApiError(404, "Order record not found.");
-
-    // Step 3: Atomic Stock Check & Update
-    for (const item of order.orderItems) {
-        const updatedProduct = await Product.findOneAndUpdate(
-            { 
-                _id: item.product, 
-                "variants._id": item.variantId,
-                "variants.productStock": { $gte: item.quantity } // ONLY update if enough stock
-            },
-            { 
-                $inc: { "variants.$.productStock": -item.quantity } 
-            },
-            { returnDocument: 'after' }
-        );
-
-        if (!updatedProduct) {
-            // Very rare case: Someone else bought it while you were paying
-            // Here you would normally trigger a refund logic
-            throw new ApiError(400, "Payment successful, but item went out of stock. Contact support for refund.");
-        }
-
-        await syncLowStockNotificationsForProduct(updatedProduct);
-    }
-
-    // Step 4: Finalize Order
-    order.paymentInfo.status = "Paid";
-    order.paymentInfo.paymentId = razorpay_payment_id;
-    order.orderStatus = "Processing";
-    order.paidAt = Date.now();
-    await order.save();
-
-    // Step 5: Clear User's Cart
-    await Cart.findOneAndDelete({ user: req.user._id });
-
-    const notifiedOrder = await Order.findById(order._id).populate("user", "fullName username email");
+    const session = await mongoose.startSession();
     let shipment = null;
+    let updatedProducts = [];
 
     try {
-        shipment = await createShipmentForOrder(notifiedOrder);
+        session.startTransaction();
+
+        // Step 3: Atomic Stock Check & Update
+        for (const item of order.orderItems) {
+            const updatedProduct = await Product.findOneAndUpdate(
+                {
+                    _id: item.product,
+                    "variants._id": item.variantId,
+                    "variants.productStock": { $gte: item.quantity } // ONLY update if enough stock
+                },
+                {
+                    $inc: { "variants.$.productStock": -item.quantity }
+                },
+                { returnDocument: "after", session }
+            );
+
+            if (!updatedProduct) {
+                // Very rare case: Someone else bought it while you were paying
+                // Here you would normally trigger a refund logic
+                throw new ApiError(400, "Payment successful, but item went out of stock. Contact support for refund.");
+            }
+
+            updatedProducts.push(updatedProduct);
+        }
+
+        // Step 4: Finalize Order
+        order.paymentInfo.status = "Paid";
+        order.paymentInfo.paymentId = razorpay_payment_id;
+        order.orderStatus = "Processing";
+        order.paidAt = Date.now();
+        await order.save({ session });
+
+        // Step 5: Clear User's Cart
+        await Cart.findOneAndDelete({ user: req.user._id }).session(session);
+
+        const existingShipment = await Shipment.findOne({ order: order._id }).session(session);
+
+        if (existingShipment) {
+            shipment = existingShipment;
+        } else {
+            const trackingNumber = process.env.DELIVERY_MODE === "production"
+                ? ""
+                : `TEST-DHL-${order._id.toString().slice(-6).toUpperCase()}-${Date.now().toString().slice(-8)}`;
+
+            const [createdShipment] = await Shipment.create([{
+                order: order._id,
+                courierName: "DHL",
+                trackingNumber,
+                shipmentStatus: "Created",
+                estimatedDeliveryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+                isTestMode: process.env.DELIVERY_MODE !== "production",
+                trackingEvents: [
+                    {
+                        status: "Shipment Created",
+                        description: "Shipment created after payment verification",
+                        eventTime: new Date()
+                    }
+                ]
+            }], { session });
+
+            shipment = createdShipment;
+        }
+
+        await session.commitTransaction();
     } catch (error) {
-        console.error("Shipment creation failed:", error.message);
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        session.endSession();
     }
 
+    for (const updatedProduct of updatedProducts) {
+        try {
+            await syncLowStockNotificationsForProduct(updatedProduct);
+        } catch (error) {
+            console.error("Low stock notification sync failed:", error.message);
+        }
+    }
+
+    let notifiedOrder = null;
     if (shipment) {
+        try {
+            notifiedOrder = await Order.findById(order._id).populate("user", "fullName username email");
+        } catch (error) {
+            console.error("Shipment email lookup failed:", error.message);
+        }
+    }
+
+    if (notifiedOrder && shipment) {
         try {
             await sendShipmentCreatedEmail({
                 order: notifiedOrder,
@@ -192,11 +278,11 @@ const verifyPayment = asyncHandler(async (req, res) => {
         }
     }
 
-    const responseOrder = order.toObject ? order.toObject() : { ...order };
-    responseOrder.shipment = shipment ? (shipment.toObject ? shipment.toObject() : { ...shipment }) : null;
+    const responsePayload = order.toObject ? order.toObject() : { ...order };
+    responsePayload.shipment = shipment ? (shipment.toObject ? shipment.toObject() : { ...shipment }) : null;
 
     return res.status(200).json(
-        new ApiResponse(200, responseOrder, "Payment verified and inventory updated!")
+        new ApiResponse(200, responsePayload, "Payment verified and inventory updated!")
     );
 });
 
@@ -330,8 +416,24 @@ const getOrderDetails = asyncHandler(async (req, res) => {
 const cancelOrder = asyncHandler(async (req, res) => {
     const { orderId } = req.params;
 
+    if (!req.user) {
+        throw new ApiError(403, "Unauthorized access");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        throw new ApiError(400, "Invalid order id.");
+    }
+
     const order = await Order.findById(orderId);
     if (!order) throw new ApiError(404, "Order not found");
+
+    const userRoles = getUserRoles(req.user);
+    const canManageOrders = userRoles.includes("admin") || userRoles.includes("vendor");
+    const isOrderOwner = order.user?.toString() === req.user._id.toString();
+
+    if (!isOrderOwner && !canManageOrders) {
+        throw new ApiError(403, "You are not allowed to cancel this order.");
+    }
 
     if (order.orderStatus !== "Processing") {
         throw new ApiError(400, "Order cannot be cancelled at this stage");
@@ -405,15 +507,110 @@ const getCustomerOrdersForVendor = asyncHandler(async (req, res) => {
 
 // Get every single order (For Admin Dashboard)
 const getAllOrders = asyncHandler(async (req, res) => {
-    const orders = await Order.find().populate("user", "fullName email").sort("-createdAt");
-    
-    // Summary calculation for Admin
-    const totalRevenue = orders.reduce((sum, order) => 
-        order.paymentInfo.status === "Paid" ? sum + order.totalAmount : sum, 0
-    );
+    const {
+        page = 1,
+        limit = 10,
+        status = "",
+        paymentStatus = "",
+        dateFrom = "",
+        dateTo = "",
+        sort = ""
+    } = req.query;
+
+    const normalizedPage = Math.max(1, parseInt(page, 10) || 1);
+    const normalizedLimit = Math.min(100, Math.max(1, parseInt(limit, 10) || 10));
+    const skip = (normalizedPage - 1) * normalizedLimit;
+
+    const query = {};
+
+    if (status) {
+        query.orderStatus = status;
+    }
+
+    if (paymentStatus) {
+        query["paymentInfo.status"] = paymentStatus;
+    }
+
+    if (dateFrom || dateTo) {
+        query.createdAt = {};
+
+        if (dateFrom) {
+            const start = new Date(dateFrom);
+            if (Number.isNaN(start.getTime())) {
+                throw new ApiError(400, "Invalid dateFrom");
+            }
+            query.createdAt.$gte = start;
+        }
+
+        if (dateTo) {
+            const end = new Date(dateTo);
+            if (Number.isNaN(end.getTime())) {
+                throw new ApiError(400, "Invalid dateTo");
+            }
+            end.setHours(23, 59, 59, 999);
+            query.createdAt.$lte = end;
+        }
+    }
+
+    const sortMap = {
+        newest: { createdAt: -1 },
+        oldest: { createdAt: 1 },
+        totalAmount_desc: { totalAmount: -1, createdAt: -1 },
+        totalAmount_asc: { totalAmount: 1, createdAt: -1 },
+        paidAt_desc: { paidAt: -1, createdAt: -1 },
+        paidAt_asc: { paidAt: 1, createdAt: 1 }
+    };
+
+    const sortBy = sortMap[sort] || { createdAt: -1 };
+
+    const baseSelect = "user orderItems orderStatus paymentInfo totalAmount itemsPrice shippingPrice paidAt createdAt shippingAddress";
+
+    const [orders, totalOrders, revenueSummary] = await Promise.all([
+        Order.find(query)
+            .select(baseSelect)
+            .populate("user", "fullName email phone")
+            .sort(sortBy)
+            .skip(skip)
+            .limit(normalizedLimit)
+            .lean(),
+        Order.countDocuments(query),
+        Order.aggregate([
+            { $match: query },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$paymentInfo.status", "Paid"] },
+                                "$totalAmount",
+                                0
+                            ]
+                        }
+                    }
+                }
+            }
+        ])
+    ]);
+
+    const totalPages = Math.ceil(totalOrders / normalizedLimit);
+    const totalRevenue = revenueSummary[0]?.totalRevenue || 0;
 
     return res.status(200).json(
-        new ApiResponse(200, { orders, totalRevenue }, "All orders fetched for Admin")
+        new ApiResponse(
+            200,
+            {
+                orders,
+                pagination: {
+                    page: normalizedPage,
+                    limit: normalizedLimit,
+                    totalOrders,
+                    totalPages
+                },
+                totalRevenue
+            },
+            "All orders fetched for Admin"
+        )
     );
 });
 

@@ -3,6 +3,7 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import { Address } from "../models/address.model.js"
 import {User} from "../models/user.model.js"
+import mongoose from "mongoose"
 
 const addNewAddress = asyncHandler(async (req, res) =>{
     
@@ -75,7 +76,25 @@ const deleteExistingAddress = asyncHandler(async (req, res) =>{
     const {addressId} = req.params
     const userId = req.user?._id 
 
-    const deletedAddress = await Address.findByIdAndDelete({
+    if (!userId) {
+        throw new ApiError(403, "Unauthorized request")
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(addressId)) {
+        throw new ApiError(400, "Invalid address id")
+    }
+
+    const existingAddress = await Address.findById(addressId)
+
+    if (!existingAddress) {
+        throw new ApiError(404, "Address not found")
+    }
+
+    if (existingAddress.user?.toString() !== userId.toString()) {
+        throw new ApiError(403, "Unauthorized request")
+    }
+
+    const deletedAddress = await Address.findOneAndDelete({
         _id: addressId,
         user: userId
     })

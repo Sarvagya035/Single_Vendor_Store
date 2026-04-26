@@ -216,7 +216,7 @@ const resolveReportWindow = (range, startDate, endDate) => {
 };
 
 const downloadOrderReports = asyncHandler(async (req, res) => {
-    const { range, format, startDate, endDate } = req.query;
+    const { range, format, startDate, endDate, dateFrom, dateTo, status } = req.query;
     const normalizedFormat = String(format || "csv").toLowerCase();
 
     if (!["csv", "pdf"].includes(normalizedFormat)) {
@@ -224,14 +224,62 @@ const downloadOrderReports = asyncHandler(async (req, res) => {
     }
 
     const reportWindow = resolveReportWindow(range, startDate, endDate);
-    const paidOrders = await Order.find({ "paymentInfo.status": "Paid" })
-        .populate("user", "fullName username email")
-        .sort("-createdAt");
+    const effectiveFrom = dateFrom || formatDateOnly(reportWindow.startDate);
+    const effectiveTo = dateTo || formatDateOnly(reportWindow.endDate);
 
-    const filteredOrders = paidOrders.filter((order) => {
-        const effectiveDate = order.paidAt || order.createdAt;
-        return effectiveDate >= reportWindow.startDate && effectiveDate <= reportWindow.endDate;
-    });
+    const orderQuery = {
+        "paymentInfo.status": "Paid"
+    };
+
+    if (status) {
+        orderQuery.orderStatus = status;
+    }
+
+    if (effectiveFrom || effectiveTo) {
+        orderQuery.paidAt = {};
+
+        if (effectiveFrom) {
+            const parsedFrom = new Date(effectiveFrom);
+            if (Number.isNaN(parsedFrom.getTime())) {
+                throw new ApiError(400, "Invalid dateFrom");
+            }
+            parsedFrom.setHours(0, 0, 0, 0);
+            orderQuery.paidAt.$gte = parsedFrom;
+        }
+
+        if (effectiveTo) {
+            const parsedTo = new Date(effectiveTo);
+            if (Number.isNaN(parsedTo.getTime())) {
+                throw new ApiError(400, "Invalid dateTo");
+            }
+            parsedTo.setHours(23, 59, 59, 999);
+            orderQuery.paidAt.$lte = parsedTo;
+        }
+    } else {
+        orderQuery.$or = [
+            {
+                paidAt: {
+                    $gte: reportWindow.startDate,
+                    $lte: reportWindow.endDate
+                }
+            },
+            {
+                paidAt: null,
+                createdAt: {
+                    $gte: reportWindow.startDate,
+                    $lte: reportWindow.endDate
+                }
+            }
+        ];
+    }
+
+    const paidOrders = await Order.find(orderQuery)
+        .select("user orderItems orderStatus paidAt createdAt totalAmount paymentInfo")
+        .populate("user", "fullName email phone")
+        .sort({ paidAt: -1, createdAt: -1 })
+        .lean();
+
+    const filteredOrders = paidOrders;
 
     const summary = {
         totalOrders: filteredOrders.length,

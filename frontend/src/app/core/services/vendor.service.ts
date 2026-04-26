@@ -20,7 +20,7 @@ import {
 export class VendorService {
   private apiUrl = `${environment.apiUrl}/vendor`;
   private adminUrl = `${environment.apiUrl}/admin`;
-  private productUrl = `${environment.apiUrl}/product`;
+  private productUrl = `${environment.apiUrl}/products`;
   private categoryUrl = `${environment.apiUrl}/category`;
   private orderUrl = `${environment.apiUrl}/orders`;
   private wishlistUrl = `${environment.apiUrl}/wishlist`;
