@@ -18,6 +18,7 @@ import {
 } from '../../core/models/customer.models';
 import { ProductReview, ProductReviewForm, ProductReviewStat } from '../../core/models/review.models';
 import { ProductGalleryComponent } from './product-gallery/product-gallery.component';
+import { ProductCardVariantActionEvent } from './components/product-card/product-card.component';
 import { ProductRelatedProductsSectionComponent } from './components/product-related-products-section/product-related-products-section.component';
 import { ProductReviewsSummaryComponent } from './components/product-reviews-summary/product-reviews-summary.component';
 import { ProductReviewsListComponent } from './components/product-reviews-list/product-reviews-list.component';
@@ -32,6 +33,7 @@ import {
   buildVariantLabel,
   buildVariantLabels
 } from './utils/product-detail-variants.helpers';
+import { resolveVariantImage } from './utils/product-detail-variants.helpers';
 import {
   ratingBreakdown as buildRatingBreakdown,
   reviewTotalCount as getReviewTotalCount
@@ -60,13 +62,14 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
         <ng-container *ngIf="product && !loading">
           <div class="mt-8 rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-tight shadow-[0_24px_60px_rgba(47,27,20,0.08)]">
             <div class="grid gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:gap-8">
-              <app-product-gallery
-                [productName]="product.productName"
-                [activeImage]="activeImage()"
-                [selectedImage]="selectedImage"
-                [images]="galleryImages()"
-                (imageSelected)="selectedImage = $event"
-              />
+                <app-product-gallery
+                  [productName]="product.productName"
+                  [activeImage]="activeImage()"
+                  [selectedImage]="selectedImage"
+                  [images]="galleryImages()"
+                  [offerBadgeText]="offerBadgeText()"
+                  (imageSelected)="selectedImage = $event"
+                />
 
               <app-product-purchase-panel
                 [product]="product"
@@ -98,6 +101,8 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
             [wishlistedProductIds]="wishlistedProductIds"
             (productClick)="openProduct($event)"
             (wishlistToggle)="toggleRelatedWishlist($event)"
+            (addToCart)="handleRelatedProductCardAddToCart($event)"
+            (buyNow)="handleRelatedProductCardBuyNow($event)"
           />
 
           <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
@@ -339,7 +344,7 @@ export class ProductDetailComponent implements OnInit {
 
   onVariantChange(variantId: string): void {
     this.selectedVariantId = variantId;
-    this.selectedImage = this.activeImage();
+    this.selectedImage = resolveVariantImage(this.selectedVariant()) || this.product?.mainImages?.[0] || '';
   }
 
   galleryImages(): string[] {
@@ -536,6 +541,46 @@ export class ProductDetailComponent implements OnInit {
     return buildDiscountedPriceLabel(this.product, this.selectedVariant(), this.formatCurrency.bind(this));
   }
 
+  offerBadgeText(): string {
+    const selectedVariant = this.selectedVariant();
+    const offerText = this.getTextField(selectedVariant, ['offerText', 'offerDescription', 'offer']) ||
+      this.getTextField(this.product, ['offerText', 'offerDescription', 'offer']);
+
+    if (offerText) {
+      return offerText;
+    }
+
+    const originalPrice = this.getNumericField(selectedVariant, ['productPrice', 'mrp', 'originalPrice', 'price']) ??
+      this.getNumericField(this.product, ['basePrice', 'mrp', 'originalPrice', 'price']);
+    const discountedPrice = this.getNumericField(selectedVariant, ['finalPrice', 'salePrice', 'discountedPrice', 'price']) ??
+      this.getNumericField(this.product, ['basePrice', 'salePrice', 'discountedPrice', 'price']);
+    const discountPercentage =
+      this.getNumericField(selectedVariant, ['discountPercentage']) ??
+      this.getNumericField(this.product, ['discountPercentage']);
+
+    if (typeof originalPrice === 'number' && typeof discountedPrice === 'number' && originalPrice > discountedPrice) {
+      const savedAmount = Math.max(0, Math.round(originalPrice - discountedPrice));
+      const percent = Math.max(0, Math.round(((originalPrice - discountedPrice) / originalPrice) * 100));
+      const parts: string[] = [];
+
+      if (percent > 0) {
+        parts.push(`${percent}% OFF`);
+      }
+
+      if (savedAmount > 0) {
+        parts.push(`Save ₹${savedAmount}`);
+      }
+
+      return parts.length ? parts.join(' · ') : 'Limited time offer';
+    }
+
+    if (typeof discountPercentage === 'number' && discountPercentage > 0) {
+      return `${Math.round(discountPercentage)}% OFF`;
+    }
+
+    return '';
+  }
+
   get existingReview(): ProductReview | null {
     if (!this.user?._id) {
       return null;
@@ -566,6 +611,59 @@ export class ProductDetailComponent implements OnInit {
         this.reviewFormSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
+  }
+
+  handleRelatedProductCardAddToCart(event: ProductCardVariantActionEvent): void {
+    if (!event?.product?._id || !event?.variant?._id) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.guestDataService.addToGuestCart(event.product._id, event.variant._id, 1);
+      this.errorService.showToast('Item saved to this device. Sign in to sync your cart.', 'success');
+      return;
+    }
+
+    this.cartService.addToCart(event.product._id, event.variant._id, 1).subscribe({
+      next: () => {
+        this.errorService.showToast('Item added to cart.', 'success');
+      },
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to add this item to the cart right now.',
+          'error'
+        );
+      }
+    });
+  }
+
+  handleRelatedProductCardBuyNow(event: ProductCardVariantActionEvent): void {
+    if (!event?.product?._id || !event?.variant?._id) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    this.cartService.addToCart(event.product._id, event.variant._id, 1).subscribe({
+      next: () => {
+        this.router.navigate(['/checkout']);
+      },
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
+      }
+    });
   }
 
   submitReview(): void {
@@ -771,6 +869,49 @@ export class ProductDetailComponent implements OnInit {
     groups: CustomerLandingCategoryGroup[]
   ): CustomerCatalogProduct[] {
     return buildSimilarProducts(currentProduct, catalogProducts, groups);
+  }
+
+  private getTextField(
+    source: CustomerCatalogVariant | CustomerCatalogProduct | null | undefined,
+    keys: string[]
+  ): string {
+    if (!source || typeof source !== 'object') {
+      return '';
+    }
+
+    const record = source as Record<string, unknown>;
+    for (const key of keys) {
+      const value = record[key];
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+    }
+
+    return '';
+  }
+
+  private getNumericField(
+    source: CustomerCatalogVariant | CustomerCatalogProduct | null | undefined,
+    keys: string[]
+  ): number | null {
+    if (!source || typeof source !== 'object') {
+      return null;
+    }
+
+    const record = source as Record<string, unknown>;
+    for (const key of keys) {
+      const value = record[key];
+      if (value === null || value === undefined || value === '') {
+        continue;
+      }
+
+      const numeric = Number(value);
+      if (!Number.isNaN(numeric)) {
+        return numeric;
+      }
+    }
+
+    return null;
   }
 }
 

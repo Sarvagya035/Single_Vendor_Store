@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CartActionService } from '../../core/services/cart-action.service';
+import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { ErrorService } from '../../core/services/error.service';
 import { GuestDataService } from '../../core/services/guest-data.service';
@@ -11,11 +12,12 @@ import { StoreProductVariantService } from '../../core/services/store-product-va
 import { WishlistService } from '../../core/services/wishlist.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
 import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
+import { ProductCardComponent, ProductCardVariantActionEvent } from './components/product-card/product-card.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent],
   template: `
     <div class="min-h-[calc(100vh-72px)] bg-slate-50">
       <section class="w-full bg-white">
@@ -164,71 +166,18 @@ import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-mod
           </div>
 
           <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
-            <article
+            <app-product-card
               *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
-              role="link"
-              tabindex="0"
-              (click)="openProduct(product)"
-              (keydown.enter)="openProduct(product)"
-              (keydown.space)="$event.preventDefault(); openProduct(product)"
-                class="group relative rounded-[1.6rem] border border-slate-200 bg-white p-2 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)] md:p-3 lg:p-4"
-            >
-              <button
-                type="button"
-                class="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600 sm:right-4 sm:top-4 sm:h-11 sm:w-11"
-                [disabled]="wishlistBusyId === product._id"
-                [attr.aria-label]="isWishlisted(product) ? 'Remove from wishlist' : 'Save to wishlist'"
-                (click)="$event.stopPropagation(); toggleWishlist(product)"
-                [ngClass]="isWishlisted(product) ? 'border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-[0_14px_28px_rgba(244,63,94,0.24)] ring-rose-100' : ''"
-              >
-                <svg *ngIf="wishlistBusyId !== product._id && !isWishlisted(product)" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
-                </svg>
-                <svg *ngIf="wishlistBusyId !== product._id && isWishlisted(product)" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
-                  <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
-                </svg>
-                <span *ngIf="wishlistBusyId === product._id" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
-              </button>
-
-              <div class="aspect-square overflow-hidden rounded-[1.2rem] border border-slate-200 bg-slate-100 md:rounded-[1.25rem]">
-                <img
-                  [src]="productImage(product)"
-                  [alt]="product.productName"
-                  loading="lazy"
-                  decoding="async"
-                  class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                />
-              </div>
-
-              <div class="mt-2 space-y-2 md:mt-3 md:space-y-2 lg:mt-4 lg:space-y-3">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="min-w-0">
-                    <p class="truncate text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 sm:text-[10px] lg:text-[11px]">{{ product.brand || 'Premium Pack' }}</p>
-                    <h4 class="mt-1 line-clamp-2 text-[10px] font-semibold leading-4 text-slate-900 sm:text-[11px] lg:text-lg">{{ product.productName }}</h4>
-                  </div>
-                  <span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold text-slate-900 shadow-sm ring-1 ring-amber-200 sm:px-2.5 sm:py-1 sm:text-[10px] lg:px-3 lg:text-xs">
-                    {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
-                  </span>
-                </div>
-
-                <p class="text-[9px] font-semibold text-slate-500 sm:text-[10px] lg:text-sm">{{ product.categoryDetails?.name || 'Dry fruits & nuts' }}</p>
-
-                <div class="flex items-center justify-between gap-2 pt-1 text-[9px] font-black sm:text-[10px] lg:text-sm">
-                  <span class="min-w-0 truncate text-slate-500">
-                    {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
-                  </span>
-                  <button
-                    type="button"
-                    class="inline-flex h-7 shrink-0 items-center justify-center rounded-full border border-[#e7dac9] px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#6f4e37] transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-900 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 sm:h-8 sm:px-3 sm:py-1.5 sm:text-[10px] sm:tracking-[0.12em] lg:h-auto lg:px-3 lg:py-1.5 lg:text-xs lg:tracking-[0.14em]"
-                    [disabled]="isProductOutOfStock(product)"
-                    (click)="$event.stopPropagation(); onProductCardAction(product)"
-                  >
-                    <span class="sm:hidden">{{ hasSingleVariant(product) ? 'Add To Cart' : 'OPTIONS' }}</span>
-                    <span class="hidden sm:inline">{{ productCardActionLabel(product) }}</span>
-                  </button>
-                </div>
-              </div>
-            </article>
+              [product]="product"
+              [isWishlisted]="isWishlisted(product)"
+              [wishlistBusy]="wishlistBusyId === product._id"
+              [variantCount]="(product.variants || []).length"
+              [isOutOfStock]="isProductOutOfStock(product)"
+              (productClick)="openProduct($event)"
+              (wishlistToggle)="toggleWishlist($event)"
+              (addToCart)="handleProductCardAddToCart($event)"
+              (buyNow)="handleProductCardBuyNow($event)"
+            />
           </div>
 
           <div class="mt-6 text-center">
@@ -492,6 +441,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private cartActionService: CartActionService,
+    private cartService: CartService,
     private catalogService: CatalogService,
     private errorService: ErrorService,
     private guestDataService: GuestDataService,
@@ -719,6 +669,61 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     this.router.navigate(['/products', product._id]);
+  }
+
+  handleProductCardAddToCart(event: ProductCardVariantActionEvent): void {
+    const productId = String(event?.product?._id || '').trim();
+    const variantId = String(event?.variant?._id || '').trim();
+
+    if (!productId || !variantId) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    this.cartActionService.addToCart(productId, variantId, 1).subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
+  }
+
+  handleProductCardBuyNow(event: ProductCardVariantActionEvent): void {
+    const productId = String(event?.product?._id || '').trim();
+    const variantId = String(event?.variant?._id || '').trim();
+
+    if (!productId || !variantId) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    this.cartService.addToCart(productId, variantId, 1).subscribe({
+      next: () => {
+        this.router.navigate(['/checkout']);
+      },
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
+      }
+    });
   }
 
   onProductCardAction(product: CustomerCatalogProduct): void {

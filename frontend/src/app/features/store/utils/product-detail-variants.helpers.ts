@@ -6,8 +6,10 @@ export function buildAttributeEntries(attributes?: Record<string, string>): Arra
 
 export function buildGalleryImages(product?: CustomerCatalogProduct | null): string[] {
   const images = [
-    ...(product?.mainImages || []),
-    ...((product?.variants || []).map((variant) => variant.variantImage).filter(Boolean) as string[])
+    ...collectImageCandidates(product, ['mainImages', 'images', 'image', 'imageUrl', 'thumbnail']),
+    ...((product?.variants || []).flatMap((variant) =>
+      collectImageCandidates(variant, ['variantImage', 'images', 'image', 'imageUrl', 'thumbnail'])
+    ))
   ];
 
   return [...new Set(images)];
@@ -18,11 +20,30 @@ export function buildActiveImage(
   selectedVariant: CustomerCatalogVariant | undefined,
   product?: CustomerCatalogProduct | null
 ): string {
+  const selectedVariantImage = resolveVariantImage(selectedVariant);
+  const productFallbackImage = resolveProductImage(product);
+
   return (
     selectedImage ||
-    selectedVariant?.variantImage ||
-    product?.mainImages?.[0] ||
+    selectedVariantImage ||
+    productFallbackImage ||
     'https://via.placeholder.com/800x600?text=Product'
+  );
+}
+
+export function resolveVariantImage(variant?: CustomerCatalogVariant | null): string {
+  return (
+    firstImageFromRecord(variant, ['variantImage', 'image', 'imageUrl', 'thumbnail']) ||
+    firstImageFromArrayField(variant, 'images') ||
+    ''
+  );
+}
+
+export function resolveProductImage(product?: CustomerCatalogProduct | null): string {
+  return (
+    firstImageFromRecord(product, ['mainImages', 'image', 'imageUrl', 'thumbnail']) ||
+    firstImageFromArrayField(product, 'images') ||
+    ''
   );
 }
 
@@ -81,4 +102,65 @@ export function buildDiscountedPriceLabel(
   }
 
   return formatCurrency(selectedVariant?.finalPrice || product.basePrice || 0);
+}
+
+function collectImageCandidates(
+  source: CustomerCatalogProduct | CustomerCatalogVariant | null | undefined,
+  keys: string[]
+): string[] {
+  const directImages = keys.flatMap((key) => {
+    if (!source || typeof source !== 'object') {
+      return [];
+    }
+
+    const value = (source as Record<string, unknown>)[key];
+    if (typeof value === 'string' && value.trim()) {
+      return [value.trim()];
+    }
+
+    if (Array.isArray(value)) {
+      return value
+        .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+        .map((item) => item.trim());
+    }
+
+    return [];
+  });
+
+  return directImages;
+}
+
+function firstImageFromRecord(
+  source: CustomerCatalogProduct | CustomerCatalogVariant | null | undefined,
+  keys: string[]
+): string {
+  if (!source || typeof source !== 'object') {
+    return '';
+  }
+
+  for (const key of keys) {
+    const value = (source as Record<string, unknown>)[key];
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return '';
+}
+
+function firstImageFromArrayField(
+  source: CustomerCatalogProduct | CustomerCatalogVariant | null | undefined,
+  key: string
+): string {
+  if (!source || typeof source !== 'object') {
+    return '';
+  }
+
+  const value = (source as Record<string, unknown>)[key];
+  if (!Array.isArray(value)) {
+    return '';
+  }
+
+  const first = value.find((item): item is string => typeof item === 'string' && item.trim().length > 0);
+  return first?.trim() || '';
 }

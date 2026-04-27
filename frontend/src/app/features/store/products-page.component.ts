@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CartActionService } from '../../core/services/cart-action.service';
+import { CartService } from '../../core/services/cart.service';
 import { CatalogQueryParams, CatalogService } from '../../core/services/catalog.service';
 import { ErrorService } from '../../core/services/error.service';
 import { GuestDataService } from '../../core/services/guest-data.service';
@@ -11,7 +12,7 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
 import { StoreProductVariantService } from '../../core/services/store-product-variant.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
-import { ProductCardComponent } from './components/product-card/product-card.component';
+import { ProductCardComponent, ProductCardVariantActionEvent } from './components/product-card/product-card.component';
 import { CatalogActiveFiltersComponent } from './components/catalog-active-filters/catalog-active-filters.component';
 import { CatalogSearchBarComponent } from './components/catalog-search-bar/catalog-search-bar.component';
 import { CatalogPaginationComponent } from './components/catalog-pagination/catalog-pagination.component';
@@ -230,15 +231,12 @@ import {
                     [product]="product"
                     [isWishlisted]="isWishlisted(product)"
                     [wishlistBusy]="wishlistBusyId === product._id"
-                    [actionLabel]="productCardActionLabel(product)"
-                    [imageUrl]="productImage(product)"
-                    [originalPriceText]="productOriginalPrice(product)"
-                    [discountedPriceText]="productDiscountedPrice(product)"
                     [variantCount]="(product.variants || []).length"
                     [isOutOfStock]="isProductOutOfStock(product)"
                     (productClick)="openProduct($event)"
                     (wishlistToggle)="toggleWishlist($event)"
-                    (actionClick)="onProductCardAction($event)"
+                    (addToCart)="handleProductCardAddToCart($event)"
+                    (buyNow)="handleProductCardBuyNow($event)"
                   />
                 </div>
 
@@ -396,6 +394,7 @@ export class ProductsPageComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private cartActionService: CartActionService,
+    private cartService: CartService,
     private catalogService: CatalogService,
     private errorService: ErrorService,
     private guestDataService: GuestDataService,
@@ -671,6 +670,61 @@ export class ProductsPageComponent implements OnInit {
     }
 
     return this.hasSingleVariant(product) ? 'Add To Cart' : 'Select Options';
+  }
+
+  handleProductCardAddToCart(event: ProductCardVariantActionEvent): void {
+    const productId = String(event?.product?._id || '').trim();
+    const variantId = String(event?.variant?._id || '').trim();
+
+    if (!productId || !variantId) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    this.cartActionService.addToCart(productId, variantId, 1).subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
+  }
+
+  handleProductCardBuyNow(event: ProductCardVariantActionEvent): void {
+    const productId = String(event?.product?._id || '').trim();
+    const variantId = String(event?.variant?._id || '').trim();
+
+    if (!productId || !variantId) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    this.cartService.addToCart(productId, variantId, 1).subscribe({
+      next: () => {
+        this.router.navigate(['/checkout']);
+      },
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
+      }
+    });
   }
 
   private addSingleVariantToCart(product: CustomerCatalogProduct): void {

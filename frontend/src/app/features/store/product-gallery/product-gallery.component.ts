@@ -7,7 +7,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   imports: [CommonModule],
   template: `
     <div class="space-y-3 md:space-y-4">
-      <div class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.07)] lg:rounded-[2rem]">
+      <div class="relative overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.07)] lg:rounded-[2rem]">
+        <div *ngIf="offerBadgeText" class="absolute left-0 top-3 z-10">
+          <span class="inline-flex bg-[#7a4f35] px-4 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-md">
+            {{ offerBadgeText }}
+          </span>
+        </div>
         <img
           [src]="activeImage"
           [alt]="productName"
@@ -34,6 +39,7 @@ export class ProductGalleryComponent {
   @Input() activeImage = '';
   @Input() selectedImage = '';
   @Input() images: string[] = [];
+  @Input() offerBadgeText = '';
 
   @Output() imageSelected = new EventEmitter<string>();
 

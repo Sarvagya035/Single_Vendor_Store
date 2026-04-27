@@ -44,24 +44,37 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
           </span>
         </div>
 
+        <div *ngIf="offerBadgeText" class="mt-3 inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
+          {{ offerBadgeText }}
+        </div>
+
         <p class="mt-4 text-[13px] leading-7 text-slate-600 md:mt-5 md:text-sm">
           {{ product?.productDescription || 'No description available for this product.' }}
         </p>
 
-        <div class="mt-6 space-y-2" *ngIf="showVariantSelector">
-          <label class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 md:text-[11px]">
-            Choose Variant
-          </label>
-          <select
-            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition focus:border-amber-500 focus:bg-white"
-            [ngModel]="selectedVariantId"
-            (ngModelChange)="variantChanged.emit($event)"
-            [ngModelOptions]="{ standalone: true }"
-          >
-            <option *ngFor="let variant of variants" [value]="variant._id">
-              {{ variantLabels[variant._id || ''] || 'Variant' }}
-            </option>
-          </select>
+      <div class="mt-6 space-y-2" *ngIf="showVariantSelector">
+          <div class="flex items-center justify-between gap-3">
+            <label class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 md:text-[11px]">
+              Choose Variant
+            </label>
+            <span class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              {{ variants.length }} options
+            </span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button
+              *ngFor="let variant of variants; let index = index; trackBy: trackByVariant"
+              type="button"
+              class="rounded-full border px-4 py-2 text-sm transition focus:outline-none focus:ring-2 focus:ring-orange-300"
+              [disabled]="!variant?._id"
+              [ngClass]="isVariantSelected(variant)
+                ? 'border-orange-500 bg-orange-50 px-4 py-2 text-sm font-bold text-orange-700 ring-1 ring-orange-300'
+                : 'border-orange-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-orange-400'"
+              (click)="variantChanged.emit(variant._id || '')"
+            >
+              {{ variantDisplayLabel(variant, index + 1) }}
+            </button>
+          </div>
         </div>
 
         <div class="mt-5 rounded-2xl bg-slate-50 p-4 md:mt-6">
@@ -180,6 +193,124 @@ export class ProductPurchasePanelComponent {
 
   get selectedVariantStock(): number {
     return this.selectedVariant?.productStock || 0;
+  }
+
+  get offerBadgeText(): string {
+    const offerText = this.getTextField(this.selectedVariant, ['offerText', 'offerDescription', 'offer']) ||
+      this.getTextField(this.product, ['offerText', 'offerDescription', 'offer']);
+    if (offerText) {
+      return offerText;
+    }
+
+    const originalPrice = this.getNumericField(this.selectedVariant, ['productPrice', 'mrp', 'originalPrice', 'price']) ??
+      this.getNumericField(this.product, ['basePrice', 'mrp', 'originalPrice', 'price']);
+    const discountedPrice = this.getNumericField(this.selectedVariant, ['finalPrice', 'salePrice', 'discountedPrice', 'price']) ??
+      this.getNumericField(this.product, ['basePrice', 'salePrice', 'discountedPrice', 'price']);
+    const discountPercentage =
+      this.getNumericField(this.selectedVariant, ['discountPercentage']) ??
+      this.getNumericField(this.product, ['discountPercentage']);
+
+    if (typeof originalPrice === 'number' && typeof discountedPrice === 'number' && originalPrice > discountedPrice) {
+      const savedAmount = Math.max(0, Math.round(originalPrice - discountedPrice));
+      const percent = Math.max(0, Math.round(((originalPrice - discountedPrice) / originalPrice) * 100));
+      const parts: string[] = [];
+
+      if (percent > 0) {
+        parts.push(`${percent}% OFF`);
+      }
+
+      if (savedAmount > 0) {
+        parts.push(`Save ₹${savedAmount}`);
+      }
+
+      return parts.length ? parts.join(' · ') : 'Limited time offer';
+    }
+
+    if (typeof discountPercentage === 'number' && discountPercentage > 0) {
+      return `${Math.round(discountPercentage)}% OFF`;
+    }
+
+    return '';
+  }
+
+  isVariantSelected(variant: CustomerCatalogVariant): boolean {
+    return String(variant?._id || '') === String(this.selectedVariantId || '');
+  }
+
+  trackByVariant(_: number, variant: CustomerCatalogVariant): string {
+    return variant._id || variant.sku || JSON.stringify(variant.attributes || {});
+  }
+
+  variantDisplayLabel(variant: CustomerCatalogVariant | null | undefined, fallbackIndex = 0): string {
+    if (!variant) {
+      return fallbackIndex > 0 ? `Variant ${fallbackIndex}` : 'Variant';
+    }
+
+    const attributes = Object.entries(variant.attributes || {})
+      .map(([key, value]) => ({
+        key: key.toLowerCase(),
+        value: String(value || '').trim()
+      }))
+      .filter((attribute) => !!attribute.value);
+
+    if (attributes.length) {
+      const preferredKeys = ['weight', 'size', 'pack', 'quantity', 'qty', 'count', 'volume', 'capacity', 'title', 'name'];
+      for (const preferredKey of preferredKeys) {
+        const match = attributes.find((attribute) => attribute.key.includes(preferredKey));
+        if (match?.value) {
+          return match.value;
+        }
+      }
+    }
+
+    if (variant.sku?.trim()) {
+      return variant.sku.trim();
+    }
+
+    return fallbackIndex > 0 ? `Variant ${fallbackIndex}` : 'Variant';
+  }
+
+  private getTextField(
+    source: CustomerCatalogVariant | CustomerCatalogProduct | null | undefined,
+    keys: string[]
+  ): string {
+    if (!source || typeof source !== 'object') {
+      return '';
+    }
+
+    const record = source as Record<string, unknown>;
+    for (const key of keys) {
+      const value = record[key];
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+    }
+
+    return '';
+  }
+
+  private getNumericField(
+    source: CustomerCatalogVariant | CustomerCatalogProduct | null | undefined,
+    keys: string[]
+  ): number | null {
+    if (!source || typeof source !== 'object') {
+      return null;
+    }
+
+    const record = source as Record<string, unknown>;
+    for (const key of keys) {
+      const value = record[key];
+      if (value === null || value === undefined || value === '') {
+        continue;
+      }
+
+      const numeric = Number(value);
+      if (!Number.isNaN(numeric)) {
+        return numeric;
+      }
+    }
+
+    return null;
   }
 }
 
