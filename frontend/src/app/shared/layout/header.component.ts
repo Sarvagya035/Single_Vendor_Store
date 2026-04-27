@@ -20,12 +20,12 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
   imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent],
   template: `
     <div class="sticky top-0 z-50">
-      <div *ngIf="showAnnouncementBar()" class="overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] text-white">
-        <div class="app-shell-width">
-          <div class="flex h-11 items-center overflow-hidden">
-            <div class="flex w-max items-center gap-4 whitespace-nowrap animate-announcement-marquee hover:[animation-play-state:paused]">
+      <div *ngIf="showAnnouncementBar()" class="announcement-bar overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] px-0 py-2 text-white" tabindex="0" aria-label="Top announcements">
+        <div class="header-shell">
+          <div class="flex items-center overflow-hidden">
+            <div class="announcement-track flex w-max items-center gap-4 whitespace-nowrap animate-announcement-marquee">
               <ng-container *ngFor="let message of announcementTicker; let last = last">
-                <span class="text-[11px] font-semibold uppercase tracking-[0.18em] sm:text-xs">
+                <span class="text-[10px] font-semibold uppercase tracking-[0.18em] sm:text-[11px]">
                   {{ message }}
                 </span>
                 <span *ngIf="!last" class="text-[#d7b48d]">|</span>
@@ -36,7 +36,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
       </div>
 
       <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-lg">
-        <div class="app-shell-width sm:px-6">
+        <div class="header-shell">
           <div class="flex h-16 items-center justify-between md:h-20">
           <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
             <img
@@ -100,44 +100,46 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               />
             </ng-container>
 
-            <ng-container *ngIf="showStoreCounts()">
-              <a
-                routerLink="/cart"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
-              >
-                Cart
-                <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
-              </a>
+            <div class="flex items-center gap-2 sm:gap-2">
+              <ng-container *ngIf="showStoreCounts()">
+                <a
+                  routerLink="/cart"
+                  class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
+                >
+                  Cart
+                  <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
+                </a>
 
-              <a
-                routerLink="/wishlist"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
-              >
-                Wishlist
-                <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #c2410c, #f59e0b);">{{ wishlistCount }}</span>
-              </a>
-            </ng-container>
+                <a
+                  routerLink="/wishlist"
+                  class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
+                >
+                  Wishlist
+                  <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #c2410c, #f59e0b);">{{ wishlistCount }}</span>
+                </a>
+              </ng-container>
 
-            <ng-container *ngIf="isCustomer()">
+              <ng-container *ngIf="isCustomer()">
 
-              <app-header-account-dropdown
-                theme="customer"
-                subtitle="Account"
-                [open]="isDropdownOpen"
-                [avatarUrl]="avatarUrl()"
-                [initials]="userInitials()"
-                [displayName]="customerDisplayName()"
-                [email]="user?.email || ''"
-                [items]="customerMenuItems"
-                (toggle)="toggleDropdown($event)"
-                (itemSelected)="handleCustomerItem($event)"
-              />
-            </ng-container>
+                <app-header-account-dropdown
+                  theme="customer"
+                  subtitle="Account"
+                  [open]="isDropdownOpen"
+                  [avatarUrl]="avatarUrl()"
+                  [initials]="userInitials()"
+                  [displayName]="customerDisplayName()"
+                  [email]="user?.email || ''"
+                  [items]="customerMenuItems"
+                  (toggle)="toggleDropdown($event)"
+                  (itemSelected)="handleCustomerItem($event)"
+                />
+              </ng-container>
 
-            <ng-container *ngIf="!user">
-              <a routerLink="/login" class="nav-link">Login</a>
-              <a routerLink="/register" class="btn-primary !px-5 !py-2 text-sm">Register</a>
-            </ng-container>
+              <ng-container *ngIf="!user">
+                <a routerLink="/login" class="nav-link">Login</a>
+                <a routerLink="/register" class="btn-primary !px-5 !py-2 text-sm">Register</a>
+              </ng-container>
+            </div>
           </div>
 
           <div class="flex min-w-0 items-center gap-2 sm:gap-3 md:hidden">
@@ -251,7 +253,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
         (logout)="onMobileLogout()"
       />
       <div *ngIf="isNavigating" class="pointer-events-none border-b border-[#e7dac9] bg-white/75 px-4 py-3 backdrop-blur">
-        <div class="app-shell-width px-0">
+        <div class="header-shell px-0">
           <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
           </div>
