@@ -460,8 +460,8 @@ export class CartComponent implements OnInit {
       },
       error: (error) => {
         this.guestCartLoading = false;
-        this.guestCartItems = [];
-        this.guestCartTotal = 0;
+        this.guestCartItems = this.buildGuestCartItems([], guestItems);
+        this.guestCartTotal = this.guestCartItems.reduce((total, item) => total + item.subtotal, 0);
         this.errorService.showToast(
           this.errorService.extractErrorMessage(error) || 'Unable to load your guest cart right now.',
           'error'

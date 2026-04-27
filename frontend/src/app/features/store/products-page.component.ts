@@ -716,7 +716,7 @@ export class ProductsPageComponent implements OnInit {
     }
 
     if (!this.isCustomer()) {
-      this.toggleGuestWishlist(product._id);
+      this.toggleGuestWishlist(product);
       return;
     }
 
@@ -1041,14 +1041,18 @@ export class ProductsPageComponent implements OnInit {
     );
   }
 
-  private toggleGuestWishlist(productId: string): void {
-    const isCurrentlyWishlisted = this.wishlistedProductIds.has(productId);
+  private toggleGuestWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    const isCurrentlyWishlisted = this.wishlistedProductIds.has(product._id);
 
     if (isCurrentlyWishlisted) {
-      this.guestDataService.removeFromGuestWishlist(productId);
+      this.guestDataService.removeFromGuestWishlist(product._id);
       this.errorService.showToast('Removed from guest wishlist.', 'success');
     } else {
-      this.guestDataService.addToGuestWishlist(productId);
+      this.guestDataService.addToGuestWishlist(product);
       this.errorService.showToast('Saved to guest wishlist.', 'success');
     }
 

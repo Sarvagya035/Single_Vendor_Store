@@ -16,9 +16,10 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
+        const isCurrentUserRequest = request.url.includes('/users/current-user');
         const shouldSkipAuthErrorHandling =
           request.context.get(SKIP_AUTH_ERROR_HANDLING) ||
-          request.url.includes('/users/current-user') ||
+          isCurrentUserRequest ||
           request.url.includes('/users/refresh-token') ||
           request.url.includes('/users/changePassword');
 

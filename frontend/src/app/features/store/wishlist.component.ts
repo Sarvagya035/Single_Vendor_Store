@@ -1,14 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { fromEvent } from 'rxjs';
+import { firstValueFrom, fromEvent } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../core/services/auth.service';
+import { CartActionService } from '../../core/services/cart-action.service';
+import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { GuestDataService } from '../../core/services/guest-data.service';
+import { StoreProductVariantService } from '../../core/services/store-product-variant.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { ErrorService } from '../../core/services/error.service';
 import { CustomerCatalogProduct, CustomerCatalogVariant, CustomerWishlist, CustomerWishlistProduct } from '../../core/models/customer.models';
+import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
 
 interface GuestWishlistDisplayItem {
   productId: string;
@@ -23,7 +27,7 @@ interface GuestWishlistDisplayItem {
 @Component({
   selector: 'app-wishlist',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, VariantModalComponent],
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
       <section class="storefront-section min-h-[calc(100vh-72px)] py-8 lg:py-10">
@@ -109,21 +113,41 @@ interface GuestWishlistDisplayItem {
             </div>
 
             <div class="border-t border-[#f1e4d4] px-4 py-3">
-              <button
-                type="button"
-                class="w-full rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
-                [disabled]="busyId === item._id"
-                (click)="$event.stopPropagation(); removeItem(item)"
-              >
-                {{ busyId === item._id ? 'Removing...' : 'Remove' }}
-              </button>
+              <div class="grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  class="w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  [disabled]="busyId === item._id || moveBusyId === item._id"
+                  (click)="$event.stopPropagation(); moveItemToCart(item)"
+                >
+                  {{ moveBusyId === item._id ? 'Moving...' : 'Move To Cart' }}
+                </button>
+                <button
+                  type="button"
+                  class="w-full rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  [disabled]="busyId === item._id || moveBusyId === item._id"
+                  (click)="$event.stopPropagation(); removeItem(item)"
+                >
+                  {{ busyId === item._id ? 'Removing...' : 'Remove' }}
+                </button>
+              </div>
             </div>
           </article>
         </div>
+
       </div>
         </div>
       </section>
     </ng-container>
+
+    <app-variant-modal
+      [open]="variantModalOpen"
+      [product]="selectedMoveProduct || selectedGuestMoveItem?.product || null"
+      [initialVariantId]="selectedGuestMoveItem?.variantId || ''"
+      [isAdding]="moveBusyId === (selectedMoveProduct?._id || '') || guestMoveModalBusyId === (selectedGuestMoveItem?.productId || '')"
+      (close)="closeVariantModal()"
+      (addToCart)="handleVariantModalAddToCart($event)"
+    />
 
     <ng-template #guestState>
       <section class="storefront-section min-h-[calc(100vh-72px)] py-8 lg:py-10">
@@ -216,10 +240,10 @@ interface GuestWishlistDisplayItem {
                     <button
                       type="button"
                       class="w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
-                      [disabled]="!item.available"
-                      (click)="moveGuestWishlistItemToCart(item)"
+                      [disabled]="moveBusyId === item.productId"
+                      (click)="$event.preventDefault(); $event.stopPropagation(); moveGuestWishlistItemToCart(item)"
                     >
-                      Move To Cart
+                      {{ moveBusyId === item.productId ? 'Moving...' : 'Move To Cart' }}
                     </button>
                     <button
                       type="button"
@@ -248,17 +272,26 @@ export class WishlistComponent implements OnInit {
   user: any = null;
   loading = true;
   busyId = '';
+  moveBusyId = '';
+  guestMoveModalBusyId = '';
+  modalMoveContext: 'guest' | 'customer' | null = null;
   wishlist: CustomerWishlist | null = null;
   wishlistItems: CustomerWishlistProduct[] = [];
+  variantModalOpen = false;
+  selectedMoveProduct: CustomerCatalogProduct | null = null;
+  selectedGuestMoveItem: GuestWishlistDisplayItem | null = null;
   guestWishlistLoading = false;
   guestWishlistMessage = '';
   guestWishlistItems: GuestWishlistDisplayItem[] = [];
 
   constructor(
     private authService: AuthService,
+    private cartActionService: CartActionService,
+    private cartService: CartService,
     private wishlistService: WishlistService,
     private catalogService: CatalogService,
     private guestDataService: GuestDataService,
+    private variantService: StoreProductVariantService,
     private errorService: ErrorService,
   ) {}
 
@@ -283,10 +316,6 @@ export class WishlistComponent implements OnInit {
         }
       });
 
-    this.authService.getCurrentUser().subscribe({
-      next: () => {},
-      error: () => this.authService.clearCurrentUser()
-    });
   }
 
   loadWishlist(): void {
@@ -360,6 +389,80 @@ export class WishlistComponent implements OnInit {
     });
   }
 
+  moveItemToCart(item: CustomerWishlistProduct): void {
+    const product = item as CustomerCatalogProduct;
+    if (!product?._id) {
+      return;
+    }
+
+    if (product.isActive === false) {
+      this.errorService.showToast('Unable to move item to cart.', 'error');
+      return;
+    }
+
+    if (this.variantService.isProductOutOfStock(product)) {
+      this.errorService.showToast('Product is out of stock.', 'error');
+      return;
+    }
+
+    if (!this.variantService.hasSingleVariant(product) && this.variantService.getVariants(product).length > 1) {
+      this.selectedMoveProduct = product;
+      this.selectedGuestMoveItem = null;
+      this.modalMoveContext = 'customer';
+      this.variantModalOpen = true;
+      return;
+    }
+
+    const variant = this.variantService.getDefaultVariant(product);
+    if (!variant?._id) {
+      this.errorService.showToast('Please select a variant.', 'error');
+      return;
+    }
+
+    this.moveWishlistItemToCart(product, variant, 1);
+  }
+
+  handleVariantModalAddToCart(event: VariantModalAddToCartEvent): void {
+    const quantity = Math.max(1, Number(event.quantity) || 1);
+    if (this.modalMoveContext === 'guest') {
+      const guestItem = this.selectedGuestMoveItem;
+      const guestProduct = guestItem?.product || null;
+      if (!guestItem?.productId || !guestProduct?._id) {
+        this.errorService.showToast('Unable to move item to cart.', 'error');
+        return;
+      }
+
+      const guestVariant = this.variantService.getSelectedVariant(guestProduct, event.variantId);
+      if (!guestVariant?._id) {
+        this.errorService.showToast('Please select a variant.', 'error');
+        return;
+      }
+
+      void this.moveGuestItemToCart(guestItem, guestProduct, guestVariant, quantity, 'modal');
+      return;
+    }
+
+    if (this.modalMoveContext === 'customer') {
+      const customerProduct = this.selectedMoveProduct;
+      if (!customerProduct?._id) {
+        this.errorService.showToast('Unable to move item to cart.', 'error');
+        return;
+      }
+
+      const variant = this.variantService.getSelectedVariant(customerProduct, event.variantId);
+
+      if (!variant?._id) {
+        this.errorService.showToast('Please select a variant.', 'error');
+        return;
+      }
+
+      void this.moveWishlistItemToCart(customerProduct, variant, quantity);
+      return;
+    }
+
+    this.errorService.showToast('Unable to move item to cart.', 'error');
+  }
+
   removeGuestItem(item: GuestWishlistDisplayItem): void {
     const key = this.guestWishlistItemKey(item);
     this.busyId = key;
@@ -370,13 +473,50 @@ export class WishlistComponent implements OnInit {
     this.errorService.showToast('Item removed from guest wishlist.', 'success');
   }
 
-  moveGuestWishlistItemToCart(item: GuestWishlistDisplayItem): void {
-    if (!item.available || !item.productId) {
+  closeVariantModal(): void {
+    this.resetVariantModalState();
+    this.variantModalOpen = false;
+  }
+
+  async moveGuestWishlistItemToCart(item: GuestWishlistDisplayItem): Promise<void> {
+    const key = item.productId;
+    if (!key || this.moveBusyId === key) {
       return;
     }
 
-    this.guestDataService.addToGuestCart(item.productId, item.variantId, 1);
-    this.errorService.showToast('Item added to guest cart.', 'success');
+    this.moveBusyId = key;
+
+    try {
+      const product = await this.resolveGuestMoveProduct(item);
+      if (!product?._id) {
+        throw new Error('Unable to move item to cart.');
+      }
+
+      if (!this.variantService.hasSingleVariant(product) && this.variantService.getVariants(product).length > 1) {
+        this.selectedGuestMoveItem = { ...item, product };
+        this.selectedMoveProduct = product;
+        this.modalMoveContext = 'guest';
+        this.variantModalOpen = true;
+        this.moveBusyId = '';
+        return;
+      }
+
+      const variant = this.variantService.getDefaultVariant(product);
+      if (!variant?._id) {
+        throw new Error('Please select a variant.');
+      }
+
+      await this.moveGuestItemToCart({ ...item, product }, product, variant, 1, 'button');
+    } catch (error) {
+      this.errorService.showToast(
+        this.errorService.extractErrorMessage(error) || 'Unable to move item to cart.',
+        'error'
+      );
+    } finally {
+      if (!this.variantModalOpen) {
+        this.moveBusyId = '';
+      }
+    }
   }
 
   productImage(item: CustomerWishlistProduct): string {
@@ -385,7 +525,6 @@ export class WishlistComponent implements OnInit {
 
   guestWishlistItemImage(item: GuestWishlistDisplayItem): string {
     return (
-      item.variant?.variantImage ||
       item.product?.mainImages?.[0] ||
       'https://via.placeholder.com/640x640?text=Wishlist'
     );
@@ -396,12 +535,13 @@ export class WishlistComponent implements OnInit {
   }
 
   guestWishlistVariantLabel(item: GuestWishlistDisplayItem): string {
-    if (!item.variant) {
-      return item.variantId ? 'Variant unavailable' : 'No variant';
+    const variantCount = Array.isArray(item.product?.variants) ? item.product.variants.length : 0;
+
+    if (variantCount > 1) {
+      return `${variantCount} variants`;
     }
 
-    const attributes = Object.entries(item.variant.attributes || {}).map(([key, value]) => `${key}: ${value}`);
-    return attributes.length ? attributes.join(' | ') : item.variant.sku || 'Variant';
+    return variantCount === 1 ? 'Single variant' : 'Saved product';
   }
 
   guestWishlistItemKey(item: GuestWishlistDisplayItem): string {
@@ -441,30 +581,175 @@ export class WishlistComponent implements OnInit {
   }
 
   isCustomer(): boolean {
-    return !!this.user && !this.isAdmin() && !this.isVendor();
+    return this.authService.isLoggedIn() && !!this.user && !this.isAdmin() && !this.isVendor();
+  }
+
+  private async moveWishlistItemToCart(product: CustomerCatalogProduct, variant: CustomerCatalogVariant, quantity: number): Promise<void> {
+    console.log('ENTER moveWishlistItemToCart');
+
+    if (!product?._id || !variant?._id) {
+      console.error('NO PRODUCT OR INVALID VARIANT', { product, variant });
+      this.errorService.showToast('Please select a variant.', 'error');
+      this.moveBusyId = '';
+      return;
+    }
+
+    console.log('CUSTOMER MOVE START', { product, variant, quantity });
+    this.moveBusyId = product._id;
+    console.log('MOVE BUSY SET', this.moveBusyId);
+    try {
+      console.log('VALID DATA', {
+        productId: product._id,
+        variantId: variant?._id,
+        quantity
+      });
+      console.log('CALLING CART ADD', {
+        productId: product._id,
+        variantId: variant?._id,
+        quantity,
+        endpoint: '/api/v1/cart/add-to-cart'
+      });
+      const result = await firstValueFrom(this.cartService.addToCart(product._id, variant._id, quantity));
+      console.log('CART ADD RESULT', result);
+
+      if (!result.success) {
+        throw new Error(
+          /stock|out of stock/i.test(result.message || '')
+            ? 'Product is out of stock.'
+            : result.message || 'Unable to move item to cart.'
+        );
+      }
+
+      this.errorService.showToast('Moved to cart successfully.', 'success');
+      this.safeCloseVariantModal();
+      void this.removeCustomerWishlistAfterMove(product._id);
+    } catch (error) {
+      console.error('CUSTOMER MOVE ERROR', error);
+      this.errorService.showToast(
+        this.errorService.extractErrorMessage(error) || 'Unable to move item to cart.',
+        'error'
+      );
+      this.loadWishlist();
+    } finally {
+      console.log('CUSTOMER MOVE FINALLY BEFORE RESET', this.moveBusyId);
+      this.resetVariantModalState();
+      this.moveBusyId = '';
+      console.log('CUSTOMER MOVE FINALLY AFTER RESET', this.moveBusyId);
+    }
+  }
+
+  private safeCloseVariantModal(): void {
+    try {
+      this.variantModalOpen = false;
+    } catch {
+      // Keep loading cleanup independent of modal close/view-transition issues.
+    }
+  }
+
+  private async removeCustomerWishlistAfterMove(productId: string): Promise<void> {
+    if (!productId) {
+      return;
+    }
+
+    try {
+      const wishlist = await firstValueFrom(this.wishlistService.toggleWishlist(productId));
+      this.wishlist = wishlist;
+      this.wishlistItems = Array.isArray(wishlist?.products) ? wishlist.products : [];
+    } catch (error) {
+      this.errorService.showToast(
+        this.errorService.extractErrorMessage(error) || 'Moved to cart, but wishlist removal failed.',
+        'error'
+      );
+      this.loadWishlist();
+    }
+  }
+
+  private async moveGuestItemToCart(
+    item: GuestWishlistDisplayItem,
+    product: CustomerCatalogProduct,
+    variant: CustomerCatalogVariant,
+    quantity: number,
+    loadingTarget: 'button' | 'modal' = 'button'
+  ): Promise<void> {
+    if (!item.productId || !product?._id || !variant?._id) {
+      this.errorService.showToast('Unable to move item to cart.', 'error');
+      return;
+    }
+
+    if (loadingTarget === 'modal') {
+      this.guestMoveModalBusyId = item.productId;
+    } else {
+      this.moveBusyId = item.productId;
+    }
+
+    try {
+      const result = await firstValueFrom(this.cartActionService.addToCart(product._id, variant._id, quantity));
+
+      if (!result.success) {
+        throw new Error(
+          /stock|out of stock/i.test(result.message || '')
+            ? 'Product is out of stock.'
+            : result.message || 'Unable to move item to cart.'
+        );
+      }
+
+      this.guestDataService.removeFromGuestWishlist(item.productId);
+      this.loadGuestWishlist();
+      this.variantModalOpen = false;
+      this.selectedGuestMoveItem = null;
+      this.selectedMoveProduct = null;
+      this.errorService.showToast('Moved to cart successfully.', 'success');
+    } catch (error) {
+      this.errorService.showToast(
+        this.errorService.extractErrorMessage(error) || 'Unable to move item to cart.',
+        'error'
+      );
+    } finally {
+      if (loadingTarget === 'modal') {
+        this.guestMoveModalBusyId = '';
+      } else {
+        this.moveBusyId = '';
+      }
+      this.resetVariantModalState();
+    }
+  }
+
+  private resetVariantModalState(): void {
+    this.modalMoveContext = null;
+    this.selectedMoveProduct = null;
+    this.selectedGuestMoveItem = null;
+    this.guestMoveModalBusyId = '';
   }
 
   private buildGuestWishlistItems(
     products: CustomerCatalogProduct[],
-    savedItems: Array<{ productId: string; variantId?: string }>
+    savedItems: Array<{ productId: string; productName?: string; brand?: string; mainImages?: string[]; basePrice?: number; isActive?: boolean; categoryDetails?: { _id?: string; name?: string; slug?: string }; variantId?: string }>
   ): GuestWishlistDisplayItem[] {
     const productMap = new Map((products || []).map((product) => [product._id, product]));
 
     return savedItems.map((savedItem) => {
-      const product = productMap.get(savedItem.productId) || null;
+      const fetchedProduct = productMap.get(savedItem.productId) || null;
+      const fallbackProduct = savedItem.productId
+        ? ({
+            _id: savedItem.productId,
+            productName: savedItem.productName,
+            brand: savedItem.brand,
+            mainImages: Array.isArray(savedItem.mainImages) ? savedItem.mainImages : [],
+            basePrice: savedItem.basePrice,
+            isActive: savedItem.isActive,
+            categoryDetails: savedItem.categoryDetails,
+            variants: []
+          } as CustomerCatalogProduct)
+        : null;
+      const product = fetchedProduct || fallbackProduct;
       const variant = this.resolveGuestVariant(product, savedItem.variantId);
-      const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0;
-      const available = !!product
-        && product.isActive !== false
-        && (!hasVariants || !!variant);
-      const warning = !product
-        ? 'This product is no longer available.'
-        : product.isActive === false
+      const available = (product?.isActive ?? savedItem.isActive ?? true) !== false;
+      const warning = product?.isActive === false
+        ? 'This product is inactive.'
+        : !fetchedProduct && savedItem.isActive === false
           ? 'This product is inactive.'
-          : hasVariants && !variant
-            ? 'This variant is unavailable.'
-            : '';
-      const priceLabel = Number(variant?.finalPrice || variant?.productPrice || product?.basePrice || 0);
+          : '';
+      const priceLabel = Number(product?.basePrice || variant?.finalPrice || variant?.productPrice || 0);
 
       return {
         productId: savedItem.productId,
@@ -499,5 +784,19 @@ export class WishlistComponent implements OnInit {
     }
 
     return product.displayVariant || variants[0] || null;
+  }
+
+  private async resolveGuestMoveProduct(item: GuestWishlistDisplayItem): Promise<CustomerCatalogProduct | null> {
+    const product = item.product;
+    if (this.hasGuestMoveProductDetails(product)) {
+      return product;
+    }
+
+    const response = await firstValueFrom(this.catalogService.getProductDetails(item.productId));
+    return (response?.data as CustomerCatalogProduct | null) || null;
+  }
+
+  private hasGuestMoveProductDetails(product: CustomerCatalogProduct | null): product is CustomerCatalogProduct {
+    return !!product?._id && Array.isArray(product.variants) && product.variants.length > 0;
   }
 }

@@ -5,6 +5,7 @@ import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { CartService } from './cart.service';
 import { WishlistService } from './wishlist.service';
+import { CustomerCatalogProduct } from '../models/customer.models';
 
 export interface GuestCartItem {
   productId: string;
@@ -14,6 +15,16 @@ export interface GuestCartItem {
 
 export interface GuestWishlistItem {
   productId: string;
+  productName?: string;
+  brand?: string;
+  mainImages?: string[];
+  basePrice?: number;
+  isActive?: boolean;
+  categoryDetails?: {
+    _id?: string;
+    name?: string;
+    slug?: string;
+  };
   variantId?: string;
 }
 
@@ -148,10 +159,8 @@ export class GuestDataService {
   }
 
   getGuestWishlist(): GuestWishlistItem[] {
-    return this.readItems<GuestWishlistItem>(this.guestWishlistKey).map((item) => ({
-      productId: String(item.productId || '').trim(),
-      variantId: item.variantId ? String(item.variantId).trim() : undefined
-    })).filter((item) => !!item.productId);
+    return this.normalizeGuestWishlist(this.readItems<GuestWishlistItem>(this.guestWishlistKey))
+      .filter((item) => !!item.productId);
   }
 
   getGuestWishlistCount(): number {
@@ -165,24 +174,17 @@ export class GuestDataService {
     return normalized;
   }
 
-  addToGuestWishlist(productId: string, variantId?: string): GuestWishlistItem[] {
-    const normalizedProductId = String(productId || '').trim();
-    const normalizedVariantId = String(variantId || '').trim();
-
-    if (!normalizedProductId) {
+  addToGuestWishlist(product: string | Partial<CustomerCatalogProduct>): GuestWishlistItem[] {
+    const normalized = this.normalizeGuestWishlistProduct(product);
+    if (!normalized.productId) {
       return this.getGuestWishlist();
     }
 
     const items = this.getGuestWishlist();
-    const exists = items.some(
-      (item) => item.productId === normalizedProductId && (item.variantId || '') === normalizedVariantId
-    );
+    const exists = items.some((item) => item.productId === normalized.productId);
 
     if (!exists) {
-      items.push({
-        productId: normalizedProductId,
-        variantId: normalizedVariantId || undefined
-      });
+      items.push(normalized);
       this.writeItems(this.guestWishlistKey, items);
       this.dispatchGuestWishlistUpdated();
     }
@@ -193,9 +195,17 @@ export class GuestDataService {
   removeFromGuestWishlist(productId: string, variantId?: string): GuestWishlistItem[] {
     const normalizedProductId = String(productId || '').trim();
     const normalizedVariantId = String(variantId || '').trim();
-    const items = this.getGuestWishlist().filter(
-      (item) => !(item.productId === normalizedProductId && (item.variantId || '') === normalizedVariantId)
-    );
+    const items = this.getGuestWishlist().filter((item) => {
+      if (item.productId !== normalizedProductId) {
+        return true;
+      }
+
+      if (!normalizedVariantId) {
+        return false;
+      }
+
+      return (item.variantId || '') !== normalizedVariantId;
+    });
 
     this.writeItems(this.guestWishlistKey, items);
     this.dispatchGuestWishlistUpdated();
@@ -289,7 +299,12 @@ export class GuestDataService {
   }
 
   private mergeGuestWishlistRequest(items: GuestWishlistItem[]): Observable<GuestMergeSectionResult> {
-    return this.api.post(`${this.wishlistUrl}/merge-guest-wishlist`, { items }).pipe(
+    const normalizedItems = (Array.isArray(items) ? items : []).map((item) => ({
+      productId: item.productId,
+      variantId: item.variantId
+    }));
+
+    return this.api.post(`${this.wishlistUrl}/merge-guest-wishlist`, { items: normalizedItems }).pipe(
       tap((response: any) => {
         this.wishlistService.getWishlist().subscribe({
           error: () => this.wishlistService.resetWishlist()
@@ -389,24 +404,57 @@ export class GuestDataService {
 
     for (const item of Array.isArray(items) ? items : []) {
       const productId = String(item?.productId || '').trim();
-      const variantId = String(item?.variantId || '').trim();
 
       if (!productId) {
         continue;
       }
 
-      const key = `${productId}::${variantId}`;
-      if (merged.has(key)) {
+      const existing = merged.get(productId);
+      if (existing) {
+        merged.set(productId, {
+          ...existing,
+          ...this.normalizeGuestWishlistProduct(item)
+        });
         continue;
       }
 
-      merged.set(key, {
-        productId,
-        variantId: variantId || undefined
-      });
+      merged.set(productId, this.normalizeGuestWishlistProduct(item));
     }
 
     return Array.from(merged.values());
+  }
+
+  private normalizeGuestWishlistProduct(product: string | Partial<CustomerCatalogProduct> | GuestWishlistItem): GuestWishlistItem {
+    if (typeof product === 'string') {
+      return {
+        productId: String(product || '').trim()
+      };
+    }
+
+    const source = product as GuestWishlistItem & Partial<CustomerCatalogProduct>;
+    const productId = String(source.productId || source._id || '').trim();
+    const normalized: GuestWishlistItem = {
+      productId,
+      productName: source.productName ? String(source.productName).trim() : undefined,
+      brand: source.brand ? String(source.brand).trim() : undefined,
+      mainImages: Array.isArray(source.mainImages) ? source.mainImages.filter((image): image is string => !!image) : undefined,
+      basePrice: Number.isFinite(Number(source.basePrice)) ? Number(source.basePrice) : undefined,
+      isActive: typeof source.isActive === 'boolean' ? source.isActive : undefined,
+      categoryDetails: source.categoryDetails
+        ? {
+            _id: source.categoryDetails._id,
+            name: source.categoryDetails.name,
+            slug: source.categoryDetails.slug
+          }
+        : undefined
+    };
+
+    const legacyVariantId = String(source.variantId || '').trim();
+    if (legacyVariantId) {
+      normalized.variantId = legacyVariantId;
+    }
+
+    return normalized;
   }
 
   private isCustomer(user: any): boolean {

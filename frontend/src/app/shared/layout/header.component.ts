@@ -346,9 +346,11 @@ export class HeaderComponent implements OnInit {
       }
     });
 
-    this.authService.ensureCurrentUser().subscribe({
-      error: () => this.authService.clearCurrentUser()
-    });
+    if (this.authService.hasStoredSession()) {
+      this.authService.ensureCurrentUser().subscribe({
+        error: () => this.authService.clearCurrentUser()
+      });
+    }
 
     fromEvent(window, 'guestCartUpdated')
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -367,7 +369,7 @@ export class HeaderComponent implements OnInit {
       });
 
     this.appRefreshService.refresh$.subscribe((scope) => {
-      if (scope === 'global' || scope === 'auth') {
+      if ((scope === 'global' || scope === 'auth') && this.authService.hasStoredSession()) {
         this.authService.refreshCurrentUser().subscribe({
           error: () => this.authService.clearCurrentUser()
         });

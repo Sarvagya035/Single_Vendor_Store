@@ -26,7 +26,7 @@ export class StoreProductVariantService {
     const normalizedVariantId = String(variantId || '').trim();
 
     if (normalizedVariantId) {
-      const exact = variants.find((variant) => variant._id === normalizedVariantId);
+      const exact = variants.find((variant) => String(variant._id || '').trim() === normalizedVariantId);
       if (exact) {
         return exact;
       }

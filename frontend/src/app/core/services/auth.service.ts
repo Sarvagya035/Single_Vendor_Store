@@ -21,6 +21,10 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  isLoggedIn(): boolean {
+    return !!this.currentUserSubject.value;
+  }
+
   register(userData: any): Observable<any> {
     return this.api.post(`${this.apiUrl}/register`, userData, { withCredentials: false });
   }
@@ -55,25 +59,48 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<any> {
-    return this.api.get(`${this.apiUrl}/current-user`, {
-      context: new HttpContext().set(SKIP_AUTH_ERROR_HANDLING, true)
-    }).pipe(
-      tap((res: any) => {
-        if (res.success) {
-          this.currentUserSubject.next(res.data);
-          this.setSessionActive(true);
-        } else {
-          this.clearCurrentUser();
-        }
-      }),
-      catchError((error) => {
-        if (error?.status === 401) {
-          this.clearCurrentUser();
-        }
+    if (this.currentUserSubject.value) {
+      return of(this.currentUserSubject.value);
+    }
 
-        return throwError(() => error);
-      })
-    );
+    if (!this.hasStoredSession()) {
+      return of(null);
+    }
+
+    if (!this.currentUserRequest$) {
+      let request$: Observable<any>;
+
+      request$ = this.api.get(`${this.apiUrl}/current-user`, {
+        context: new HttpContext().set(SKIP_AUTH_ERROR_HANDLING, true)
+      }).pipe(
+        tap((res: any) => {
+          if (res.success) {
+            this.currentUserSubject.next(res.data);
+            this.setSessionActive(true);
+          } else {
+            this.clearCurrentUser();
+          }
+        }),
+        catchError((error) => {
+          if (error?.status === 401) {
+            this.clearCurrentUser();
+            return of(null);
+          }
+
+          return throwError(() => error);
+        }),
+        finalize(() => {
+          if (this.currentUserRequest$ === request$) {
+            this.currentUserRequest$ = null;
+          }
+        }),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+
+      this.currentUserRequest$ = request$;
+    }
+
+    return this.currentUserRequest$;
   }
 
   refreshCurrentUser(): Observable<any> {

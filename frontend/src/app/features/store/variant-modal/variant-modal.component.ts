@@ -86,10 +86,10 @@ export interface VariantModalAddToCartEvent {
                   <select
                     class="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-500 focus:bg-white"
                     [ngModel]="selectedVariantId"
-                    (ngModelChange)="selectedVariantId = $event"
+                    (ngModelChange)="onVariantSelectionChange($event)"
                     [ngModelOptions]="{ standalone: true }"
                   >
-                    <option *ngFor="let variant of availableVariants(); trackBy: trackByVariant" [value]="variant._id">
+                    <option *ngFor="let variant of availableVariants(); trackBy: trackByVariant" [ngValue]="variantId(variant)">
                       {{ variantLabel(variant) }} - {{ formatCurrency(priceForVariant(variant)) }}
                     </option>
                   </select>
@@ -151,7 +151,7 @@ export interface VariantModalAddToCartEvent {
                     <button
                       type="button"
                       class="btn-primary order-first w-full !px-5 !py-3.5 sm:order-none"
-                      [disabled]="!selectedVariant()?._id || selectedVariantStock() <= 0 || isAdding"
+                      [disabled]="!selectedVariant()?._id || selectedVariantStock() <= 0"
                       (click)="confirmAddToCart()"
                     >
                       {{ isAdding ? 'Adding...' : 'Add To Cart' }}
@@ -169,6 +169,7 @@ export interface VariantModalAddToCartEvent {
 export class VariantModalComponent implements OnChanges {
   @Input() open = false;
   @Input() product: CustomerCatalogProduct | null = null;
+  @Input() initialVariantId = '';
   @Input() isAdding = false;
   @Output() close = new EventEmitter<void>();
   @Output() addToCart = new EventEmitter<VariantModalAddToCartEvent>();
@@ -182,7 +183,7 @@ export class VariantModalComponent implements OnChanges {
   constructor(private variantService: StoreProductVariantService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['product'] && this.open) {
+    if ((changes['product'] || changes['initialVariantId']) && this.open) {
       this.resetSelection();
     }
 
@@ -200,6 +201,14 @@ export class VariantModalComponent implements OnChanges {
 
   selectedVariant(): CustomerCatalogVariant | null {
     return this.variantService.getSelectedVariant(this.product, this.selectedVariantId);
+  }
+
+  onVariantSelectionChange(value: string): void {
+    this.selectedVariantId = String(value || '');
+  }
+
+  variantId(variant?: CustomerCatalogVariant | null): string {
+    return String(variant?._id || '');
   }
 
   selectedVariantStock(): number {
@@ -272,6 +281,7 @@ export class VariantModalComponent implements OnChanges {
       return;
     }
 
+    console.log('MODAL CONFIRM CLICKED');
     this.addToCart.emit({
       productId: this.product._id,
       variantId: variant._id,
@@ -288,8 +298,8 @@ export class VariantModalComponent implements OnChanges {
   }
 
   private resetSelection(): void {
-    const defaultVariant = this.variantService.getDefaultVariant(this.product);
-    this.selectedVariantId = defaultVariant?._id || '';
+    const defaultVariant = this.variantService.getSelectedVariant(this.product, this.initialVariantId);
+    this.selectedVariantId = String(defaultVariant?._id || '');
     this.quantity = 1;
   }
 

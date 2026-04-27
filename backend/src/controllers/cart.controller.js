@@ -27,18 +27,25 @@ async function ensureCart(userId) {
 const addToCart = asyncHandler(async (req, res) => {
     const { productId, variantId, quantity } = req.body;
     const userId = req.user._id;
+    const normalizedQuantity = Math.max(1, Number(quantity) || 1);
 
     // 1. Fetch Latest Product Data
     const product = await Product.findById(productId);
     if (!product) throw new ApiError(404, "Product not found");
+    if (product.isActive === false) {
+        throw new ApiError(400, "Product is unavailable");
+    }
 
     // 2. Find Specific Variant
     const variant = product.variants.id(variantId);
     if (!variant) throw new ApiError(404, "Variant not found");
+    if (variant.isAvailable === false || Number(variant.productStock || 0) <= 0) {
+        throw new ApiError(400, "Product is out of stock");
+    }
 
     // 3. Check Stock
-    if (variant.productStock < quantity) {
-        throw new ApiError(400, "Not enough stock available");
+    if (variant.productStock < normalizedQuantity) {
+        throw new ApiError(400, "Product is out of stock");
     }
 
     // 4. Find User's Cart
@@ -46,38 +53,38 @@ const addToCart = asyncHandler(async (req, res) => {
 
     if (!cart) {
         // Create new cart if doesn't exist
-        cart = await Cart.create({
-            user: userId,
-            cartItems: [{
-                product: productId,
-                variantId,
-                quantity,
-                priceAtAddition: variant.finalPrice // Snapshot for history
-            }]
-        });
-    } else {
-        // Check if same variant already in cart
-        const itemIndex = cart.cartItems.findIndex(
-            item => item.variantId.toString() === variantId.toString()
-        );
-
-        if (itemIndex > -1) {
-            const nextQuantity = cart.cartItems[itemIndex].quantity + Number(quantity);
-            if (variant.productStock < nextQuantity) {
-                throw new ApiError(400, `Only ${variant.productStock} units available in stock`);
-            }
-            // Update quantity
-            cart.cartItems[itemIndex].quantity = nextQuantity;
-        } else {
-            // Add new item
-            cart.cartItems.push({
-                product: productId,
-                variantId,
-                quantity,
-                priceAtAddition: variant.finalPrice
+            cart = await Cart.create({
+                user: userId,
+                cartItems: [{
+                    product: productId,
+                    variantId,
+                    quantity: normalizedQuantity,
+                    priceAtAddition: variant.finalPrice // Snapshot for history
+                }]
             });
+        } else {
+            // Check if same variant already in cart
+            const itemIndex = cart.cartItems.findIndex(
+                item => item.variantId.toString() === variantId.toString()
+            );
+
+            if (itemIndex > -1) {
+                const nextQuantity = cart.cartItems[itemIndex].quantity + normalizedQuantity;
+                if (variant.productStock < nextQuantity) {
+                    throw new ApiError(400, "Product is out of stock");
+                }
+                // Update quantity
+                cart.cartItems[itemIndex].quantity = nextQuantity;
+            } else {
+                // Add new item
+                cart.cartItems.push({
+                    product: productId,
+                    variantId,
+                    quantity: normalizedQuantity,
+                    priceAtAddition: variant.finalPrice
+                });
+            }
         }
-    }
 
     await cart.save();
     return res.status(200).json(new ApiResponse(200, cart, "Item added to cart"));
