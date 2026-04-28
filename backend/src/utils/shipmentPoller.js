@@ -30,6 +30,57 @@ const syncShipment = async (shipment) => {
     return syncShipmentFromDhl(shipment);
 };
 
+const isVersionConflictError = (error) =>
+    error?.name === "VersionError" ||
+    /No matching document found/i.test(error?.message || "");
+
+const reloadShipmentById = async (shipmentId) => {
+    if (!shipmentId) {
+        return null;
+    }
+
+    return Shipment.findById(shipmentId).populate({
+        path: "order",
+        populate: {
+            path: "user",
+            select: "fullName username email"
+        }
+    });
+};
+
+const syncShipmentSafely = async (shipment) => {
+    const shipmentId = shipment?._id?.toString?.() || shipment?._id;
+    const previousStatus = shipment.shipmentStatus;
+
+    try {
+        const updatedShipment = await syncShipment(shipment);
+        if (!updatedShipment) {
+            return null;
+        }
+
+        await syncOrderFromShipment(updatedShipment.order, updatedShipment);
+        return { shipment: updatedShipment, previousStatus };
+    } catch (error) {
+        if (!isVersionConflictError(error)) {
+            throw error;
+        }
+
+        const freshShipment = await reloadShipmentById(shipmentId);
+        if (!freshShipment) {
+            return null;
+        }
+
+        const freshPreviousStatus = freshShipment.shipmentStatus;
+        const updatedShipment = await syncShipment(freshShipment);
+        if (!updatedShipment) {
+            return null;
+        }
+
+        await syncOrderFromShipment(updatedShipment.order, updatedShipment);
+        return { shipment: updatedShipment, previousStatus: freshPreviousStatus };
+    }
+};
+
 const pollOpenShipments = async () => {
     if (isPolling) {
         return;
@@ -54,28 +105,31 @@ const pollOpenShipments = async () => {
 
         for (const shipment of shipments) {
             try {
-                const previousStatus = shipment.shipmentStatus;
-                await syncShipment(shipment);
-                await syncOrderFromShipment(shipment.order, shipment);
+                const synced = await syncShipmentSafely(shipment);
+                if (!synced?.shipment) {
+                    continue;
+                }
 
-                if (shipment.shipmentStatus !== previousStatus) {
+                const { shipment: updatedShipment, previousStatus } = synced;
+
+                if (updatedShipment.shipmentStatus !== previousStatus) {
                     try {
                         await sendShipmentStatusEmail({
-                            order: shipment.order,
-                            shipment,
+                            order: updatedShipment.order,
+                            shipment: updatedShipment,
                             previousStatus,
-                            currentStatus: shipment.shipmentStatus
+                            currentStatus: updatedShipment.shipmentStatus
                         });
                     } catch (emailError) {
                         console.error(
-                            `[Shipment Poller] Email send failed for order ${shipment.order?.toString() || shipment._id}:`,
+                            `[Shipment Poller] Email send failed for order ${updatedShipment.order?._id?.toString?.() || updatedShipment.order?.toString?.() || updatedShipment._id}:`,
                             emailError.message
                         );
                     }
                 }
             } catch (error) {
                 console.error(
-                    `[Shipment Poller] Failed to sync order ${shipment.order?.toString() || shipment._id}:`,
+                    `[Shipment Poller] Failed to sync order ${shipment.order?._id?.toString?.() || shipment.order?.toString?.() || shipment._id}:`,
                     error.message
                 );
             }

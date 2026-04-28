@@ -201,7 +201,7 @@ import {
                 {{ catalogMessage }}
               </div>
 
-              <div *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
+              <div *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
                   <div class="mt-4 h-4 w-3/4 rounded-full bg-slate-200"></div>
@@ -225,7 +225,7 @@ import {
                   </button>
                 </div>
 
-                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
+                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
                   <app-product-card
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
                     [product]="product"

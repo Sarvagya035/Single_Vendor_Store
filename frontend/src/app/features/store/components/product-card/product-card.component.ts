@@ -19,7 +19,7 @@ export interface ProductCardVariantActionEvent {
       (click)="productClick.emit(product)"
       (keydown.enter)="productClick.emit(product)"
       (keydown.space)="$event.preventDefault(); productClick.emit(product)"
-      class="product-card group relative flex h-full flex-col overflow-hidden rounded-[10px] border border-orange-100/70 bg-white shadow-[0_12px_35px_rgba(139,94,60,0.08)] transition-all duration-300 hover:-translate-y-1 hover:cursor-pointer hover:shadow-[0_18px_45px_rgba(139,94,60,0.14)] cursor-pointer"
+      class="product-card group relative flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-orange-100/70 bg-white shadow-[0_12px_35px_rgba(139,94,60,0.08)] transition-all duration-300 hover:-translate-y-1 hover:cursor-pointer hover:shadow-[0_18px_45px_rgba(139,94,60,0.14)] cursor-pointer"
     >
       <button
         type="button"
@@ -45,55 +45,62 @@ export interface ProductCardVariantActionEvent {
         >
           {{ offerBadgeText }}
         </div>
+        <div
+          *ngIf="displayRatingValue"
+          class="absolute left-3 top-12 z-10 inline-flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[10px] font-bold text-amber-700 shadow-[0_10px_22px_rgba(15,23,42,0.10)] backdrop-blur"
+        >
+          <span aria-hidden="true">★</span>
+          <span>{{ displayRatingValue }}</span>
+        </div>
         <img
           [src]="mainImageUrl"
-          [alt]="product.productName"
+          [alt]="displayTitle"
           loading="lazy"
           decoding="async"
-          class="h-56 w-full rounded-t-[10px] object-cover transition duration-300 group-hover:scale-105 sm:h-60"
+          class="h-40 w-full rounded-t-[10px] object-cover transition duration-300 group-hover:scale-105 sm:h-48 lg:h-60"
         />
       </div>
 
-      <div class="flex flex-col gap-2 p-4 pt-3 md:gap-2 lg:gap-3">
-        <div class="flex items-start justify-between gap-3">
+      <div class="flex flex-col gap-2 p-4 md:gap-2 lg:gap-3">
+        <div class="flex flex-col gap-1.5">
           <div class="min-w-0 flex-1">
-            <h2 class="line-clamp-2 text-base font-semibold leading-5 text-slate-950">
-              {{ product.productName }}
+            <h2 class="min-h-[40px] line-clamp-2 text-base font-semibold leading-5 text-slate-950 sm:text-[17px]">
+              {{ displayTitle }}
             </h2>
           </div>
-          <div class="flex shrink-0 flex-col items-end">
-            <div class="flex items-baseline gap-1.5">
-              <span class="whitespace-nowrap rounded-full bg-amber-50 px-3 py-1 text-sm font-bold text-slate-900 ring-1 ring-amber-200">
+          <div class="flex flex-col gap-1">
+            <div class="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+              <span class="whitespace-nowrap text-lg font-black tracking-tight text-slate-900">
                 {{ discountedPriceLabel }}
               </span>
-              <span *ngIf="originalPriceLabel" class="whitespace-nowrap text-xs text-slate-400 line-through">
+              <span *ngIf="originalPriceLabel" class="whitespace-nowrap text-sm font-semibold text-slate-400 line-through">
                 {{ originalPriceLabel }}
               </span>
             </div>
+            <span
+              class="inline-flex w-fit rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+              [class.bg-emerald-50]="isProductInStock"
+              [class.text-emerald-600]="isProductInStock"
+              [class.bg-red-50]="!isProductInStock"
+              [class.text-red-500]="!isProductInStock"
+            >
+              {{ stockStatusLabel }}
+            </span>
           </div>
         </div>
 
         <div class="flex items-center justify-between gap-2">
-          <span
-            class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
-            [class.bg-emerald-50]="isProductInStock"
-            [class.text-emerald-600]="isProductInStock"
-            [class.bg-red-50]="!isProductInStock"
-            [class.text-red-500]="!isProductInStock"
-          >
-            {{ stockStatusLabel }}
-          </span>
           <span class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-            {{ variantCountText }}
+            {{ displayVariantCountText }}
           </span>
         </div>
 
         <div *ngIf="showVariantSelector" class="space-y-1.5">
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-1">
             <button
               *ngFor="let variant of visibleVariants(); let index = index; trackBy: trackByVariant"
               type="button"
-              class="rounded-full border px-3 py-1.5 text-[11px] transition focus:outline-none focus:ring-2 focus:ring-orange-300"
+              class="rounded-full border px-2 py-1 text-[10px] transition focus:outline-none focus:ring-2 focus:ring-orange-300 sm:px-3 sm:py-1.5 sm:text-[11px]"
               [class.border-orange-500]="isVariantSelected(variant)"
               [class.bg-orange-50]="isVariantSelected(variant)"
               [class.text-orange-700]="isVariantSelected(variant)"
@@ -118,12 +125,12 @@ export interface ProductCardVariantActionEvent {
           </div>
         </div>
 
-        <div class="grid gap-2 sm:grid-cols-2">
+        <div class="flex flex-col gap-2">
           <button
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); addToCart.emit({ product, variant: selectedVariant })"
-            class="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-[#7a4f35] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-sm transition hover:bg-[#6a422c] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] bg-[#7a4f35] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-sm transition hover:bg-[#6a422c] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >
@@ -134,7 +141,7 @@ export interface ProductCardVariantActionEvent {
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); buyNow.emit({ product, variant: selectedVariant })"
-            class="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full border border-amber-400 bg-amber-50 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7a4f35] transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] border border-amber-400 bg-amber-50 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7a4f35] transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >
@@ -147,6 +154,14 @@ export interface ProductCardVariantActionEvent {
 })
 export class ProductCardComponent implements OnChanges {
   @Input({ required: true }) product!: CustomerCatalogProduct;
+  @Input() image = '';
+  @Input() title = '';
+  @Input() price: number | string | null = null;
+  @Input() originalPrice: number | string | null = null;
+  @Input() discount: number | string | null = null;
+  @Input() options: string[] = [];
+  @Input() stockStatus = '';
+  @Input() rating: number | string | null = null;
   @Input() isWishlisted = false;
   @Input() wishlistBusy = false;
   @Input() originalPriceText = '';
@@ -175,18 +190,34 @@ export class ProductCardComponent implements OnChanges {
   }
 
   get selectedVariant(): CustomerCatalogVariant | null {
-    return this.variantService.getSelectedVariant(this.product, this.selectedVariantId);
+    return this.variantService.getSelectedVariant(this.product || undefined, this.selectedVariantId);
   }
 
   get mainImageUrl(): string {
-    return this.variantService.getProductImage(this.product, this.selectedVariant);
+    return (
+      this.image ||
+      this.variantService.getProductImage(this.product || undefined, this.selectedVariant) ||
+      'https://via.placeholder.com/640x640?text=Product'
+    );
   }
 
   get discountedPriceLabel(): string {
-    return this.currencyFormatter.format(this.variantService.getProductPrice(this.product, this.selectedVariant));
+    if (this.price !== null && this.price !== undefined && this.price !== '') {
+      return this.formatPriceValue(this.price);
+    }
+
+    return this.currencyFormatter.format(this.variantService.getProductPrice(this.product || undefined, this.selectedVariant));
   }
 
   get originalPriceLabel(): string {
+    if (this.originalPrice !== null && this.originalPrice !== undefined && this.originalPrice !== '') {
+      const originalValue = this.formatPriceValue(this.originalPrice);
+      const discountedValue = this.discountedPriceLabel;
+      if (originalValue && originalValue !== discountedValue) {
+        return originalValue;
+      }
+    }
+
     const selected = this.selectedVariant;
     const original = Number(selected?.productPrice || this.product?.basePrice || 0);
     const discounted = Number(selected?.finalPrice || this.product?.basePrice || 0);
@@ -199,6 +230,17 @@ export class ProductCardComponent implements OnChanges {
   }
 
   get offerBadgeText(): string {
+    if (this.discount !== null && this.discount !== undefined && this.discount !== '') {
+      if (typeof this.discount === 'string') {
+        return this.discount.trim();
+      }
+
+      const numericDiscount = Number(this.discount);
+      if (!Number.isNaN(numericDiscount) && numericDiscount > 0) {
+        return `${Math.round(numericDiscount)}% OFF`;
+      }
+    }
+
     const selected = this.selectedVariant;
     const original = Number(selected?.productPrice || this.product?.basePrice || 0);
     const discounted = Number(selected?.finalPrice || this.product?.basePrice || 0);
@@ -210,11 +252,16 @@ export class ProductCardComponent implements OnChanges {
   }
 
   get showVariantSelector(): boolean {
-    return this.visibleVariants().length > 0;
+    return this.visibleVariants().length > 0 || this.options.length > 0;
   }
 
   get variantCountText(): string {
     const count = this.variantCount || this.visibleVariants().length;
+    return `${count} option${count === 1 ? '' : 's'}`;
+  }
+
+  get displayVariantCountText(): string {
+    const count = this.variantCount || this.visibleVariants().length || this.options.length;
     return `${count} option${count === 1 ? '' : 's'}`;
   }
 
@@ -223,7 +270,25 @@ export class ProductCardComponent implements OnChanges {
   }
 
   get stockStatusLabel(): string {
+    if (this.stockStatus.trim()) {
+      return this.stockStatus.trim();
+    }
+
     return this.isProductInStock ? 'In Stock' : 'Out of Stock';
+  }
+
+  get displayTitle(): string {
+    return this.title || this.product?.productName || 'Product';
+  }
+
+  get displayRatingValue(): string {
+    const source = this.rating ?? this.product?.averageRating;
+    const numeric = Number(source);
+    if (!Number.isFinite(numeric) || numeric <= 0) {
+      return '';
+    }
+
+    return numeric.toFixed(1);
   }
 
   get isProductInStock(): boolean {
@@ -240,7 +305,7 @@ export class ProductCardComponent implements OnChanges {
   }
 
   visibleVariants(): CustomerCatalogVariant[] {
-    return this.variantService.getVariants(this.product);
+    return this.variantService.getVariants(this.product || undefined);
   }
 
   selectVariant(variant: CustomerCatalogVariant): void {
@@ -317,8 +382,22 @@ export class ProductCardComponent implements OnChanges {
   }
 
   private initializeSelectedVariant(): void {
-    const defaultVariant = this.variantService.getSelectedVariant(this.product, this.selectedVariantId);
+    const defaultVariant = this.variantService.getSelectedVariant(this.product || undefined, this.selectedVariantId);
     this.selectedVariantId = defaultVariant?._id || '';
+
+    if (!this.selectedVariantId) {
+      const firstVariant = this.visibleVariants()[0];
+      this.selectedVariantId = firstVariant?._id || '';
+    }
+  }
+
+  private formatPriceValue(value: number | string): string {
+    const numeric = Number(value);
+    if (Number.isFinite(numeric)) {
+      return this.currencyFormatter.format(numeric);
+    }
+
+    return String(value);
   }
 
   private variantLabelFromAttributes(variant: CustomerCatalogVariant): string {

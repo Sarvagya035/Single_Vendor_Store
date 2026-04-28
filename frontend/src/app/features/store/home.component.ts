@@ -165,7 +165,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
             <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
           </div>
 
-          <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
             <app-product-card
               *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
               [product]="product"
