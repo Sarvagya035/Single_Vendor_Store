@@ -12,8 +12,9 @@ import { RouterModule } from '@angular/router';
       class="absolute inset-x-0 top-full z-[230] max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-[#eadcc9] bg-[#fffaf5] animate-in slide-in-from-top duration-200 md:max-h-[calc(100vh-5rem)] xl:hidden"
       data-mobile-menu-panel
     >
-      <div class="space-y-2 px-4 pt-2 pb-6">
-        <ng-container *ngIf="showPublicNavLinks">
+      <div class="space-y-4 px-4 pt-2 pb-6">
+        <section *ngIf="showPublicNavLinks" class="space-y-2">
+          <p class="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Navigation</p>
           <a *ngIf="!loggedIn" routerLink="/" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Home</a>
           <a routerLink="/products" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Products</a>
           <a
@@ -27,53 +28,10 @@ import { RouterModule } from '@angular/router';
           <a routerLink="/products" [queryParams]="{ category: 'gifting' }" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Gifting Collection</a>
           <a routerLink="/about-us" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">About Us</a>
           <a routerLink="/contact" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Contact Us</a>
-        </ng-container>
+        </section>
 
-        <ng-container *ngIf="loggedIn; else guestLinks">
-          <a
-          routerLink="/profile"
-          (click)="close.emit()"
-          class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
-        >
-          Profile
-        </a>
-          <a
-            *ngIf="!isAdmin && !isVendor"
-            routerLink="/orders"
-            (click)="close.emit()"
-            class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
-          >
-            My Orders
-          </a>
-          <a
-            *ngIf="!isAdmin && !isVendor"
-            routerLink="/wishlist"
-            (click)="close.emit()"
-            class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
-          >
-            My Wishlist
-          </a>
-          <a
-            *ngIf="!isAdmin && !isVendor"
-            routerLink="/addresses"
-            (click)="close.emit()"
-            class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
-          >
-            My Addresses
-          </a>
-
-          <div class="border-t border-[#eadcc9] pt-4">
-            <button
-              type="button"
-              (click)="logout.emit()"
-              class="w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm font-bold text-rose-600 hover:bg-rose-50"
-            >
-              Logout
-            </button>
-          </div>
-        </ng-container>
-
-        <ng-template #guestLinks>
+        <section *ngIf="!loggedIn" class="space-y-2 border-t border-[#eadcc9] pt-4">
+          <p class="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Account</p>
           <a
             routerLink="/login"
             (click)="close.emit()"
@@ -88,7 +46,7 @@ import { RouterModule } from '@angular/router';
           >
             Register
           </a>
-        </ng-template>
+        </section>
       </div>
     </div>
   `

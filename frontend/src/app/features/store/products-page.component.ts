@@ -121,20 +121,6 @@ import {
                         {{ activeFilterCount() }}
                       </span>
                     </button>
-
-                    <label class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm">
-                      <span class="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Sort</span>
-                      <select
-                        [(ngModel)]="sortBy"
-                        name="mobileSortBy"
-                        (ngModelChange)="onCatalogFilterChange()"
-                        class="min-w-0 flex-1 border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none"
-                      >
-                        <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
-                          {{ option.label }}
-                        </option>
-                      </select>
-                    </label>
                   </div>
 
                 <app-catalog-active-filters
@@ -150,21 +136,7 @@ import {
               </div>
               </div>
 
-              <div class="mb-5 flex flex-wrap items-center gap-3 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-3">
-                <label class="hidden items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm lg:flex">
-                  <span class="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Sort</span>
-                  <select
-                    [(ngModel)]="sortBy"
-                    name="sortBy"
-                    (ngModelChange)="onCatalogFilterChange()"
-                    class="border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none"
-                  >
-                    <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
-                      {{ option.label }}
-                    </option>
-                  </select>
-                </label>
-
+              <div *ngIf="hasActiveFilters()" class="mb-5 flex flex-wrap items-center gap-3 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-3">
                 <div class="flex flex-wrap items-center gap-2">
                   <span
                     *ngIf="selectedBrand !== 'all'"
@@ -194,13 +166,6 @@ import {
                 </div>
               </div>
 
-              <div
-                *ngIf="catalogMessage"
-                class="mb-4 rounded-[1.1rem] border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-slate-900"
-              >
-                {{ catalogMessage }}
-              </div>
-
               <div *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
@@ -225,7 +190,7 @@ import {
                   </button>
                 </div>
 
-                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 lg:gap-6">
                   <app-product-card
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
                     [product]="product"

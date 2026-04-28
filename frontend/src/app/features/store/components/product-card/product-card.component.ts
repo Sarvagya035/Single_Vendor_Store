@@ -66,12 +66,12 @@ export interface ProductCardVariantActionEvent {
 
       <div class="flex flex-1 min-w-0 flex-col gap-1.5 p-2.5 sm:gap-2 sm:p-3 md:p-4">
         <div class="min-w-0">
-          <h2 class="min-h-[34px] line-clamp-2 text-xs font-semibold leading-5 text-slate-900 sm:text-sm">
+          <h2 class="mb-1 min-h-[34px] line-clamp-2 text-base font-semibold leading-snug text-slate-900 sm:text-[17px]">
             {{ displayTitle }}
           </h2>
         </div>
 
-        <div *ngIf="showVariantSelector" class="mt-2 min-h-[34px]">
+        <div *ngIf="showVariantSelector" class="mt-1 min-h-[34px]">
           <div class="flex flex-wrap gap-1.5 sm:gap-2">
             <button
               *ngFor="let variant of visibleVariants(); let index = index; trackBy: trackByVariant"
@@ -115,12 +115,12 @@ export interface ProductCardVariantActionEvent {
           </span>
         </div>
 
-        <div class="grid w-full min-w-0 grid-cols-2 gap-1.5 sm:gap-2 pt-1">
+        <div class="grid w-full min-w-0 grid-cols-2 gap-2 pt-1">
           <button
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); addToCart.emit({ product, variant: selectedVariant })"
-            class="inline-flex h-8 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg bg-[#8B5538] px-1.5 text-[9px] font-bold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[#74452e] sm:h-9 sm:px-2 sm:text-[10px] md:text-xs disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex h-8 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg bg-[#8B5538] px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[#74452e] sm:h-9 sm:px-3 sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >
@@ -132,7 +132,7 @@ export interface ProductCardVariantActionEvent {
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); buyNow.emit({ product, variant: selectedVariant })"
-            class="inline-flex h-8 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg border border-amber-400 bg-white px-1.5 text-[9px] font-bold uppercase tracking-[0.04em] text-[#8B5538] transition hover:bg-amber-50 sm:h-9 sm:px-2 sm:text-[10px] md:text-xs disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex h-8 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg border border-amber-400 bg-white px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#8B5538] transition hover:bg-amber-50 sm:h-9 sm:px-3 sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >

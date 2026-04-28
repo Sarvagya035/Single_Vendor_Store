@@ -341,6 +341,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   fadeMode = true;
   loadingCategories = false;
   products: CustomerCatalogProduct[] = [];
+  featuredProductLimit = 12;
   wishlistedProductIds = new Set<string>();
   wishlistBusyId = '';
   categoryCanScrollPrev = false;
@@ -466,6 +467,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
 
     this.preloadHeroSlides();
+    this.updateFeaturedProductLimit();
     this.loadLandingProducts();
     this.loadLandingCategories();
     this.startHeroCarousel();
@@ -490,6 +492,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @HostListener('window:resize')
   onWindowResize(): void {
     this.updateCategoryCarouselState();
+    this.updateFeaturedProductLimit();
   }
 
   isAdmin(): boolean {
@@ -660,7 +663,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   featuredProducts(): CustomerCatalogProduct[] {
-    return this.products.slice(0, 12);
+    return this.products.slice(0, this.featuredProductLimit);
+  }
+
+  private updateFeaturedProductLimit(): void {
+    this.featuredProductLimit = window.innerWidth >= 1280 ? 15 : 12;
   }
 
   openProduct(product: CustomerCatalogProduct): void {
