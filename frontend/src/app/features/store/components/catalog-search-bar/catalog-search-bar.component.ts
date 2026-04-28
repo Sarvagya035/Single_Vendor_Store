@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <form class="relative mt-4 w-full" (ngSubmit)="searchSubmit.emit(searchQuery)">
+    <form class="relative w-full" (ngSubmit)="searchSubmit.emit(searchQuery)">
       <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-amber-500 focus-within:bg-white">
         <span class="text-slate-400">
           <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

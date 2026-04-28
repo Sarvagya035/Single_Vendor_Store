@@ -19,31 +19,23 @@ export interface ProductCardVariantActionEvent {
       (click)="productClick.emit(product)"
       (keydown.enter)="productClick.emit(product)"
       (keydown.space)="$event.preventDefault(); productClick.emit(product)"
-      class="product-card group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.14)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+      class="product-card group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
     >
-      <div class="relative aspect-square w-full overflow-hidden bg-slate-50">
+      <div class="relative h-[240px] w-full overflow-hidden rounded-t-[10px] bg-slate-50">
         <img
           [src]="mainImageUrl"
           [alt]="displayTitle"
           loading="lazy"
           decoding="async"
-          class="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105"
+          class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
         />
         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
 
         <div
           *ngIf="offerBadgeText"
-          class="absolute left-3 top-3 z-10 rounded-full bg-gradient-to-r from-[#7a4f35] to-[#9b6a43] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white shadow-[0_12px_24px_rgba(122,79,53,0.22)] ring-1 ring-white/20"
+          class="absolute left-3 top-3 z-10 rounded-full bg-[#f5d9c7] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#8B5538] shadow-sm ring-1 ring-[#f2c9ad]"
         >
           {{ offerBadgeText }}
-        </div>
-
-        <div
-          *ngIf="displayRatingValue"
-          class="absolute bottom-3 left-3 z-10 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold text-amber-700 shadow-[0_10px_20px_rgba(15,23,42,0.12)] backdrop-blur"
-        >
-          <span aria-hidden="true">★</span>
-          <span>{{ displayRatingValue }}</span>
         </div>
 
         <button
@@ -64,25 +56,22 @@ export interface ProductCardVariantActionEvent {
         </button>
       </div>
 
-      <div class="flex flex-1 min-w-0 flex-col gap-1.5 p-2.5 sm:gap-2 sm:p-3 md:p-4">
+      <div class="flex flex-1 min-w-0 flex-col gap-3 p-4 sm:gap-3">
         <div class="min-w-0">
-          <h2 class="mb-1 min-h-[34px] line-clamp-2 text-base font-semibold leading-snug text-slate-900 sm:text-[17px]">
+          <h2 class="line-clamp-2 text-[15px] font-semibold leading-snug text-slate-800 sm:text-base">
             {{ displayTitle }}
           </h2>
         </div>
 
-        <div *ngIf="showVariantSelector" class="mt-1 min-h-[34px]">
-          <div class="flex flex-wrap gap-1.5 sm:gap-2">
+        <div *ngIf="showVariantSelector" class="min-h-[34px]">
+          <div class="flex gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <button
               *ngFor="let variant of visibleVariants(); let index = index; trackBy: trackByVariant"
               type="button"
-              class="inline-flex min-w-0 items-center justify-center rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium whitespace-nowrap text-slate-600 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-300 sm:px-3 sm:py-1.5 sm:text-xs"
-              [class.border-amber-300]="isVariantSelected(variant)"
-              [class.bg-amber-50]="isVariantSelected(variant)"
-              [class.text-amber-800]="isVariantSelected(variant)"
-              [class.font-semibold]="isVariantSelected(variant)"
-              [class.ring-1]="isVariantSelected(variant)"
-              [class.ring-amber-200]="isVariantSelected(variant)"
+              class="inline-flex shrink-0 min-w-0 items-center justify-center rounded-full border px-3 py-1.5 text-[11px] font-medium whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-amber-300"
+              [ngClass]="isVariantSelected(variant)
+                ? 'border-[#7a4f35] bg-[#7a4f35] text-white shadow-sm'
+                : 'border-orange-200 bg-white text-slate-600 hover:border-[#7a4f35] hover:text-[#7a4f35]'"
               [attr.aria-label]="variantLabel(variant)"
               [attr.aria-pressed]="isVariantSelected(variant)"
               (click)="$event.stopPropagation(); selectVariant(variant)"
@@ -94,9 +83,9 @@ export interface ProductCardVariantActionEvent {
           </div>
         </div>
 
-        <div class="mt-2 flex items-center justify-between gap-1.5 flex-wrap">
+        <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex min-w-0 items-baseline gap-1.5">
-            <span class="whitespace-nowrap text-sm font-bold tracking-tight text-slate-900 sm:text-lg">
+            <span class="whitespace-nowrap text-base font-bold tracking-tight text-[#8B5538] sm:text-lg">
               {{ discountedPriceLabel }}
             </span>
             <span *ngIf="originalPriceLabel" class="whitespace-nowrap text-xs font-semibold text-slate-400 line-through sm:text-sm">
@@ -105,12 +94,13 @@ export interface ProductCardVariantActionEvent {
           </div>
 
           <span
-            class="shrink-0 whitespace-nowrap rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-medium text-emerald-700 sm:px-2 sm:text-[10px] md:text-xs"
+            class="shrink-0 whitespace-nowrap rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700 sm:text-xs"
             [class.bg-red-50]="!isProductInStock"
             [class.text-red-500]="!isProductInStock"
-            [class.bg-emerald-100]="isProductInStock"
+            [class.bg-emerald-50]="isProductInStock"
             [class.text-emerald-700]="isProductInStock"
           >
+            <span class="mr-1 inline-block h-2 w-2 rounded-full bg-current align-middle"></span>
             {{ stockStatusLabel }}
           </span>
         </div>
@@ -120,7 +110,7 @@ export interface ProductCardVariantActionEvent {
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); addToCart.emit({ product, variant: selectedVariant })"
-            class="inline-flex h-8 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg bg-[#8B5538] px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[#74452e] sm:h-9 sm:px-3 sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex h-9 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-full bg-[#8B5538] px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[#74452e] sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >
@@ -132,7 +122,7 @@ export interface ProductCardVariantActionEvent {
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); buyNow.emit({ product, variant: selectedVariant })"
-            class="inline-flex h-8 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg border border-amber-400 bg-white px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#8B5538] transition hover:bg-amber-50 sm:h-9 sm:px-3 sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex h-9 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-full border border-[#8B5538] bg-white px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#8B5538] transition hover:bg-[#fff7f2] sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >
@@ -304,7 +294,7 @@ export class ProductCardComponent implements OnChanges {
   }
 
   variantLabel(variant: CustomerCatalogVariant): string {
-    return this.variantDisplayLabel(variant);
+    return this.getVariantLabel(variant);
   }
 
   variantImage(variant: CustomerCatalogVariant): string {
@@ -312,20 +302,39 @@ export class ProductCardComponent implements OnChanges {
   }
 
   variantDisplayLabel(variant: CustomerCatalogVariant | null | undefined, fallbackIndex = 0): string {
+    return this.getVariantLabel(variant, fallbackIndex);
+  }
+
+  getVariantLabel(variant: CustomerCatalogVariant | null | undefined, fallbackIndex = 0): string {
     if (!variant) {
-      return fallbackIndex > 0 ? `Variant ${fallbackIndex}` : 'Variant';
+      return fallbackIndex > 0 ? `Option ${fallbackIndex}` : 'Variant';
+    }
+
+    const directFields = [
+      this.getTextFieldValue(variant, 'label'),
+      this.getTextFieldValue(variant, 'name'),
+      this.getTextFieldValue(variant, 'size'),
+      this.getTextFieldValue(variant, 'weight'),
+      this.getTextFieldValue(variant, 'unit'),
+      this.getTextFieldValue(variant, 'title'),
+      this.getTextFieldValue(variant, 'value')
+    ];
+
+    const directLabel = directFields.find((value) => !!value);
+    if (directLabel) {
+      return this.normalizeVariantLabel(directLabel);
     }
 
     const labelFromAttributes = this.variantLabelFromAttributes(variant);
     if (labelFromAttributes) {
-      return labelFromAttributes;
+      return this.normalizeVariantLabel(labelFromAttributes);
     }
 
     if (variant.sku?.trim()) {
       return variant.sku.trim();
     }
 
-    return fallbackIndex > 0 ? `Variant ${fallbackIndex}` : 'Variant';
+    return fallbackIndex > 0 ? `Option ${fallbackIndex}` : 'Variant';
   }
 
   isVariantSelected(variant: CustomerCatalogVariant): boolean {
@@ -412,6 +421,19 @@ export class ProductCardComponent implements OnChanges {
     }
 
     return attributes.map((attribute) => attribute.value).join(' • ');
+  }
+
+  private getTextFieldValue(
+    source: CustomerCatalogVariant | null | undefined,
+    key: string
+  ): string {
+    const raw = this.getFieldValue(source, key);
+    return typeof raw === 'string' || typeof raw === 'number' ? String(raw).trim() : '';
+  }
+
+  private normalizeVariantLabel(label: string): string {
+    const normalized = label.trim().replace(/\s+/g, ' ');
+    return normalized ? normalized.toUpperCase() : label;
   }
 
   private getFieldValue(

@@ -25,7 +25,7 @@ export class CatalogService {
 
   constructor(private api: ApiService) {}
 
-  getCatalogProducts(page = 1, limit = 12, query?: CatalogQueryParams): Observable<any> {
+  getCatalogProducts(page = 1, limit = 28, query?: CatalogQueryParams): Observable<any> {
     let params = new HttpParams().set('page', page).set('limit', limit);
 
     Object.entries(query || {}).forEach(([key, value]) => {
@@ -65,7 +65,7 @@ export class CatalogService {
   searchProducts(
     query: string,
     page = 1,
-    limit = 12,
+    limit = 28,
     options: Omit<CatalogQueryParams, 'q'> = {}
   ): Observable<any> {
     return this.getCatalogProducts(page, limit, { ...options, q: query.trim() });

@@ -61,18 +61,18 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
               {{ variants.length }} options
             </span>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <button
               *ngFor="let variant of variants; let index = index; trackBy: trackByVariant"
               type="button"
-              class="rounded-full border px-4 py-2 text-sm transition focus:outline-none focus:ring-2 focus:ring-orange-300"
+              class="shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300"
               [disabled]="!variant?._id"
               [ngClass]="isVariantSelected(variant)
-                ? 'border-orange-500 bg-orange-50 px-4 py-2 text-sm font-bold text-orange-700 ring-1 ring-orange-300'
-                : 'border-orange-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:border-orange-400'"
+                ? 'border-[#7a4f35] bg-[#7a4f35] text-white shadow-sm'
+                : 'border-orange-200 bg-white text-slate-600 hover:border-[#7a4f35] hover:text-[#7a4f35]'"
               (click)="variantChanged.emit(variant._id || '')"
             >
-              {{ variantDisplayLabel(variant, index + 1) }}
+              {{ getVariantLabel(variant, index + 1) }}
             </button>
           </div>
         </div>
@@ -242,8 +242,21 @@ export class ProductPurchasePanelComponent {
   }
 
   variantDisplayLabel(variant: CustomerCatalogVariant | null | undefined, fallbackIndex = 0): string {
-    if (!variant) {
-      return fallbackIndex > 0 ? `Variant ${fallbackIndex}` : 'Variant';
+    return this.getVariantLabel(variant, fallbackIndex);
+  }
+
+  getVariantLabel(variant: CustomerCatalogVariant | null | undefined, fallbackIndex = 0): string {
+    return (
+      this.getTextField(variant, ['label', 'name', 'weight', 'size', 'title', 'value', 'unit']) ||
+      this.getAttributeLabel(variant) ||
+      (variant?.sku?.trim() || '') ||
+      (fallbackIndex > 0 ? `Option ${fallbackIndex}` : 'Variant')
+    );
+  }
+
+  private getAttributeLabel(variant: CustomerCatalogVariant | null | undefined): string {
+    if (!variant || typeof variant !== 'object') {
+      return '';
     }
 
     const attributes = Object.entries(variant.attributes || {})
@@ -253,21 +266,19 @@ export class ProductPurchasePanelComponent {
       }))
       .filter((attribute) => !!attribute.value);
 
-    if (attributes.length) {
-      const preferredKeys = ['weight', 'size', 'pack', 'quantity', 'qty', 'count', 'volume', 'capacity', 'title', 'name'];
-      for (const preferredKey of preferredKeys) {
-        const match = attributes.find((attribute) => attribute.key.includes(preferredKey));
-        if (match?.value) {
-          return match.value;
-        }
+    if (!attributes.length) {
+      return '';
+    }
+
+    const preferredKeys = ['weight', 'size', 'pack', 'quantity', 'qty', 'count', 'volume', 'capacity', 'title', 'name', 'unit', 'label', 'value'];
+    for (const preferredKey of preferredKeys) {
+      const match = attributes.find((attribute) => attribute.key.includes(preferredKey));
+      if (match?.value) {
+        return match.value;
       }
     }
 
-    if (variant.sku?.trim()) {
-      return variant.sku.trim();
-    }
-
-    return fallbackIndex > 0 ? `Variant ${fallbackIndex}` : 'Variant';
+    return attributes.map((attribute) => attribute.value).join(' • ');
   }
 
   private getTextField(

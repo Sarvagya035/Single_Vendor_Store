@@ -35,31 +35,31 @@ import {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent, CatalogActiveFiltersComponent, CatalogSearchBarComponent, CatalogPaginationComponent, CatalogFilterFormComponent],
   template: `
-    <div class="relative min-h-[calc(100vh-72px)] w-full overflow-hidden bg-slate-50">
+    <div class="relative min-h-[calc(100vh-72px)] w-full bg-[#fffaf3]">
       <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -top-24 left-8 h-72 w-72 rounded-full bg-amber-300/25 blur-3xl"></div>
-        <div class="absolute top-32 right-0 h-96 w-96 rounded-full bg-amber-200/25 blur-3xl"></div>
+        <div class="absolute -top-24 left-8 h-72 w-72 rounded-full bg-amber-300/20 blur-3xl"></div>
+        <div class="absolute top-32 right-0 h-96 w-96 rounded-full bg-amber-200/20 blur-3xl"></div>
       </div>
 
-      <section class="relative h-full w-full px-3 py-3 sm:px-4 lg:px-6 lg:py-6">
-        <div class="h-full min-h-[calc(100vh-88px)] rounded-[2rem] border border-white/70 bg-white/90 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur">
-
-          <div class="grid min-h-[calc(100vh-150px)] w-full min-w-0 gap-0 lg:grid-cols-[320px_1fr]">
-            <aside class="hidden border-b border-slate-200 bg-slate-50/80 px-4 py-5 lg:sticky lg:top-6 lg:block lg:h-[calc(100vh-120px)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:bg-slate-50/90">
-              <div class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Filters</p>
-                    <h3 class="mt-1 text-base font-black text-slate-900">Refine results</h3>
-                  </div>
-                  <button
-                    type="button"
-                    class="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 hover:bg-white"
-                    (click)="resetFilters()"
-                  >
-                    Reset
-                  </button>
+      <section class="relative w-full px-2 pt-3 pb-5 sm:px-3 lg:px-4">
+        <div class="mx-auto grid w-full max-w-[1560px] grid-cols-1 rounded-[2rem] border border-slate-200 bg-white shadow-sm lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+          <aside class="hidden min-w-0 self-start border-r border-slate-200 bg-transparent p-0 lg:sticky lg:top-[124px] lg:block">
+            <div class="rounded-l-[2rem] bg-white/70 p-4">
+              <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Filters</p>
+                  <h3 class="mt-1 text-sm font-semibold text-slate-900">Refine results</h3>
                 </div>
+                <button
+                  type="button"
+                  class="h-8 rounded-full border border-slate-200 bg-slate-50 px-4 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 hover:bg-white"
+                  (click)="resetFilters()"
+                >
+                  Reset
+                </button>
+              </div>
+
+              <div class="pt-4">
                 <app-catalog-filter-form
                   [selectedCategorySlug]="selectedCategorySlug"
                   [selectedBrand]="selectedBrand"
@@ -82,47 +82,66 @@ import {
                   (ratingFilterChange)="ratingFilter = $event"
                   (filterChange)="onCatalogFilterChange()"
                 />
-
-                <p class="text-[11px] font-semibold leading-5 text-slate-500">
-                  Parent categories include all of their child category products.
-                </p>
               </div>
-            </aside>
+            </div>
+          </aside>
 
-            <main class="w-full min-w-0 bg-white px-4 py-5 sm:px-6 lg:px-6">
-              <div class="mb-5 border-b border-slate-200 pb-5">
-                <div>
-                  <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Dry fruit catalog</p>
-                  <h1 class="mt-1 text-2xl font-black tracking-tight text-slate-900 md:text-3xl">Shop all products</h1>
-                  <p class="mt-2 text-sm font-medium text-slate-500">
-                    {{ pageSubtitle() }}
-                  </p>
-                  <p *ngIf="selectedCategoryDescription()" class="mt-2 max-w-3xl text-sm font-medium leading-7 text-slate-600">
-                    {{ selectedCategoryDescription() }}
-                  </p>
-                </div>
-
-                <app-catalog-search-bar
-                  [searchQuery]="searchQuery"
-                  placeholder="Search dry fruits, nuts and healthy packs"
-                  (searchChange)="onSearchQueryChange($event)"
-                  (searchSubmit)="searchProducts()"
-                />
-
-                <div class="mt-4 grid gap-3 lg:hidden">
-                  <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr]">
-                    <button
-                      type="button"
-                      class="btn-primary justify-between !px-4 !py-3 text-sm"
-                      (click)="openFilters()"
-                    >
-                      <span>Filters</span>
-                      <span class="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-black tracking-[0.14em]">
-                        {{ activeFilterCount() }}
-                      </span>
-                    </button>
+          <main class="min-w-0 p-3 sm:p-4 lg:p-5">
+            <div class="space-y-3">
+              <section class="mb-4 border-b border-slate-200 pb-5">
+                <div class="flex flex-col gap-3">
+                  <div class="space-y-2">
+                    <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Dry fruit catalog</p>
+                    <h1 class="text-[28px] font-bold leading-tight tracking-tight text-slate-950 sm:text-[34px] lg:text-[40px]">
+                      <span class="text-[#7a4f35]">Purity</span> You Can Taste,
+                      <span class="text-[#7a4f35]">Quality</span> You Can Trust
+                    </h1>
+                    <p class="max-w-3xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
+                      Discover the perfect blend of taste and nutrition in every pack.
+                    </p>
+                    <p *ngIf="selectedCategoryDescription()" class="max-w-3xl text-sm font-medium leading-7 text-slate-600">
+                      {{ selectedCategoryDescription() }}
+                    </p>
                   </div>
 
+                  <div class="space-y-3">
+                    <app-catalog-search-bar
+                      [searchQuery]="searchQuery"
+                      placeholder="Search dry fruits, nuts and healthy packs"
+                      (searchChange)="onSearchQueryChange($event)"
+                      (searchSubmit)="searchProducts()"
+                    />
+
+                    <div class="grid gap-3 lg:hidden">
+                      <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
+                        <button
+                          type="button"
+                          class="btn-primary justify-between !px-4 !py-3 text-sm"
+                          (click)="openFilters()"
+                        >
+                          <span>Filters</span>
+                          <span class="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-black tracking-[0.14em]">
+                            {{ activeFilterCount() }}
+                          </span>
+                        </button>
+                      </div>
+
+                      <app-catalog-active-filters
+                        [hasActiveFilters]="hasActiveFilters()"
+                        [selectedBrand]="selectedBrand"
+                        [minPrice]="minPrice"
+                        [maxPrice]="maxPrice"
+                        [availabilityFilter]="availabilityFilter"
+                        [ratingFilter]="ratingFilter"
+                        (clearAll)="resetFilters()"
+                        (removeFilter)="handleActiveFilterRemoval($event)"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <div *ngIf="hasActiveFilters()" class="rounded-[1.5rem] border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
                 <app-catalog-active-filters
                   [hasActiveFilters]="hasActiveFilters()"
                   [selectedBrand]="selectedBrand"
@@ -134,46 +153,15 @@ import {
                   (removeFilter)="handleActiveFilterRemoval($event)"
                 />
               </div>
-              </div>
 
-              <div *ngIf="hasActiveFilters()" class="mb-5 flex flex-wrap items-center gap-3 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-3">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span
-                    *ngIf="selectedBrand !== 'all'"
-                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-                  >
-                    Brand: {{ selectedBrand }}
-                  </span>
-                  <span
-                    *ngIf="minPrice || maxPrice"
-                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-                  >
-                    Price:
-                    {{ minPrice || '0' }} - {{ maxPrice || 'Any' }}
-                  </span>
-                  <span
-                    *ngIf="availabilityFilter !== 'all'"
-                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-                  >
-                    {{ availabilityFilter === 'in-stock' ? 'In stock only' : 'Out of stock only' }}
-                  </span>
-                  <span
-                    *ngIf="ratingFilter !== 'all'"
-                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-                  >
-                    {{ ratingFilter }}+ rating
-                  </span>
-                </div>
-              </div>
-
-              <div *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
+              <section *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
                   <div class="mt-4 h-4 w-3/4 rounded-full bg-slate-200"></div>
                   <div class="mt-3 h-4 w-1/2 rounded-full bg-slate-200"></div>
                   <div class="mt-3 h-10 rounded-[1rem] bg-slate-200"></div>
                 </div>
-              </div>
+              </section>
 
               <ng-container *ngIf="!loadingProducts">
                 <div *ngIf="products.length === 0" class="rounded-[1.6rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
@@ -190,7 +178,7 @@ import {
                   </button>
                 </div>
 
-                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 lg:gap-6">
+                <section *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
                   <app-product-card
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
                     [product]="product"
@@ -203,21 +191,23 @@ import {
                     (addToCart)="handleProductCardAddToCart($event)"
                     (buyNow)="handleProductCardBuyNow($event)"
                   />
-                </div>
+                </section>
 
-              <app-catalog-pagination
-                [showPagination]="catalogTotalItems > pageSize"
-                [currentPage]="currentPage"
-                [totalPages]="totalPages"
-                [visiblePages]="visiblePages()"
-                [totalProductCount]="totalProductCount()"
-                [startIndex]="paginationStartIndex()"
-                [endIndex]="paginationEndIndex()"
-                (pageChange)="changePage($event)"
-              />
+                <div class="pt-2">
+                  <app-catalog-pagination
+                    [showPagination]="catalogTotalItems > pageSize"
+                    [currentPage]="currentPage"
+                    [totalPages]="totalPages"
+                    [visiblePages]="visiblePages()"
+                    [totalProductCount]="totalProductCount()"
+                    [startIndex]="paginationStartIndex()"
+                    [endIndex]="paginationEndIndex()"
+                    (pageChange)="changePage($event)"
+                  />
+                </div>
               </ng-container>
-            </main>
-          </div>
+            </div>
+          </main>
         </div>
       </section>
 
@@ -325,7 +315,7 @@ export class ProductsPageComponent implements OnInit {
   catalogMessage = '';
   loadingCategories = false;
   currentPage = 1;
-  pageSize = 12;
+  pageSize = 28;
   catalogTotalItems = 0;
   catalogTotalPages = 1;
   sortBy = 'relevance';
@@ -848,6 +838,7 @@ export class ProductsPageComponent implements OnInit {
 
     this.currentPage = normalized;
     this.refreshCatalogListing();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   totalProductCount(): number {

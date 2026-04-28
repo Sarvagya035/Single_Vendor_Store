@@ -8,14 +8,14 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="mt-4 space-y-4">
+    <div class="space-y-4">
       <label class="block">
-        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
+        <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Category</span>
         <select
           [ngModel]="selectedCategorySlug"
           name="selectedCategorySlug"
           (ngModelChange)="onSelectedCategorySlugChange($event)"
-          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+          class="mt-2 h-10 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
         >
           <option value="all">All categories</option>
           <option *ngFor="let category of sidebarCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
@@ -25,12 +25,12 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
       </label>
 
       <label class="block">
-        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Brand</span>
+        <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Brand</span>
         <select
           [ngModel]="selectedBrand"
           name="selectedBrand"
           (ngModelChange)="onSelectedBrandChange($event)"
-          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+          class="mt-2 h-10 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
         >
           <option value="all">All brands</option>
           <option *ngFor="let brand of brandOptions; trackBy: trackByValue" [value]="brand">
@@ -40,12 +40,12 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
       </label>
 
       <label class="block">
-        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Sort by</span>
+        <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Sort by</span>
         <select
           [ngModel]="sortBy"
           name="sidebarSortBy"
           (ngModelChange)="onSortByChange($event)"
-          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+          class="mt-2 h-10 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
         >
           <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
             {{ option.label }}
@@ -53,9 +53,9 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
         </select>
       </label>
 
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div class="grid grid-cols-2 gap-2">
         <label class="block">
-          <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Min price</span>
+          <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Min price</span>
           <input
             [ngModel]="minPrice"
             name="minPrice"
@@ -63,12 +63,12 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
             type="number"
             min="0"
             placeholder="0"
-            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+            class="mt-2 h-10 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
           />
         </label>
 
         <label class="block">
-          <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Max price</span>
+          <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Max price</span>
           <input
             [ngModel]="maxPrice"
             name="maxPrice"
@@ -76,18 +76,18 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
             type="number"
             min="0"
             placeholder="Any"
-            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+            class="mt-2 h-10 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
           />
         </label>
       </div>
 
       <label class="block">
-        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Availability</span>
+        <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Availability</span>
         <select
           [ngModel]="availabilityFilter"
           name="availabilityFilter"
           (ngModelChange)="onAvailabilityFilterChange($event)"
-          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+          class="mt-2 h-10 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
         >
           <option *ngFor="let option of availabilityOptions; trackBy: trackByFilterOption" [value]="option.value">
             {{ option.label }}
@@ -96,12 +96,12 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
       </label>
 
       <label class="block">
-        <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Minimum rating</span>
+        <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Minimum rating</span>
         <select
           [ngModel]="ratingFilter"
           name="ratingFilter"
           (ngModelChange)="onRatingFilterChange($event)"
-          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+          class="mt-2 h-10 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
         >
           <option *ngFor="let option of ratingOptions; trackBy: trackByFilterOption" [value]="option.value">
             {{ option.label }}

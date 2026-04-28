@@ -18,7 +18,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
           [disabled]="currentPage === 1"
           (click)="pageChange.emit(currentPage - 1)"
         >
-          Prev
+          <span class="sm:hidden">Prev</span>
+          <span class="hidden sm:inline">Previous</span>
         </button>
 
         <button

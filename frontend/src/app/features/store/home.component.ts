@@ -21,18 +21,29 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
   template: `
     <div class="min-h-[calc(100vh-72px)] bg-slate-50">
       <section class="w-full bg-white">
-        <div class="relative min-h-[calc(80vh-50px)] overflow-hidden">
+        <div class="relative min-h-[520px] overflow-hidden bg-[#fff3e8] sm:min-h-[calc(80vh-50px)]">
           <div class="absolute inset-0">
             <div
               *ngFor="let slide of heroSlides; let index = index; trackBy: trackByHeroSlide"
               [ngClass]="heroSlideTransitionClasses(index)"
-              [style.background-image]="'url(' + slide.image + ')'"
+              class="absolute inset-0 overflow-hidden"
               aria-hidden="true"
-            ></div>
+            >
+              <picture class="block h-full w-full bg-[#fff3e8]">
+                <source [attr.media]="'(max-width: 767px)'" [attr.srcset]="slide.mobileImage" />
+                <img
+                  [src]="slide.image"
+                  [alt]="slide.title"
+                  loading="eager"
+                  decoding="async"
+                  class="h-full w-full object-contain md:object-cover"
+                />
+              </picture>
+            </div>
           </div>
 
           <div class="absolute inset-0 z-20">
-            <div class="mx-auto flex h-full w-full max-w-[1480px] items-end px-4 pb-6 sm:px-6 lg:px-8 lg:pb-10">
+            <div class="mx-auto flex h-full w-full max-w-[1480px] items-end px-0 pb-6 sm:px-6 lg:px-8 lg:pb-10">
               <div class="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-start">
                 <a
                   routerLink="/products"
@@ -165,7 +176,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
             <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div class="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6 xl:grid-cols-5">
             <app-product-card
               *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
               [product]="product"
@@ -254,16 +265,18 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
 
       <section class="storefront-section w-full bg-white py-10 sm:py-12 lg:py-14">
   <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
-    <div class="relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
-      
+      <div class="relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
       <div class="overflow-hidden rounded-[1.5rem] bg-slate-100">
-        <img
-          src="/assets/n%20bulk.png"
-          alt="Bulk showcase"
-          loading="lazy"
-          decoding="async"
-          class="h-auto w-full object-cover"
-        />
+        <picture class="block w-full bg-[#fff3e8]">
+          <source media="(max-width: 767px)" srcset="/assets/mobile-bluk.jpg.jpeg" />
+          <img
+            src="/assets/n%20bulk.png"
+            alt="Bulk showcase"
+            loading="lazy"
+            decoding="async"
+            class="h-auto w-full object-contain sm:object-cover"
+          />
+        </picture>
       </div>
 
       <!-- Button aligned under text -->
@@ -356,19 +369,22 @@ export class HomeComponent implements OnInit, OnDestroy {
       eyebrow: 'Premium dry fruits',
       title: 'Fresh dry fruits for everyday health.',
       subtitle: 'Explore almonds, cashews, pistachios, raisins, dates, seeds, and healthy snack mixes curated for your family.',
-      image: '/assets/BEST.png'
+      image: '/assets/BEST.png',
+      mobileImage: '/assets/mobile-banner-1.jpg.jpeg'
     },
     {
       eyebrow: 'New arrival',
       title: 'Explore our fresh banner showcase.',
       subtitle: 'A new banner highlight added to the landing page carousel.',
-      image: '/assets/banner-test.png'
+      image: '/assets/banner-test.png',
+      mobileImage: '/assets/mobile-banner-2.jpg.jpeg'
     },
     {
       eyebrow: 'Featured banner',
       title: 'Discover our new seasonal banner.',
       subtitle: 'Meet the latest hero image now rotating through the landing page slider.',
-      image: '/assets/new-one.png'
+      image: '/assets/new-one.png',
+      mobileImage: '/assets/mobile-banner-3.jpg.jpeg'
     }
   ];
   readonly homeReviews = [
@@ -659,6 +675,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       const img = new Image();
       img.src = slide.image;
+
+      if (slide.mobileImage) {
+        const mobileImg = new Image();
+        mobileImg.src = slide.mobileImage;
+      }
     });
   }
 

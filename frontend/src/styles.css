@@ -37,7 +37,6 @@
       radial-gradient(circle at bottom center, rgba(245, 230, 211, 0.24), transparent 34%);
     color: var(--text-main);
     text-rendering: optimizeLegibility;
-    overflow-x: clip;
   }
 
   *,
@@ -236,11 +235,11 @@
   }
 
   .product-card {
-    @apply w-full min-w-0 overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white p-2 shadow-sm sm:p-3;
+    @apply w-full min-w-0 overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm;
   }
 
   .product-card-image {
-    @apply w-full aspect-square rounded-[1rem] object-cover;
+    @apply h-[240px] w-full object-cover;
   }
 
   .product-card-title {
@@ -253,6 +252,28 @@
 
   .product-card-footer {
     @apply mt-2 flex flex-col gap-2 sm:mt-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .custom-filter-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+  }
+
+  .custom-filter-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-filter-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-filter-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.45);
+    border-radius: 999px;
+  }
+
+  .custom-filter-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.65);
   }
 
   .pagination-wrap {
