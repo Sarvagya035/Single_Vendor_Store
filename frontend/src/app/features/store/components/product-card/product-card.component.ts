@@ -19,105 +19,74 @@ export interface ProductCardVariantActionEvent {
       (click)="productClick.emit(product)"
       (keydown.enter)="productClick.emit(product)"
       (keydown.space)="$event.preventDefault(); productClick.emit(product)"
-      class="product-card group relative flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-orange-100/70 bg-white shadow-[0_12px_35px_rgba(139,94,60,0.08)] transition-all duration-300 hover:-translate-y-1 hover:cursor-pointer hover:shadow-[0_18px_45px_rgba(139,94,60,0.14)] cursor-pointer"
+      class="product-card group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.14)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
     >
-      <button
-        type="button"
-        class="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/85 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.10)] ring-1 ring-black/5 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-amber-300 hover:bg-white hover:text-rose-600 sm:right-4 sm:top-4 sm:h-11 sm:w-11"
-        [disabled]="wishlistBusy"
-        [attr.aria-label]="isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'"
-        (click)="$event.stopPropagation(); wishlistToggle.emit(product)"
-        [ngClass]="isWishlisted ? 'border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-[0_14px_28px_rgba(244,63,94,0.24)] ring-rose-100' : ''"
-      >
-        <svg *ngIf="!wishlistBusy && !isWishlisted" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
-        </svg>
-        <svg *ngIf="!wishlistBusy && isWishlisted" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
-          <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
-        </svg>
-        <span *ngIf="wishlistBusy" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
-      </button>
-
-      <div class="relative w-full overflow-hidden bg-gradient-to-br from-orange-50/50 to-white">
-        <div
-          *ngIf="offerBadgeText"
-          class="absolute left-3 top-3 z-10 rounded-full bg-[#8b5e3c] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white shadow-[0_10px_22px_rgba(139,94,60,0.2)]"
-        >
-          {{ offerBadgeText }}
-        </div>
-        <div
-          *ngIf="displayRatingValue"
-          class="absolute left-3 top-12 z-10 inline-flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[10px] font-bold text-amber-700 shadow-[0_10px_22px_rgba(15,23,42,0.10)] backdrop-blur"
-        >
-          <span aria-hidden="true">★</span>
-          <span>{{ displayRatingValue }}</span>
-        </div>
+      <div class="relative aspect-square w-full overflow-hidden bg-slate-50">
         <img
           [src]="mainImageUrl"
           [alt]="displayTitle"
           loading="lazy"
           decoding="async"
-          class="h-40 w-full rounded-t-[10px] object-cover transition duration-300 group-hover:scale-105 sm:h-48 lg:h-60"
+          class="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105"
         />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
+
+        <div
+          *ngIf="offerBadgeText"
+          class="absolute left-3 top-3 z-10 rounded-full bg-gradient-to-r from-[#7a4f35] to-[#9b6a43] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white shadow-[0_12px_24px_rgba(122,79,53,0.22)] ring-1 ring-white/20"
+        >
+          {{ offerBadgeText }}
+        </div>
+
+        <div
+          *ngIf="displayRatingValue"
+          class="absolute bottom-3 left-3 z-10 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold text-amber-700 shadow-[0_10px_20px_rgba(15,23,42,0.12)] backdrop-blur"
+        >
+          <span aria-hidden="true">★</span>
+          <span>{{ displayRatingValue }}</span>
+        </div>
+
+        <button
+          type="button"
+          class="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/90 text-slate-500 shadow-[0_12px_24px_rgba(15,23,42,0.12)] backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.04] hover:border-amber-300 hover:text-rose-600"
+          [disabled]="wishlistBusy"
+          [attr.aria-label]="isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'"
+          (click)="$event.stopPropagation(); wishlistToggle.emit(product)"
+          [ngClass]="isWishlisted ? 'border-rose-200 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-[0_14px_28px_rgba(244,63,94,0.22)]' : ''"
+        >
+          <svg *ngIf="!wishlistBusy && !isWishlisted" viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
+          </svg>
+          <svg *ngIf="!wishlistBusy && isWishlisted" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+            <path d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z"></path>
+          </svg>
+          <span *ngIf="wishlistBusy" class="text-[10px] font-black uppercase tracking-[0.18em]">...</span>
+        </button>
       </div>
 
-      <div class="flex flex-col gap-2 p-4 md:gap-2 lg:gap-3">
-        <div class="flex flex-col gap-1.5">
-          <div class="min-w-0 flex-1">
-            <h2 class="min-h-[40px] line-clamp-2 text-base font-semibold leading-5 text-slate-950 sm:text-[17px]">
-              {{ displayTitle }}
-            </h2>
-          </div>
-          <div class="flex flex-col gap-1">
-            <div class="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-              <span class="whitespace-nowrap text-lg font-black tracking-tight text-slate-900">
-                {{ discountedPriceLabel }}
-              </span>
-              <span *ngIf="originalPriceLabel" class="whitespace-nowrap text-sm font-semibold text-slate-400 line-through">
-                {{ originalPriceLabel }}
-              </span>
-            </div>
-            <span
-              class="inline-flex w-fit rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-              [class.bg-emerald-50]="isProductInStock"
-              [class.text-emerald-600]="isProductInStock"
-              [class.bg-red-50]="!isProductInStock"
-              [class.text-red-500]="!isProductInStock"
-            >
-              {{ stockStatusLabel }}
-            </span>
-          </div>
+      <div class="flex flex-1 min-w-0 flex-col gap-1.5 p-2.5 sm:gap-2 sm:p-3 md:p-4">
+        <div class="min-w-0">
+          <h2 class="min-h-[34px] line-clamp-2 text-xs font-semibold leading-5 text-slate-900 sm:text-sm">
+            {{ displayTitle }}
+          </h2>
         </div>
 
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-            {{ displayVariantCountText }}
-          </span>
-        </div>
-
-        <div *ngIf="showVariantSelector" class="space-y-1.5">
-          <div class="flex flex-wrap gap-1">
+        <div *ngIf="showVariantSelector" class="mt-2 min-h-[34px]">
+          <div class="flex flex-wrap gap-1.5 sm:gap-2">
             <button
               *ngFor="let variant of visibleVariants(); let index = index; trackBy: trackByVariant"
               type="button"
-              class="rounded-full border px-2 py-1 text-[10px] transition focus:outline-none focus:ring-2 focus:ring-orange-300 sm:px-3 sm:py-1.5 sm:text-[11px]"
-              [class.border-orange-500]="isVariantSelected(variant)"
-              [class.bg-orange-50]="isVariantSelected(variant)"
-              [class.text-orange-700]="isVariantSelected(variant)"
-              [class.font-bold]="isVariantSelected(variant)"
+              class="inline-flex min-w-0 items-center justify-center rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium whitespace-nowrap text-slate-600 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-300 sm:px-3 sm:py-1.5 sm:text-xs"
+              [class.border-amber-300]="isVariantSelected(variant)"
+              [class.bg-amber-50]="isVariantSelected(variant)"
+              [class.text-amber-800]="isVariantSelected(variant)"
+              [class.font-semibold]="isVariantSelected(variant)"
               [class.ring-1]="isVariantSelected(variant)"
-              [class.ring-orange-300]="isVariantSelected(variant)"
-              [class.border-orange-200]="!isVariantSelected(variant)"
-              [class.bg-white]="!isVariantSelected(variant)"
-              [class.text-slate-600]="!isVariantSelected(variant)"
-              [class.font-semibold]="!isVariantSelected(variant)"
+              [class.ring-amber-200]="isVariantSelected(variant)"
               [attr.aria-label]="variantLabel(variant)"
               [attr.aria-pressed]="isVariantSelected(variant)"
               (click)="$event.stopPropagation(); selectVariant(variant)"
             >
-              <span *ngIf="isVariantSelected(variant)" class="mr-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[9px] font-black text-white">
-                ✓
-              </span>
               <span class="whitespace-nowrap">
                 {{ variantDisplayLabel(variant, index + 1) }}
               </span>
@@ -125,23 +94,45 @@ export interface ProductCardVariantActionEvent {
           </div>
         </div>
 
-        <div class="flex flex-col gap-2">
+        <div class="mt-2 flex items-center justify-between gap-1.5 flex-wrap">
+          <div class="flex min-w-0 items-baseline gap-1.5">
+            <span class="whitespace-nowrap text-sm font-bold tracking-tight text-slate-900 sm:text-lg">
+              {{ discountedPriceLabel }}
+            </span>
+            <span *ngIf="originalPriceLabel" class="whitespace-nowrap text-xs font-semibold text-slate-400 line-through sm:text-sm">
+              {{ originalPriceLabel }}
+            </span>
+          </div>
+
+          <span
+            class="shrink-0 whitespace-nowrap rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-medium text-emerald-700 sm:px-2 sm:text-[10px] md:text-xs"
+            [class.bg-red-50]="!isProductInStock"
+            [class.text-red-500]="!isProductInStock"
+            [class.bg-emerald-100]="isProductInStock"
+            [class.text-emerald-700]="isProductInStock"
+          >
+            {{ stockStatusLabel }}
+          </span>
+        </div>
+
+        <div class="grid w-full min-w-0 grid-cols-2 gap-1.5 sm:gap-2 pt-1">
           <button
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); addToCart.emit({ product, variant: selectedVariant })"
-            class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] bg-[#7a4f35] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-sm transition hover:bg-[#6a422c] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex h-8 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg bg-[#8B5538] px-1.5 text-[9px] font-bold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[#74452e] sm:h-9 sm:px-2 sm:text-[10px] md:text-xs disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >
-            {{ isProductInStock ? 'Add To Cart' : 'Out of Stock' }}
+            <span class="inline sm:hidden">{{ isProductInStock ? 'Cart' : 'Out' }}</span>
+            <span class="hidden sm:inline">{{ isProductInStock ? 'Add to Cart' : 'Out of Stock' }}</span>
           </button>
 
           <button
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); buyNow.emit({ product, variant: selectedVariant })"
-            class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] border border-amber-400 bg-amber-50 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[#7a4f35] transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex h-8 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg border border-amber-400 bg-white px-1.5 text-[9px] font-bold uppercase tracking-[0.04em] text-[#8B5538] transition hover:bg-amber-50 sm:h-9 sm:px-2 sm:text-[10px] md:text-xs disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >

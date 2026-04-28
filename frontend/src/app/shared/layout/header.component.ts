@@ -19,7 +19,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent],
   template: `
-    <div class="sticky top-0 z-50">
+    <div class="sticky top-0 z-50 relative">
       <div *ngIf="showAnnouncementBar()" class="announcement-bar overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] px-0 py-2 text-white" tabindex="0" aria-label="Top announcements">
         <div class="header-shell">
           <div class="flex items-center overflow-hidden">
@@ -36,9 +36,8 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
       </div>
 
       <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-lg">
-        <div class="header-shell">
-          <div class="flex h-16 items-center justify-between md:h-20">
-          <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
+        <div class="mx-auto flex w-full max-w-[1480px] items-center justify-between px-4 sm:px-6 lg:px-8 h-16 md:h-20">
+          <a [routerLink]="logoRoute()" class="group flex min-w-0 flex-shrink-0 cursor-pointer items-center gap-2 transition-opacity hover:opacity-80">
             <img
               src="/assets/divya%20logo.webp"
               alt="Divya logo"
@@ -46,61 +45,25 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             />
           </a>
 
-          <div class="hidden items-center gap-4 md:flex lg:gap-6">
-            <ng-container *ngIf="showPublicNavLinks()">
-              <a *ngIf="!isCustomer()" routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
-              <a routerLink="/products" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Products</a>
-              <a
-                routerLink="/products"
-                [queryParams]="{ category: 'combos' }"
-                class="nav-link rounded-none bg-transparent px-0 font-semibold text-[#6f4e37] shadow-none hover:bg-transparent hover:text-amber-700"
+          <div class="hidden flex-1 items-center justify-end gap-5 xl:flex">
+            <div class="flex items-center gap-4 xl:gap-5">
+              <ng-container *ngIf="showPublicNavLinks()">
+                <a *ngIf="!isCustomer()" routerLink="/" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">Home</a>
+                <a routerLink="/products" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">Products</a>
+                <a
+                  routerLink="/products"
+                  [queryParams]="{ category: 'combos' }"
+                  class="nav-link cursor-pointer rounded-none bg-transparent px-0 font-semibold text-[#6f4e37] shadow-none hover:bg-transparent hover:text-amber-700"
                 >
-                Combos
-              </a>
-              <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
-              <a routerLink="/about-us" class="nav-link" routerLinkActive="text-amber-700 after:w-full">About Us</a>
-              <a routerLink="/contact" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Contact Us</a>
-            </ng-container>
+                  Combos
+                </a>
+                <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
+                <a routerLink="/about-us" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">About Us</a>
+                <a routerLink="/contact" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">Contact Us</a>
+              </ng-container>
+            </div>
 
-            <ng-container *ngIf="user && !isCustomer()">
-              <a
-                *ngIf="isVendor() || isAdmin()"
-                routerLink="/vendor/notifications"
-                class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
-                aria-label="Open vendor notifications"
-                title="Notifications"
-              >
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.157V11a6 6 0 10-12 0v3.157c0 .538-.214 1.055-.595 1.438L4 17h5m6 0a3 3 0 11-6 0m6 0H9"
-                  />
-                </svg>
-                <span
-                  *ngIf="vendorNotificationCount > 0"
-                  class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
-                >
-                  {{ vendorNotificationCount }}
-                </span>
-              </a>
-
-              <app-header-account-dropdown
-                theme="vendor"
-                subtitle="Store account"
-                [open]="isVendorDropdownOpen"
-                [avatarUrl]="avatarUrl()"
-                [initials]="userInitials()"
-                [displayName]="displayName()"
-                [email]="user?.email || ''"
-                [items]="vendorMenuItems"
-                (toggle)="toggleVendorDropdown($event)"
-                (itemSelected)="handleVendorItem($event)"
-              />
-            </ng-container>
-
-            <div class="flex items-center gap-2 sm:gap-2">
+            <div class="flex items-center gap-2">
               <ng-container *ngIf="showStoreCounts()">
                 <a
                   routerLink="/cart"
@@ -119,8 +82,45 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
                 </a>
               </ng-container>
 
-              <ng-container *ngIf="isCustomer()">
+              <ng-container *ngIf="user && !isCustomer()">
+                <a
+                  *ngIf="isVendor() || isAdmin()"
+                  routerLink="/vendor/notifications"
+                  class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                  aria-label="Open vendor notifications"
+                  title="Notifications"
+                >
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.157V11a6 6 0 10-12 0v3.157c0 .538-.214 1.055-.595 1.438L4 17h5m6 0a3 3 0 11-6 0m6 0H9"
+                    />
+                  </svg>
+                  <span
+                    *ngIf="vendorNotificationCount > 0"
+                    class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
+                  >
+                    {{ vendorNotificationCount }}
+                  </span>
+                </a>
 
+                <app-header-account-dropdown
+                  theme="vendor"
+                  subtitle="Store account"
+                  [open]="isVendorDropdownOpen"
+                  [avatarUrl]="avatarUrl()"
+                  [initials]="userInitials()"
+                  [displayName]="displayName()"
+                  [email]="user?.email || ''"
+                  [items]="vendorMenuItems"
+                  (toggle)="toggleVendorDropdown($event)"
+                  (itemSelected)="handleVendorItem($event)"
+                />
+              </ng-container>
+
+              <ng-container *ngIf="isCustomer()">
                 <app-header-account-dropdown
                   theme="customer"
                   subtitle="Account"
@@ -136,17 +136,17 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               </ng-container>
 
               <ng-container *ngIf="!user">
-                <a routerLink="/login" class="nav-link">Login</a>
+                <a routerLink="/login" class="nav-link cursor-pointer">Login</a>
                 <a routerLink="/register" class="btn-primary !px-5 !py-2 text-sm">Register</a>
               </ng-container>
             </div>
           </div>
 
-          <div class="flex min-w-0 items-center gap-2 sm:gap-3 md:hidden">
+          <div class="flex min-w-0 items-center gap-2 sm:gap-3 xl:hidden">
             <a
               *ngIf="showStoreCounts()"
               routerLink="/cart"
-              class="header-icon"
+              class="header-icon cursor-pointer"
             >
               <span class="sr-only">Cart</span>
               <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -160,7 +160,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             <a
               *ngIf="showStoreCounts()"
               routerLink="/wishlist"
-              class="header-icon"
+              class="header-icon cursor-pointer"
             >
               <span class="sr-only">Wishlist</span>
               <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -188,7 +188,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             <a
               *ngIf="user && (isVendor() || isAdmin())"
               routerLink="/vendor/notifications"
-              class="header-icon relative text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+              class="header-icon relative cursor-pointer text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
               aria-label="Open vendor notifications"
               title="Notifications"
             >
@@ -224,7 +224,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
             <button
               type="button"
-              class="header-icon relative text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              class="header-icon relative cursor-pointer text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
               (click)="onMobileMenuButtonClick()"
               [attr.aria-label]="mobileMenuButtonLabel()"
               data-mobile-menu-trigger
@@ -239,7 +239,6 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               </svg>
             </button>
           </div>
-        </div>
         </div>
       </nav>
 

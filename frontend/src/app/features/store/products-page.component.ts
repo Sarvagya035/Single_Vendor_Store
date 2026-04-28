@@ -225,7 +225,7 @@ import {
                   </button>
                 </div>
 
-                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 sm:gap-4 lg:gap-5">
+                <div *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-3 lg:grid-cols-4 xl:grid-cols-5">
                   <app-product-card
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
                     [product]="product"

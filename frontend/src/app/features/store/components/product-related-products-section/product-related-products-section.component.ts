@@ -19,7 +19,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from '../product-
         </p>
       </div>
 
-      <div *ngIf="relatedProducts.length; else noRelatedProducts" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div *ngIf="relatedProducts.length; else noRelatedProducts" class="mt-6 grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-3 lg:grid-cols-4 xl:grid-cols-4">
         <app-product-card
           *ngFor="let related of relatedProducts; trackBy: trackByProductId"
           [product]="related"
