@@ -20,7 +20,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
   imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent],
   template: `
     <div class="min-h-[calc(100vh-72px)] bg-slate-50">
-      <section class="w-full bg-white">
+      <section class="w-full -mt-2 sm:mt-0 bg-[#fff3e8]">
         <div class="relative min-h-[520px] overflow-hidden bg-[#fff3e8] sm:min-h-[calc(80vh-50px)]">
           <div class="absolute inset-0">
             <div
@@ -36,7 +36,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
                   [alt]="slide.title"
                   loading="eager"
                   decoding="async"
-                  class="h-full w-full object-contain md:object-cover"
+                  class="h-full w-full object-cover"
                 />
               </picture>
             </div>
@@ -269,8 +269,8 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
         </div>
       </section>
 
-      <div class="w-full bg-[#fff3e8]">
-      <section class="storefront-section w-full bg-[#fffaf3] py-16 sm:py-20">
+      <div class="w-full bg-white">
+      <section class="storefront-section w-full bg-white py-16 sm:py-20">
         <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
           <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-12 lg:items-center">
             <div class="max-w-2xl">
@@ -316,7 +316,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
         </div>
       </section>
 
-      <section class="storefront-section w-full py-16 sm:py-20">
+      <section class="storefront-section w-full bg-[#fff3e8] py-16 sm:py-20">
         <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
           <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-12 lg:items-center">
           <div class="flex flex-col justify-center">
