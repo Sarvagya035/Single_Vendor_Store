@@ -249,7 +249,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
           <div class="space-y-2">
             <div class="flex items-end gap-1.5">
               <div class="flex-1 space-y-1.5">
-                <div class="grid grid-cols-12 gap-1">
+                <div class="grid grid-cols-6 gap-1">
                   <span *ngFor="let bar of priceHistogramBars" [class]="bar"></span>
                 </div>
                 <div class="relative h-8">
@@ -259,9 +259,9 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
                     type="range"
                     class="price-range absolute inset-0 z-20 h-8 w-full"
                     min="0"
-                    max="1500"
-                    step="50"
-                    [ngModel]="priceMinValue()"
+                    [max]="priceOptions.length - 1"
+                    step="1"
+                    [ngModel]="priceMinIndex"
                     (ngModelChange)="onPriceMinRangeChange($event)"
                     aria-label="Minimum price range"
                   />
@@ -269,9 +269,9 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
                     type="range"
                     class="price-range absolute inset-0 z-30 h-8 w-full"
                     min="0"
-                    max="1500"
-                    step="50"
-                    [ngModel]="priceMaxValue()"
+                    [max]="priceOptions.length - 1"
+                    step="1"
+                    [ngModel]="priceMaxIndex"
                     (ngModelChange)="onPriceMaxRangeChange($event)"
                     aria-label="Maximum price range"
                   />
@@ -377,36 +377,38 @@ export class CatalogFilterFormComponent {
   @Input() brandOptions: string[] = [];
   @Input() sortOptions: Array<{ value: string; label: string }> = [];
   @Input() ratingOptions: Array<{ value: string; label: string }> = [];
+  readonly priceOptions = [
+    { label: 'Min', value: 0 },
+    { label: '₹250', value: 250 },
+    { label: '₹500', value: 500 },
+    { label: '₹1000', value: 1000 },
+    { label: '₹1500', value: 1500 },
+    { label: '₹2000+', value: 2000 }
+  ];
   readonly priceMinOptions = [
     { value: '', label: 'Min' },
     { value: '250', label: '₹250' },
     { value: '500', label: '₹500' },
     { value: '1000', label: '₹1000' },
-    { value: '1500', label: '₹1500+' }
+    { value: '1500', label: '₹1500' },
+    { value: '2000', label: '₹2000+' }
   ];
   readonly priceMaxOptions = [
-    { value: '', label: '₹1500+' },
     { value: '250', label: '₹250' },
     { value: '500', label: '₹500' },
     { value: '1000', label: '₹1000' },
-    { value: '1500', label: '₹1500+' }
+    { value: '1500', label: '₹1500' },
+    { value: '', label: '₹2000+' }
   ];
-  readonly priceSteps = [0, 250, 500, 1000, 1500];
   readonly priceHistogramBars = [
     'h-3 w-full rounded-sm bg-slate-300/70',
-    'h-4 w-full rounded-sm bg-slate-300/70',
     'h-5 w-full rounded-sm bg-slate-300/70',
-    'h-3 w-full rounded-sm bg-slate-300/70',
+    'h-4 w-full rounded-sm bg-slate-300/70',
     'h-6 w-full rounded-sm bg-slate-300/70',
     'h-4 w-full rounded-sm bg-slate-300/70',
-    'h-5 w-full rounded-sm bg-slate-300/70',
-    'h-3 w-full rounded-sm bg-slate-300/70',
-    'h-4 w-full rounded-sm bg-slate-300/70',
-    'h-5 w-full rounded-sm bg-slate-300/70',
-    'h-3 w-full rounded-sm bg-slate-300/70',
-    'h-4 w-full rounded-sm bg-slate-300/70'
+    'h-5 w-full rounded-sm bg-slate-300/70'
   ];
-  readonly priceTickMarks = Array.from({ length: 5 });
+  readonly priceTickMarks = Array.from({ length: 6 });
 
   private _resetToken = 0;
   categoryExpanded = true;
@@ -437,35 +439,21 @@ export class CatalogFilterFormComponent {
   }
 
   onMinPriceChange(value: string): void {
-    const nextMin = this.normalizePriceValue(value, 0);
-    const currentMax = this.priceMaxValue();
+    const nextMinIndex = this.priceIndexFromMinValue(value);
+    const currentMaxIndex = this.priceMaxIndex;
+    const boundedMinIndex = Math.min(nextMinIndex, currentMaxIndex);
+    const boundedMaxIndex = Math.max(currentMaxIndex, boundedMinIndex);
 
-    if (nextMin > currentMax) {
-      const fixedMax = nextMin >= 1500 ? '' : String(nextMin);
-      this.maxPrice = fixedMax;
-      this.maxPriceChange.emit(fixedMax);
-    }
-
-    const minValue = nextMin <= 0 ? '' : String(nextMin);
-    this.minPrice = minValue;
-    this.minPriceChange.emit(minValue);
-    this.filterChange.emit();
+    this.applyPriceRange(boundedMinIndex, boundedMaxIndex);
   }
 
   onMaxPriceChange(value: string): void {
-    const nextMax = this.normalizePriceValue(value, 1500);
-    const currentMin = this.priceMinValue();
+    const nextMaxIndex = this.priceIndexFromMaxValue(value);
+    const currentMinIndex = this.priceMinIndex;
+    const boundedMaxIndex = Math.max(nextMaxIndex, currentMinIndex);
+    const boundedMinIndex = Math.min(currentMinIndex, boundedMaxIndex);
 
-    if (nextMax < currentMin) {
-      const fixedMin = nextMax <= 0 ? '' : String(nextMax);
-      this.minPrice = fixedMin;
-      this.minPriceChange.emit(fixedMin);
-    }
-
-    const maxValue = nextMax >= 1500 ? '' : String(nextMax);
-    this.maxPrice = maxValue;
-    this.maxPriceChange.emit(maxValue);
-    this.filterChange.emit();
+    this.applyPriceRange(boundedMinIndex, boundedMaxIndex);
   }
 
   onRatingFilterChange(value: string): void {
@@ -473,47 +461,30 @@ export class CatalogFilterFormComponent {
     this.filterChange.emit();
   }
 
-  priceMinValue(): number {
-    return this.normalizePriceValue(this.minPrice, 0);
+  get priceMinIndex(): number {
+    return this.priceIndexFromMinValue(this.minPrice);
   }
 
-  priceMaxValue(): number {
-    const value = this.normalizePriceValue(this.maxPrice, 1500);
-    return value < this.priceMinValue() ? this.priceMinValue() : value;
+  get priceMaxIndex(): number {
+    return this.priceIndexFromMaxValue(this.maxPrice);
   }
 
   onPriceMinRangeChange(value: string | number): void {
-    const nextMin = this.normalizePriceValue(String(value), 0);
-    const nextMax = this.priceMaxValue();
-    const boundedMin = Math.min(nextMin, nextMax);
+    const nextMinIndex = this.clampPriceIndex(Number(value));
+    const currentMaxIndex = this.priceMaxIndex;
+    const boundedMinIndex = Math.min(nextMinIndex, currentMaxIndex);
+    const boundedMaxIndex = Math.max(currentMaxIndex, boundedMinIndex);
 
-    if (nextMin > nextMax) {
-      const fixedMax = boundedMin >= 1500 ? '' : String(boundedMin);
-      this.maxPrice = fixedMax;
-      this.maxPriceChange.emit(fixedMax);
-    }
-
-    const minValue = boundedMin <= 0 ? '' : String(boundedMin);
-    this.minPrice = minValue;
-    this.minPriceChange.emit(minValue);
-    this.filterChange.emit();
+    this.applyPriceRange(boundedMinIndex, boundedMaxIndex);
   }
 
   onPriceMaxRangeChange(value: string | number): void {
-    const nextMax = this.normalizePriceValue(String(value), 1500);
-    const nextMin = this.priceMinValue();
-    const boundedMax = Math.max(nextMax, nextMin);
+    const nextMaxIndex = this.clampPriceIndex(Number(value));
+    const currentMinIndex = this.priceMinIndex;
+    const boundedMaxIndex = Math.max(nextMaxIndex, currentMinIndex);
+    const boundedMinIndex = Math.min(currentMinIndex, boundedMaxIndex);
 
-    if (nextMax < nextMin) {
-      const fixedMin = boundedMax <= 0 ? '' : String(boundedMax);
-      this.minPrice = fixedMin;
-      this.minPriceChange.emit(fixedMin);
-    }
-
-    const maxValue = boundedMax >= 1500 ? '' : String(boundedMax);
-    this.maxPrice = maxValue;
-    this.maxPriceChange.emit(maxValue);
-    this.filterChange.emit();
+    this.applyPriceRange(boundedMinIndex, boundedMaxIndex);
   }
 
   selectRatingOption(value: string): void {
@@ -741,13 +712,47 @@ export class CatalogFilterFormComponent {
     return String(value || '').trim().toLowerCase();
   }
 
-  private normalizePriceValue(value: string, fallback: number): number {
-    const parsed = Number(value);
-    if (!Number.isFinite(parsed)) {
-      return fallback;
+  private clampPriceIndex(value: number): number {
+    const lastIndex = this.priceOptions.length - 1;
+    if (!Number.isFinite(value)) {
+      return 0;
     }
 
-    return Math.min(1500, Math.max(0, Math.round(parsed)));
+    return Math.min(lastIndex, Math.max(0, Math.round(value)));
+  }
+
+  private priceIndexFromMinValue(value: string): number {
+    if (value === '') {
+      return 0;
+    }
+
+    const index = this.priceOptions.findIndex((option) => String(option.value) === String(value));
+    return index >= 0 ? index : 0;
+  }
+
+  private priceIndexFromMaxValue(value: string): number {
+    const lastIndex = this.priceOptions.length - 1;
+    if (value === '') {
+      return lastIndex;
+    }
+
+    const index = this.priceOptions.findIndex((option) => String(option.value) === String(value));
+    return index >= 0 ? index : lastIndex;
+  }
+
+  private applyPriceRange(minIndex: number, maxIndex: number): void {
+    const lastIndex = this.priceOptions.length - 1;
+    const boundedMinIndex = this.clampPriceIndex(Math.min(minIndex, maxIndex));
+    const boundedMaxIndex = this.clampPriceIndex(Math.max(minIndex, maxIndex));
+
+    const minValue = boundedMinIndex <= 0 ? '' : String(this.priceOptions[boundedMinIndex].value);
+    const maxValue = boundedMaxIndex >= lastIndex ? '' : String(this.priceOptions[boundedMaxIndex].value);
+
+    this.minPrice = minValue;
+    this.maxPrice = maxValue;
+    this.minPriceChange.emit(minValue);
+    this.maxPriceChange.emit(maxValue);
+    this.filterChange.emit();
   }
 
   private categoryChipLabel(value: string): string {
@@ -778,7 +783,7 @@ export class CatalogFilterFormComponent {
 
   private priceChipLabel(): string {
     const minLabel = this.priceLabel(this.minPrice, 'Min');
-    const maxLabel = this.priceLabel(this.maxPrice, '₹1500+');
+    const maxLabel = this.priceLabel(this.maxPrice, '₹2000+');
 
     if (this.minPrice && this.maxPrice) {
       return `${minLabel} to ${maxLabel}`;
@@ -792,20 +797,27 @@ export class CatalogFilterFormComponent {
   }
 
   private priceLabel(value: string, fallback: string): string {
-    const match = [...this.priceMinOptions, ...this.priceMaxOptions].find((option) => option.value === value);
+    const match = this.priceOptions.find((option) => String(option.value) === String(value));
     return match?.label || fallback;
   }
 
   priceTrackStart(): number {
-    return this.priceValueToPercent(this.minPrice, 0);
+    return this.priceIndexToPercent(this.priceMinIndex);
   }
 
   priceTrackEnd(): number {
-    const end = this.priceValueToPercent(this.maxPrice, 100);
+    const end = this.priceIndexToPercent(this.priceMaxIndex);
     return Math.max(end, this.priceTrackStart());
   }
 
   priceTrackFillStyle(): Record<string, string> {
+    if (this.minPrice === '' && this.maxPrice === '') {
+      return {
+        left: '0%',
+        width: '0%'
+      };
+    }
+
     const start = this.priceTrackStart();
     const end = this.priceTrackEnd();
 
@@ -815,22 +827,13 @@ export class CatalogFilterFormComponent {
     };
   }
 
-  private priceValueToPercent(value: string, fallbackPercent: number): number {
-    const parsedValue = Number(value);
-    if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
-      return fallbackPercent;
+  private priceIndexToPercent(index: number): number {
+    const lastIndex = this.priceOptions.length - 1;
+    if (lastIndex <= 0) {
+      return 0;
     }
 
-    const index = this.priceSteps.indexOf(parsedValue);
-    if (index < 0) {
-      return fallbackPercent;
-    }
-
-    if (this.priceSteps.length <= 1) {
-      return fallbackPercent;
-    }
-
-    return (index / (this.priceSteps.length - 1)) * 100;
+    return (this.clampPriceIndex(index) / lastIndex) * 100;
   }
 
   categoryLabel(category: CustomerLandingCategory): string {
