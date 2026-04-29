@@ -695,8 +695,14 @@ const getAllProducts = asyncHandler(async (req, res) => {
     } = req.query;
 
     const trimmedQuery = String(q || "").trim();
-    const trimmedCategory = String(category || "").trim();
-    const trimmedBrand = String(brand || "").trim();
+    const categoryTerms = String(category || "")
+        .split(",")
+        .map((value) => String(value || "").trim())
+        .filter(Boolean);
+    const brandTerms = String(brand || "")
+        .split(",")
+        .map((value) => String(value || "").trim())
+        .filter(Boolean);
     const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     const pipeline = [
@@ -755,16 +761,20 @@ const getAllProducts = asyncHandler(async (req, res) => {
         });
     }
 
-    if (trimmedCategory) {
-        const categoryMatch = { $regex: escapeRegex(trimmedCategory), $options: "i" };
-        const categoryFilters = [
-            { "categoryDetails.name": categoryMatch },
-            { "categoryDetails.slug": categoryMatch }
-        ];
+    if (categoryTerms.length > 0) {
+        const categoryFilters = [];
 
-        if (mongoose.Types.ObjectId.isValid(trimmedCategory)) {
-            categoryFilters.push({ category: new mongoose.Types.ObjectId(trimmedCategory) });
-        }
+        categoryTerms.forEach((term) => {
+            const categoryMatch = { $regex: escapeRegex(term), $options: "i" };
+            categoryFilters.push(
+                { "categoryDetails.name": categoryMatch },
+                { "categoryDetails.slug": categoryMatch }
+            );
+
+            if (mongoose.Types.ObjectId.isValid(term)) {
+                categoryFilters.push({ category: new mongoose.Types.ObjectId(term) });
+            }
+        });
 
         pipeline.push({
             $match: {
@@ -773,10 +783,12 @@ const getAllProducts = asyncHandler(async (req, res) => {
         });
     }
 
-    if (trimmedBrand) {
+    if (brandTerms.length > 0) {
         pipeline.push({
             $match: {
-                brand: { $regex: escapeRegex(trimmedBrand), $options: "i" }
+                $or: brandTerms.map((term) => ({
+                    brand: { $regex: escapeRegex(term), $options: "i" }
+                }))
             }
         });
     }

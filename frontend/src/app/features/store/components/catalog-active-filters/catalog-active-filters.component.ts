@@ -17,10 +17,17 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
     <div class="flex flex-wrap items-center gap-2">
       <span
-        *ngIf="selectedBrand !== 'all'"
+        *ngIf="selectedCategoryCount > 0"
         class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
       >
-        Brand: {{ selectedBrand }}
+        Category ({{ selectedCategoryCount }})
+        <button type="button" class="ml-2 text-amber-900/80" (click)="removeFilter.emit('selectedCategory')">×</button>
+      </span>
+      <span
+        *ngIf="selectedBrandCount > 0"
+        class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
+      >
+        Brand ({{ selectedBrandCount }})
         <button type="button" class="ml-2 text-amber-900/80" (click)="removeFilter.emit('selectedBrand')">×</button>
       </span>
       <span
@@ -50,13 +57,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class CatalogActiveFiltersComponent {
   @Input() hasActiveFilters = false;
-  @Input() selectedBrand = 'all';
+  @Input() selectedCategoryCount = 0;
+  @Input() selectedBrandCount = 0;
   @Input() minPrice = '';
   @Input() maxPrice = '';
   @Input() availabilityFilter = 'all';
   @Input() ratingFilter = 'all';
 
-  @Output() removeFilter = new EventEmitter<'selectedBrand' | 'price' | 'availabilityFilter' | 'ratingFilter'>();
+  @Output() removeFilter = new EventEmitter<'selectedCategory' | 'selectedBrand' | 'price' | 'availabilityFilter' | 'ratingFilter'>();
   @Output() clearAll = new EventEmitter<void>();
 
   get hasPriceFilter(): boolean {

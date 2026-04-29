@@ -41,45 +41,44 @@ import {
         <div class="absolute top-32 right-0 h-96 w-96 rounded-full bg-amber-200/20 blur-3xl"></div>
       </div>
 
-      <section class="relative w-full px-2 pt-3 pb-5 sm:px-3 lg:px-4">
-        <div class="mx-auto grid w-full max-w-[1560px] grid-cols-1 rounded-[2rem] border border-slate-200 bg-white shadow-sm lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
-          <aside class="hidden min-w-0 self-start border-r border-slate-200 bg-transparent p-0 lg:sticky lg:top-[124px] lg:block">
-            <div class="rounded-l-[2rem] bg-white/70 p-4">
+      <section class="relative w-full pb-5">
+        <div class="mx-auto grid w-full max-w-[1560px] grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+          <aside class="hidden h-full min-w-0 self-start bg-[#fffaf3] p-0 lg:sticky lg:top-[124px] lg:block lg:border-r lg:border-slate-200">
+            <div class="p-4 sm:p-5 lg:pr-6">
               <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <div>
-                  <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Filters</p>
+                  <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-600">Filters</p>
                   <h3 class="mt-1 text-sm font-semibold text-slate-900">Refine results</h3>
                 </div>
                 <button
                   type="button"
-                  class="h-8 rounded-full border border-slate-200 bg-slate-50 px-4 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 hover:bg-white"
+                  class="text-xs font-semibold uppercase tracking-wide text-[#8a4f2a] transition hover:text-[#6d3c20]"
                   (click)="resetFilters()"
                 >
-                  Reset
+                  Clear all
                 </button>
               </div>
 
               <div class="pt-4">
                 <app-catalog-filter-form
-                  [selectedCategorySlug]="selectedCategorySlug"
-                  [selectedBrand]="selectedBrand"
+                  [resetToken]="filterResetToken"
+                  [selectedCategoryIds]="selectedCategoryIds"
+                  [selectedBrandIds]="selectedBrandIds"
                   [sortBy]="sortBy"
                   [minPrice]="minPrice"
                   [maxPrice]="maxPrice"
-                  [availabilityFilter]="availabilityFilter"
                   [ratingFilter]="ratingFilter"
                   [sidebarCategories]="sidebarCategories"
                   [brandOptions]="brandOptions()"
                   [sortOptions]="sortOptions"
-                  [availabilityOptions]="availabilityOptions"
                   [ratingOptions]="ratingOptions"
-                  (selectedCategorySlugChange)="selectedCategorySlug = $event"
-                  (selectedBrandChange)="selectedBrand = $event"
+                  (selectedCategoryIdsChange)="onSelectedCategoryIdsChange($event)"
+                  (selectedBrandIdsChange)="onSelectedBrandIdsChange($event)"
                   (sortByChange)="sortBy = $event"
                   (minPriceChange)="minPrice = $event"
                   (maxPriceChange)="maxPrice = $event"
-                  (availabilityFilterChange)="availabilityFilter = $event"
                   (ratingFilterChange)="ratingFilter = $event"
+                  (clearAll)="resetFilters()"
                   (filterChange)="onCatalogFilterChange()"
                 />
               </div>
@@ -98,9 +97,6 @@ import {
                     </h1>
                     <p class="max-w-3xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
                       Discover the perfect blend of taste and nutrition in every pack.
-                    </p>
-                    <p *ngIf="selectedCategoryDescription()" class="max-w-3xl text-sm font-medium leading-7 text-slate-600">
-                      {{ selectedCategoryDescription() }}
                     </p>
                   </div>
 
@@ -128,7 +124,8 @@ import {
 
                       <app-catalog-active-filters
                         [hasActiveFilters]="hasActiveFilters()"
-                        [selectedBrand]="selectedBrand"
+                        [selectedCategoryCount]="selectedCategoryIds.length"
+                        [selectedBrandCount]="selectedBrandIds.length"
                         [minPrice]="minPrice"
                         [maxPrice]="maxPrice"
                         [availabilityFilter]="availabilityFilter"
@@ -140,19 +137,6 @@ import {
                   </div>
                 </div>
               </section>
-
-              <div *ngIf="hasActiveFilters()" class="rounded-[1.5rem] border border-slate-200 bg-white/85 px-4 py-3 shadow-sm">
-                <app-catalog-active-filters
-                  [hasActiveFilters]="hasActiveFilters()"
-                  [selectedBrand]="selectedBrand"
-                  [minPrice]="minPrice"
-                  [maxPrice]="maxPrice"
-                  [availabilityFilter]="availabilityFilter"
-                  [ratingFilter]="ratingFilter"
-                  (clearAll)="resetFilters()"
-                  (removeFilter)="handleActiveFilterRemoval($event)"
-                />
-              </div>
 
               <section *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
@@ -222,7 +206,7 @@ import {
         <aside class="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[2rem] bg-white p-4 shadow-2xl">
           <div class="sticky top-0 z-10 mb-4 flex items-center justify-between border-b border-slate-200 bg-white pb-3">
             <div>
-              <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Filters</p>
+              <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Filters</p>
               <h2 class="text-lg font-black text-slate-900">Refine results</h2>
             </div>
 
@@ -235,28 +219,27 @@ import {
             </button>
           </div>
 
-          <div class="rounded-[1.6rem] border border-slate-200 bg-slate-50/80 p-4 shadow-sm">
+          <div class="rounded-[1.6rem] border border-slate-200 bg-[#fffaf3] p-4 shadow-sm">
             <div class="space-y-4">
               <app-catalog-filter-form
-                [selectedCategorySlug]="selectedCategorySlug"
-                [selectedBrand]="selectedBrand"
+                [resetToken]="filterResetToken"
+                [selectedCategoryIds]="selectedCategoryIds"
+                [selectedBrandIds]="selectedBrandIds"
                 [sortBy]="sortBy"
                 [minPrice]="minPrice"
                 [maxPrice]="maxPrice"
-                [availabilityFilter]="availabilityFilter"
                 [ratingFilter]="ratingFilter"
                 [sidebarCategories]="sidebarCategories"
                 [brandOptions]="brandOptions()"
                 [sortOptions]="sortOptions"
-                [availabilityOptions]="availabilityOptions"
                 [ratingOptions]="ratingOptions"
-                (selectedCategorySlugChange)="selectedCategorySlug = $event"
-                (selectedBrandChange)="selectedBrand = $event"
+                (selectedCategoryIdsChange)="onSelectedCategoryIdsChange($event)"
+                (selectedBrandIdsChange)="onSelectedBrandIdsChange($event)"
                 (sortByChange)="sortBy = $event"
                 (minPriceChange)="minPrice = $event"
                 (maxPriceChange)="maxPrice = $event"
-                (availabilityFilterChange)="availabilityFilter = $event"
                 (ratingFilterChange)="ratingFilter = $event"
+                (clearAll)="resetFilters()"
                 (filterChange)="onCatalogFilterChange()"
               />
 
@@ -311,6 +294,7 @@ export class ProductsPageComponent implements OnInit {
   visibleCatalogCategories: LandingCategoryNode[] = [];
   expandedCategoryIds = new Set<string>();
   selectedCategorySlug = 'all';
+  selectedCategoryIds: string[] = [];
   viewMode: 'landing' | 'search' = 'landing';
   catalogMessage = '';
   loadingCategories = false;
@@ -320,11 +304,13 @@ export class ProductsPageComponent implements OnInit {
   catalogTotalPages = 1;
   sortBy = 'relevance';
   selectedBrand = 'all';
+  selectedBrandIds: string[] = [];
   availabilityFilter = 'all';
   ratingFilter = 'all';
   minPrice = '';
   maxPrice = '';
   isMobileFiltersOpen = false;
+  filterResetToken = 0;
   readonly sortOptions = [
     { value: 'relevance', label: 'Relevance' },
     { value: 'newest', label: 'Newest First' },
@@ -380,7 +366,10 @@ export class ProductsPageComponent implements OnInit {
 
     this.route.queryParamMap.subscribe((params) => {
       this.searchQuery = params.get('q') || '';
-      this.selectedCategorySlug = params.get('category') || 'all';
+      this.selectedCategoryIds = this.parseFilterValues(params.get('category'));
+      this.selectedCategorySlug = this.selectedCategoryIds[0] || 'all';
+      this.selectedBrandIds = this.parseFilterValues(params.get('brand'));
+      this.selectedBrand = this.selectedBrandIds[0] || 'all';
       this.currentPage = 1;
 
       if (this.searchQuery.trim()) {
@@ -441,8 +430,8 @@ export class ProductsPageComponent implements OnInit {
 
   activeFilterCount(): number {
     return [
-      this.selectedCategorySlug !== 'all',
-      this.selectedBrand !== 'all',
+      this.selectedCategoryIds.length > 0,
+      this.selectedBrandIds.length > 0,
       this.sortBy !== 'relevance',
       this.availabilityFilter !== 'all',
       this.ratingFilter !== 'all',
@@ -515,8 +504,8 @@ export class ProductsPageComponent implements OnInit {
     const query = this.searchQuery.trim();
     const params: CatalogQueryParams = {
       q: query || undefined,
-      category: this.selectedCategorySlug !== 'all' ? this.selectedCategorySlug : undefined,
-      brand: this.selectedBrand !== 'all' ? this.selectedBrand : undefined,
+      category: this.selectedCategoryIds.length ? this.selectedCategoryIds.join(',') : undefined,
+      brand: this.selectedBrandIds.length ? this.selectedBrandIds.join(',') : undefined,
       availability: this.availabilityFilter as CatalogQueryParams['availability'],
       rating: this.ratingFilter,
       minPrice: this.minPrice,
@@ -558,7 +547,6 @@ export class ProductsPageComponent implements OnInit {
     const query = value.trim();
     if (!query) {
       this.viewMode = 'landing';
-      this.selectedCategorySlug = 'all';
       this.currentPage = 1;
       this.refreshCatalogListing();
       return;
@@ -766,7 +754,9 @@ export class ProductsPageComponent implements OnInit {
   }
 
   selectCategory(slug: string): void {
-    this.selectedCategorySlug = slug || 'all';
+    const normalized = this.normalizeCategoryKey(slug);
+    this.selectedCategoryIds = normalized ? [normalized] : [];
+    this.selectedCategorySlug = normalized || 'all';
     this.currentPage = 1;
     this.refreshCatalogMessage();
   }
@@ -854,7 +844,8 @@ export class ProductsPageComponent implements OnInit {
   }
 
   isSelectedCategory(category: CustomerLandingCategory): boolean {
-    return this.normalizeCategoryKey(this.selectedCategorySlug) === this.normalizeCategoryKey(category.slug || category.name);
+    const value = this.normalizeCategoryKey(category.slug || category.name);
+    return this.selectedCategoryIds.map((item) => this.normalizeCategoryKey(item)).includes(value);
   }
 
   isExpanded(category: LandingCategoryNode): boolean {
@@ -907,29 +898,79 @@ export class ProductsPageComponent implements OnInit {
     return String(value || '').trim().toLowerCase();
   }
 
+  private normalizeFilterValues(values: string[]): string[] {
+    const seen = new Set<string>();
+    const normalizedValues: string[] = [];
+
+    (values || []).forEach((value) => {
+      const normalized = this.normalizeCategoryKey(value);
+      if (!normalized || seen.has(normalized)) {
+        return;
+      }
+
+      seen.add(normalized);
+      normalizedValues.push(normalized);
+    });
+
+    return normalizedValues;
+  }
+
+  private parseFilterValues(value: string | null): string[] {
+    if (!value) {
+      return [];
+    }
+
+    return this.normalizeFilterValues(
+      String(value)
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => Boolean(item) && item.toLowerCase() !== 'all')
+    );
+  }
+
   onCatalogFilterChange(): void {
     this.currentPage = 1;
     this.refreshCatalogListing();
+  }
+
+  onSelectedCategoryIdsChange(values: string[]): void {
+    this.selectedCategoryIds = this.normalizeFilterValues(values);
+    this.selectedCategorySlug = this.selectedCategoryIds[0] || 'all';
+    this.currentPage = 1;
+  }
+
+  onSelectedBrandIdsChange(values: string[]): void {
+    this.selectedBrandIds = this.normalizeFilterValues(values);
+    this.selectedBrand = this.selectedBrandIds[0] || 'all';
+    this.currentPage = 1;
   }
 
   resetFilters(): void {
     this.searchQuery = '';
     this.sortBy = 'relevance';
     this.selectedCategorySlug = 'all';
+    this.selectedCategoryIds = [];
     this.selectedBrand = 'all';
+    this.selectedBrandIds = [];
     this.availabilityFilter = 'all';
     this.ratingFilter = 'all';
     this.minPrice = '';
     this.maxPrice = '';
     this.currentPage = 1;
     this.viewMode = 'landing';
+    this.filterResetToken += 1;
     this.refreshCatalogListing();
   }
 
-  handleActiveFilterRemoval(filter: 'selectedBrand' | 'price' | 'availabilityFilter' | 'ratingFilter'): void {
+  handleActiveFilterRemoval(filter: 'selectedCategory' | 'selectedBrand' | 'price' | 'availabilityFilter' | 'ratingFilter'): void {
     switch (filter) {
+      case 'selectedCategory':
+        this.selectedCategorySlug = 'all';
+        this.selectedCategoryIds = [];
+        break;
       case 'selectedBrand':
         this.selectedBrand = 'all';
+        this.selectedBrandIds = [];
         break;
       case 'price':
         this.minPrice = '';
@@ -1015,12 +1056,12 @@ export class ProductsPageComponent implements OnInit {
   hasActiveFilters(): boolean {
     return [
       this.sortBy !== 'relevance',
-      this.selectedBrand !== 'all',
+      this.selectedBrandIds.length > 0,
       this.availabilityFilter !== 'all',
       this.ratingFilter !== 'all',
       this.minPrice !== '',
       this.maxPrice !== '',
-      this.selectedCategorySlug !== 'all'
+      this.selectedCategoryIds.length > 0
     ].some(Boolean);
   }
 
