@@ -97,7 +97,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
       </section>
       -->
 
-      <section id="categories" class="storefront-section w-full bg-[#fff3e8] py-10 sm:py-12 lg:py-14 scroll-mt-6">
+      <section id="categories" class="storefront-section w-full bg-[#fff3e8] py-16 sm:py-20 scroll-mt-6">
         <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
           <div class="mb-4 text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Categories</p>
@@ -129,7 +129,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
                 *ngFor="let category of catalogCategories; trackBy: trackByCategoryId"
                 [routerLink]="['/products']"
                 [queryParams]="{ category: category.slug || category.name }"
-                class="group relative w-[min(220px,42vw)] shrink-0 snap-start overflow-hidden rounded-[1.35rem] border bg-white text-left shadow-sm transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(47,27,20,0.08)] sm:w-[min(240px,30vw)] lg:w-[220px] xl:w-[240px]"
+                class="group relative w-[min(220px,42vw)] shrink-0 snap-start overflow-hidden rounded-[10px] border bg-white text-left shadow-sm transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(47,27,20,0.08)] sm:w-[min(240px,30vw)] lg:w-[220px] xl:w-[240px]"
                 [style.border-color]="categoryAccent(category).border"
               >
                 <div class="absolute right-3 top-3 z-10 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold leading-none text-orange-700 ring-1 ring-orange-200">
@@ -147,6 +147,9 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
                 </div>
                 <div class="space-y-1 p-2 md:p-3">
                   <h4 class="truncate text-sm font-semibold leading-5 text-slate-900 sm:text-base lg:text-base">{{ category.name }}</h4>
+                  <p class="min-h-[2.5rem] text-sm leading-5 text-slate-500 line-clamp-2 overflow-hidden">
+                    {{ category.description || 'Browse products from this category.' }}
+                  </p>
                 </div>
               </a>
             </div>
@@ -169,7 +172,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
         </div>
       </section>
 
-      <section class="storefront-section w-full bg-white py-10 sm:py-12 lg:py-14 scroll-mt-6">
+      <section class="storefront-section w-full bg-white py-16 sm:py-20 scroll-mt-6">
         <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
           <div class="mb-4 text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Products</p>
@@ -210,9 +213,9 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
         </div>
       </section>
 
-      <section id="about" class="storefront-section w-full bg-[#fff3e8] py-10 sm:py-12 lg:py-14 scroll-mt-6">
+      <section id="about" class="storefront-section w-full bg-[#fff3e8] py-16 sm:py-20 scroll-mt-6">
         <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
-          <div class="group rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-8 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:px-6 lg:px-8">
+          <div class="group">
           <div class="text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Customer reviews</p>
             <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">What our customers say</h3>
@@ -263,42 +266,61 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
         </div>
       </section>
 
-      <section class="storefront-section w-full bg-white py-10 sm:py-12 lg:py-14">
-  <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
-      <div class="relative overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
-      <div class="overflow-hidden rounded-[1.5rem] bg-slate-100">
-        <picture class="block w-full bg-[#fff3e8]">
-          <source media="(max-width: 767px)" srcset="/assets/mobile-bluk.jpg.jpeg" />
-          <img
-            src="/assets/n%20bulk.png"
-            alt="Bulk showcase"
-            loading="lazy"
-            decoding="async"
-            class="h-auto w-full object-contain sm:object-cover"
-          />
-        </picture>
-      </div>
-
-      <!-- Button aligned under text -->
-      <div class="absolute left-[9%] top-[64%] flex sm:left-[15%] sm:top-[64%]">
-        <a
-          routerLink="/contact"
-          class="inline-flex items-center justify-center rounded-full bg-[#fff4e6] px-3 py-2 text-xs sm:px-5 sm:py-3 sm:text-sm font-semibold text-[#6f4e37] shadow-[0_14px_30px_rgba(47,27,20,0.12)] ring-1 ring-[#eadcc9] transition hover:-translate-y-0.5 hover:bg-[#fff0dc] sm:px-5 sm:py-3 sm:text-sm"
-        >
-          Contact Us
-        </a>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-      <section class="storefront-section w-full bg-[#fff3e8] py-10 sm:py-12 lg:py-14">
+      <div class="w-full bg-[#fff3e8]">
+      <section class="storefront-section w-full bg-[#fffaf3] py-16 sm:py-20">
         <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
-          <div class="grid gap-6 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_0.95fr]">
-          <div class="flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-10">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">About Us</p>
-            <h3 class="mt-2 text-2xl font-bold tracking-tight text-slate-900">About Divya Dryfruit House</h3>
+          <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-12 lg:items-center">
+            <div class="max-w-2xl">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">Bulk buy dry fruits</p>
+              <h3 class="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl lg:text-4xl">
+                Bulk Buy Dry Fruits
+              </h3>
+              <p class="mt-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#a16207] sm:text-base">
+                For Retailers, Wholesalers &amp; Corporate Gifting
+              </p>
+              <p class="mt-4 max-w-xl text-sm font-medium leading-8 text-slate-500 sm:text-[15px]">
+                Get premium quality dry fruits at wholesale prices. Enjoy exclusive bulk discounts, reliable supply, and fast delivery across India.
+              </p>
+
+              <div class="mt-6 flex flex-wrap gap-3">
+                <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Best Wholesale Pricing</span>
+                <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Custom Packaging Available</span>
+                <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Fast PAN India Delivery</span>
+                <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Assured Quality</span>
+              </div>
+            </div>
+
+            <div class="flex h-full flex-col justify-center lg:items-end">
+              <div class="w-full rounded-[20px] border border-amber-100 bg-white/80 p-5 shadow-sm sm:p-6">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">Start your bulk inquiry</p>
+                <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                  Tell us your requirement and our team will help with pricing, packaging, and delivery options tailored to your business.
+                </p>
+                <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <a
+                    routerLink="/bulk-order"
+                    class="inline-flex items-center justify-center rounded-full bg-[#6f4e37] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(111,78,55,0.18)] transition hover:bg-[#5f4230] hover:translate-y-[-1px]"
+                  >
+                    Place Bulk Order
+                  </a>
+                  <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                    Lead response within business hours
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="storefront-section w-full py-16 sm:py-20">
+        <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-12 lg:items-center">
+          <div class="flex flex-col justify-center">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">About Us</p>
+            <h3 class="mt-2 max-w-xl text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl lg:text-4xl">
+              About Divya Dryfruit House
+            </h3>
             <p class="mt-4 max-w-2xl text-sm font-medium leading-8 text-slate-500">
               We believe better wellness starts with what you bring home. Our focus is on premium dry fruits, spices, herbs, and fresh bakery items, all selected with care for quality, freshness, and family-friendly everyday use.
             </p>
@@ -307,27 +329,27 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
             </p>
 
             <div class="mt-6 flex flex-wrap gap-3">
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Fresh selection</span>
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Wide variety</span>
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Customer focused</span>
+              <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Fresh selection</span>
+              <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Wide variety</span>
+              <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Customer focused</span>
             </div>
           </div>
 
-          <div class="grid gap-4 bg-[#fffaf5] px-6 py-8 sm:grid-cols-2 sm:px-8 lg:px-10">
-            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)]">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Quality first</p>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div class="rounded-[20px] border border-amber-100 bg-white/80 p-5 shadow-sm transition duration-200 hover:shadow-md">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">Quality first</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                 Carefully chosen products that support a healthy lifestyle and reliable everyday shopping.
               </p>
             </div>
-            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)]">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">One roof</p>
+            <div class="rounded-[20px] border border-amber-100 bg-white/80 p-5 shadow-sm transition duration-200 hover:shadow-md">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">One roof</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                 Dry fruits, spices, herbs, and bakery essentials brought together for simple, convenient buying.
               </p>
             </div>
-            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)] sm:col-span-2">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Trusted by customers</p>
+            <div class="rounded-[20px] border border-amber-100 bg-white/80 p-5 shadow-sm transition duration-200 hover:shadow-md sm:col-span-2">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">Trusted by customers</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                 Friendly service, fair pricing, and a focus on freshness help us build trust with every order.
               </p>
@@ -336,6 +358,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
           </div>
         </div>
       </section>
+      </div>
     </div>
   `
 })
@@ -354,7 +377,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   fadeMode = true;
   loadingCategories = false;
   products: CustomerCatalogProduct[] = [];
-  featuredProductLimit = 12;
+  featuredProductLimit = 4;
   wishlistedProductIds = new Set<string>();
   wishlistBusyId = '';
   categoryCanScrollPrev = false;
@@ -688,7 +711,24 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private updateFeaturedProductLimit(): void {
-    this.featuredProductLimit = window.innerWidth >= 1280 ? 15 : 12;
+    const width = window.innerWidth;
+
+    if (width >= 1280) {
+      this.featuredProductLimit = 10;
+      return;
+    }
+
+    if (width >= 1024) {
+      this.featuredProductLimit = 8;
+      return;
+    }
+
+    if (width >= 768) {
+      this.featuredProductLimit = 6;
+      return;
+    }
+
+    this.featuredProductLimit = 4;
   }
 
   openProduct(product: CustomerCatalogProduct): void {

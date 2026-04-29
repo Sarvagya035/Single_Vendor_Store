@@ -69,6 +69,11 @@ export const routes: Routes = [
       import('./features/store/contact.component').then((m) => m.ContactComponent)
   },
   {
+    path: 'bulk-order',
+    loadComponent: () =>
+      import('./features/store/bulk-order.component').then((m) => m.BulkOrderComponent)
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login.component').then((m) => m.LoginComponent)
