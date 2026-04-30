@@ -5,17 +5,28 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../models/customer.models';
 import { ApiService } from './api.service';
+import { ApiResponse } from '../models/api-response.model';
 
 export interface CatalogQueryParams {
   q?: string;
   category?: string;
   brand?: string;
-  availability?: 'all' | 'in-stock' | 'out-of-stock';
   rating?: string;
   minPrice?: string | number;
   maxPrice?: string | number;
   sortBy?: string;
 }
+
+type CatalogResponse<T = unknown> = ApiResponse<T>;
+
+interface ProductDocsResponse {
+  docs?: CustomerCatalogProduct[];
+  [key: string]: unknown;
+}
+
+const isProductDocsResponse = (value: unknown): value is ProductDocsResponse => {
+  return !!value && typeof value === 'object' && 'docs' in value;
+};
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +36,7 @@ export class CatalogService {
 
   constructor(private api: ApiService) {}
 
-  getCatalogProducts(page = 1, limit = 28, query?: CatalogQueryParams): Observable<any> {
+  getCatalogProducts(page = 1, limit = 28, query?: CatalogQueryParams): Observable<CatalogResponse<unknown>> {
     let params = new HttpParams().set('page', page).set('limit', limit);
 
     Object.entries(query || {}).forEach(([key, value]) => {
@@ -37,21 +48,21 @@ export class CatalogService {
     });
 
     return this.api
-      .get(`${this.productUrl}/get-all-products`, { params })
-      .pipe(map((response: any) => this.normalizeProductCollection(response)));
+      .get<CatalogResponse<unknown>>(`${this.productUrl}/get-all-products`, { params })
+      .pipe(map((response) => this.normalizeProductCollection(response)));
   }
 
-  getLandingPageProducts(): Observable<any> {
+  getLandingPageProducts(): Observable<CatalogResponse<unknown>> {
     return this.api
-      .get(`${this.productUrl}/get-landing-page-products`)
-      .pipe(map((response: any) => this.normalizeLandingCollection(response)));
+      .get<CatalogResponse<unknown>>(`${this.productUrl}/get-landing-page-products`)
+      .pipe(map((response) => this.normalizeLandingCollection(response)));
   }
 
-  getLandingCategories(): Observable<any> {
+  getLandingCategories(): Observable<CatalogResponse<CustomerLandingCategory[]>> {
     return this.api
-      .get(`${environment.apiUrl}/category/landing`)
+      .get<CatalogResponse<CustomerLandingCategory[]>>(`${environment.apiUrl}/category/landing`)
       .pipe(
-        map((response: any) => ({
+        map((response) => ({
           ...response,
           data: Array.isArray(response?.data)
             ? response.data.map((category: CustomerLandingCategory) => ({
@@ -67,22 +78,22 @@ export class CatalogService {
     page = 1,
     limit = 28,
     options: Omit<CatalogQueryParams, 'q'> = {}
-  ): Observable<any> {
+  ): Observable<CatalogResponse<unknown>> {
     return this.getCatalogProducts(page, limit, { ...options, q: query.trim() });
   }
 
-  getProductDetails(productId: string): Observable<any> {
+  getProductDetails(productId: string): Observable<CatalogResponse<CustomerCatalogProduct>> {
     return this.api
-      .get(`${this.productUrl}/public/get-product-by-id/${productId}`)
+      .get<CatalogResponse<CustomerCatalogProduct>>(`${this.productUrl}/public/get-product-by-id/${productId}`)
       .pipe(
-        map((response: any) => ({
+        map((response) => ({
           ...response,
           data: response?.data ? this.normalizeProduct(response.data) : response?.data
         }))
       );
   }
 
-  getProductsByIds(productIds: string[]): Observable<any> {
+  getProductsByIds(productIds: string[]): Observable<CatalogResponse<CustomerCatalogProduct[]>> {
     const uniqueProductIds = [...new Set((productIds || []).map((id) => String(id || '').trim()).filter(Boolean))];
 
     if (uniqueProductIds.length === 0) {
@@ -94,9 +105,9 @@ export class CatalogService {
     }
 
     return this.api
-      .post(`${environment.apiUrl}/products/bulk`, { productIds: uniqueProductIds })
+      .post<CatalogResponse<unknown>>(`${environment.apiUrl}/products/bulk`, { productIds: uniqueProductIds })
       .pipe(
-        map((response: any) => ({
+        map((response: CatalogResponse<unknown>) => ({
           ...response,
           data: Array.isArray(response?.data)
             ? response.data.map((product: CustomerCatalogProduct) => this.normalizeProduct(product))
@@ -105,8 +116,8 @@ export class CatalogService {
       );
   }
 
-  private normalizeProductCollection(response: any): any {
-    const rawData = response?.data;
+  private normalizeProductCollection(response: CatalogResponse<unknown>): CatalogResponse<unknown> {
+    const rawData = response?.data as unknown;
 
     if (Array.isArray(rawData)) {
       return {
@@ -115,7 +126,7 @@ export class CatalogService {
       };
     }
 
-    if (Array.isArray(rawData?.docs)) {
+    if (isProductDocsResponse(rawData) && Array.isArray(rawData.docs)) {
       return {
         ...response,
         data: {
@@ -128,8 +139,8 @@ export class CatalogService {
     return response;
   }
 
-  private normalizeLandingCollection(response: any): any {
-    const rawData = response?.data;
+  private normalizeLandingCollection(response: CatalogResponse<unknown>): CatalogResponse<unknown> {
+    const rawData = response?.data as unknown;
 
     if (!Array.isArray(rawData)) {
       return response;

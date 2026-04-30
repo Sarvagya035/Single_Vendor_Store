@@ -15,6 +15,25 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
       outline: none;
     }
 
+    .option-radio {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 1rem;
+      height: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.125rem;
+      background: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    .option-radio:checked {
+      border-color: #8a4f2a;
+      background: #8a4f2a;
+      box-shadow: inset 0 0 0 2px #ffffff;
+    }
+
     .price-range::-webkit-slider-runnable-track {
       background: transparent;
       border: none;
@@ -217,14 +236,12 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
         <div *ngIf="sortExpanded" class="mt-3 space-y-2">
           <label
             *ngFor="let option of sortOptions; trackBy: trackBySortOption"
-            class="flex items-center gap-2 py-1.5 text-sm text-slate-700"
-            [class.font-medium]="sortBy === option.value"
-            [class.text-[#8a4f2a]]="sortBy === option.value"
+            class="flex items-center gap-2 py-1.5 text-sm text-slate-800"
           >
             <input
               type="radio"
-              class="h-4 w-4 border-slate-300 accent-[#8a4f2a]"
-              name="sortByOptions"
+              name="sortBy"
+              class="option-radio shrink-0"
               [checked]="sortBy === option.value"
               (change)="selectSortOption(option.value)"
             />
@@ -336,14 +353,12 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
         <div *ngIf="ratingExpanded" class="mt-3 space-y-2">
           <label
             *ngFor="let option of ratingOptions; trackBy: trackByFilterOption"
-            class="flex items-center gap-2 py-1.5 text-sm text-slate-700"
-            [class.font-medium]="ratingFilter === option.value"
-            [class.text-[#8a4f2a]]="ratingFilter === option.value"
+            class="flex items-center gap-2 py-1.5 text-sm text-slate-800"
           >
             <input
               type="radio"
-              class="h-4 w-4 border-slate-300 accent-[#8a4f2a]"
-              name="ratingOptions"
+              name="ratingFilter"
+              class="option-radio shrink-0"
               [checked]="ratingFilter === option.value"
               (change)="selectRatingOption(option.value)"
             />

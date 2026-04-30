@@ -127,11 +127,11 @@ export class LoginComponent {
         }
 
         const user = res.data?.user;
-        const roles = Array.isArray(user?.role) ? user.role : [user?.role];
+        const roles = (Array.isArray(user?.role) ? user.role : [user?.role]).filter((role): role is string => !!role);
 
         if (
-          roles.some((role: string) => String(role).toLowerCase() === 'vendor') ||
-          roles.some((role: string) => String(role).toLowerCase() === 'admin')
+          roles.some((role) => role.toLowerCase() === 'vendor') ||
+          roles.some((role) => role.toLowerCase() === 'admin')
         ) {
           this.router.navigate(['/vendor/dashboard']);
           return;

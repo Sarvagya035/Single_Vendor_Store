@@ -3,12 +3,38 @@ import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CustomerCart } from '../models/customer.models';
+import { ApiResponse } from '../models/api-response.model';
 import { ApiService } from './api.service';
 
 const EMPTY_CART: CustomerCart = {
   cartItems: [],
   totalCartPrice: 0,
   alerts: null
+};
+
+interface CartResponseData {
+  cart?: Partial<CustomerCart> & {
+    alerts?: string | null;
+  };
+  alerts?: string | null;
+}
+
+type CartResponse = ApiResponse<CartResponseData | Partial<CustomerCart> | null>;
+
+const isCartPayload = (value: unknown): value is CartResponseData | Partial<CustomerCart> => {
+  return !!value && typeof value === 'object';
+};
+
+const extractCartPayload = (value: CartResponse['data']): Partial<CustomerCart> => {
+  if (!isCartPayload(value)) {
+    return {};
+  }
+
+  if ('cart' in value && isCartPayload(value.cart)) {
+    return value.cart;
+  }
+
+  return value as Partial<CustomerCart>;
 };
 
 @Injectable({
@@ -26,32 +52,32 @@ export class CartService {
     return this.cartSubject.value;
   }
 
-  getCart(): Observable<any> {
-    return this.api.get(`${this.cartUrl}/get-cart`).pipe(
-      tap((response: any) => this.cartSubject.next(this.normalizeCart(response)))
+  getCart(): Observable<CartResponse> {
+    return this.api.get<CartResponse>(`${this.cartUrl}/get-cart`).pipe(
+      tap((response) => this.cartSubject.next(this.normalizeCart(response)))
     );
   }
 
-  addToCart(productId: string, variantId: string, quantity: number): Observable<any> {
+  addToCart(productId: string, variantId: string, quantity: number): Observable<CartResponse> {
     return this.api
-      .post(`${this.cartUrl}/add-to-cart`, { productId, variantId, quantity })
+      .post<CartResponse>(`${this.cartUrl}/add-to-cart`, { productId, variantId, quantity })
       .pipe(tap(() => this.refreshCartState()));
   }
 
-  updateQuantity(productId: string, variantId: string, action: 'inc' | 'dec'): Observable<any> {
+  updateQuantity(productId: string, variantId: string, action: 'inc' | 'dec'): Observable<CartResponse> {
     return this.api
-      .patch(`${this.cartUrl}/update-cart`, { productId, variantId, action })
+      .patch<CartResponse>(`${this.cartUrl}/update-cart`, { productId, variantId, action })
       .pipe(tap(() => this.refreshCartState()));
   }
 
-  removeItem(variantId: string): Observable<any> {
+  removeItem(variantId: string): Observable<CartResponse> {
     return this.api
-      .delete(`${this.cartUrl}/delete-cart/${variantId}`)
+      .delete<CartResponse>(`${this.cartUrl}/delete-cart/${variantId}`)
       .pipe(tap(() => this.refreshCartState()));
   }
 
-  clearCart(): Observable<any> {
-    return this.api.delete(`${this.cartUrl}/clear-cart`).pipe(
+  clearCart(): Observable<CartResponse> {
+    return this.api.delete<CartResponse>(`${this.cartUrl}/clear-cart`).pipe(
       tap(() => {
         this.cartSubject.next(EMPTY_CART);
       })
@@ -73,13 +99,14 @@ export class CartService {
       .subscribe();
   }
 
-  private normalizeCart(response: any): CustomerCart {
-    const payload = response?.data?.cart ?? response?.data ?? {};
+  private normalizeCart(response: CartResponse): CustomerCart {
+    const responseData = response?.data;
+    const payload = extractCartPayload(responseData);
 
     return {
-      cartItems: Array.isArray(payload?.cartItems) ? payload.cartItems : [],
-      totalCartPrice: Number(payload?.totalCartPrice || 0),
-      alerts: response?.data?.alerts ?? null
+      cartItems: Array.isArray(payload.cartItems) ? payload.cartItems : [],
+      totalCartPrice: Number(payload.totalCartPrice || 0),
+      alerts: isCartPayload(responseData) && 'alerts' in responseData ? responseData.alerts ?? null : null
     };
   }
 }

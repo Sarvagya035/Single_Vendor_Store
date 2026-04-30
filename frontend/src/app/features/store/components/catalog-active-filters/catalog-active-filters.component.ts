@@ -39,13 +39,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         <button type="button" class="ml-2 text-amber-900/80" (click)="removeFilter.emit('price')">×</button>
       </span>
       <span
-        *ngIf="availabilityFilter !== 'all'"
-        class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-      >
-        {{ availabilityFilter === 'in-stock' ? 'In stock only' : 'Out of stock only' }}
-        <button type="button" class="ml-2 text-amber-900/80" (click)="removeFilter.emit('availabilityFilter')">×</button>
-      </span>
-      <span
         *ngIf="ratingFilter !== 'all'"
         class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
       >
@@ -61,10 +54,9 @@ export class CatalogActiveFiltersComponent {
   @Input() selectedBrandCount = 0;
   @Input() minPrice = '';
   @Input() maxPrice = '';
-  @Input() availabilityFilter = 'all';
   @Input() ratingFilter = 'all';
 
-  @Output() removeFilter = new EventEmitter<'selectedCategory' | 'selectedBrand' | 'price' | 'availabilityFilter' | 'ratingFilter'>();
+  @Output() removeFilter = new EventEmitter<'selectedCategory' | 'selectedBrand' | 'price' | 'ratingFilter'>();
   @Output() clearAll = new EventEmitter<void>();
 
   get hasPriceFilter(): boolean {

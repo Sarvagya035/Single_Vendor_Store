@@ -66,7 +66,7 @@ export class EditProfileComponent implements OnInit {
     this.authService.getCurrentUser().subscribe({
       next: (res) => {
         if (res.success) {
-          this.user = { ...res.data };
+          this.user = { ...(res.data || {}) } as CustomerProfileForm;
         }
       },
       error: () => this.router.navigate(['/login'])
@@ -94,7 +94,7 @@ export class EditProfileComponent implements OnInit {
       next: (res) => {
         this.isUpdatingProfile = false;
         if (res.success) {
-          this.user = { ...this.user, ...res.data };
+          this.user = { ...this.user, ...(res.data || {}) };
           this.authService.setCurrentUser(this.user);
           this.errorService.showToast(res.message || 'Profile updated successfully!', 'success');
         } else {
@@ -117,10 +117,10 @@ export class EditProfileComponent implements OnInit {
       next: (res) => {
         this.isUpdatingAvatar = false;
         if (res.success) {
-          this.user.avatar = res.data.avatar;
+          this.user.avatar = res.data.avatar || '';
           this.selectedFile = null;
           this.previewUrl = null;
-          this.authService.setCurrentUser({ ...this.user, avatar: res.data.avatar });
+          this.authService.setCurrentUser({ ...this.user, avatar: res.data.avatar || '' });
           this.errorService.showToast(res.message || 'Avatar updated successfully!', 'success');
         } else {
           this.errorService.showToast(res.message || 'Upload failed.', 'error');

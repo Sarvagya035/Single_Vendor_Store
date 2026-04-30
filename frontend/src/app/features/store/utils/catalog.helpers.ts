@@ -137,7 +137,8 @@ export const categoryLabel = (category: CustomerLandingCategory): string => {
 
 export const buildCatalogMessage = (options: {
   query: string;
-  selectedCategorySlug: string;
+  selectedCategoryIds?: string[];
+  selectedCategorySlug?: string;
   totalProductCount: number;
   hasActiveFilters: boolean;
   landingCategoriesCount: number;
@@ -145,6 +146,8 @@ export const buildCatalogMessage = (options: {
 }): string => {
   const trimmedQuery = String(options.query || '').trim();
   const totalItems = options.totalProductCount;
+  const selectedCategoryIds = Array.isArray(options.selectedCategoryIds) ? options.selectedCategoryIds.filter(Boolean) : [];
+  const selectedCategoryKey = normalizeCatalogKey(selectedCategoryIds[0] || options.selectedCategorySlug || '');
 
   if (trimmedQuery) {
     return totalItems
@@ -152,9 +155,9 @@ export const buildCatalogMessage = (options: {
       : `No products matched "${trimmedQuery}".`;
   }
 
-  const selectedCategory = findCategoryNodeBySlug(options.catalogCategoryTree, options.selectedCategorySlug);
+  const selectedCategory = findCategoryNodeBySlug(options.catalogCategoryTree, selectedCategoryKey);
 
-  if (options.selectedCategorySlug === 'all') {
+  if (!selectedCategoryKey || selectedCategoryKey === 'all') {
     if (options.hasActiveFilters) {
       return `Showing ${totalItems} filtered product${totalItems === 1 ? '' : 's'} across the catalog.`;
     }
@@ -162,6 +165,12 @@ export const buildCatalogMessage = (options: {
     return options.landingCategoriesCount
       ? `Showing ${totalItems} curated product${totalItems === 1 ? '' : 's'} across ${options.landingCategoriesCount} categorie${options.landingCategoriesCount === 1 ? 'y' : 's'}.`
       : 'Browse premium dry fruits by type or search for a specific pack.';
+  }
+
+  if (selectedCategoryIds.length > 1) {
+    return options.hasActiveFilters
+      ? `Browsing selected categories with ${totalItems} filtered product${totalItems === 1 ? '' : 's'}.`
+      : `Browsing selected categories with ${totalItems} product${totalItems === 1 ? '' : 's'}.`;
   }
 
   if (selectedCategory?.name) {
@@ -176,11 +185,14 @@ export const buildCatalogMessage = (options: {
 export const buildPageSubtitle = (options: {
   viewMode: 'landing' | 'search';
   searchQuery: string;
-  selectedCategorySlug: string;
+  selectedCategoryIds?: string[];
+  selectedCategorySlug?: string;
   hasActiveFilters: boolean;
   catalogCategories: CustomerLandingCategory[];
 }): string => {
   const trimmedSearchQuery = String(options.searchQuery || '').trim();
+  const selectedCategoryIds = Array.isArray(options.selectedCategoryIds) ? options.selectedCategoryIds.filter(Boolean) : [];
+  const selectedCategoryKey = normalizeCatalogKey(selectedCategoryIds[0] || options.selectedCategorySlug || '');
 
   if (options.viewMode === 'search' && trimmedSearchQuery) {
     return options.hasActiveFilters
@@ -188,35 +200,25 @@ export const buildPageSubtitle = (options: {
       : `Showing search results for "${trimmedSearchQuery}".`;
   }
 
-  if (options.selectedCategorySlug === 'all') {
+  if (!selectedCategoryKey || selectedCategoryKey === 'all') {
     return options.hasActiveFilters
       ? 'Browse premium dry fruits with filters and sorting.'
       : 'Browse premium dry fruits by type or search for a specific pack.';
   }
 
   const selectedCategory = options.catalogCategories.find(
-    (category) => normalizeCatalogKey(category.slug || category.name) === normalizeCatalogKey(options.selectedCategorySlug)
+    (category) => normalizeCatalogKey(category.slug || category.name) === selectedCategoryKey
   );
+
+  if (selectedCategoryIds.length > 1) {
+    return options.hasActiveFilters
+      ? 'Browsing selected categories with filters applied.'
+      : 'Browsing selected categories.';
+  }
 
   return selectedCategory?.name
     ? options.hasActiveFilters
       ? `Browsing ${selectedCategory.name} with filters applied.`
       : `Browsing ${selectedCategory.name}.`
     : 'Browse premium dry fruits by type or search for a specific pack.';
-};
-
-export const buildSelectedCategoryDescription = (options: {
-  viewMode: 'landing' | 'search';
-  selectedCategorySlug: string;
-  catalogCategories: CustomerLandingCategory[];
-}): string => {
-  if (options.selectedCategorySlug === 'all' || options.viewMode === 'search') {
-    return '';
-  }
-
-  const selectedCategory = options.catalogCategories.find(
-    (category) => normalizeCatalogKey(category.slug || category.name) === normalizeCatalogKey(options.selectedCategorySlug)
-  );
-
-  return String(selectedCategory?.description || '').trim();
 };

@@ -585,8 +585,6 @@ export class WishlistComponent implements OnInit {
   }
 
   private async moveWishlistItemToCart(product: CustomerCatalogProduct, variant: CustomerCatalogVariant, quantity: number): Promise<void> {
-    console.log('ENTER moveWishlistItemToCart');
-
     if (!product?._id || !variant?._id) {
       console.error('NO PRODUCT OR INVALID VARIANT', { product, variant });
       this.errorService.showToast('Please select a variant.', 'error');
@@ -594,23 +592,9 @@ export class WishlistComponent implements OnInit {
       return;
     }
 
-    console.log('CUSTOMER MOVE START', { product, variant, quantity });
     this.moveBusyId = product._id;
-    console.log('MOVE BUSY SET', this.moveBusyId);
     try {
-      console.log('VALID DATA', {
-        productId: product._id,
-        variantId: variant?._id,
-        quantity
-      });
-      console.log('CALLING CART ADD', {
-        productId: product._id,
-        variantId: variant?._id,
-        quantity,
-        endpoint: '/api/v1/cart/add-to-cart'
-      });
       const result = await firstValueFrom(this.cartService.addToCart(product._id, variant._id, quantity));
-      console.log('CART ADD RESULT', result);
 
       if (!result.success) {
         throw new Error(
@@ -631,10 +615,8 @@ export class WishlistComponent implements OnInit {
       );
       this.loadWishlist();
     } finally {
-      console.log('CUSTOMER MOVE FINALLY BEFORE RESET', this.moveBusyId);
       this.resetVariantModalState();
       this.moveBusyId = '';
-      console.log('CUSTOMER MOVE FINALLY AFTER RESET', this.moveBusyId);
     }
   }
 

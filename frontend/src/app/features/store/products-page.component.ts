@@ -23,7 +23,6 @@ import {
   buildVisibleCategoryList,
   buildCatalogMessage,
   buildPageSubtitle,
-  buildSelectedCategoryDescription,
   collectCategoryKeys,
   findCategoryNodeBySlug,
   countProductsForNode,
@@ -128,7 +127,6 @@ import {
                         [selectedBrandCount]="selectedBrandIds.length"
                         [minPrice]="minPrice"
                         [maxPrice]="maxPrice"
-                        [availabilityFilter]="availabilityFilter"
                         [ratingFilter]="ratingFilter"
                         (clearAll)="resetFilters()"
                         (removeFilter)="handleActiveFilterRemoval($event)"
@@ -305,7 +303,6 @@ export class ProductsPageComponent implements OnInit {
   sortBy = 'relevance';
   selectedBrand = 'all';
   selectedBrandIds: string[] = [];
-  availabilityFilter = 'all';
   ratingFilter = 'all';
   minPrice = '';
   maxPrice = '';
@@ -318,11 +315,6 @@ export class ProductsPageComponent implements OnInit {
     { value: 'price-desc', label: 'Price: High to Low' },
     { value: 'rating-desc', label: 'Customer Rating' },
     { value: 'popular', label: 'Popularity' }
-  ];
-  readonly availabilityOptions = [
-    { value: 'all', label: 'All items' },
-    { value: 'in-stock', label: 'In stock only' },
-    { value: 'out-of-stock', label: 'Out of stock only' }
   ];
   readonly ratingOptions = [
     { value: 'all', label: 'Any rating' },
@@ -433,7 +425,6 @@ export class ProductsPageComponent implements OnInit {
       this.selectedCategoryIds.length > 0,
       this.selectedBrandIds.length > 0,
       this.sortBy !== 'relevance',
-      this.availabilityFilter !== 'all',
       this.ratingFilter !== 'all',
       this.minPrice !== '',
       this.maxPrice !== ''
@@ -506,7 +497,6 @@ export class ProductsPageComponent implements OnInit {
       q: query || undefined,
       category: this.selectedCategoryIds.length ? this.selectedCategoryIds.join(',') : undefined,
       brand: this.selectedBrandIds.length ? this.selectedBrandIds.join(',') : undefined,
-      availability: this.availabilityFilter as CatalogQueryParams['availability'],
       rating: this.ratingFilter,
       minPrice: this.minPrice,
       maxPrice: this.maxPrice,
@@ -516,12 +506,19 @@ export class ProductsPageComponent implements OnInit {
     this.catalogService.getCatalogProducts(this.currentPage, this.pageSize, params).subscribe({
       next: (response) => {
         this.loadingProducts = false;
-        const payload = response?.data || {};
-        const rawProducts = Array.isArray(payload?.docs) ? payload.docs : Array.isArray(payload) ? payload : [];
+        const payload = (response?.data ?? {}) as
+          | CustomerCatalogProduct[]
+          | {
+              docs?: CustomerCatalogProduct[];
+              totalDocs?: number;
+              totalPages?: number;
+              page?: number;
+            };
+        const rawProducts = Array.isArray(payload) ? payload : Array.isArray(payload.docs) ? payload.docs : [];
         this.products = rawProducts.map((product: CustomerCatalogProduct) => this.attachCatalogContext(product));
-        this.catalogTotalItems = Number(payload?.totalDocs || this.products.length || 0);
-        this.catalogTotalPages = Math.max(1, Number(payload?.totalPages || 1));
-        this.currentPage = Number(payload?.page || this.currentPage || 1);
+        this.catalogTotalItems = Array.isArray(payload) ? this.products.length : Number(payload.totalDocs || this.products.length || 0);
+        this.catalogTotalPages = Array.isArray(payload) ? Math.max(1, Math.ceil(this.products.length / this.pageSize)) : Math.max(1, Number(payload.totalPages || 1));
+        this.currentPage = Array.isArray(payload) ? this.currentPage || 1 : Number(payload.page || this.currentPage || 1);
         this.catalogMessage = this.buildCatalogMessage(query);
       },
       error: () => {
@@ -856,16 +853,8 @@ export class ProductsPageComponent implements OnInit {
     return buildPageSubtitle({
       viewMode: this.viewMode,
       searchQuery: this.searchQuery,
-      selectedCategorySlug: this.selectedCategorySlug,
+      selectedCategoryIds: this.selectedCategoryIds,
       hasActiveFilters: this.hasActiveFilters(),
-      catalogCategories: this.catalogCategories
-    });
-  }
-
-  selectedCategoryDescription(): string {
-    return buildSelectedCategoryDescription({
-      viewMode: this.viewMode,
-      selectedCategorySlug: this.selectedCategorySlug,
       catalogCategories: this.catalogCategories
     });
   }
@@ -952,7 +941,6 @@ export class ProductsPageComponent implements OnInit {
     this.selectedCategoryIds = [];
     this.selectedBrand = 'all';
     this.selectedBrandIds = [];
-    this.availabilityFilter = 'all';
     this.ratingFilter = 'all';
     this.minPrice = '';
     this.maxPrice = '';
@@ -962,7 +950,7 @@ export class ProductsPageComponent implements OnInit {
     this.refreshCatalogListing();
   }
 
-  handleActiveFilterRemoval(filter: 'selectedCategory' | 'selectedBrand' | 'price' | 'availabilityFilter' | 'ratingFilter'): void {
+  handleActiveFilterRemoval(filter: 'selectedCategory' | 'selectedBrand' | 'price' | 'ratingFilter'): void {
     switch (filter) {
       case 'selectedCategory':
         this.selectedCategorySlug = 'all';
@@ -975,9 +963,6 @@ export class ProductsPageComponent implements OnInit {
       case 'price':
         this.minPrice = '';
         this.maxPrice = '';
-        break;
-      case 'availabilityFilter':
-        this.availabilityFilter = 'all';
         break;
       case 'ratingFilter':
         this.ratingFilter = 'all';
@@ -1057,7 +1042,6 @@ export class ProductsPageComponent implements OnInit {
     return [
       this.sortBy !== 'relevance',
       this.selectedBrandIds.length > 0,
-      this.availabilityFilter !== 'all',
       this.ratingFilter !== 'all',
       this.minPrice !== '',
       this.maxPrice !== '',
@@ -1166,7 +1150,7 @@ export class ProductsPageComponent implements OnInit {
   private buildCatalogMessage(query: string): string {
     return buildCatalogMessage({
       query,
-      selectedCategorySlug: this.selectedCategorySlug,
+      selectedCategoryIds: this.selectedCategoryIds,
       totalProductCount: this.totalProductCount(),
       hasActiveFilters: this.hasActiveFilters(),
       landingCategoriesCount: this.landingCategories.length,

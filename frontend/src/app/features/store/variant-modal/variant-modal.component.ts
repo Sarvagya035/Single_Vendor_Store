@@ -281,7 +281,6 @@ export class VariantModalComponent implements OnChanges {
       return;
     }
 
-    console.log('MODAL CONFIRM CLICKED');
     this.addToCart.emit({
       productId: this.product._id,
       variantId: variant._id,

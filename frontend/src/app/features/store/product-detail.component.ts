@@ -299,13 +299,18 @@ export class ProductDetailComponent implements OnInit {
         this.product = productResponse?.data || null;
         this.reviews = reviews;
         this.reviewStats = reviewStats;
+        const catalogPayload = (catalogProducts?.data ?? {}) as
+          | CustomerCatalogProduct[]
+          | {
+              docs?: CustomerCatalogProduct[];
+            };
         this.relatedProducts = this.product
           ? this.findSimilarProducts(
               this.product,
-              Array.isArray(catalogProducts?.data?.docs)
-                ? catalogProducts.data.docs
-                : Array.isArray(catalogProducts?.data)
-                  ? catalogProducts.data
+              Array.isArray(catalogPayload)
+                ? catalogPayload
+                : Array.isArray(catalogPayload.docs)
+                  ? catalogPayload.docs
                   : [],
               Array.isArray(landingProducts?.data)
                 ? landingProducts.data
