@@ -65,8 +65,29 @@ interface GuestCartDisplayItem {
               {{ cart.alerts }}
             </div>
 
-            <div *ngIf="cartLoading" class="px-4 py-6 text-sm font-medium text-slate-500 sm:px-5 lg:px-6">
-              Loading cart...
+            <div *ngIf="cartLoading" class="grid gap-5 bg-[#fffdfa] px-4 py-6 sm:px-5 lg:grid-cols-[minmax(0,1.75fr)_360px] lg:px-6">
+              <div class="space-y-5">
+                <div *ngFor="let _ of cartSkeletonCards" class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                  <div class="flex flex-col gap-4 sm:flex-row">
+                    <div class="h-24 w-full animate-pulse rounded-[1.5rem] bg-slate-200/80 sm:h-28 sm:w-28"></div>
+                    <div class="min-w-0 flex-1 space-y-3">
+                      <div class="h-5 w-3/4 animate-pulse rounded-full bg-slate-200/80"></div>
+                      <div class="h-3 w-1/3 animate-pulse rounded-full bg-slate-200/80"></div>
+                      <div class="mt-4 h-12 w-40 animate-pulse rounded-xl bg-slate-200/80"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <aside class="space-y-5">
+                <div class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                  <div class="h-4 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
+                  <div class="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4">
+                    <div class="h-4 animate-pulse rounded-full bg-slate-200/80"></div>
+                    <div class="h-4 w-2/3 animate-pulse rounded-full bg-slate-200/80"></div>
+                  </div>
+                </div>
+              </aside>
             </div>
 
             <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] px-4 py-6 sm:px-5 lg:px-6">
@@ -199,8 +220,29 @@ interface GuestCartDisplayItem {
               </div>
             </div>
 
-            <div *ngIf="guestCartLoading" class="px-4 py-6 text-sm font-medium text-slate-500 sm:px-5 lg:px-6">
-              Loading saved items...
+            <div *ngIf="guestCartLoading" class="grid gap-5 bg-[#fffdfa] px-4 py-6 sm:px-5 lg:grid-cols-[minmax(0,1.75fr)_360px] lg:px-6">
+              <div class="space-y-5">
+                <div *ngFor="let _ of guestCartSkeletonCards" class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                  <div class="flex flex-col gap-4 sm:flex-row">
+                    <div class="h-24 w-full animate-pulse rounded-[1.5rem] bg-slate-200/80 sm:h-28 sm:w-28"></div>
+                    <div class="min-w-0 flex-1 space-y-3">
+                      <div class="h-5 w-3/4 animate-pulse rounded-full bg-slate-200/80"></div>
+                      <div class="h-3 w-1/3 animate-pulse rounded-full bg-slate-200/80"></div>
+                      <div class="mt-4 h-12 w-40 animate-pulse rounded-xl bg-slate-200/80"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <aside class="space-y-5">
+                <div class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                  <div class="h-4 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
+                  <div class="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4">
+                    <div class="h-4 animate-pulse rounded-full bg-slate-200/80"></div>
+                    <div class="h-4 w-2/3 animate-pulse rounded-full bg-slate-200/80"></div>
+                  </div>
+                </div>
+              </aside>
             </div>
 
             <div
@@ -349,6 +391,8 @@ export class CartComponent implements OnInit {
   guestCartLoading = false;
   guestCartMessage = '';
   guestCartItems: GuestCartDisplayItem[] = [];
+  readonly cartSkeletonCards = Array.from({ length: 2 });
+  readonly guestCartSkeletonCards = Array.from({ length: 2 });
   guestCartTotal = 0;
   private guestCartSource: Array<{ productId: string; variantId?: string; quantity: number }> = [];
 

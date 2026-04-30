@@ -44,8 +44,24 @@ interface GuestWishlistDisplayItem {
           </a>
         </div>
 
-        <div *ngIf="loading" class="py-16 text-center text-sm font-semibold text-slate-500">
-          Loading your wishlist...
+        <div *ngIf="loading" class="mt-8 grid gap-4">
+          <article *ngFor="let _ of wishlistSkeletonCards" class="overflow-hidden rounded-[1.4rem] border border-[#e7dac9] bg-[#fffaf5] shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+            <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
+              <div class="block shrink-0">
+                <div class="h-24 w-full overflow-hidden rounded-[1.2rem] bg-slate-200/80 sm:h-20 sm:w-20 animate-pulse"></div>
+              </div>
+
+              <div class="min-w-0 flex-1 space-y-3">
+                <div class="h-3 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
+                <div class="h-5 w-3/4 animate-pulse rounded-full bg-slate-200/80"></div>
+                <div class="h-4 w-1/2 animate-pulse rounded-full bg-slate-200/80"></div>
+                <div class="mt-2 flex gap-2">
+                  <div class="h-6 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
+                  <div class="h-6 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
+                </div>
+              </div>
+            </div>
+          </article>
         </div>
 
         <div *ngIf="!loading && wishlistItems.length === 0" class="py-16 text-center">
@@ -163,8 +179,24 @@ interface GuestWishlistDisplayItem {
               </div>
             </div>
 
-            <div *ngIf="guestWishlistLoading" class="py-16 text-center text-sm font-semibold text-slate-500">
-              Loading saved items...
+            <div *ngIf="guestWishlistLoading" class="mt-8 grid gap-4">
+              <article *ngFor="let _ of guestWishlistSkeletonCards" class="overflow-hidden rounded-[1.4rem] border border-[#e7dac9] bg-[#fffaf5] shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+                <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
+                  <div class="block shrink-0">
+                    <div class="h-24 w-full overflow-hidden rounded-[1.2rem] bg-slate-200/80 sm:h-20 sm:w-20 animate-pulse"></div>
+                  </div>
+
+                  <div class="min-w-0 flex-1 space-y-3">
+                    <div class="h-3 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
+                    <div class="h-5 w-3/4 animate-pulse rounded-full bg-slate-200/80"></div>
+                    <div class="h-4 w-1/2 animate-pulse rounded-full bg-slate-200/80"></div>
+                    <div class="mt-2 flex gap-2">
+                      <div class="h-6 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
+                      <div class="h-6 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
+                    </div>
+                  </div>
+                </div>
+              </article>
             </div>
 
             <div *ngIf="guestWishlistMessage" class="mt-4 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800">
@@ -271,6 +303,8 @@ export class WishlistComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   user: any = null;
   loading = true;
+  readonly wishlistSkeletonCards = Array.from({ length: 3 });
+  readonly guestWishlistSkeletonCards = Array.from({ length: 3 });
   busyId = '';
   moveBusyId = '';
   guestMoveModalBusyId = '';
@@ -474,6 +508,7 @@ export class WishlistComponent implements OnInit {
   }
 
   closeVariantModal(): void {
+    this.clearMoveBusyState();
     this.resetVariantModalState();
     this.variantModalOpen = false;
   }
@@ -586,7 +621,6 @@ export class WishlistComponent implements OnInit {
 
   private async moveWishlistItemToCart(product: CustomerCatalogProduct, variant: CustomerCatalogVariant, quantity: number): Promise<void> {
     if (!product?._id || !variant?._id) {
-      console.error('NO PRODUCT OR INVALID VARIANT', { product, variant });
       this.errorService.showToast('Please select a variant.', 'error');
       this.moveBusyId = '';
       return;
@@ -605,10 +639,9 @@ export class WishlistComponent implements OnInit {
       }
 
       this.errorService.showToast('Moved to cart successfully.', 'success');
+      await this.removeCustomerWishlistAfterMove(product._id);
       this.safeCloseVariantModal();
-      void this.removeCustomerWishlistAfterMove(product._id);
     } catch (error) {
-      console.error('CUSTOMER MOVE ERROR', error);
       this.errorService.showToast(
         this.errorService.extractErrorMessage(error) || 'Unable to move item to cart.',
         'error'
@@ -622,6 +655,7 @@ export class WishlistComponent implements OnInit {
 
   private safeCloseVariantModal(): void {
     try {
+      this.clearMoveBusyState();
       this.variantModalOpen = false;
     } catch {
       // Keep loading cleanup independent of modal close/view-transition issues.
@@ -700,6 +734,11 @@ export class WishlistComponent implements OnInit {
     this.modalMoveContext = null;
     this.selectedMoveProduct = null;
     this.selectedGuestMoveItem = null;
+    this.clearMoveBusyState();
+  }
+
+  private clearMoveBusyState(): void {
+    this.moveBusyId = '';
     this.guestMoveModalBusyId = '';
   }
 

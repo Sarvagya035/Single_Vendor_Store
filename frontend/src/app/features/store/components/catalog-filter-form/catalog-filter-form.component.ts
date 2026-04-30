@@ -122,6 +122,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
 
         <div *ngIf="categoryExpanded" class="mt-3 space-y-3">
           <input
+            *ngIf="!loadingFilters"
             [(ngModel)]="categorySearch"
             name="categorySearch"
             type="text"
@@ -129,7 +130,17 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
             class="w-full border-b border-slate-300 bg-transparent py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-amber-400"
           />
 
-          <div class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
+          <div *ngIf="loadingFilters" class="space-y-3">
+            <div class="h-8 w-2/3 animate-pulse rounded-md bg-slate-200/80"></div>
+            <div class="max-h-56 space-y-2 overflow-y-auto pr-1">
+              <div *ngFor="let _ of filterSkeletonRows" class="flex items-center gap-2 py-1.5">
+                <div class="h-4 w-4 animate-pulse rounded-[2px] bg-slate-200/80"></div>
+                <div class="h-4 flex-1 animate-pulse rounded-full bg-slate-200/80"></div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingFilters" class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
             <label class="flex items-center gap-2 py-1.5 text-sm text-slate-800">
               <input
                 type="checkbox"
@@ -181,6 +192,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
 
         <div *ngIf="brandExpanded" class="mt-3 space-y-3">
           <input
+            *ngIf="!loadingFilters"
             [(ngModel)]="brandSearch"
             name="brandSearch"
             type="text"
@@ -188,7 +200,17 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
             class="w-full border-b border-slate-300 bg-transparent py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-amber-400"
           />
 
-          <div class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
+          <div *ngIf="loadingFilters" class="space-y-3">
+            <div class="h-8 w-2/3 animate-pulse rounded-md bg-slate-200/80"></div>
+            <div class="max-h-56 space-y-2 overflow-y-auto pr-1">
+              <div *ngFor="let _ of filterSkeletonRows" class="flex items-center gap-2 py-1.5">
+                <div class="h-4 w-4 animate-pulse rounded-[2px] bg-slate-200/80"></div>
+                <div class="h-4 flex-1 animate-pulse rounded-full bg-slate-200/80"></div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingFilters" class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
             <label class="flex items-center gap-2 py-1.5 text-sm text-slate-800">
               <input
                 type="checkbox"
@@ -389,6 +411,7 @@ export class CatalogFilterFormComponent {
   @Input() brandOptions: string[] = [];
   @Input() sortOptions: Array<{ value: string; label: string }> = [];
   @Input() ratingOptions: Array<{ value: string; label: string }> = [];
+  @Input() loadingFilters = false;
   readonly priceOptions = [
     { label: 'Min', value: 0 },
     { label: '₹250', value: 250 },
@@ -421,6 +444,7 @@ export class CatalogFilterFormComponent {
     'h-5 w-full rounded-sm bg-slate-300/70'
   ];
   readonly priceTickMarks = Array.from({ length: 6 });
+  readonly filterSkeletonRows = Array.from({ length: 6 });
 
   private _resetToken = 0;
   categoryExpanded = true;

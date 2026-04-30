@@ -24,7 +24,15 @@ export class ErrorInterceptor implements HttpInterceptor {
           request.url.includes('/users/changePassword');
 
         if (!shouldSkipAuthErrorHandling) {
-          this.errorService.handleHttpError(error);
+          const message = this.errorService.extractErrorMessage(error);
+          const friendlyMessage =
+            error.status === 401
+              ? 'Your session has expired. Please sign in again.'
+              : error.status === 403
+                ? 'You do not have permission to perform this action.'
+                : message;
+
+          this.errorService.showToast(friendlyMessage || 'Something went wrong. Please try again.', 'error');
         }
 
         if (error.status === 401 && !shouldSkipAuthErrorHandling) {

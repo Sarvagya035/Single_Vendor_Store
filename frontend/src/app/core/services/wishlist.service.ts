@@ -2,10 +2,27 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
-import { CustomerWishlist } from '../models/customer.models';
+import { ApiResponse } from '../models/api-response.model';
+import { CustomerWishlist, CustomerWishlistProduct } from '../models/customer.models';
 
 const EMPTY_WISHLIST: CustomerWishlist = {
   products: []
+};
+
+type WishlistItem = CustomerWishlistProduct;
+
+interface WishlistResponsePayload {
+  _id?: string;
+  owner?: string;
+  products?: WishlistItem[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+type WishlistApiResponse = ApiResponse<WishlistResponsePayload | null>;
+
+const isWishlistPayload = (value: unknown): value is WishlistResponsePayload => {
+  return !!value && typeof value === 'object';
 };
 
 @Injectable({
@@ -24,15 +41,15 @@ export class WishlistService {
   }
 
   getWishlist(): Observable<CustomerWishlist> {
-    return this.api.get(`${this.wishlistUrl}/get-wishlist`).pipe(
-      map((response: any) => this.normalizeWishlist(response?.data)),
+    return this.api.get<WishlistApiResponse>(`${this.wishlistUrl}/get-wishlist`).pipe(
+      map((response) => this.normalizeWishlist(response?.data)),
       tap((wishlist) => this.wishlistSubject.next(wishlist))
     );
   }
 
   toggleWishlist(productId: string): Observable<CustomerWishlist> {
-    return this.api.post(`${this.wishlistUrl}/toggle/${productId}`, {}).pipe(
-      map((response: any) => this.normalizeWishlist(response?.data)),
+    return this.api.post<WishlistApiResponse>(`${this.wishlistUrl}/toggle/${productId}`, {}).pipe(
+      map((response) => this.normalizeWishlist(response?.data)),
       tap((wishlist) => this.wishlistSubject.next(wishlist))
     );
   }
@@ -41,13 +58,15 @@ export class WishlistService {
     this.wishlistSubject.next(EMPTY_WISHLIST);
   }
 
-  private normalizeWishlist(payload: any): CustomerWishlist {
+  private normalizeWishlist(payload: unknown): CustomerWishlist {
+    const normalizedPayload = isWishlistPayload(payload) ? payload : {};
+
     return {
-      _id: payload?._id,
-      owner: payload?.owner,
-      products: Array.isArray(payload?.products) ? payload.products : [],
-      createdAt: payload?.createdAt,
-      updatedAt: payload?.updatedAt
+      _id: normalizedPayload._id,
+      owner: normalizedPayload.owner,
+      products: Array.isArray(normalizedPayload.products) ? normalizedPayload.products : [],
+      createdAt: normalizedPayload.createdAt,
+      updatedAt: normalizedPayload.updatedAt
     };
   }
 }

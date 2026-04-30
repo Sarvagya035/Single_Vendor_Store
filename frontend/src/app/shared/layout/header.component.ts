@@ -242,15 +242,19 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
         </div>
       </nav>
 
-      <app-header-mobile-menu
-        [open]="isMenuOpen"
-        [loggedIn]="!!user"
-        [isAdmin]="isAdmin()"
-        [isVendor]="isVendor() || isAdmin()"
-        [showPublicNavLinks]="showPublicNavLinks()"
-        (close)="closeMobileMenu()"
-        (logout)="onMobileLogout()"
-      />
+      @defer (on idle) {
+        <app-header-mobile-menu
+          [open]="isMenuOpen"
+          [loggedIn]="!!user"
+          [isAdmin]="isAdmin()"
+          [isVendor]="isVendor() || isAdmin()"
+          [showPublicNavLinks]="showPublicNavLinks()"
+          (close)="closeMobileMenu()"
+          (logout)="onMobileLogout()"
+        />
+      } @placeholder {
+        <ng-container></ng-container>
+      }
       <div *ngIf="isNavigating" class="pointer-events-none border-b border-[#e7dac9] bg-white/75 px-4 py-3 backdrop-blur">
         <div class="header-shell px-0">
           <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
@@ -565,7 +569,6 @@ export class HeaderComponent implements OnInit {
         this.wishlistService.resetWishlist();
         this.authService.clearCurrentUser();
         this.syncGuestCounts();
-        console.error('Logout failed', err);
       }
     });
   }

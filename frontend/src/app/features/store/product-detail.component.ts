@@ -59,6 +59,25 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
             {{ successMessage }}
           </div>
 
+          <div *ngIf="loading" class="mt-6 space-y-6">
+            <div class="grid gap-6 rounded-[2rem] border border-[#eadcc9] bg-white/90 p-4 shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:p-6">
+              <div class="space-y-4">
+                <div class="aspect-square rounded-[1.8rem] bg-slate-200/80 animate-pulse"></div>
+                <div class="grid grid-cols-4 gap-3">
+                  <div *ngFor="let _ of detailSkeletonTiles" class="aspect-square rounded-[1rem] bg-slate-200/80 animate-pulse"></div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div class="h-4 w-24 rounded-full bg-slate-200/80 animate-pulse"></div>
+                <div class="h-10 w-4/5 rounded-full bg-slate-200/80 animate-pulse"></div>
+                <div class="h-4 w-2/3 rounded-full bg-slate-200/80 animate-pulse"></div>
+                <div class="h-28 rounded-[1.5rem] bg-slate-200/80 animate-pulse"></div>
+                <div class="h-12 rounded-[1.5rem] bg-slate-200/80 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
           <ng-container *ngIf="product && !loading">
             <div class="mt-0 rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-tight shadow-[0_24px_60px_rgba(47,27,20,0.08)]">
               <div class="grid gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:gap-8">
@@ -217,6 +236,7 @@ export class ProductDetailComponent implements OnInit {
     rating: 5,
     reviewImages: []
   };
+  readonly detailSkeletonTiles = Array.from({ length: 4 });
   @ViewChild('reviewFormSection') reviewFormSection?: ElementRef<HTMLElement>;
   @ViewChild(ProductReviewFormComponent) reviewFormComponent?: ProductReviewFormComponent;
 
