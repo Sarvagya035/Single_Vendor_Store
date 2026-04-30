@@ -42,9 +42,9 @@ import {
       </div>
 
       <section class="relative w-full pb-5">
-        <div class="mx-auto grid w-full max-w-[1560px] grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
-          <aside class="hidden h-full min-w-0 self-start bg-[#fffaf3] p-0 lg:sticky lg:top-[124px] lg:block lg:border-r lg:border-slate-200">
-            <div class="p-4 sm:p-5 lg:pr-6">
+        <div class="grid w-full grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+          <aside class="hidden h-full min-w-0 self-start -ml-px bg-[#fffaf3] p-0 lg:sticky lg:top-[124px] lg:block lg:border-r lg:border-slate-200">
+            <div class="px-6 py-6">
               <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <div>
                   <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-600">Filters</p>

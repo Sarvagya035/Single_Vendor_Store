@@ -12,7 +12,7 @@ import { ErrorService } from '../../core/services/error.service';
       <div class="pointer-events-none absolute left-0 top-0 h-80 w-80 rounded-full bg-[#f5e6d3]/70 blur-[120px]"></div>
       <div class="pointer-events-none absolute right-0 top-16 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
-      <section class="storefront-section py-14 sm:py-16 lg:py-20">
+      <section class="storefront-section pt-6 pb-14 sm:pt-8 sm:pb-16 lg:pt-10 lg:pb-20">
         <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
           <div class="mx-auto max-w-3xl text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8b5e3c]">Bulk Order Inquiry</p>

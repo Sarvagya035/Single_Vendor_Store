@@ -249,9 +249,6 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
           <div class="space-y-2">
             <div class="flex items-end gap-1.5">
               <div class="flex-1 space-y-1.5">
-                <div class="grid grid-cols-6 gap-1">
-                  <span *ngFor="let bar of priceHistogramBars" [class]="bar"></span>
-                </div>
                 <div class="relative h-8">
                   <div class="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-200"></div>
                   <div class="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-amber-400" [ngStyle]="priceTrackFillStyle()"></div>
