@@ -9,7 +9,7 @@ import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
 import { CustomerAddress, CustomerCart } from '../../core/models/customer.models';
 import { OrderCheckoutPayload } from '../../core/models/order.models';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.production';
 
 const EMPTY_CART: CustomerCart = {
   cartItems: [],
@@ -333,7 +333,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
 
         const razorpay = new RazorpayCheckout({
-          key: environment.razorpayKey,
+          key: environment.razorpayKeyId,
           amount: razorOrder.amount,
           currency: razorOrder.currency,
           name: 'E-Commerce',
