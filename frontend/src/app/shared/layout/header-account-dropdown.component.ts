@@ -36,7 +36,7 @@ type HeaderDropdownTheme = 'customer' | 'vendor' | 'admin';
           </div>
           <span
             *ngIf="theme === 'customer' && desktop"
-            class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-amber-400"
+            class="absolute -bottom-0.5 -right-0.5 z-20 h-2.5 w-2.5 rounded-full border-2 border-white bg-amber-400"
           ></span>
         </div>
 
@@ -141,7 +141,7 @@ export class HeaderAccountDropdownComponent {
   avatarClasses(): string {
     if (this.desktop) {
       const desktopClasses: Record<HeaderDropdownTheme, string> = {
-        customer: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase text-white ring-2 ring-[#fff4e6]',
+        customer: 'relative z-10 flex h-11 w-11 items-center justify-center rounded-full bg-[#fff3e8] text-sm font-bold leading-none uppercase text-[#8a4f2a] ring-2 ring-[#fff4e6]',
         vendor: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white ring-2 ring-white',
         admin: 'flex h-11 w-11 items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white ring-2 ring-white'
       };
@@ -149,7 +149,7 @@ export class HeaderAccountDropdownComponent {
     }
 
     const mobileClasses: Record<HeaderDropdownTheme, string> = {
-      customer: 'flex h-full w-full items-center justify-center rounded-full text-xs font-black uppercase text-white',
+      customer: 'relative z-10 flex h-full w-full items-center justify-center rounded-full bg-[#fff3e8] text-sm font-bold leading-none uppercase text-[#8a4f2a]',
       vendor: 'flex h-full w-full items-center justify-center rounded-full text-xs font-black uppercase tracking-[0.12em] text-white',
       admin: 'flex h-full w-full items-center justify-center rounded-full text-xs font-black uppercase tracking-[0.12em] text-white'
     };
@@ -168,7 +168,7 @@ export class HeaderAccountDropdownComponent {
   heroAvatarClasses(): string {
     const size = this.desktop ? 'h-12 w-12' : 'h-11 w-11';
     const tone: Record<HeaderDropdownTheme, string> = {
-      customer: `flex ${size} items-center justify-center rounded-full text-sm font-black uppercase text-white`,
+      customer: `relative z-10 flex ${size} items-center justify-center rounded-full bg-[#fff3e8] text-sm font-bold leading-none uppercase text-[#8a4f2a]`,
       vendor: `flex ${size} items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white`,
       admin: `flex ${size} items-center justify-center rounded-full text-sm font-black uppercase tracking-[0.12em] text-white`
     };
