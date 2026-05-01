@@ -338,6 +338,22 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'bulk-inquiries',
+        canActivate: [AuthGuard, RoleGuard],
+        data: { roles: ['vendor', 'Vendor', 'admin', 'Admin'] },
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/admin/bulk-inquiries/admin-bulk-inquiries-page.component').then(
+                (m) => m.AdminBulkInquiriesPageComponent
+              )
+          }
+        ]
+      },
+      {
         path: 'shipments',
         canActivate: [AuthGuard, RoleGuard],
         data: { roles: ['vendor', 'Vendor', 'admin', 'Admin'] },

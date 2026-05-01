@@ -15,6 +15,7 @@ import cartRouter from "./routes/cart.routes.js"
 import orderRouter from "./routes/order.routes.js"
 import commentRouter from "./routes/comment.routes.js"
 import wishlistRouter from "./routes/wishlist.routes.js"
+import bulkInquiryRouter from "./routes/bulkInquiry.routes.js"
 
 const app = express()
 
@@ -88,6 +89,7 @@ app.use("/api/v1/cart", cartRouter)
 app.use("/api/v1/orders", orderRouter)
 app.use("/api/v1/comments", commentRouter)
 app.use("/api/v1/wishlist", wishlistRouter)
+app.use("/api/v1/bulk-inquiries", bulkInquiryRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)

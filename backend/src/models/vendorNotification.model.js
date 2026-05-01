@@ -10,8 +10,18 @@ const vendorNotificationSchema = new Schema(
         },
         type: {
             type: String,
-            enum: ["low_stock"],
+            enum: ["low_stock", "bulk_inquiry"],
             default: "low_stock",
+            index: true
+        },
+        referenceType: {
+            type: String,
+            trim: true,
+            default: ""
+        },
+        referenceId: {
+            type: Schema.Types.ObjectId,
+            default: null,
             index: true
         },
         title: {
@@ -33,27 +43,24 @@ const vendorNotificationSchema = new Schema(
         productId: {
             type: Schema.Types.ObjectId,
             ref: "Product",
-            required: true,
+            default: null,
             index: true
         },
         variantId: {
             type: Schema.Types.ObjectId,
-            required: true,
+            default: null,
             index: true
         },
         productName: {
             type: String,
-            required: true,
             trim: true
         },
         variantLabel: {
             type: String,
-            required: true,
             trim: true
         },
         currentStock: {
             type: Number,
-            required: true,
             min: 0
         },
         stockThreshold: {
@@ -93,7 +100,18 @@ const vendorNotificationSchema = new Schema(
 
 vendorNotificationSchema.index(
     { vendor: 1, productId: 1, variantId: 1, type: 1 },
-    { unique: true }
+    {
+        unique: true,
+        partialFilterExpression: { type: "low_stock" }
+    }
+);
+
+vendorNotificationSchema.index(
+    { vendor: 1, referenceType: 1, referenceId: 1, type: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { type: "bulk_inquiry" }
+    }
 );
 
 export const VendorNotification = mongoose.model("VendorNotification", vendorNotificationSchema);

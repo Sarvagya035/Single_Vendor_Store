@@ -22,6 +22,7 @@ export type VendorDashboardView =
   | 'categories'
   | 'customers'
   | 'notifications'
+  | 'bulk-inquiries'
   | 'shipments'
   | 'best-selling-products';
 export type ReportRange = 'weekly' | 'monthly' | 'custom';
@@ -164,28 +165,34 @@ export interface VendorAnalyticsPayload {
   productWiseSales: VendorProductSaleRecord[];
 }
 
-export type VendorNotificationType = 'low_stock';
+export type VendorNotificationType = 'low_stock' | 'bulk_inquiry';
 export type VendorNotificationPriority = 'low' | 'medium' | 'high';
 
 export interface VendorNotificationRecord {
   _id?: string;
   vendor?: string;
   type: VendorNotificationType;
+  referenceType?: string;
+  referenceId?: string;
   title: string;
   message: string;
   priority: VendorNotificationPriority;
-  productId: string;
-  variantId: string;
-  productName: string;
-  variantLabel: string;
-  currentStock: number;
-  stockThreshold: number;
+  productId?: string;
+  variantId?: string;
+  productName?: string;
+  variantLabel?: string;
+  currentStock?: number;
+  stockThreshold?: number;
   actionLink?: string;
   isRead: boolean;
   readAt?: string;
   isResolved: boolean;
   resolvedAt?: string;
   isLowStock?: boolean;
+  fullName?: string;
+  businessName?: string;
+  orderType?: string;
+  city?: string;
   createdAt?: string;
   updatedAt?: string;
 }

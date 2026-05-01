@@ -127,18 +127,35 @@ type NotificationFilter = 'all' | 'unread' | 'active';
                 <p class="mt-3 text-sm font-medium text-slate-600">{{ notification.message }}</p>
 
                 <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                    <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Product</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ notification.productName }}</p>
-                  </div>
-                  <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                    <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Variant</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ notification.variantLabel }}</p>
-                  </div>
-                  <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                    <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ notification.currentStock }} / {{ notification.stockThreshold }}</p>
-                  </div>
+                  <ng-container *ngIf="notification.type === 'bulk_inquiry'; else lowStockCards">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Customer</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ notification.businessName || notification.fullName || 'Customer' }}</p>
+                    </div>
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Inquiry Type</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ notification.orderType || 'Bulk inquiry' }}</p>
+                    </div>
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">City</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ notification.city || 'Not provided' }}</p>
+                    </div>
+                  </ng-container>
+
+                  <ng-template #lowStockCards>
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Product</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ notification.productName }}</p>
+                    </div>
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Variant</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ notification.variantLabel }}</p>
+                    </div>
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ notification.currentStock }} / {{ notification.stockThreshold }}</p>
+                    </div>
+                  </ng-template>
                 </div>
 
                 <p class="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
@@ -151,7 +168,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
                   [routerLink]="resolveActionLink(notification)"
                   class="btn-primary w-full !px-5 !py-3 text-center sm:w-auto"
                 >
-                  Restock now
+                  {{ notification.type === 'bulk_inquiry' ? 'View inquiry' : 'Restock now' }}
                 </a>
                 <button
                   type="button"
@@ -290,6 +307,10 @@ export class VendorNotificationsPageComponent implements OnInit {
   resolveActionLink(notification: VendorNotificationRecord): string {
     if (notification.actionLink) {
       return notification.actionLink;
+    }
+
+    if (notification.type === 'bulk_inquiry') {
+      return '/vendor/bulk-inquiries';
     }
 
     return `/vendor/products/${notification.productId}/restock`;

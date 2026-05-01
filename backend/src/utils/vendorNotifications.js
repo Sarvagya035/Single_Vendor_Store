@@ -197,10 +197,87 @@ const syncLowStockNotificationsForVendor = async (vendorInput) => {
     return notifications;
 };
 
+const buildBulkInquiryNotificationPayload = (inquiry) => {
+    const customerName = String(inquiry?.businessName || inquiry?.fullName || "Unknown").trim();
+    const orderType = String(inquiry?.orderType || "bulk inquiry").trim();
+    const city = String(inquiry?.city || "").trim();
+
+    return {
+        title: "New Bulk Order Inquiry",
+        message: `${customerName} submitted a ${orderType.toLowerCase()} inquiry${city ? ` from ${city}` : ""}.`,
+        priority: "medium",
+        actionLink: "/vendor/bulk-inquiries",
+        metadata: {
+            fullName: String(inquiry?.fullName || "").trim(),
+            businessName: String(inquiry?.businessName || "").trim(),
+            orderType,
+            city,
+            inquiryId: inquiry?._id?.toString?.() || String(inquiry?._id || "")
+        }
+    };
+};
+
+const createOrUpdateBulkInquiryNotifications = async (inquiry) => {
+    if (!inquiry?._id) {
+        return [];
+    }
+
+    const vendors = await Vendor.find({}).select("_id");
+
+    if (!vendors.length) {
+        return [];
+    }
+
+    const payload = buildBulkInquiryNotificationPayload(inquiry);
+
+    const results = await Promise.allSettled(
+        vendors.map((vendor) =>
+            VendorNotification.findOneAndUpdate(
+                {
+                    vendor: vendor._id,
+                    type: "bulk_inquiry",
+                    referenceType: "bulkInquiry",
+                    referenceId: inquiry._id
+                },
+                {
+                    $set: {
+                        type: "bulk_inquiry",
+                        referenceType: "bulkInquiry",
+                        referenceId: inquiry._id,
+                        title: payload.title,
+                        message: payload.message,
+                        priority: payload.priority,
+                        actionLink: payload.actionLink,
+                        productId: null,
+                        variantId: null,
+                        productName: payload.metadata.businessName || payload.metadata.fullName || "",
+                        variantLabel: payload.metadata.orderType || "",
+                        currentStock: 0,
+                        stockThreshold: 0,
+                        isRead: false,
+                        readAt: null,
+                        isResolved: false,
+                        resolvedAt: null,
+                        metadata: payload.metadata
+                    }
+                },
+                {
+                    upsert: true,
+                    new: true,
+                    setDefaultsOnInsert: true
+                }
+            )
+        )
+    );
+
+    return results;
+};
+
 export {
     LOW_STOCK_THRESHOLD,
     buildVariantLabel,
     createOrUpdateLowStockNotification,
     syncLowStockNotificationsForProduct,
-    syncLowStockNotificationsForVendor
+    syncLowStockNotificationsForVendor,
+    createOrUpdateBulkInquiryNotifications
 };

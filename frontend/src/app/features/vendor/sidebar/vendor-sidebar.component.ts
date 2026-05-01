@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { VendorDashboardView } from '../../../core/models/vendor.models';
 
-type VendorSidebarIcon = 'dashboard' | 'trend' | 'box' | 'categories' | 'customers' | 'orders' | 'shipments';
+type VendorSidebarIcon = 'dashboard' | 'trend' | 'box' | 'categories' | 'customers' | 'orders' | 'shipments' | 'inquiry';
 
 interface VendorSidebarItem {
   label: string;
@@ -26,7 +26,7 @@ interface VendorSidebarItem {
   template: `
     <nav class="flex h-full flex-col gap-2">
           @for (item of sidebarItems; track item.view) {
-            @if (item.view !== 'shipments' || showShipments) {
+            @if ((item.view !== 'shipments' || showShipments) && (item.view !== 'bulk-inquiries' || showBulkInquiries)) {
               <a
                 [routerLink]="item.link"
                 class="flex w-full min-w-0 items-center justify-between rounded-2xl border px-3 py-3 text-left transition-all"
@@ -93,6 +93,13 @@ interface VendorSidebarItem {
                           <circle cx="17" cy="18" r="1.5" />
                         </svg>
                       }
+                      @case ('inquiry') {
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                          <path d="M4 5h16v11H7l-3 3z" />
+                          <path d="M8 9h8" />
+                          <path d="M8 12h5" />
+                        </svg>
+                      }
                     }
                   </span>
 
@@ -117,7 +124,9 @@ export class VendorSidebarComponent {
   @Input() customerCount = 0;
   @Input() orderCount = 0;
   @Input() shipmentCount = 0;
+  @Input() bulkInquiryCount = 0;
   @Input() showShipments = false;
+  @Input() showBulkInquiries = false;
   @Output() closeMobile = new EventEmitter<void>();
 
   get sidebarItems(): VendorSidebarItem[] {
@@ -175,6 +184,15 @@ export class VendorSidebarComponent {
         inactiveClasses: 'border-transparent bg-[#fffdf6] text-slate-800 hover:border-[#ead9bf] hover:bg-[#fff8eb]'
       },
       {
+        label: 'Bulk Inquiries',
+        link: '/vendor/bulk-inquiries',
+        view: 'bulk-inquiries',
+        icon: 'inquiry',
+        count: this.bulkInquiryCount,
+        activeClasses: 'border-[#e9d3bb] bg-[#fdf4dd] text-[#6f4e37] shadow-sm',
+        inactiveClasses: 'border-transparent bg-[#fffdf6] text-slate-800 hover:border-[#ead9bf] hover:bg-[#fff8eb]'
+      },
+      {
         label: 'Shipments',
         link: '/vendor/shipments',
         view: 'shipments',
@@ -186,4 +204,3 @@ export class VendorSidebarComponent {
     ];
   }
 }
-
