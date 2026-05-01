@@ -333,7 +333,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
 
         const razorpay = new RazorpayCheckout({
-          key: environment.razorpayKeyId,
+          key: environment.razorpayKey,
           amount: razorOrder.amount,
           currency: razorOrder.currency,
           name: 'E-Commerce',
