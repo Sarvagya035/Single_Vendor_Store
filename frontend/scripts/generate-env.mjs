@@ -64,7 +64,7 @@ const fileValues = fs.existsSync(envPath)
 const productionValue = getEnvValue(fileValues, 'FRONTEND_PRODUCTION') || defaults.FRONTEND_PRODUCTION;
 const isProduction = productionValue === 'true';
 const apiUrl = getEnvValue(fileValues, 'FRONTEND_API_URL');
-const razorpayKeyId = getEnvValue(fileValues, 'FRONTEND_RAZORPAY_KEY_ID');
+const razorpayKey = getEnvValue(fileValues, 'FRONTEND_RAZORPAY_KEY_ID');
 
 if (isProduction) {
   const missingKeys = [];
@@ -73,7 +73,7 @@ if (isProduction) {
     missingKeys.push('FRONTEND_API_URL');
   }
 
-  if (!razorpayKeyId) {
+  if (!razorpayKey) {
     missingKeys.push('FRONTEND_RAZORPAY_KEY_ID');
   }
 
@@ -88,13 +88,13 @@ if (isProduction) {
 const config = {
   production: isProduction,
   apiUrl: isProduction ? apiUrl : apiUrl || defaults.FRONTEND_API_URL,
-  razorpayKeyId: isProduction ? razorpayKeyId : razorpayKeyId || defaults.FRONTEND_RAZORPAY_KEY_ID
+  razorpayKey: isProduction ? razorpayKey : razorpayKey || defaults.FRONTEND_RAZORPAY_KEY_ID
 };
 
 const environmentSource = `export const environment = {
   production: ${config.production},
   apiUrl: '${config.apiUrl}',
-  razorpayKeyId: '${config.razorpayKeyId}'
+  razorpayKey: '${config.razorpayKey}'
 };
 `;
 
