@@ -160,7 +160,7 @@ interface GuestWishlistDisplayItem {
       [open]="variantModalOpen"
       [product]="selectedMoveProduct || selectedGuestMoveItem?.product || null"
       [initialVariantId]="selectedGuestMoveItem?.variantId || ''"
-      [isAdding]="moveBusyId === (selectedMoveProduct?._id || '') || guestMoveModalBusyId === (selectedGuestMoveItem?.productId || '')"
+      [isAdding]="isMovingToCart"
       (close)="closeVariantModal()"
       (addToCart)="handleVariantModalAddToCart($event)"
     />
@@ -308,6 +308,7 @@ export class WishlistComponent implements OnInit {
   busyId = '';
   moveBusyId = '';
   guestMoveModalBusyId = '';
+  isMovingToCart = false;
   modalMoveContext: 'guest' | 'customer' | null = null;
   wishlist: CustomerWishlist | null = null;
   wishlistItems: CustomerWishlistProduct[] = [];
@@ -443,6 +444,7 @@ export class WishlistComponent implements OnInit {
       this.selectedMoveProduct = product;
       this.selectedGuestMoveItem = null;
       this.modalMoveContext = 'customer';
+      this.isMovingToCart = false;
       this.variantModalOpen = true;
       return;
     }
@@ -509,6 +511,7 @@ export class WishlistComponent implements OnInit {
 
   closeVariantModal(): void {
     this.clearMoveBusyState();
+    this.isMovingToCart = false;
     this.resetVariantModalState();
     this.variantModalOpen = false;
   }
@@ -531,6 +534,7 @@ export class WishlistComponent implements OnInit {
         this.selectedGuestMoveItem = { ...item, product };
         this.selectedMoveProduct = product;
         this.modalMoveContext = 'guest';
+        this.isMovingToCart = false;
         this.variantModalOpen = true;
         this.moveBusyId = '';
         return;
@@ -623,10 +627,12 @@ export class WishlistComponent implements OnInit {
     if (!product?._id || !variant?._id) {
       this.errorService.showToast('Please select a variant.', 'error');
       this.moveBusyId = '';
+      this.isMovingToCart = false;
       return;
     }
 
     this.moveBusyId = product._id;
+    this.isMovingToCart = true;
     try {
       const result = await firstValueFrom(this.cartService.addToCart(product._id, variant._id, quantity));
 
@@ -650,12 +656,14 @@ export class WishlistComponent implements OnInit {
     } finally {
       this.resetVariantModalState();
       this.moveBusyId = '';
+      this.isMovingToCart = false;
     }
   }
 
   private safeCloseVariantModal(): void {
     try {
       this.clearMoveBusyState();
+      this.isMovingToCart = false;
       this.variantModalOpen = false;
     } catch {
       // Keep loading cleanup independent of modal close/view-transition issues.
@@ -694,6 +702,7 @@ export class WishlistComponent implements OnInit {
 
     if (loadingTarget === 'modal') {
       this.guestMoveModalBusyId = item.productId;
+      this.isMovingToCart = true;
     } else {
       this.moveBusyId = item.productId;
     }
@@ -723,6 +732,7 @@ export class WishlistComponent implements OnInit {
     } finally {
       if (loadingTarget === 'modal') {
         this.guestMoveModalBusyId = '';
+        this.isMovingToCart = false;
       } else {
         this.moveBusyId = '';
       }
@@ -735,6 +745,7 @@ export class WishlistComponent implements OnInit {
     this.selectedMoveProduct = null;
     this.selectedGuestMoveItem = null;
     this.clearMoveBusyState();
+    this.isMovingToCart = false;
   }
 
   private clearMoveBusyState(): void {
