@@ -107,3 +107,5 @@ export interface StoreOrdersResponse {
   orders: OrderRecord[];
   totalRevenue: number;
 }
+
+export type AdminOrdersResponse = StoreOrdersResponse;

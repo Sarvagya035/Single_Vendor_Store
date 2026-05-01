@@ -8,7 +8,8 @@ import {
     getVendorOrders,
     getCustomerOrdersForVendor,
     updateOrderStatus,
-    getAllOrders
+    getAllOrders,
+    deleteOrderByAdmin
 
 } from "../controllers/order.controller.js";
 import {
@@ -36,8 +37,9 @@ router.route("/shipment/:orderId/sync").post(authorizeRoles("admin"), syncShipme
 
 router.route("/vendor-orders").get(authorizeRoles("vendor"), getVendorOrders);
 router.route("/vendor/customer/:customerId").get(authorizeRoles("vendor", "admin"), getCustomerOrdersForVendor);
-router.route("/vendor-update-status/:orderId").put(authorizeRoles("vendor"), updateOrderStatus);
+router.route("/vendor-update-status/:orderId").put(authorizeRoles("vendor", "admin"), updateOrderStatus);
 
-router.route("/admin/all-orders").get(authorizeRoles("vendor"), getAllOrders);
+router.route("/admin/all-orders").get(authorizeRoles("vendor", "admin"), getAllOrders);
+router.route("/admin/orders/:orderId").delete(authorizeRoles("vendor", "admin"), deleteOrderByAdmin);
 
 export default router;  

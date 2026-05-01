@@ -59,6 +59,17 @@ const getUserRoles = (user) => {
     return Array.isArray(user.role) ? user.role : [user.role];
 };
 
+const restoreStockForOrderItems = async (orderItems = []) => {
+    for (const item of orderItems) {
+        await Product.updateOne(
+            { _id: item.product, "variants._id": item.variantId },
+            { $inc: { "variants.$.productStock": item.quantity } }
+        );
+
+        await syncLowStockNotificationsForProduct(item.product);
+    }
+};
+
 const cleanupExpiredPendingOrders = async (userId) => {
     const cutoff = new Date(Date.now() - PENDING_ORDER_EXPIRY_MS);
 
@@ -328,6 +339,29 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
             cloneOrderWithItems(order, filteredItems),
             `Order item status updated to ${status}`
         )
+    );
+});
+
+const deleteOrderByAdmin = asyncHandler(async (req, res) => {
+    const { orderId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        throw new ApiError(400, "Invalid order id.");
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+        throw new ApiError(404, "Order not found");
+    }
+
+    if (order.paymentInfo?.status === "Paid" && order.orderStatus !== "Delivered") {
+        await restoreStockForOrderItems(order.orderItems);
+    }
+
+    await Order.deleteOne({ _id: order._id });
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Order deleted successfully")
     );
 });
 
@@ -624,5 +658,6 @@ export {
     getVendorOrders,
     getCustomerOrdersForVendor,
     getAllOrders,
+    deleteOrderByAdmin,
     
 }

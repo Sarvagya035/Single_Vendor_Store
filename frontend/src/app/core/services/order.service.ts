@@ -3,6 +3,7 @@ import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   CheckoutResponseData,
+  AdminOrdersResponse,
   OrderCheckoutPayload,
   OrderItemRecord,
   OrderRecord,
@@ -78,13 +79,20 @@ export class OrderService {
   }
 
   updateVendorOrderStatus(orderId: string, orderItemId: string, status: string): Observable<OrderApiResponse<unknown>> {
-    return this.api.put(
+    return this.api.put<OrderApiResponse<unknown>>(
       `${this.orderUrl}/vendor-update-status/${orderId}`,
       { orderItemId, status }
     );
   }
 
-  getAdminOrders(): Observable<StoreOrdersResponse> {
+  updateOrderStatus(orderId: string, orderItemId: string, status: string): Observable<OrderApiResponse<unknown>> {
+    return this.api.put<OrderApiResponse<unknown>>(
+      `${this.orderUrl}/vendor-update-status/${orderId}`,
+      { orderItemId, status }
+    );
+  }
+
+  getAdminOrders(): Observable<AdminOrdersResponse> {
     return this.api
       .get<OrderApiResponse<unknown>>(`${this.orderUrl}/admin/all-orders`)
       .pipe(
@@ -99,6 +107,10 @@ export class OrderService {
           };
         })
       );
+  }
+
+  deleteOrderByAdmin(orderId: string): Observable<OrderApiResponse<unknown>> {
+    return this.api.delete<OrderApiResponse<unknown>>(`${this.orderUrl}/admin/orders/${orderId}`);
   }
 
   private normalizeOrderList(payload: unknown): OrderRecord[] {
