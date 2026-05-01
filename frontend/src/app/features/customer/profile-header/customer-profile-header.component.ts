@@ -23,7 +23,7 @@ import { CustomerVendorProfile } from '../../../core/models/customer.models';
             {{ isAdmin || isVendor ? 'Store Account' : 'Customer Account' }}
           </div>
 
-          <a *ngIf="isAdmin || isVendor" routerLink="/vendor/dashboard" class="btn-secondary !py-3 border-amber-100 bg-[#fff7ed]/70 text-amber-800">
+          <a *ngIf="isAdmin || isVendor" routerLink="/vendor/dashboard" class="btn-secondary border-amber-100 bg-[#fff7ed]/70 text-amber-800 !py-3">
             Store Dashboard
           </a>
           <div *ngIf="vendorProfile?.verificationStatus === 'pending'" class="flex items-center gap-2 rounded-xl border border-amber-100 bg-[#fff7ed]/70 px-4 py-3 text-xs font-medium text-amber-700">

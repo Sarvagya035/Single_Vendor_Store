@@ -38,8 +38,8 @@ interface DashboardProduct {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <section class="vendor-page vendor-container">
-      <div class="vendor-dashboard-section border-b border-slate-200">
+    <section class="vendor-page app-panel">
+      <div class="vendor-dashboard-section border-b border-[#eee2d4]">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div class="min-w-0">
             <p class="app-page-eyebrow">Dashboard</p>
@@ -54,7 +54,7 @@ interface DashboardProduct {
         </div>
       </div>
 
-      <div class="vendor-dashboard-section border-b border-slate-200">
+      <div class="vendor-dashboard-section border-b border-[#eee2d4]">
         <div class="vendor-dashboard-grid">
           <article *ngFor="let metric of metrics" class="vendor-stat-card transition hover:-translate-y-0.5" [ngClass]="metricCardClass(metric.tone)">
             <p class="vendor-stat-label">{{ metric.label }}</p>
@@ -64,7 +64,7 @@ interface DashboardProduct {
         </div>
       </div>
 
-      <div class="vendor-dashboard-section border-t border-slate-200">
+      <div class="vendor-dashboard-section border-t border-[#eee2d4]">
         <div class="vendor-section-head">
           <p class="vendor-stat-label">Reports</p>
           <h2 class="vendor-panel-title">Download Sales Reports</h2>
@@ -82,23 +82,23 @@ interface DashboardProduct {
               </p>
             </div>
 
-            <div class="grid gap-3 sm:grid-cols-2">
-              <button type="button" class="min-h-[5.5rem] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-amber-200 hover:bg-[#fffaf4]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('weekly', 'csv')">
+          <div class="grid gap-3 sm:grid-cols-2">
+              <button type="button" class="min-h-[5.5rem] rounded-[1.5rem] border border-[#e7dac9] bg-white px-4 py-4 text-left transition hover:border-amber-200 hover:bg-[#fffaf4]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('weekly', 'csv')">
                 <span class="block text-sm font-black text-slate-900">Weekly CSV</span>
                 <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Spreadsheet</span>
               </button>
 
-              <button type="button" class="min-h-[5.5rem] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-[#e7dac9] hover:bg-[#fef6eb]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('weekly', 'pdf')">
+              <button type="button" class="min-h-[5.5rem] rounded-[1.5rem] border border-[#e7dac9] bg-white px-4 py-4 text-left transition hover:border-[#e7dac9] hover:bg-[#fef6eb]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('weekly', 'pdf')">
                 <span class="block text-sm font-black text-slate-900">Weekly PDF</span>
                 <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Printable</span>
               </button>
 
-              <button type="button" class="min-h-[5.5rem] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-amber-200 hover:bg-[#fffaf4]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('monthly', 'csv')">
+              <button type="button" class="min-h-[5.5rem] rounded-[1.5rem] border border-[#e7dac9] bg-white px-4 py-4 text-left transition hover:border-amber-200 hover:bg-[#fffaf4]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('monthly', 'csv')">
                 <span class="block text-sm font-black text-slate-900">Monthly CSV</span>
                 <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Spreadsheet</span>
               </button>
 
-              <button type="button" class="min-h-[5.5rem] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-[#e7dac9] hover:bg-[#fef6eb]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('monthly', 'pdf')">
+              <button type="button" class="min-h-[5.5rem] rounded-[1.5rem] border border-[#e7dac9] bg-white px-4 py-4 text-left transition hover:border-[#e7dac9] hover:bg-[#fef6eb]" [disabled]="isDownloadingReport" (click)="downloadPresetReport('monthly', 'pdf')">
                 <span class="block text-sm font-black text-slate-900">Monthly PDF</span>
                 <span class="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Printable</span>
               </button>
@@ -119,12 +119,12 @@ interface DashboardProduct {
             <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <label class="min-w-0 space-y-2">
                 <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Start date</span>
-                <input type="date" [(ngModel)]="customReportStartDate" class="block w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:ring-2 focus:ring-amber-600/30">
+                <input type="date" [(ngModel)]="customReportStartDate" class="app-field--dark min-w-0">
               </label>
 
               <label class="min-w-0 space-y-2">
                 <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">End date</span>
-                <input type="date" [(ngModel)]="customReportEndDate" class="block w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:ring-2 focus:ring-amber-600/30">
+                <input type="date" [(ngModel)]="customReportEndDate" class="app-field--dark min-w-0">
               </label>
             </div>
 
@@ -141,7 +141,7 @@ interface DashboardProduct {
         </div>
       </div>
 
-      <div class="vendor-dashboard-section border-t border-slate-200">
+      <div class="vendor-dashboard-section border-t border-[#eee2d4]">
         <div class="vendor-section-head">
           <p class="vendor-stat-label">Recent Orders</p>
           <h2 class="vendor-panel-title">Fulfillment Snapshot</h2>
@@ -155,7 +155,7 @@ interface DashboardProduct {
           Orders for your store will appear here once customers start checking out.
         </div>
 
-        <div *ngIf="recentOrders.length" class="divide-y divide-slate-100">
+            <div *ngIf="recentOrders.length" class="divide-y divide-slate-100">
           <article *ngFor="let order of recentOrders" class="flex flex-col gap-4 px-0 py-5 md:flex-row md:items-center md:justify-between">
             <div class="min-w-0">
               <p class="text-sm font-black text-slate-900">{{ order.id }} • {{ order.itemCount }} item(s)</p>
@@ -181,7 +181,7 @@ interface DashboardProduct {
           </div>
 
           <div class="grid gap-3">
-            <a *ngFor="let action of quickActions" [routerLink]="action.link" class="min-w-0 rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 transition hover:border-[#e7dac9] hover:bg-[#fffaf4]">
+            <a *ngFor="let action of quickActions" [routerLink]="action.link" class="min-w-0 rounded-[1.5rem] border border-[#e7dac9] bg-white px-5 py-4 transition hover:border-[#e7dac9] hover:bg-[#fffaf4]">
               <p class="text-sm font-black text-slate-900">{{ action.title }}</p>
               <p class="mt-1 break-words text-sm font-medium text-slate-500">{{ action.description }}</p>
             </a>
@@ -205,7 +205,7 @@ interface DashboardProduct {
           </div>
 
           <div *ngIf="topProducts.length" class="space-y-3">
-            <article *ngFor="let product of topProducts" class="min-w-0 rounded-[1.5rem] border border-slate-200 bg-white p-4">
+            <article *ngFor="let product of topProducts" class="min-w-0 rounded-[1.5rem] border border-[#e7dac9] bg-white p-4">
               <div class="flex items-start justify-between gap-4">
                 <div class="min-w-0">
                   <p class="text-sm font-black text-slate-900">{{ product.name }}</p>
@@ -215,7 +215,7 @@ interface DashboardProduct {
               </div>
               <p class="mt-3 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
             </article>
-            <a routerLink="/vendor/best-selling-products" class="mt-4 inline-flex rounded-2xl border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50">
+            <a routerLink="/vendor/best-selling-products" class="mt-4 inline-flex rounded-full border border-[#e7dac9] bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-[#fffaf4]">
               View full best sellers
             </a>
           </div>

@@ -25,20 +25,20 @@ interface VendorSidebarItem {
   },
   template: `
     <nav class="flex h-full flex-col gap-2">
-          @for (item of sidebarItems; track item.view) {
-            @if ((item.view !== 'shipments' || showShipments) && (item.view !== 'bulk-inquiries' || showBulkInquiries)) {
-              <a
-                [routerLink]="item.link"
-                class="flex w-full min-w-0 items-center justify-between rounded-2xl border px-3 py-3 text-left transition-all"
-                [ngClass]="activeView === item.view ? item.activeClasses : item.inactiveClasses"
-                (click)="closeMobile.emit()"
+      @for (item of sidebarItems; track item.view) {
+        @if ((item.view !== 'shipments' || showShipments) && (item.view !== 'bulk-inquiries' || showBulkInquiries)) {
+          <a
+            [routerLink]="item.link"
+            class="flex w-full min-w-0 items-center justify-between rounded-[1.5rem] border px-3 py-3 text-left transition-all"
+            [ngClass]="activeView === item.view ? item.activeClasses : item.inactiveClasses"
+            (click)="closeMobile.emit()"
+          >
+            <span class="flex min-w-0 items-center gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors"
+                [ngClass]="activeView === item.view ? 'border-[#d9c4ad] bg-[#6f4e37] text-white' : 'border-[#ead9bf] bg-[#f7eedc] text-[#6f4e37]'"
+                aria-hidden="true"
               >
-                <span class="flex min-w-0 items-center gap-2.5">
-                  <span
-                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors"
-                    [ngClass]="activeView === item.view ? 'border-[#d9c4ad] bg-[#6f4e37] text-white' : 'border-[#ead9bf] bg-[#f7eedc] text-[#6f4e37]'"
-                    aria-hidden="true"
-                  >
                     @switch (item.icon) {
                       @case ('dashboard') {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
@@ -103,17 +103,17 @@ interface VendorSidebarItem {
                     }
                   </span>
 
-                  <span class="min-w-0 flex-1 truncate text-[0.95rem] font-medium tracking-[-0.01em]">{{ item.label }}</span>
-                </span>
+              <span class="min-w-0 flex-1 truncate text-[0.95rem] font-medium tracking-[-0.01em]">{{ item.label }}</span>
+            </span>
 
-                @if (item.showCount !== false && item.count !== undefined) {
-                  <span class="rounded-full bg-[#f6b24c] px-2.5 py-0.5 text-[11px] font-medium text-[#5d3618] shadow-sm">
-                    {{ item.count }}
-                  </span>
-                }
-              </a>
+            @if (item.showCount !== false && item.count !== undefined) {
+              <span class="rounded-full bg-[#f6b24c] px-2.5 py-0.5 text-[11px] font-medium text-[#5d3618] shadow-sm">
+                {{ item.count }}
+              </span>
             }
-          }
+          </a>
+        }
+      }
     </nav>
   `
 })

@@ -24,8 +24,8 @@ const EMPTY_CART: CustomerCart = {
   template: `
     <section class="storefront-section mt-4 space-y-6">
       <div class="storefront-container">
-        <div class="vendor-page-shell overflow-hidden">
-          <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+        <div class="app-panel overflow-hidden">
+          <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div class="max-w-2xl">
                 <p class="app-page-eyebrow !text-amber-700">Checkout</p>
@@ -39,7 +39,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </div>
 
-          <div class="border-b border-slate-200 bg-gradient-to-r from-white via-[#fffaf5] to-white px-4 py-4 sm:px-5 lg:px-6">
+          <div class="border-b border-[#eee2d4] bg-gradient-to-r from-white via-[#fffaf5] to-white px-4 py-4 sm:px-5 lg:px-6">
             <div class="grid gap-3 rounded-[1.4rem] border border-[#eadcc9] bg-white p-4 shadow-[0_12px_32px_rgba(111,78,55,0.05)] md:grid-cols-3">
               <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
                 <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">1</span>
@@ -71,8 +71,8 @@ const EMPTY_CART: CustomerCart = {
 
           <div *ngIf="isLoading" class="px-4 py-6 text-sm font-medium text-slate-500 sm:px-5 lg:px-6">Loading checkout details...</div>
 
-          <div *ngIf="!isLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] px-4 py-6 sm:px-5 lg:px-6">
-            <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+          <div *ngIf="!isLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+            <div class="app-empty-state">
               <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
               <p class="mt-3 text-sm font-medium text-slate-500">Add products to your cart before checking out.</p>
               <a routerLink="/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
@@ -80,7 +80,7 @@ const EMPTY_CART: CustomerCart = {
           </div>
 
           <div *ngIf="!isLoading && cart.cartItems.length" class="px-4 pb-2 sm:px-5 lg:hidden lg:px-6">
-            <div class="rounded-[1.6rem] border border-[#e7dac9] bg-white p-4 shadow-[0_16px_40px_rgba(111,78,55,0.06)]">
+            <div class="app-card app-panel-body">
               <div class="flex items-center justify-between gap-4">
                 <div>
                   <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Checkout total</p>
@@ -114,9 +114,9 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </div>
 
-          <div *ngIf="!isLoading && cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] p-4 sm:p-5 lg:grid-cols-[minmax(0,1.75fr)_360px] lg:p-6">
+          <div *ngIf="!isLoading && cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
             <div class="space-y-5">
-              <section class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6">
+              <section class="app-card app-panel-body">
                 <div class="flex flex-col gap-3 border-b border-[#f1e4d4] pb-4 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Delivery Address</p>
@@ -159,7 +159,7 @@ const EMPTY_CART: CustomerCart = {
                 </div>
               </section>
 
-              <section class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6">
+              <section class="app-card app-panel-body">
                 <div class="border-b border-[#f1e4d4] pb-4">
                   <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Order Items</p>
                   <h2 class="mt-2 text-2xl font-medium tracking-tight text-slate-900">Cart snapshot</h2>
@@ -198,7 +198,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
 
             <aside class="hidden space-y-5 lg:block lg:sticky lg:top-6 lg:self-start">
-              <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_50px_rgba(111,78,55,0.05)] sm:p-6">
+              <div class="app-card app-panel-body">
                 <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Payment Summary</p>
                 <h2 class="mt-2 text-2xl font-medium tracking-tight text-slate-900">Secure checkout</h2>
 

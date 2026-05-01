@@ -76,7 +76,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
   `],
   template: `
     <div class="space-y-4">
-      <section *ngIf="selectedFilterChips().length" class="border-b border-slate-200 pb-4">
+      <section *ngIf="selectedFilterChips().length" class="border-b border-[#eee2d4] pb-4">
         <div class="flex items-center justify-between gap-3">
           <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600">Selected filters</p>
         </div>
@@ -85,7 +85,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
           <button
             *ngFor="let chip of selectedFilterChips(); trackBy: trackByChip"
             type="button"
-            class="inline-flex items-center gap-1 rounded-md bg-[#e8e2da] px-2.5 py-1.5 text-xs text-slate-700 transition hover:bg-[#ddd5ca]"
+            class="app-chip gap-1 transition hover:bg-[#f2e6d7]"
             (click)="removeChip(chip)"
           >
             <span class="text-slate-500">×</span>
@@ -94,7 +94,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
         </div>
       </section>
 
-      <section class="border-b border-slate-200 pb-4">
+      <section class="border-b border-[#eee2d4] pb-4">
         <button
           type="button"
           class="flex w-full items-center justify-between gap-3 text-left"
@@ -127,7 +127,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
             name="categorySearch"
             type="text"
             placeholder="Search Category"
-            class="w-full border-b border-slate-300 bg-transparent py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-amber-400"
+            class="app-field !rounded-xl !py-2.5"
           />
 
           <div *ngIf="loadingFilters" class="space-y-3">
@@ -141,7 +141,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
           </div>
 
           <div *ngIf="!loadingFilters" class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
-            <label class="flex items-center gap-2 py-1.5 text-sm text-slate-800">
+            <label class="flex items-center gap-2 py-2 text-sm text-slate-800">
               <input
                 type="checkbox"
                 class="h-4 w-4 rounded-[2px] border border-slate-300 accent-[#8a4f2a]"
@@ -151,7 +151,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
               <span>All categories</span>
             </label>
 
-            <label *ngFor="let category of filteredSidebarCategories(); trackBy: trackByCategoryId" class="flex items-center gap-2 py-1.5 text-sm text-slate-800">
+            <label *ngFor="let category of filteredSidebarCategories(); trackBy: trackByCategoryId" class="flex items-center gap-2 py-2 text-sm text-slate-800">
               <input
                 type="checkbox"
                 class="h-4 w-4 rounded-[2px] border border-slate-300 accent-[#8a4f2a]"
@@ -164,7 +164,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
         </div>
       </section>
 
-      <section class="border-b border-slate-200 pb-4">
+      <section class="border-b border-[#eee2d4] pb-4">
         <button
           type="button"
           class="flex w-full items-center justify-between gap-3 text-left"
@@ -197,7 +197,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
             name="brandSearch"
             type="text"
             placeholder="Search Brand"
-            class="w-full border-b border-slate-300 bg-transparent py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-amber-400"
+            class="app-field !rounded-xl !py-2.5"
           />
 
           <div *ngIf="loadingFilters" class="space-y-3">
@@ -211,7 +211,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
           </div>
 
           <div *ngIf="!loadingFilters" class="max-h-56 space-y-0.5 overflow-y-auto pr-1">
-            <label class="flex items-center gap-2 py-1.5 text-sm text-slate-800">
+            <label class="flex items-center gap-2 py-2 text-sm text-slate-800">
               <input
                 type="checkbox"
                 class="h-4 w-4 rounded-[2px] border border-slate-300 accent-[#8a4f2a]"
@@ -221,7 +221,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
               <span>All brands</span>
             </label>
 
-            <label *ngFor="let brand of filteredBrandOptions(); trackBy: trackByValue" class="flex items-center gap-2 py-1.5 text-sm text-slate-800">
+            <label *ngFor="let brand of filteredBrandOptions(); trackBy: trackByValue" class="flex items-center gap-2 py-2 text-sm text-slate-800">
               <input
                 type="checkbox"
                 class="h-4 w-4 rounded-[2px] border border-slate-300 accent-[#8a4f2a]"
@@ -234,7 +234,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
         </div>
       </section>
 
-      <section class="border-b border-slate-200 pb-4">
+      <section class="border-b border-[#eee2d4] pb-4">
         <button
           type="button"
           class="flex w-full items-center justify-between gap-3 text-left"
@@ -272,7 +272,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
         </div>
       </section>
 
-      <section class="border-b border-slate-200 pb-4">
+      <section class="border-b border-[#eee2d4] pb-4">
         <div class="flex items-center justify-between gap-3">
           <span class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">PRICE</span>
           <button
@@ -325,7 +325,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
                 [ngModel]="minPrice"
                 name="minPrice"
                 (ngModelChange)="onMinPriceChange($event)"
-                class="h-8 w-full appearance-none rounded-sm border border-slate-300 bg-white px-2 text-xs sm:text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+              class="h-10 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
               >
                 <option *ngFor="let option of priceMinOptions; trackBy: trackByFilterOption" [value]="option.value">
                   {{ option.label }}
@@ -340,7 +340,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
                 [ngModel]="maxPrice"
                 name="maxPrice"
                 (ngModelChange)="onMaxPriceChange($event)"
-                class="h-8 w-full appearance-none rounded-sm border border-slate-300 bg-white px-2 text-xs sm:text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+              class="h-10 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm text-slate-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
               >
                 <option *ngFor="let option of priceMaxOptions; trackBy: trackByFilterOption" [value]="option.value">
                   {{ option.label }}
@@ -351,7 +351,7 @@ import { CustomerLandingCategory } from '../../../../core/models/customer.models
         </div>
       </section>
 
-      <section class="border-b border-slate-200 pb-4">
+      <section class="border-b border-[#eee2d4] pb-4">
         <button
           type="button"
           class="flex w-full items-center justify-between gap-3 text-left"

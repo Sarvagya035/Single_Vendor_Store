@@ -27,7 +27,7 @@ import { ErrorService } from '../../core/services/error.service';
 
           <div class="mt-10 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <div class="space-y-6">
-              <div class="rounded-[20px] border border-amber-100 bg-white/80 p-6 shadow-sm backdrop-blur-sm sm:p-7">
+              <div class="app-panel app-panel-soft p-6 sm:p-7">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8b5e3c]">Why choose us</p>
                 <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-900">Reliable bulk supply for growing businesses</h2>
                 <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
@@ -66,7 +66,7 @@ import { ErrorService } from '../../core/services/error.service';
                 </div>
               </div>
 
-              <div class="rounded-[20px] border border-amber-100 bg-white/80 p-6 shadow-sm backdrop-blur-sm sm:p-7">
+              <div class="app-panel app-panel-soft p-6 sm:p-7">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8b5e3c]">Bulk order benefits</p>
                 <div class="mt-4 flex flex-wrap gap-3">
                   <span class="rounded-[999px] border border-[#f2ddc2] bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37]">Retailers</span>
@@ -76,7 +76,7 @@ import { ErrorService } from '../../core/services/error.service';
               </div>
             </div>
 
-            <div class="rounded-[20px] border border-slate-200 bg-white p-6 shadow-md sm:p-8">
+            <div class="app-panel app-panel-body p-6 sm:p-8">
               <div class="space-y-3">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Send inquiry</p>
                 <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Tell us about your bulk requirement</h2>
@@ -94,7 +94,7 @@ import { ErrorService } from '../../core/services/error.service';
                       type="text"
                       formControlName="fullName"
                       placeholder="Enter your full name"
-                      class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                      class="app-field"
                     />
                     <p *ngIf="showError('fullName')" class="text-xs font-medium text-rose-500">Full name is required.</p>
                   </div>
@@ -108,7 +108,7 @@ import { ErrorService } from '../../core/services/error.service';
                       maxlength="10"
                       formControlName="phone"
                       placeholder="10-digit phone number"
-                      class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                      class="app-field"
                     />
                     <p *ngIf="showError('phone')" class="text-xs font-medium text-rose-500">Enter a valid 10-digit phone number.</p>
                   </div>
@@ -122,7 +122,7 @@ import { ErrorService } from '../../core/services/error.service';
                       type="email"
                       formControlName="email"
                       placeholder="Enter your email"
-                      class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                      class="app-field"
                     />
                   </div>
 
@@ -133,7 +133,7 @@ import { ErrorService } from '../../core/services/error.service';
                       type="text"
                       formControlName="businessName"
                       placeholder="Enter business name"
-                      class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                      class="app-field"
                     />
                   </div>
                 </div>
@@ -144,7 +144,7 @@ import { ErrorService } from '../../core/services/error.service';
                     <select
                       id="orderType"
                       formControlName="orderType"
-                      class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                      class="app-field"
                     >
                       <option value="">Select order type</option>
                       <option value="Retailer">Retailer</option>
@@ -173,7 +173,7 @@ import { ErrorService } from '../../core/services/error.service';
                     rows="5"
                     formControlName="productRequirement"
                     placeholder="Tell us the dry fruits you need, packaging preferences, and any special requirements"
-                    class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                    class="app-field"
                   ></textarea>
                   <p *ngIf="showError('productRequirement')" class="text-xs font-medium text-rose-500">Product requirement is required.</p>
                 </div>
@@ -192,7 +192,7 @@ import { ErrorService } from '../../core/services/error.service';
 
                 <button
                   type="submit"
-                  class="inline-flex w-full items-center justify-center rounded-full bg-orange-500 px-6 py-3.5 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(249,115,22,0.22)] transition hover:bg-orange-600"
+                  class="btn-primary w-full justify-center !px-6 !py-3.5"
                 >
                   Submit Inquiry
                 </button>

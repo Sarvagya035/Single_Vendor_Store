@@ -52,11 +52,7 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
             </div>
           }
 
-          <div
-            class="transition-all duration-300 ease-out"
-            [class.opacity-60]="isNavigating()"
-            [class.translate-y-1]="isNavigating()"
-          >
+          <div class="transition-all duration-300 ease-out" [class.opacity-60]="isNavigating()" [class.translate-y-1]="isNavigating()">
             <router-outlet />
           </div>
         </section>
@@ -70,10 +66,8 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
           (click)="closeVendorMobileNav()"
         ></button>
 
-        <aside
-          class="absolute right-0 top-0 h-full w-[min(88vw,22rem)] overflow-y-auto bg-white p-4 shadow-2xl"
-        >
-          <div class="mb-5 flex items-center justify-between border-b border-slate-200 pb-4">
+        <aside class="absolute right-0 top-0 h-full w-[min(88vw,22rem)] overflow-y-auto bg-white p-4 shadow-2xl">
+          <div class="mb-5 flex items-center justify-between border-b border-[#eee2d4] pb-4">
             <div>
               <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
                 Vendor Navigation

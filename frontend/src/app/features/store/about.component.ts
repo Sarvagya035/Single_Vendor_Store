@@ -56,22 +56,22 @@ import { RouterModule } from '@angular/router';
         <div class="storefront-container">
           <div class="mx-auto w-full max-w-7xl">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <article class="app-card bg-white p-5">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Rating</p>
                 <p class="mt-3 text-2xl font-bold text-slate-900">4.9</p>
                 <p class="mt-1 text-sm font-medium text-slate-500">Customer Rating</p>
               </article>
-              <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <article class="app-card bg-white p-5">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Selection</p>
                 <p class="mt-3 text-2xl font-bold text-slate-900">Wide</p>
                 <p class="mt-1 text-sm font-medium text-slate-500">Product Selection</p>
               </article>
-              <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <article class="app-card bg-white p-5">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Freshness</p>
                 <p class="mt-3 text-2xl font-bold text-slate-900">Everyday</p>
                 <p class="mt-1 text-sm font-medium text-slate-500">Fresh Quality</p>
               </article>
-              <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <article class="app-card bg-white p-5">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Shopping</p>
                 <p class="mt-3 text-2xl font-bold text-slate-900">Secure</p>
                 <p class="mt-1 text-sm font-medium text-slate-500">Trusted Experience</p>
@@ -85,7 +85,7 @@ import { RouterModule } from '@angular/router';
         <div class="storefront-container">
           <div class="mx-auto w-full max-w-7xl">
             <div class="grid grid-cols-1 gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6">
-              <article class="rounded-[2rem] border border-[#eadcc9] bg-white p-6 shadow-[0_20px_60px_rgba(47,27,20,0.06)] sm:p-8 lg:p-10">
+              <article class="app-panel app-panel-body sm:p-8 lg:p-10">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Our story</p>
                 <h2 class="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                   A one-stop shop for taste, health, and convenience.
@@ -104,25 +104,25 @@ import { RouterModule } from '@angular/router';
                   Built around freshness, trust, and everyday value.
                 </h2>
                 <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div class="app-card bg-white p-5">
                     <p class="text-sm font-bold text-slate-900">Premium Quality Products</p>
                     <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
                       Carefully sourced items selected for better taste, freshness, and long-term wellness.
                     </p>
                   </div>
-                  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div class="app-card bg-white p-5">
                     <p class="text-sm font-bold text-slate-900">Fresh Packing</p>
                     <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
                       Packed with care to preserve aroma, crunch, and natural goodness.
                     </p>
                   </div>
-                  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div class="app-card bg-white p-5">
                     <p class="text-sm font-bold text-slate-900">Fast Delivery</p>
                     <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
                       Smooth ordering and quick delivery support for daily needs and gifting.
                     </p>
                   </div>
-                  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div class="app-card bg-white p-5">
                     <p class="text-sm font-bold text-slate-900">Trusted Shopping</p>
                     <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
                       Secure checkout, easy browsing, and a customer-first shopping experience.
@@ -138,7 +138,7 @@ import { RouterModule } from '@angular/router';
       <section class="storefront-section pb-10 lg:pb-14">
         <div class="storefront-container">
           <div class="mx-auto w-full max-w-7xl">
-            <div class="rounded-[2rem] border border-[#eadcc9] bg-white p-6 shadow-[0_20px_60px_rgba(47,27,20,0.06)] sm:p-8 lg:p-10">
+            <div class="app-panel app-panel-body sm:p-8 lg:p-10">
               <div class="max-w-2xl">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Product range</p>
                 <h2 class="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -150,22 +150,22 @@ import { RouterModule } from '@angular/router';
               </div>
 
               <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <div class="rounded-2xl border border-slate-200 bg-[#fffaf5] p-5">
+                <div class="app-card bg-[#fffaf5] p-5">
                   <p class="text-sm font-bold text-slate-900">Dry Fruits</p>
                 </div>
-                <div class="rounded-2xl border border-slate-200 bg-[#fffaf5] p-5">
+                <div class="app-card bg-[#fffaf5] p-5">
                   <p class="text-sm font-bold text-slate-900">Nuts & Seeds</p>
                 </div>
-                <div class="rounded-2xl border border-slate-200 bg-[#fffaf5] p-5">
+                <div class="app-card bg-[#fffaf5] p-5">
                   <p class="text-sm font-bold text-slate-900">Spices & Herbs</p>
                 </div>
-                <div class="rounded-2xl border border-slate-200 bg-[#fffaf5] p-5">
+                <div class="app-card bg-[#fffaf5] p-5">
                   <p class="text-sm font-bold text-slate-900">Gift Boxes</p>
                 </div>
-                <div class="rounded-2xl border border-slate-200 bg-[#fffaf5] p-5">
+                <div class="app-card bg-[#fffaf5] p-5">
                   <p class="text-sm font-bold text-slate-900">Bakery Essentials</p>
                 </div>
-                <div class="rounded-2xl border border-slate-200 bg-[#fffaf5] p-5">
+                <div class="app-card bg-[#fffaf5] p-5">
                   <p class="text-sm font-bold text-slate-900">Combos</p>
                 </div>
               </div>

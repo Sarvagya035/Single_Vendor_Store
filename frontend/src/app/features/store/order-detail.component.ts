@@ -27,7 +27,7 @@ import { OrderService } from '../../core/services/order.service';
 
         <div *ngIf="!isLoading && order as currentOrder" [ngClass]="isVendorView() ? 'mt-0' : 'mt-8'">
           <ng-container *ngIf="isVendorView(); else customerOrderLayout">
-            <section class="rounded-[2rem] border border-slate-200 bg-white app-card-body shadow-sm overflow-hidden">
+            <section class="app-card overflow-hidden">
               <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div class="min-w-0 flex-1">
                   <p class="vendor-stat-label">Vendor Order</p>
@@ -62,7 +62,7 @@ import { OrderService } from '../../core/services/order.service';
 
               <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
                 <div class="space-y-6">
-                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#fffaf4] app-card-tight">
+                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#fffaf4] app-panel-body">
                     <div class="flex items-end justify-between gap-4 border-b border-slate-200 pb-4">
                       <div>
                         <p class="vendor-stat-label">Order Items</p>
@@ -101,7 +101,7 @@ import { OrderService } from '../../core/services/order.service';
                     </div>
                   </section>
 
-                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#2f1b14] app-card-tight text-white">
+                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#2f1b14] app-panel-body text-white">
                     <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Vendor Summary</p>
                     <div class="mt-5 grid gap-3 sm:grid-cols-3">
                       <div class="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
@@ -125,7 +125,7 @@ import { OrderService } from '../../core/services/order.service';
                 </div>
 
                 <div class="space-y-6">
-                  <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 sm:p-6">
+                  <section class="app-card app-panel-body">
                     <div class="flex flex-col gap-3 border-b border-slate-200 pb-4">
                       <div>
                         <p class="vendor-stat-label">Delivery</p>
@@ -260,7 +260,7 @@ import { OrderService } from '../../core/services/order.service';
 
           <ng-template #customerOrderLayout>
             <div class="px-4 pb-6 sm:px-5 lg:px-6">
-              <section class="overflow-hidden rounded-[2.25rem] border border-[#e7dac9] bg-white shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <section class="app-panel overflow-hidden">
                 <div class="border-b border-[#f1e4d4] px-6 py-6 sm:px-7">
                   <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                     <div class="min-w-0">
@@ -288,7 +288,7 @@ import { OrderService } from '../../core/services/order.service';
                   </div>
                 </div>
 
-                <div class="grid gap-6 app-card-body lg:grid-cols-[minmax(0,1fr)_340px]">
+                <div class="grid gap-6 app-panel-body lg:grid-cols-[minmax(0,1fr)_340px]">
                   <div class="space-y-6">
                     <section class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fffaf4] p-5 sm:p-6">
                       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">

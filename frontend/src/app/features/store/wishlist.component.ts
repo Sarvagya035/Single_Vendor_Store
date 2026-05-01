@@ -32,7 +32,7 @@ interface GuestWishlistDisplayItem {
     <ng-container *ngIf="isCustomer(); else guestState">
       <section class="storefront-section min-h-[calc(100vh-72px)] py-8 lg:py-10">
         <div class="storefront-container">
-        <div class="rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-body shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
+        <div class="app-panel app-panel-body">
         <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.26em] text-amber-700">Saved items</p>
@@ -64,7 +64,7 @@ interface GuestWishlistDisplayItem {
           </article>
         </div>
 
-        <div *ngIf="!loading && wishlistItems.length === 0" class="py-16 text-center">
+        <div *ngIf="!loading && wishlistItems.length === 0" class="app-empty-state">
           <h2 class="text-2xl font-black text-slate-900">Your wishlist is empty</h2>
           <p class="mx-auto mt-3 max-w-lg text-sm font-medium leading-relaxed text-slate-500">
             Save products from product pages to compare them later or come back when you're ready to buy.
@@ -168,7 +168,7 @@ interface GuestWishlistDisplayItem {
     <ng-template #guestState>
       <section class="storefront-section min-h-[calc(100vh-72px)] py-8 lg:py-10">
         <div class="storefront-container">
-          <div class="rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-body shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
+          <div class="app-panel app-panel-body">
             <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p class="text-[11px] font-black uppercase tracking-[0.26em] text-amber-700">Saved items</p>
@@ -203,7 +203,7 @@ interface GuestWishlistDisplayItem {
               {{ guestWishlistMessage }}
             </div>
 
-            <div *ngIf="!guestWishlistLoading && guestWishlistItems.length === 0" class="py-16 text-center">
+            <div *ngIf="!guestWishlistLoading && guestWishlistItems.length === 0" class="app-empty-state">
               <h2 class="text-2xl font-black text-slate-900">Your guest wishlist is empty</h2>
               <p class="mx-auto mt-3 max-w-lg text-sm font-medium leading-relaxed text-slate-500">
                 Save products from product pages to compare them later or come back when you're ready to buy.

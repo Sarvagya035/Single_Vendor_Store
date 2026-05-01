@@ -24,9 +24,7 @@ export interface VariantModalAddToCartEvent {
       ></button>
 
       <div class="absolute inset-x-0 bottom-0 flex items-end justify-center sm:inset-0 sm:px-4 sm:py-6 sm:items-center">
-        <div
-          [ngClass]="panelStateClasses()"
-        >
+        <div [ngClass]="panelStateClasses()">
           <div class="sm:hidden mx-auto mt-3 h-1.5 w-12 rounded-full bg-slate-300/80"></div>
 
           <button
@@ -139,7 +137,7 @@ export interface VariantModalAddToCartEvent {
                   {{ selectedVariantWarning() }}
                 </div>
 
-                <div class="sticky bottom-0 -mx-4 mt-auto border-t border-slate-200 bg-white/95 px-4 pt-4 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:pt-0">
+                <div class="sticky bottom-0 -mx-4 mt-auto border-t border-[#eee2d4] bg-white/95 px-4 pt-4 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:pt-0">
                   <div class="grid gap-3 sm:grid-cols-2">
                     <button
                     type="button"
@@ -307,7 +305,7 @@ export class VariantModalComponent implements OnChanges {
     const hidden = this.open && !this.isClosing && this.isOpeningPhase();
 
     return [
-      'relative z-10 flex max-h-[90vh] w-full flex-col overflow-hidden border border-white/60 bg-white shadow-[0_28px_80px_rgba(15,23,42,0.28)] rounded-t-[2rem] pb-[env(safe-area-inset-bottom)] sm:max-w-lg sm:rounded-[2rem] transition-all duration-200 ease-out will-change-transform',
+      'relative z-10 flex max-h-[90vh] w-full flex-col overflow-hidden app-modal-shell rounded-t-[2rem] pb-[env(safe-area-inset-bottom)] sm:max-w-lg sm:rounded-[2rem] transition-all duration-200 ease-out will-change-transform',
       hidden || closing
         ? 'opacity-0 translate-y-6 sm:translate-y-4 sm:scale-95'
         : 'opacity-100 translate-y-0 sm:scale-100'
@@ -316,7 +314,7 @@ export class VariantModalComponent implements OnChanges {
 
   overlayStateClasses(): string {
     return [
-      'absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] transition-opacity duration-200 ease-out',
+      'absolute inset-0 app-modal-backdrop transition-opacity duration-200 ease-out',
       this.isClosing || this.isOpeningPhase() ? 'opacity-0' : 'opacity-100'
     ].join(' ');
   }

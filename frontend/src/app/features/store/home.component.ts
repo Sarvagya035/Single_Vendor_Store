@@ -104,7 +104,7 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
         <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
           <div class="mb-4 text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Categories</p>
-            <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Shop by category</h3>
+            <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">SHOP BY CATEGORY</h3>
           </div>
 
           <div class="relative mt-2">

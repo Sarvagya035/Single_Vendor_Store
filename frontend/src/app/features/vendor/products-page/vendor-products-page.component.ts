@@ -35,15 +35,15 @@ import {
         </div>
 
         <div class="vendor-grid-3 vendor-section-body">
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+          <article class="vendor-stat-card">
             <p class="vendor-stat-label !text-amber-700">Total Products</p>
             <p class="vendor-stat-value">{{ totalDocs }}</p>
           </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+          <article class="vendor-stat-card">
             <p class="vendor-stat-label !text-amber-700">Active Listings</p>
             <p class="vendor-stat-value">{{ activeCount }}</p>
           </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+          <article class="vendor-stat-card">
             <p class="vendor-stat-label !text-amber-600">Low Stock</p>
             <p class="vendor-stat-value">{{ lowStockCount }}</p>
           </article>
@@ -74,7 +74,7 @@ import {
                   [(ngModel)]="searchQuery"
                   (ngModelChange)="onSearchChange()"
                   placeholder="Search by name, brand, SKU, or category..."
-                  class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                  class="app-field pl-12"
                 />
               </div>
 
@@ -82,7 +82,7 @@ import {
                 type="button"
                 (click)="loadVendorProducts(currentPage)"
                 [disabled]="isLoading"
-                class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-transparent bg-[#f7f3ef] px-5 py-3.5 text-sm font-bold text-slate-900 transition hover:bg-[#efe7df] disabled:opacity-60 lg:w-auto"
+                class="btn-secondary w-full justify-center gap-2 !px-5 !py-3.5 lg:w-auto"
               >
                 <svg class="h-4 w-4 text-[#7c5646]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M20 11a8.5 8.5 0 1 0 1.5 4.8" />
@@ -97,7 +97,7 @@ import {
                 <select
                   [(ngModel)]="selectedCategory"
                   (ngModelChange)="applyFilters()"
-                  class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-5 py-3.5 text-sm font-bold text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+                  class="app-field"
                 >
                   <option value="all">All Categories</option>
                   <option *ngFor="let category of categoryOptions; trackBy: trackByCategoryOption" [value]="category._id">
@@ -110,7 +110,7 @@ import {
                 <select
                   [(ngModel)]="selectedStatus"
                   (ngModelChange)="applyFilters()"
-                  class="block w-full rounded-2xl border border-[#d4a017] bg-white px-5 py-3.5 text-sm font-bold text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition focus:border-[#b87912] focus:ring-4 focus:ring-amber-100"
+                  class="app-field"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -122,7 +122,7 @@ import {
                 *ngIf="hasActiveFilters"
                 type="button"
                 (click)="clearFilters()"
-                class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50"
+                class="btn-secondary inline-flex items-center justify-center !px-4 !py-3.5 text-xs uppercase tracking-[0.16em]"
               >
                 Reset filters
               </button>
@@ -131,26 +131,26 @@ import {
             <div class="flex flex-wrap gap-2">
               <span
                 *ngIf="searchQuery.trim()"
-                class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
+                class="app-chip gap-2 !border-amber-200 !bg-amber-50 !text-amber-800"
               >
                 Search: "{{ searchQuery.trim() }}"
               </span>
               <span
                 *ngIf="selectedCategory !== 'all'"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-700"
+                class="app-chip gap-2"
               >
                 Category: {{ selectedCategoryLabel }}
               </span>
               <span
                 *ngIf="selectedStatus !== 'all'"
-                class="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-black uppercase tracking-[0.16em]"
-                [ngClass]="selectedStatus === 'active' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-50 text-slate-600'"
+                class="app-badge gap-2"
+                [ngClass]="selectedStatus === 'active' ? 'border border-emerald-200 bg-emerald-50 text-emerald-700' : 'border border-slate-200 bg-slate-50 text-slate-600'"
               >
                 Status: {{ selectedStatusLabel }}
               </span>
               <span
                 *ngIf="hasActiveFilters"
-                class="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-rose-700"
+                class="app-chip gap-2 !border-rose-200 !bg-rose-50 !text-rose-700"
               >
                 Filters active
               </span>
@@ -174,7 +174,7 @@ import {
         </div>
 
         <div *ngIf="!isLoading && filteredProducts.length > 0" class="vendor-table-wrap hidden lg:block">
-          <div class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-[#fffaf5] vendor-table-head-cell text-sm font-semibold text-slate-500">
+          <div class="app-table-header grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 text-sm font-semibold text-slate-500">
             <span>Product</span>
             <span>Category</span>
             <span>Variants</span>
@@ -185,7 +185,7 @@ import {
 
           <article
             *ngFor="let product of filteredProducts; trackBy: trackByProductId"
-            class="grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 border-b border-slate-200 bg-white vendor-table-cell transition hover:bg-[#fffaf4] last:border-b-0"
+            class="app-table-shell grid grid-cols-[minmax(0,2.2fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.5fr)] gap-4 transition hover:bg-[#fffaf4] last:border-b-0"
           >
             <div class="flex min-w-0 items-center gap-4">
               <div class="h-14 w-14 overflow-hidden rounded-full bg-[#f5ede5]">
@@ -233,32 +233,32 @@ import {
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <a [routerLink]="['/vendor/products', product._id, 'view']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-[#fffaf4]">
+              <a [routerLink]="['/vendor/products', product._id, 'view']" class="btn-secondary rounded-xl px-3 py-2 text-[11px] uppercase tracking-[0.16em]">
                 View
               </a>
-              <a [routerLink]="['/vendor/products', product._id, 'edit']" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-[#fffaf4]">
+              <a [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary rounded-xl px-3 py-2 text-[11px] uppercase tracking-[0.16em]">
                 Edit
               </a>
               <div class="relative">
                 <button
                   type="button"
                   (click)="toggleActionMenu(product._id)"
-                  class="rounded-xl border border-[#7c5646] bg-[#7c5646] px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-white transition hover:bg-[#6e4b3d]"
+                  class="btn-primary rounded-xl px-3 py-2 text-[11px] uppercase tracking-[0.16em]"
                 >
                   More
                 </button>
 
                 <div
                   *ngIf="openActionMenuId === product._id"
-                  class="absolute right-0 top-full z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                  class="absolute right-0 top-full z-20 mt-2 w-48 overflow-hidden app-modal-shell p-1.5"
                 >
-                  <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
+                  <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
                     Restock
                   </a>
-                  <a [routerLink]="['/vendor/products', product._id, 'variants']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                  <a [routerLink]="['/vendor/products', product._id, 'variants']" (click)="closeActionMenu()" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                     Variants
                   </a>
-                  <button type="button" (click)="openDeleteModal(product)" class="block w-full px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50">
+                  <button type="button" (click)="openDeleteModal(product)" class="block w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50">
                     Delete
                   </button>
                 </div>
@@ -286,7 +286,7 @@ import {
                     <p class="mt-1 text-sm font-semibold text-slate-600">{{ product.brand || 'Generic' }}</p>
                   </div>
                   <span
-                    class="inline-flex rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]"
+                  class="app-badge"
                     [ngClass]="product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'"
                   >
                     {{ product.isActive ? 'Active' : 'Inactive' }}
@@ -312,32 +312,32 @@ import {
             </div>
 
             <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              <a [routerLink]="['/vendor/products', product._id, 'view']" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
+              <a [routerLink]="['/vendor/products', product._id, 'view']" class="btn-secondary rounded-xl px-3 py-3 text-center text-[11px] uppercase tracking-[0.16em]">
                 View
               </a>
-              <a [routerLink]="['/vendor/products', product._id, 'edit']" class="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
+              <a [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary rounded-xl px-3 py-3 text-center text-[11px] uppercase tracking-[0.16em]">
                 Edit
               </a>
               <div class="relative col-span-2 sm:col-span-1">
                 <button
                   type="button"
                   (click)="toggleActionMenu(product._id)"
-                  class="w-full rounded-xl border border-slate-900 bg-slate-900 px-3 py-3 text-center text-[11px] font-black uppercase tracking-[0.16em] text-white"
+                  class="btn-primary w-full rounded-xl px-3 py-3 text-center text-[11px] uppercase tracking-[0.16em]"
                 >
                   More
                 </button>
 
                 <div
                   *ngIf="openActionMenuId === product._id"
-                  class="absolute right-0 top-full z-20 mt-2 w-full min-w-[10rem] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                  class="absolute right-0 top-full z-20 mt-2 w-full min-w-[10rem] overflow-hidden app-modal-shell p-1.5"
                 >
-                  <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
+                  <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
                     Restock
                   </a>
-                  <a [routerLink]="['/vendor/products', product._id, 'variants']" (click)="closeActionMenu()" class="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                  <a [routerLink]="['/vendor/products', product._id, 'variants']" (click)="closeActionMenu()" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                     Variants
                   </a>
-                  <button type="button" (click)="openDeleteModal(product)" class="block w-full px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50">
+                  <button type="button" (click)="openDeleteModal(product)" class="block w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50">
                     Delete
                   </button>
                 </div>
@@ -360,7 +360,7 @@ import {
               type="button"
               (click)="loadVendorProducts(currentPage - 1)"
               [disabled]="!hasPrevPage || isLoading"
-              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-slate-700 disabled:opacity-50"
+              class="btn-secondary rounded-2xl px-4 py-3 text-xs uppercase tracking-[0.16em] disabled:opacity-50"
             >
               Previous
             </button>
@@ -371,7 +371,7 @@ import {
               (click)="loadVendorProducts(page)"
               [disabled]="isLoading"
               class="rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.16em] disabled:opacity-50"
-              [ngClass]="page === currentPage ? 'bg-amber-700 text-white' : 'border border-slate-200 bg-white text-slate-700'"
+              [ngClass]="page === currentPage ? 'btn-primary' : 'btn-secondary'"
             >
               {{ page }}
             </button>
@@ -380,7 +380,7 @@ import {
               type="button"
               (click)="loadVendorProducts(currentPage + 1)"
               [disabled]="!hasNextPage || isLoading"
-              class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-slate-700 disabled:opacity-50"
+              class="btn-secondary rounded-2xl px-4 py-3 text-xs uppercase tracking-[0.16em] disabled:opacity-50"
             >
               Next
             </button>
@@ -394,7 +394,7 @@ import {
         (click)="closeDeleteModal()"
       >
         <div
-          class="w-full max-w-lg rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl"
+          class="app-modal-shell w-full max-w-lg p-6 shadow-2xl"
           (click)="$event.stopPropagation()"
         >
           <p class="text-[11px] font-black uppercase tracking-[0.2em] text-rose-500">Delete product</p>
@@ -412,7 +412,7 @@ import {
               type="button"
               (click)="closeDeleteModal()"
               [disabled]="busyDeleteId === pendingDeleteProduct._id"
-              class="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+              class="btn-secondary rounded-2xl px-5 py-3 text-sm uppercase tracking-[0.16em] disabled:opacity-60"
             >
               Cancel
             </button>
@@ -420,7 +420,7 @@ import {
               type="button"
               (click)="confirmDeleteProduct()"
               [disabled]="busyDeleteId === pendingDeleteProduct._id"
-              class="rounded-2xl border border-rose-200 bg-rose-600 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-rose-700 disabled:opacity-60"
+              class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-rose-200 bg-rose-600 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-rose-700 disabled:opacity-60"
             >
               {{ busyDeleteId === pendingDeleteProduct._id ? 'Deleting...' : 'Delete Product' }}
             </button>
