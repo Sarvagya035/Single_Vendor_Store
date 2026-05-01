@@ -247,6 +247,17 @@ export class VendorService {
       );
   }
 
+  getBulkInquiriesSummary(): Observable<{ totalInquiries: number; newCount: number }> {
+    return this.http
+      .get<any>(`${this.adminUrl}/bulk-inquiries`, { withCredentials: true })
+      .pipe(
+        map((response) => ({
+          totalInquiries: Number(response?.data?.summary?.totalInquiries || 0),
+          newCount: Number(response?.data?.summary?.newCount || 0)
+        }))
+      );
+  }
+
   markVendorNotificationRead(notificationId: string): Observable<VendorNotificationRecord> {
     return this.http
       .patch<any>(`${this.adminUrl}/notifications/${notificationId}/read`, {}, { withCredentials: true })

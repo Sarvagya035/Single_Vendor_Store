@@ -393,10 +393,16 @@ const serializeNotification = (notificationDoc) => {
 
     return {
         ...notification,
+        referenceType: notification.referenceType || metadata.referenceType || "",
+        referenceId: notification.referenceId || metadata.referenceId || "",
         productName: notification.productName || metadata.productName || "",
         variantLabel: notification.variantLabel || metadata.variantLabel || "",
         currentStock: notification.currentStock ?? metadata.currentStock ?? 0,
         stockThreshold: notification.stockThreshold ?? metadata.stockThreshold ?? 0,
+        fullName: metadata.fullName || "",
+        businessName: metadata.businessName || "",
+        orderType: metadata.orderType || "",
+        city: metadata.city || "",
         isLowStock: notification.type === "low_stock" && !notification.isResolved
     };
 };

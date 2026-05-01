@@ -21,6 +21,11 @@ import {
     toggleProductStatusByAdmin 
 } from "../controllers/admin.Controllers.js";
 import {
+    getAdminBulkInquiryById,
+    getAdminBulkInquiries,
+    updateAdminBulkInquiryStatus
+} from "../controllers/adminBulkInquiry.controller.js";
+import {
     getAdminShipments,
     updateAdminShipment
 } from "../controllers/shipment.controller.js";
@@ -96,6 +101,9 @@ router.route("/notifications/read-all").patch(verifyJWT, authorizeRoles("vendor"
 router.route("/reports/orders").get(verifyJWT, authorizeRoles("vendor", "admin"), downloadOrderReports);
 router.route("/shipments").get(verifyJWT, authorizeRoles("vendor", "admin"), getAdminShipments);
 router.route("/shipments/:orderId").patch(verifyJWT, authorizeRoles("admin"), updateAdminShipment);
+router.route("/bulk-inquiries").get(verifyJWT, authorizeRoles("vendor", "Vendor", "admin", "Admin"), getAdminBulkInquiries);
+router.route("/bulk-inquiries/:id").get(verifyJWT, authorizeRoles("vendor", "Vendor", "admin", "Admin"), getAdminBulkInquiryById);
+router.route("/bulk-inquiries/:id/status").patch(verifyJWT, authorizeRoles("vendor", "Vendor", "admin", "Admin"), updateAdminBulkInquiryStatus);
 
 router.route("/initial-setup-129986").post(upload.single("vendorLogo"), setupInitialAdminAndStore) //working nicely
 

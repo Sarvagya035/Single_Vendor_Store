@@ -31,11 +31,13 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
           <app-vendor-sidebar
             [activeView]="activeView"
             [productCount]="productCount"
-            [categoryCount]="categoryCount"
-            [customerCount]="customerCount"
-            [orderCount]="orderCount"
-            [shipmentCount]="shipmentCount"
-            [showShipments]="true"
+          [categoryCount]="categoryCount"
+          [customerCount]="customerCount"
+          [orderCount]="orderCount"
+          [shipmentCount]="shipmentCount"
+          [bulkInquiryCount]="bulkInquiryCount"
+          [showShipments]="true"
+          [showBulkInquiries]="canViewBulkInquiries"
           />
         </div>
       </aside>
@@ -93,14 +95,16 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
           <app-vendor-sidebar
             class="block"
             [activeView]="activeView"
-            [productCount]="productCount"
-            [categoryCount]="categoryCount"
-            [customerCount]="customerCount"
-            [orderCount]="orderCount"
-            [shipmentCount]="shipmentCount"
-            [showShipments]="true"
-            (closeMobile)="closeVendorMobileNav()"
-          />
+          [productCount]="productCount"
+          [categoryCount]="categoryCount"
+          [customerCount]="customerCount"
+          [orderCount]="orderCount"
+          [shipmentCount]="shipmentCount"
+          [bulkInquiryCount]="bulkInquiryCount"
+          [showShipments]="true"
+          [showBulkInquiries]="canViewBulkInquiries"
+          (closeMobile)="closeVendorMobileNav()"
+        />
         </aside>
       </div>
     </div>
@@ -112,6 +116,7 @@ export class VendorShellComponent implements OnInit {
   customerCount = 0;
   orderCount = 0;
   shipmentCount = 0;
+  bulkInquiryCount = 0;
   currentRoles: string[] = [];
   readonly isNavigating = signal(false);
 
@@ -147,6 +152,10 @@ export class VendorShellComponent implements OnInit {
       return 'notifications';
     }
 
+    if (this.router.url.includes('/vendor/bulk-inquiries')) {
+      return 'bulk-inquiries';
+    }
+
     if (this.router.url.includes('/vendor/shipments')) {
       return 'shipments';
     }
@@ -172,6 +181,7 @@ export class VendorShellComponent implements OnInit {
       customers: 'Customers',
       orders: 'Orders',
       notifications: 'Notifications',
+      'bulk-inquiries': 'Bulk Inquiries',
       shipments: 'Shipments'
     };
 
@@ -179,7 +189,11 @@ export class VendorShellComponent implements OnInit {
   }
 
   get isAdminUser(): boolean {
-    return this.currentRoles.includes('admin');
+    return this.currentRoles.includes('admin') || this.currentRoles.includes('Admin');
+  }
+
+  get canViewBulkInquiries(): boolean {
+    return this.isAdminUser || this.currentRoles.includes('vendor') || this.currentRoles.includes('Vendor');
   }
 
   ngOnInit() {
@@ -255,14 +269,16 @@ export class VendorShellComponent implements OnInit {
       orders: this.orderService.getVendorOrders(),
       categories: this.vendorService.getCategoryTree(),
       users: this.vendorService.getAllUsers(1, 1000),
-      shipments: shipmentRequest
+      shipments: shipmentRequest,
+      bulkInquiries: this.vendorService.getBulkInquiriesSummary()
     }).subscribe({
-      next: ({ products, orders, categories, users, shipments }) => {
+      next: ({ products, orders, categories, users, shipments, bulkInquiries }) => {
         this.productCount = products?.data?.docs?.length || 0;
         this.orderCount = orders.length || 0;
         this.categoryCount = this.countCategories(categories?.data || []);
         this.customerCount = this.countCustomers(users?.users || []);
         this.shipmentCount = shipments?.summary?.totalShipments || 0;
+        this.bulkInquiryCount = bulkInquiries?.newCount || 0;
       },
       error: () => {
         this.productCount = 0;
@@ -270,6 +286,7 @@ export class VendorShellComponent implements OnInit {
         this.customerCount = 0;
         this.orderCount = 0;
         this.shipmentCount = 0;
+        this.bulkInquiryCount = 0;
       }
     });
   }

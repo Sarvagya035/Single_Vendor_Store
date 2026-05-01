@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { BulkInquiryPayload, BulkInquiryService } from '../../core/services/bulk-inquiry.service';
 import { ErrorService } from '../../core/services/error.service';
 
 @Component({
@@ -206,6 +207,7 @@ import { ErrorService } from '../../core/services/error.service';
 export class BulkOrderComponent {
   private readonly fb = inject(FormBuilder);
   private readonly errorService = inject(ErrorService);
+  private readonly bulkInquiryService = inject(BulkInquiryService);
 
   bulkOrderForm = this.fb.group({
     fullName: ['', Validators.required],
@@ -229,22 +231,46 @@ export class BulkOrderComponent {
       return;
     }
 
-    this.errorService.showToast('Your inquiry has been submitted. Our team will contact you shortly.', 'success');
-    this.bulkOrderForm.reset({
-      fullName: '',
-      phone: '',
-      email: '',
-      businessName: '',
-      orderType: '',
-      productRequirement: '',
-      quantity: '',
-      city: ''
+    const payload = this.buildPayload();
+
+    this.bulkInquiryService.createBulkInquiry(payload).subscribe({
+      next: () => {
+        this.errorService.showToast('Your inquiry has been submitted. Our team will contact you shortly.', 'success');
+        this.bulkOrderForm.reset({
+          fullName: '',
+          phone: '',
+          email: '',
+          businessName: '',
+          orderType: '',
+          productRequirement: '',
+          quantity: '',
+          city: ''
+        });
+        this.submitted = false;
+      },
+      error: (error) => {
+        this.errorService.handleHttpError(error);
+      }
     });
-    this.submitted = false;
   }
 
   showError(controlName: string): boolean {
     const control = this.bulkOrderForm.get(controlName);
     return !!control && control.invalid && (control.touched || this.submitted);
+  }
+
+  private buildPayload(): BulkInquiryPayload {
+    const formValue = this.bulkOrderForm.getRawValue();
+
+    return {
+      fullName: String(formValue.fullName || '').trim(),
+      phone: String(formValue.phone || '').trim(),
+      email: String(formValue.email || '').trim() || undefined,
+      businessName: String(formValue.businessName || '').trim() || undefined,
+      orderType: String(formValue.orderType || '').trim(),
+      productRequirement: String(formValue.productRequirement || '').trim(),
+      quantity: String(formValue.quantity || '').trim() || undefined,
+      city: String(formValue.city || '').trim()
+    };
   }
 }
