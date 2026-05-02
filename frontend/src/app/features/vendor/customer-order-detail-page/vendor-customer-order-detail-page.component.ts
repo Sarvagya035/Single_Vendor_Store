@@ -46,9 +46,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </p>
         </div>
 
-        <div *ngIf="!isLoading && customer && order" class="border-t border-slate-200 vendor-section-body lg:py-6">
+        <div *ngIf="!isLoading && customer && order" class="vendor-section-body lg:py-6">
           <div class="space-y-6">
-            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
+            <section class="app-panel app-panel-body">
               <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-3">
@@ -81,7 +81,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </section>
 
-            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
+            <section class="app-panel app-panel-body">
               <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p class="vendor-stat-label">Order Items</p>

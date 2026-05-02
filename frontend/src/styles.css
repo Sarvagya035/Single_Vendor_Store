@@ -121,10 +121,8 @@
   }
 
   .vendor-app-layout {
-    @apply flex w-full min-w-0 gap-5 px-4 py-5 items-start sm:px-5 lg:gap-6 lg:px-6 lg:py-6;
-    max-width: none;
-    margin-left: 0;
-    margin-right: 0;
+    @apply grid min-h-screen w-full min-w-0 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-0;
+    background: #f8f3ea;
   }
 
   .app-shell-width {
@@ -158,16 +156,15 @@
   }
 
   .vendor-sidebar-wrap {
-    @apply hidden lg:block w-[260px] shrink-0 sticky top-24 self-start;
+    @apply hidden lg:flex w-[260px] shrink-0 sticky top-[82px] h-[calc(100vh-82px)] self-start border-r border-[#ead8c2] bg-[#fbf4e8] lg:overflow-y-auto;
   }
 
   .vendor-sidebar-card {
-    @apply w-full rounded-[2rem] border border-[#eadcc9] bg-white/95 p-4 shadow-[0_18px_50px_rgba(47,27,20,0.06)] overflow-y-auto;
-    height: calc(100vh - 7rem);
+    @apply flex h-full w-full flex-col bg-[#fbf4e8] px-4 py-5;
   }
 
   .vendor-main {
-    @apply flex-1 min-w-0;
+    @apply min-w-0 flex-1 bg-[#fffdf8] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6 xl:px-8 xl:py-6;
   }
 
   .vendor-page {
@@ -175,11 +172,11 @@
   }
 
   .vendor-container {
-    @apply w-full min-w-0 overflow-hidden rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)];
+    @apply w-full min-w-0;
   }
 
   .vendor-page-header {
-    @apply border-b border-[#eee2d4] px-5 py-5 sm:px-6 lg:px-8;
+    @apply border-b border-[#eee2d4] pb-5;
   }
 
   .vendor-page-actions {
@@ -187,7 +184,7 @@
   }
 
   .vendor-section-body {
-    @apply px-5 py-5 sm:px-6 lg:px-8 lg:py-6;
+    @apply py-5 sm:py-5 lg:py-6;
 }
 
   .vendor-table-head-cell {
@@ -211,7 +208,7 @@
   }
 
   .vendor-section {
-    @apply w-full min-w-0 overflow-hidden rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)];
+    @apply w-full min-w-0;
   }
 
   .vendor-grid-2 {
@@ -424,8 +421,12 @@
     @apply w-full min-w-0;
   }
 
+  .vendor-page-frame {
+    @apply mx-auto w-full min-w-0 max-w-[1440px];
+  }
+
   .vendor-dashboard-section {
-    @apply px-5 py-5 sm:px-6 lg:px-8 lg:py-6;
+    @apply px-0 py-5 sm:py-6 lg:py-6;
   }
 
   .vendor-dashboard-grid {

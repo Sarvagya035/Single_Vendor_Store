@@ -38,7 +38,7 @@ interface DashboardProduct {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <section class="vendor-page app-panel">
+    <section class="vendor-content">
       <div class="vendor-dashboard-section border-b border-[#eee2d4]">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div class="min-w-0">

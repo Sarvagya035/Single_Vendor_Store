@@ -27,10 +27,9 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
   template: `
     <div class="vendor-theme vendor-app-layout">
       <aside class="vendor-sidebar-wrap">
-        <div class="vendor-sidebar-card">
-          <app-vendor-sidebar
-            [activeView]="activeView"
-            [productCount]="productCount"
+        <app-vendor-sidebar
+          [activeView]="activeView"
+          [productCount]="productCount"
           [categoryCount]="categoryCount"
           [customerCount]="customerCount"
           [orderCount]="orderCount"
@@ -38,24 +37,25 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
           [bulkInquiryCount]="bulkInquiryCount"
           [showShipments]="true"
           [showBulkInquiries]="canViewBulkInquiries"
-          />
-        </div>
+        />
       </aside>
 
       <main class="vendor-main min-w-0">
-        <section class="vendor-page vendor-content min-w-0 lg:pt-0">
-          @if (isNavigating()) {
-            <div class="rounded-[1.5rem] border border-amber-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
-              <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
-                <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
+        <div class="vendor-page-frame">
+          <section class="vendor-page vendor-content min-w-0 lg:pt-0">
+            @if (isNavigating()) {
+              <div class="rounded-[1.5rem] border border-amber-100 bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
+                <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                  <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
+                </div>
               </div>
-            </div>
-          }
+            }
 
-          <div class="transition-all duration-300 ease-out" [class.opacity-60]="isNavigating()" [class.translate-y-1]="isNavigating()">
-            <router-outlet />
-          </div>
-        </section>
+            <div class="transition-all duration-300 ease-out" [class.opacity-60]="isNavigating()" [class.translate-y-1]="isNavigating()">
+              <router-outlet />
+            </div>
+          </section>
+        </div>
       </main>
 
       <div *ngIf="isVendorMobileNavOpen" class="fixed inset-0 z-50 lg:hidden">
@@ -66,7 +66,7 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
           (click)="closeVendorMobileNav()"
         ></button>
 
-        <aside class="absolute right-0 top-0 h-full w-[min(88vw,22rem)] overflow-y-auto bg-white p-4 shadow-2xl">
+        <aside class="absolute right-0 top-0 h-full w-[min(88vw,22rem)] overflow-y-auto border-l border-[#ead8c2] bg-[#fbf4e8] p-4 shadow-2xl">
           <div class="mb-5 flex items-center justify-between border-b border-[#eee2d4] pb-4">
             <div>
               <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
@@ -89,16 +89,16 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
           <app-vendor-sidebar
             class="block"
             [activeView]="activeView"
-          [productCount]="productCount"
-          [categoryCount]="categoryCount"
-          [customerCount]="customerCount"
-          [orderCount]="orderCount"
-          [shipmentCount]="shipmentCount"
-          [bulkInquiryCount]="bulkInquiryCount"
-          [showShipments]="true"
-          [showBulkInquiries]="canViewBulkInquiries"
-          (closeMobile)="closeVendorMobileNav()"
-        />
+            [productCount]="productCount"
+            [categoryCount]="categoryCount"
+            [customerCount]="customerCount"
+            [orderCount]="orderCount"
+            [shipmentCount]="shipmentCount"
+            [bulkInquiryCount]="bulkInquiryCount"
+            [showShipments]="true"
+            [showBulkInquiries]="canViewBulkInquiries"
+            (closeMobile)="closeVendorMobileNav()"
+          />
         </aside>
       </div>
     </div>
