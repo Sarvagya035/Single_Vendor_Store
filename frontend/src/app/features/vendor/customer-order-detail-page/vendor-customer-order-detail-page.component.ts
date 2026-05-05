@@ -58,16 +58,16 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                     </span>
                   </div>
 
-              <div class="vendor-grid-3 mt-4">
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+              <div class="vendor-grid-3 mt-4 gap-3 sm:gap-4 lg:gap-6">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Customer</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ customerLabel() }}</p>
                     </div>
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Items</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ order.orderItems?.length || 0 }} item(s)</p>
                     </div>
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Placed</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
                     </div>
@@ -92,10 +92,10 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </p>
               </div>
 
-        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="mt-5 grid gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-6">
                 <article
                   *ngFor="let item of order.orderItems || []; trackBy: trackByOrderItem"
-                  class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4"
+                  class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5"
                 >
                   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div class="min-w-0">

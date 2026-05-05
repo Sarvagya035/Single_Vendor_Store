@@ -6,7 +6,7 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <p *ngIf="eyebrow" class="app-page-eyebrow" [ngClass]="eyebrowClass">
           {{ eyebrow }}
@@ -19,7 +19,7 @@ import { Component, Input } from '@angular/core';
         </p>
       </div>
 
-      <div class="flex flex-wrap items-center gap-3">
+      <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
         <ng-content />
       </div>
     </div>

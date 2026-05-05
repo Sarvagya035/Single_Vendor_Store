@@ -21,12 +21,12 @@ interface VendorSidebarItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   host: {
-    class: 'block h-full min-w-0 lg:sticky lg:top-[82px] lg:h-[calc(100vh-82px)] lg:overflow-y-auto'
+    class: 'block h-full min-w-0'
   },
   template: `
-    <nav class="flex h-full flex-col bg-[#fbf1e3] px-4 py-6">
+    <nav class="flex h-full flex-col bg-[#fbf1e3] px-4 pt-4 pb-6">
       @for (group of sidebarGroups; track group.title) {
-        <div class="mt-6 first:mt-0">
+        <div class="mt-4 first:mt-0">
           <div class="mb-2 flex items-center gap-2 px-1">
             <span class="text-[11px] font-semibold uppercase tracking-[1.2px] text-[#a07a5a]">{{ group.title }}</span>
             <span class="h-[1px] flex-1 bg-[#ead8c2]"></span>
@@ -37,7 +37,7 @@ interface VendorSidebarItem {
               @if ((item.view !== 'shipments' || showShipments) && (item.view !== 'bulk-inquiries' || showBulkInquiries)) {
                 <a
                   [routerLink]="item.link"
-                  class="flex w-full items-center justify-between gap-3 rounded-full px-4 py-2.5 text-left transition-all duration-200"
+                  class="flex w-full items-center justify-between gap-3 rounded-full px-4 py-3 text-left transition-all duration-200"
                   [ngClass]="activeView === item.view ? item.activeClasses : item.inactiveClasses"
                   (click)="closeMobile.emit()"
                 >

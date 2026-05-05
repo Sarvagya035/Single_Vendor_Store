@@ -20,7 +20,7 @@ interface CategoryCreateForm {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <section class="vendor-content border-t border-[#ead8c2] pt-5">
+    <section class="vendor-content border-t border-slate-200 vendor-section-body lg:py-6">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div class="min-w-0">
           <p class="app-page-eyebrow">CATEGORY MANAGEMENT</p>
@@ -39,8 +39,8 @@ interface CategoryCreateForm {
         </div>
       </div>
 
-      <div *ngIf="showCreateForm" class="mt-5 border-b border-[#ead8c2] bg-[#fffaf4] px-4 py-5 sm:px-5 lg:px-6">
-        <form class="grid gap-4 lg:grid-cols-2" (ngSubmit)="submitCreateForm()">
+      <div *ngIf="showCreateForm" class="mt-4 border-t border-slate-200 bg-[#fffaf4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6">
+        <form class="grid gap-3 sm:gap-4 lg:grid-cols-2" (ngSubmit)="submitCreateForm()">
           <div class="space-y-2">
             <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category Name</label>
             <input
@@ -114,7 +114,7 @@ interface CategoryCreateForm {
         </p>
       </div>
 
-      <div *ngIf="!isLoading && categories.length > 0" class="mt-5 divide-y divide-[#ead8c2] border-t border-[#ead8c2]">
+      <div *ngIf="!isLoading && categories.length > 0" class="mt-5 divide-y divide-slate-200 border-t border-slate-200">
         <ng-container *ngFor="let category of categories; trackBy: trackByCategoryId">
           <ng-container *ngTemplateOutlet="categoryNode; context: { $implicit: category }"></ng-container>
         </ng-container>
@@ -124,7 +124,7 @@ interface CategoryCreateForm {
         <div class="group">
           <div
             class="category-row transition hover:bg-[#fffaf4]"
-            [style.padding-left.px]="24 + ((category.level || 0) * 36)"
+            [style.padding-left.px]="18 + ((category.level || 0) * 20)"
           >
             <div class="category-main">
               <button
@@ -151,7 +151,7 @@ interface CategoryCreateForm {
               </div>
 
               <div class="category-info">
-                <p class="category-name text-lg font-black">
+                <p class="category-name text-base font-black sm:text-lg">
                   {{ category.name }}
                 </p>
 
@@ -164,7 +164,7 @@ interface CategoryCreateForm {
               </div>
             </div>
 
-            <div class="category-actions" (click)="$event.stopPropagation()">
+            <div class="category-actions flex flex-wrap items-center gap-2" (click)="$event.stopPropagation()">
               <button
                 type="button"
                 (click)="toggleEdit(category)"
@@ -197,8 +197,8 @@ interface CategoryCreateForm {
             </div>
           </div>
 
-          <div *ngIf="editingId === category._id" class="mx-4 my-4 border-b border-[#ead8c2] bg-[#fffaf4] px-4 py-5 sm:mx-5 sm:px-5 lg:mx-6 lg:px-6" [style.padding-left.px]="24 + ((category.level || 0) * 36)">
-            <div class="grid gap-4 md:grid-cols-2">
+          <div *ngIf="editingId === category._id" class="mx-3 my-3 border-t border-slate-200 bg-[#fffaf4] px-4 py-4 sm:mx-4 sm:px-5 sm:py-5 lg:mx-5 lg:px-6" [style.padding-left.px]="18 + ((category.level || 0) * 20)">
+            <div class="grid gap-3 sm:gap-4 md:grid-cols-2">
               <div class="space-y-2 md:col-span-1">
                 <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category Name</label>
                 <input
@@ -245,7 +245,7 @@ interface CategoryCreateForm {
             </div>
           </div>
 
-          <div *ngIf="isExpanded(category._id) && category.children?.length" class="category-children border-t border-[#ead8c2] bg-slate-50/40">
+          <div *ngIf="isExpanded(category._id) && category.children?.length" class="category-children border-t border-slate-200 bg-slate-50/40">
             <ng-container *ngFor="let child of category.children; trackBy: trackByCategoryId">
               <ng-container *ngTemplateOutlet="categoryNode; context: { $implicit: child }"></ng-container>
             </ng-container>

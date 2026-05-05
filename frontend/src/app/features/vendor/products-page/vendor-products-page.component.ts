@@ -45,8 +45,8 @@ import {
           </article>
         </div>
 
-        <div class="border-b border-slate-200 vendor-section-body lg:py-5">
-          <div class="space-y-3">
+        <div class="border-t border-slate-200 vendor-section-body lg:py-6">
+          <div class="space-y-4">
             <div class="relative">
               <svg
                 class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
@@ -206,7 +206,7 @@ import {
 
                       <div
                         *ngIf="openActionMenuId === product._id"
-                        class="absolute right-0 top-full z-20 mt-2 w-48 overflow-hidden app-modal-shell p-1.5 text-left"
+                        class="absolute right-0 top-full z-20 mt-2 w-[min(12rem,calc(100vw-2rem))] overflow-hidden app-modal-shell p-1.5 text-left"
                       >
                         <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
                           Restock
@@ -288,7 +288,7 @@ import {
 
                 <div
                   *ngIf="openActionMenuId === product._id"
-                  class="absolute right-0 top-full z-20 mt-2 w-full min-w-[10rem] overflow-hidden app-modal-shell p-1.5"
+                  class="absolute right-0 top-full z-20 mt-2 w-[min(12rem,calc(100vw-2rem))] overflow-hidden app-modal-shell p-1.5"
                 >
                   <a [routerLink]="['/vendor/products', product._id, 'restock']" (click)="closeActionMenu()" class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-amber-50">
                     Restock

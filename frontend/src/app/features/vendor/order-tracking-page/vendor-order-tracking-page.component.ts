@@ -136,7 +136,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </section>
 
-            <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
+            <div class="vendor-grid-2 gap-4 lg:gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
               <section class="space-y-6">
                 <div class="app-panel app-panel-body">
                   <div class="flex items-end justify-between gap-4 border-b border-[#eee2d4] pb-4">
@@ -154,7 +154,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   <div *ngIf="visibleItems.length" class="mt-5 space-y-4">
                     <article
                       *ngFor="let item of visibleItems; trackBy: trackByItem"
-                      class="app-card bg-[#fffaf4] p-4"
+                      class="app-card bg-[#fffaf4] p-3 sm:p-4 lg:p-5"
                     >
                       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div class="min-w-0">
@@ -189,7 +189,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   <div *ngIf="shipment?.trackingEvents?.length; else noEvents" class="mt-5 space-y-3">
                     <article
                       *ngFor="let event of shipment?.trackingEvents || []; trackBy: trackByEvent"
-                      class="app-card bg-[#fff7ed]/70 p-4"
+                      class="app-card bg-[#fff7ed]/70 p-3 sm:p-4 lg:p-5"
                     >
                       <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div class="min-w-0">

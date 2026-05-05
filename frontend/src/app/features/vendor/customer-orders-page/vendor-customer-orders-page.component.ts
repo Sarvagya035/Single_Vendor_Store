@@ -32,38 +32,38 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           Loading customer order history...
         </div>
 
-        <div *ngIf="!isLoading && customer" class="vendor-section-body">
-          <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
-          <div class="flex items-center gap-4">
-            <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-xl font-black text-slate-500">
-              <img *ngIf="customer.avatar; else customerInitials" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
-              <ng-template #customerInitials>{{ initials(customer) }}</ng-template>
+        <div *ngIf="!isLoading && customer" class="vendor-section-body lg:py-6">
+          <div class="flex flex-col gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div class="flex items-center gap-4">
+              <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-xl font-black text-slate-500">
+                <img *ngIf="customer.avatar; else customerInitials" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
+                <ng-template #customerInitials>{{ initials(customer) }}</ng-template>
+              </div>
+
+              <div class="min-w-0">
+                <h2 class="vendor-panel-title mt-2 truncate">
+                  {{ customer.username || customer.fullName || customer.email }}
+                </h2>
+              </div>
             </div>
 
-            <div class="min-w-0">
-              <h2 class="vendor-panel-title mt-2 truncate">
-                {{ customer.username || customer.fullName || customer.email }}
-              </h2>
+            <div class="flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.18em]">
+              <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ customerOrders.length }} order{{ customerOrders.length === 1 ? '' : 's' }}</span>
+              <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ formatCurrency(totalSpent()) }} spent</span>
+              <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ latestOrderLabel() }}</span>
             </div>
           </div>
-
-          <div class="flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.18em]">
-            <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ customerOrders.length }} order{{ customerOrders.length === 1 ? '' : 's' }}</span>
-            <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ formatCurrency(totalSpent()) }} spent</span>
-            <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ latestOrderLabel() }}</span>
-          </div>
-        </div>
 
         <div class="vendor-grid-3 vendor-section-body">
-          <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
+          <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70 p-3 sm:p-4 lg:p-5">
             <p class="vendor-stat-label !text-amber-700">Total Orders</p>
-            <p class="mt-3 text-3xl font-black text-slate-900">{{ customerOrders.length }}</p>
+            <p class="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">{{ customerOrders.length }}</p>
           </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
+          <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70 p-3 sm:p-4 lg:p-5">
             <p class="vendor-stat-label !text-amber-700">Delivered</p>
-            <p class="mt-3 text-3xl font-black text-slate-900">{{ countByStatus('Delivered') }}</p>
+            <p class="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">{{ countByStatus('Delivered') }}</p>
           </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
+          <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70 p-3 sm:p-4 lg:p-5">
             <p class="vendor-stat-label !text-amber-700">Latest Order</p>
             <p class="mt-3 text-lg font-black text-slate-900">{{ latestOrderLabel() }}</p>
           </article>
@@ -77,126 +77,126 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </p>
         </div>
 
-        <div *ngIf="!isLoading && customerOrders.length === 0 && customer" class="border-t border-slate-200 vendor-section-body py-16 text-center">
+        <div *ngIf="!isLoading && customerOrders.length === 0 && customer" class="border-t border-slate-200 vendor-section-body lg:py-6 text-center">
           <h2 class="vendor-empty-title">No customer orders yet</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">
             This customer has not placed any orders yet.
           </p>
         </div>
 
-        <div *ngIf="!isLoading && customerOrders.length > 0" class="border-t border-slate-200 vendor-section-body">
-        <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p class="vendor-stat-label">Search</p>
-            <h2 class="vendor-panel-title mt-2">Find a specific order</h2>
-          </div>
+        <div *ngIf="!isLoading && customerOrders.length > 0" class="border-t border-slate-200 vendor-section-body lg:py-6">
+          <div class="flex flex-col gap-4 border-b border-slate-200 pb-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p class="vendor-stat-label">Search</p>
+              <h2 class="vendor-panel-title mt-2">Find a specific order</h2>
+            </div>
 
-          <div class="w-full max-w-2xl">
-            <label class="sr-only" for="customer-order-search">Search orders</label>
-            <div class="flex items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 shadow-sm focus-within:border-amber-300 focus-within:ring-4 focus-within:ring-amber-100">
-              <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-400">
-                <path fill="currentColor" d="M10 4a6 6 0 104.472 10.007l4.26 4.261 1.414-1.414-4.26-4.26A6 6 0 0010 4Zm0 2a4 4 0 110 8 4 4 0 010-8Z" />
-              </svg>
-              <input
-                id="customer-order-search"
-                type="text"
-                [(ngModel)]="searchTerm"
-                placeholder="Search by order number, item name, SKU, or status"
-                class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
-              />
-              <button
-                *ngIf="searchTerm"
-                type="button"
-                class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-slate-600 transition hover:bg-slate-200"
-                (click)="searchTerm = ''"
-              >
-                Clear
-              </button>
+            <div class="w-full max-w-2xl">
+              <label class="sr-only" for="customer-order-search">Search orders</label>
+              <div class="flex items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 shadow-sm focus-within:border-amber-300 focus-within:ring-4 focus-within:ring-amber-100">
+                <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-400">
+                  <path fill="currentColor" d="M10 4a6 6 0 104.472 10.007l4.26 4.261 1.414-1.414-4.26-4.26A6 6 0 0010 4Zm0 2a4 4 0 110 8 4 4 0 010-8Z" />
+                </svg>
+                <input
+                  id="customer-order-search"
+                  type="text"
+                  [(ngModel)]="searchTerm"
+                  placeholder="Search by order number, item name, SKU, or status"
+                  class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                />
+                <button
+                  *ngIf="searchTerm"
+                  type="button"
+                  class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-slate-600 transition hover:bg-slate-200"
+                  (click)="searchTerm = ''"
+                >
+                  Clear
+                </button>
+              </div>
             </div>
           </div>
+
+          <div class="mt-4 flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
+              Showing {{ filteredOrders().length }} of {{ customerOrders.length }}
+            </span>
+            <span *ngIf="searchTerm" class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">
+              {{ searchTerm }}
+            </span>
+          </div>
         </div>
 
-        <div class="mt-4 flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
-          <span class="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
-            Showing {{ filteredOrders().length }} of {{ customerOrders.length }}
-          </span>
-          <span *ngIf="searchTerm" class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">
-            {{ searchTerm }}
-          </span>
+        <div *ngIf="!isLoading && filteredOrders().length === 0 && customerOrders.length > 0" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-4 py-10 text-center sm:px-6 lg:px-8">
+          <h2 class="vendor-empty-title">No matching orders</h2>
+          <p class="mt-3 text-sm font-medium text-slate-500">
+            Try a different order number, item name, SKU, or status.
+          </p>
         </div>
-      </div>
 
-      <div *ngIf="!isLoading && filteredOrders().length === 0 && customerOrders.length > 0" class="rounded-[2rem] border border-dashed border-slate-300 bg-white px-8 py-16 text-center">
-        <h2 class="vendor-empty-title">No matching orders</h2>
-        <p class="mt-3 text-sm font-medium text-slate-500">
-          Try a different order number, item name, SKU, or status.
-        </p>
-      </div>
-
-      <div *ngIf="!isLoading && filteredOrders().length > 0" class="grid gap-5">
-        <article
-          *ngFor="let order of filteredOrders(); trackBy: trackByOrder"
-          class="vendor-mobile-card cursor-pointer transition hover:-translate-y-0.5 hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)]"
-          (click)="openOrder(order)"
-        >
-          <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-            <div class="min-w-0 flex-1">
-              <div class="flex flex-wrap items-center gap-3">
-                <p class="text-lg font-black text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
-                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(vendorOrderStatus(order))">
-                  {{ vendorOrderStatus(order) }}
-                </span>
-              </div>
-
-              <div class="mt-4 grid gap-4 md:grid-cols-3">
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Items</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ order.orderItems?.length || 0 }} item(s)</p>
+        <div *ngIf="!isLoading && filteredOrders().length > 0" class="grid gap-4 sm:gap-5">
+          <article
+            *ngFor="let order of filteredOrders(); trackBy: trackByOrder"
+            class="vendor-mobile-card p-3 sm:p-4 lg:p-5 cursor-pointer transition hover:-translate-y-0.5 hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)]"
+            (click)="openOrder(order)"
+          >
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-3">
+                  <p class="text-base font-black text-slate-900 sm:text-lg">Order #{{ shortOrderId(order._id) }}</p>
+                  <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(vendorOrderStatus(order))">
+                    {{ vendorOrderStatus(order) }}
+                  </span>
                 </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Amount</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(orderTotal(order)) }}</p>
-                </div>
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Placed</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
-                </div>
-              </div>
 
-              <div class="mt-4 grid gap-3">
-                <div
-                  *ngFor="let item of order.orderItems || []; trackBy: trackByOrderItem"
-                  class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4"
-                  (click)="$event.stopPropagation()"
-                >
-                  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div class="min-w-0">
-                      <p class="text-sm font-black text-slate-900">{{ item.name || 'Order item' }}</p>
-                      <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                        {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
-                      </p>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
+                    <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Items</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ order.orderItems?.length || 0 }} item(s)</p>
+                  </div>
+                  <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
+                    <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Amount</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(orderTotal(order)) }}</p>
+                  </div>
+                  <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
+                    <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Placed</p>
+                    <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
+                  </div>
+                </div>
+
+                <div class="mt-4 grid gap-3">
+                  <div
+                    *ngFor="let item of order.orderItems || []; trackBy: trackByOrderItem"
+                    class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div class="min-w-0">
+                        <p class="text-sm font-black text-slate-900">{{ item.name || 'Order item' }}</p>
+                        <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                          {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
+                        </p>
+                      </div>
+
+                      <p class="text-sm font-black text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
                     </div>
-
-                    <p class="text-sm font-black text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="flex flex-col items-start gap-3 lg:min-w-[220px] lg:items-end">
-              <button
-                type="button"
-                class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100"
-                (click)="$event.stopPropagation(); openOrder(order)"
-              >
-                View order
-              </button>
-              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Customer order history
-              </p>
+              <div class="flex flex-col items-start gap-3 lg:min-w-[220px] lg:items-end">
+                <button
+                  type="button"
+                  class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100"
+                  (click)="$event.stopPropagation(); openOrder(order)"
+                >
+                  View order
+                </button>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Customer order history
+                </p>
+              </div>
             </div>
-          </div>
-        </article>
+          </article>
         </div>
       </div>
     </section>
