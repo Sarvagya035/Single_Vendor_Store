@@ -41,8 +41,8 @@ interface GuestCartDisplayItem {
     <ng-container *ngIf="isCustomer(); else guestState">
       <section class="storefront-section mt-4 space-y-6">
         <div class="storefront-container">
-          <div class="vendor-page-shell overflow-hidden">
-            <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <div class="app-panel overflow-hidden">
+            <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                   <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
@@ -65,9 +65,9 @@ interface GuestCartDisplayItem {
               {{ cart.alerts }}
             </div>
 
-            <div *ngIf="cartLoading" class="grid gap-5 bg-[#fffdfa] px-4 py-6 sm:px-5 lg:grid-cols-[minmax(0,1.75fr)_360px] lg:px-6">
+            <div *ngIf="cartLoading" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
-                <div *ngFor="let _ of cartSkeletonCards" class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <div *ngFor="let _ of cartSkeletonCards" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
                     <div class="h-24 w-full animate-pulse rounded-[1.5rem] bg-slate-200/80 sm:h-28 sm:w-28"></div>
                     <div class="min-w-0 flex-1 space-y-3">
@@ -80,7 +80,7 @@ interface GuestCartDisplayItem {
               </div>
 
               <aside class="space-y-5">
-                <div class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <div class="app-card app-panel-body">
                   <div class="h-4 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
                   <div class="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4">
                     <div class="h-4 animate-pulse rounded-full bg-slate-200/80"></div>
@@ -90,8 +90,8 @@ interface GuestCartDisplayItem {
               </aside>
             </div>
 
-            <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] px-4 py-6 sm:px-5 lg:px-6">
-              <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white app-card-body text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+            <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+              <div class="app-empty-state">
                 <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
                 <p class="mt-3 text-sm font-medium text-slate-500">
                   Browse products and add a variant to start building your order.
@@ -100,12 +100,9 @@ interface GuestCartDisplayItem {
               </div>
             </div>
 
-            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] app-card-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
-                <article
-                  *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
-                  class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]"
-                >
+                <article *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
                     <img
                       [src]="cartItemImage(item)"
@@ -169,7 +166,7 @@ interface GuestCartDisplayItem {
               </div>
 
               <aside class="space-y-5">
-                <div class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <div class="app-card app-panel-body">
                   <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Summary</p>
 
                   <div class="mt-6 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4 text-sm text-slate-700">
@@ -207,8 +204,8 @@ interface GuestCartDisplayItem {
     <ng-template #guestState>
       <section class="storefront-section mt-4 space-y-6">
         <div class="storefront-container">
-          <div class="vendor-page-shell overflow-hidden">
-            <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+          <div class="app-panel overflow-hidden">
+            <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                   <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
@@ -220,9 +217,9 @@ interface GuestCartDisplayItem {
               </div>
             </div>
 
-            <div *ngIf="guestCartLoading" class="grid gap-5 bg-[#fffdfa] px-4 py-6 sm:px-5 lg:grid-cols-[minmax(0,1.75fr)_360px] lg:px-6">
+            <div *ngIf="guestCartLoading" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
-                <div *ngFor="let _ of guestCartSkeletonCards" class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <div *ngFor="let _ of guestCartSkeletonCards" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
                     <div class="h-24 w-full animate-pulse rounded-[1.5rem] bg-slate-200/80 sm:h-28 sm:w-28"></div>
                     <div class="min-w-0 flex-1 space-y-3">
@@ -235,7 +232,7 @@ interface GuestCartDisplayItem {
               </div>
 
               <aside class="space-y-5">
-                <div class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <div class="app-card app-panel-body">
                   <div class="h-4 w-20 animate-pulse rounded-full bg-slate-200/80"></div>
                   <div class="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4">
                     <div class="h-4 animate-pulse rounded-full bg-slate-200/80"></div>
@@ -252,8 +249,8 @@ interface GuestCartDisplayItem {
               {{ guestCartMessage }}
             </div>
 
-            <div *ngIf="!guestCartLoading && guestCartItems.length === 0" class="bg-[#fffdfa] px-4 py-6 sm:px-5 lg:px-6">
-              <div class="rounded-[2rem] border border-dashed border-[#e7dac9] bg-white app-card-body text-center shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+            <div *ngIf="!guestCartLoading && guestCartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+              <div class="app-empty-state">
                 <h2 class="text-2xl font-medium text-slate-900">Your guest cart is empty</h2>
                 <p class="mt-3 text-sm font-medium text-slate-500">
                   Browse products and add a variant to start building your order.
@@ -262,12 +259,9 @@ interface GuestCartDisplayItem {
               </div>
             </div>
 
-            <div *ngIf="!guestCartLoading && guestCartItems.length > 0" class="grid gap-5 bg-[#fffdfa] app-card-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+            <div *ngIf="!guestCartLoading && guestCartItems.length > 0" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
-                <article
-                  *ngFor="let item of guestCartItems; trackBy: trackByGuestCartItem"
-                  class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]"
-                >
+                <article *ngFor="let item of guestCartItems; trackBy: trackByGuestCartItem" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
                     <img
                       [src]="guestCartItemImage(item)"
@@ -345,7 +339,7 @@ interface GuestCartDisplayItem {
               </div>
 
               <aside class="space-y-5">
-                <div class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.05)]">
+                <div class="app-card app-panel-body">
                   <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Summary</p>
 
                   <div class="mt-6 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4 text-sm text-slate-700">

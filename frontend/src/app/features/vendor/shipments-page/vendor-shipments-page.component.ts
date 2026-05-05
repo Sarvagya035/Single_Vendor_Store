@@ -86,14 +86,14 @@ interface ShipmentCardView {
           Loading shipment records...
         </div>
 
-        <div *ngIf="!isLoading && shipments.length === 0" class="border-t border-slate-200 vendor-section-body py-12 text-center">
+        <div *ngIf="!isLoading && shipments.length === 0" class="border-t border-slate-200 vendor-section-body lg:py-6 text-center">
           <h2 class="vendor-empty-title">No shipments yet</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">
             Shipment records will appear here after payment verification creates them.
           </p>
         </div>
 
-        <div *ngIf="shipments.length" class="space-y-4 border-t border-slate-200 vendor-section-body">
+        <div *ngIf="shipments.length" class="space-y-4 border-t border-slate-200 vendor-section-body lg:py-6">
           <article
             *ngFor="let shipment of shipments; trackBy: trackByShipment"
             class="vendor-mobile-card"

@@ -42,21 +42,21 @@ interface VendorCustomerRow {
         </div>
 
         <div class="vendor-grid-3 vendor-section-body">
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
             <p class="vendor-stat-label !text-amber-700">Total Customers</p>
             <p class="vendor-stat-value">{{ customerRows.length }}</p>
           </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
             <p class="vendor-stat-label !text-amber-700">Active Buyers</p>
             <p class="vendor-stat-value">{{ activeCustomerCount }}</p>
           </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
             <p class="vendor-stat-label !text-amber-600">Latest Signup</p>
             <p class="mt-3 text-sm font-black text-slate-900">{{ newestCustomerLabel }}</p>
           </article>
         </div>
 
-        <div class="border-b border-slate-200 vendor-section-body lg:py-5">
+        <div class="border-t border-slate-200 vendor-section-body lg:py-6">
           <div class="relative">
             <svg
               class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
@@ -181,7 +181,7 @@ interface VendorCustomerRow {
           </table>
         </div>
 
-        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="grid gap-4 px-5 pb-5 sm:px-6 lg:hidden">
+        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="grid gap-3 px-4 pb-4 sm:gap-4 sm:px-5 lg:hidden">
           <article
             *ngFor="let customer of filteredCustomers; trackBy: trackByCustomer"
             class="vendor-mobile-card"

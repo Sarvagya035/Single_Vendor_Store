@@ -18,7 +18,7 @@ import { OrderService } from '../../core/services/order.service';
     <section class="storefront-section overflow-x-hidden pt-4 space-y-6 sm:pt-6 lg:pt-8">
       <div class="storefront-container">
         <div class="vendor-page-shell overflow-hidden">
-          <div class="border-b border-slate-200 px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
+          <div class="border-b border-[#eee2d4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div class="min-w-0">
                 <p class="app-page-eyebrow !text-amber-700">Track Order</p>
@@ -39,8 +39,8 @@ import { OrderService } from '../../core/services/order.service';
             Loading tracking details...
           </div>
 
-          <div *ngIf="!isLoading && order" class="bg-[#fffdfa] app-card-body">
-            <div class="rounded-[2.25rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+          <div *ngIf="!isLoading && order" class="app-panel app-panel-body">
+            <div class="app-panel app-panel-body">
               <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
                 <div class="min-w-0">
                   <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Order</p>
@@ -120,7 +120,7 @@ import { OrderService } from '../../core/services/order.service';
 
                 <article
                   *ngFor="let item of visibleItems; trackBy: trackByItem"
-                  class="flex flex-col gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-white p-4 sm:flex-row sm:p-5"
+                  class="flex flex-col gap-4 app-card bg-white p-4 sm:flex-row sm:p-5"
                 >
                   <div class="flex h-24 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#eadfce] bg-[#fffaf4] sm:h-28 sm:w-28">
                     <img
@@ -148,7 +148,7 @@ import { OrderService } from '../../core/services/order.service';
               </div>
 
               <div class="mt-8 grid gap-4 border-t border-[#f1e4d4] pt-6 md:grid-cols-2">
-                <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-5">
+                <div class="app-card bg-[#fff7ed]/70 p-5">
                   <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Shipping Address</p>
                   <p class="mt-3 text-sm font-medium leading-7 text-slate-600">
                     {{ order.shippingAddress?.address || 'Address unavailable' }}
@@ -159,7 +159,7 @@ import { OrderService } from '../../core/services/order.service';
                   <p class="mt-2 text-sm font-semibold text-slate-700">{{ order.shippingAddress?.phone || '-' }}</p>
                 </div>
 
-                <div class="rounded-[1.5rem] border border-[#e7dac9] bg-[#2f1b14] p-5 text-white">
+                <div class="rounded-[1.5rem] border border-[#2f1b14] bg-[#2f1b14] p-5 text-white">
                   <p class="text-xs font-medium uppercase tracking-[0.22em] text-slate-400">Payment</p>
                   <div class="mt-4 space-y-3 text-sm font-medium text-slate-300">
                     <div class="flex items-center justify-between">

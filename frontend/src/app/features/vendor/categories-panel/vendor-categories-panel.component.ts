@@ -20,29 +20,27 @@ interface CategoryCreateForm {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <section class="vendor-content border-t border-slate-200">
-      <div class="vendor-page-header border-b border-slate-200">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="app-page-eyebrow">Category Management</p>
-            <h3 class="app-page-title !text-[1.8rem] md:!text-[2.2rem]">Category Tree</h3>
-            <p class="app-page-description !mt-2 !max-w-2xl">
-              Manage your category hierarchy. Click the arrow to expand/collapse subcategories.
-            </p>
-          </div>
-          <div class="vendor-page-actions">
-            <button type="button" (click)="toggleCreateForm()" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">
-              {{ showCreateForm ? 'Close Form' : 'Add Category' }}
-            </button>
-            <button type="button" (click)="refresh.emit()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
-              {{ isLoading ? 'Refreshing...' : 'Refresh Categories' }}
-            </button>
-          </div>
+    <section class="vendor-content border-t border-slate-200 vendor-section-body lg:py-6">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div class="min-w-0">
+          <p class="app-page-eyebrow">CATEGORY MANAGEMENT</p>
+          <h3 class="app-page-title !text-[1.8rem] md:!text-[2.2rem]">Category Tree</h3>
+          <p class="app-page-description !mt-2 !max-w-2xl">
+            Manage your category hierarchy. Click the arrow to expand or collapse subcategories.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center lg:shrink-0">
+          <button type="button" (click)="toggleCreateForm()" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">
+            {{ showCreateForm ? 'Close Form' : 'Add Category' }}
+          </button>
+          <button type="button" (click)="refresh.emit()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
+            {{ isLoading ? 'Refreshing...' : 'Refresh Categories' }}
+          </button>
         </div>
       </div>
 
-      <div *ngIf="showCreateForm" class="border-b border-slate-200 bg-[#fffaf4] px-6 py-5">
-        <form class="grid gap-4 lg:grid-cols-2" (ngSubmit)="submitCreateForm()">
+      <div *ngIf="showCreateForm" class="mt-4 border-t border-slate-200 bg-[#fffaf4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6">
+        <form class="grid gap-3 sm:gap-4 lg:grid-cols-2" (ngSubmit)="submitCreateForm()">
           <div class="space-y-2">
             <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category Name</label>
             <input
@@ -102,21 +100,21 @@ interface CategoryCreateForm {
         </form>
       </div>
 
-      <div *ngIf="isLoading" class="px-6 py-16">
+      <div *ngIf="isLoading" class="py-10 sm:py-12">
         <div class="flex flex-col items-center gap-4">
           <div class="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="font-medium text-slate-500">Loading categories...</p>
         </div>
       </div>
 
-      <div *ngIf="!isLoading && categories.length === 0" class="mx-6 my-6 rounded-[1.6rem] border border-slate-200 bg-white px-8 py-20 text-center shadow-[0_10px_30px_rgba(47,27,20,0.04)]">
+      <div *ngIf="!isLoading && categories.length === 0" class="py-10 text-center">
         <h3 class="vendor-empty-title">No Categories Yet</h3>
         <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
           Categories from your backend will appear here once they are created.
         </p>
       </div>
 
-      <div *ngIf="!isLoading && categories.length > 0" class="divide-y divide-slate-200">
+      <div *ngIf="!isLoading && categories.length > 0" class="mt-5 divide-y divide-slate-200 border-t border-slate-200">
         <ng-container *ngFor="let category of categories; trackBy: trackByCategoryId">
           <ng-container *ngTemplateOutlet="categoryNode; context: { $implicit: category }"></ng-container>
         </ng-container>
@@ -126,7 +124,7 @@ interface CategoryCreateForm {
         <div class="group">
           <div
             class="category-row transition hover:bg-[#fffaf4]"
-            [style.padding-left.px]="24 + ((category.level || 0) * 36)"
+            [style.padding-left.px]="18 + ((category.level || 0) * 20)"
           >
             <div class="category-main">
               <button
@@ -153,7 +151,7 @@ interface CategoryCreateForm {
               </div>
 
               <div class="category-info">
-                <p class="category-name text-lg font-black">
+                <p class="category-name text-base font-black sm:text-lg">
                   {{ category.name }}
                 </p>
 
@@ -166,7 +164,7 @@ interface CategoryCreateForm {
               </div>
             </div>
 
-            <div class="category-actions" (click)="$event.stopPropagation()">
+            <div class="category-actions flex flex-wrap items-center gap-2" (click)="$event.stopPropagation()">
               <button
                 type="button"
                 (click)="toggleEdit(category)"
@@ -199,8 +197,8 @@ interface CategoryCreateForm {
             </div>
           </div>
 
-          <div *ngIf="editingId === category._id" class="mx-6 my-4 rounded-[1.5rem] border border-slate-200 bg-[#fffaf4] px-6 py-5" [style.padding-left.px]="24 + ((category.level || 0) * 36)">
-            <div class="grid gap-4 md:grid-cols-2">
+          <div *ngIf="editingId === category._id" class="mx-3 my-3 border-t border-slate-200 bg-[#fffaf4] px-4 py-4 sm:mx-4 sm:px-5 sm:py-5 lg:mx-5 lg:px-6" [style.padding-left.px]="18 + ((category.level || 0) * 20)">
+            <div class="grid gap-3 sm:gap-4 md:grid-cols-2">
               <div class="space-y-2 md:col-span-1">
                 <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category Name</label>
                 <input

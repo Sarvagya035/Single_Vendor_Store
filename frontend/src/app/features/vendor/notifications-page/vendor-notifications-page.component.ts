@@ -18,60 +18,60 @@ type NotificationFilter = 'all' | 'unread' | 'active';
     <section class="vendor-content">
       <div class="vendor-section">
         <div class="vendor-page-header">
-        <app-page-header
-          eyebrow="Notifications"
-          title="Notification center"
-          description="Track low-stock alerts and keep product availability under control from one place."
-          titleClass="!text-[1.8rem] md:!text-[2.2rem]"
-        >
-          <button type="button" (click)="reload()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
-            {{ isLoading ? 'Refreshing...' : 'Refresh Notifications' }}
-          </button>
-        </app-page-header>
+          <app-page-header
+            eyebrow="Notifications"
+            title="Notification center"
+            description="Track low-stock alerts and keep product availability under control from one place."
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
+          >
+            <button type="button" (click)="reload()" [disabled]="isLoading" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">
+              {{ isLoading ? 'Refreshing...' : 'Refresh Notifications' }}
+            </button>
+          </app-page-header>
         </div>
 
         <div class="vendor-grid-4 vendor-section-body">
-        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-          <p class="vendor-stat-label">Unread</p>
-          <p class="vendor-stat-value">{{ summary.unreadNotifications }}</p>
-        </article>
-        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-          <p class="vendor-stat-label">Low stock</p>
-          <p class="vendor-stat-value">{{ summary.activeLowStockAlerts }}</p>
-        </article>
-        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-          <p class="vendor-stat-label">Resolved</p>
-          <p class="vendor-stat-value">{{ summary.resolvedLowStockAlerts }}</p>
-        </article>
-        <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-          <p class="vendor-stat-label">Total</p>
-          <p class="vendor-stat-value">{{ summary.totalNotifications }}</p>
-        </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
+            <p class="vendor-stat-label">Unread</p>
+            <p class="vendor-stat-value">{{ summary.unreadNotifications }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
+            <p class="vendor-stat-label">Low stock</p>
+            <p class="vendor-stat-value">{{ summary.activeLowStockAlerts }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
+            <p class="vendor-stat-label">Resolved</p>
+            <p class="vendor-stat-value">{{ summary.resolvedLowStockAlerts }}</p>
+          </article>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
+            <p class="vendor-stat-label">Total</p>
+            <p class="vendor-stat-value">{{ summary.totalNotifications }}</p>
+          </article>
         </div>
 
-        <div class="border-t border-slate-200 vendor-section-body lg:py-5">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="border-t border-slate-200 vendor-section-body lg:py-6">
+          <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div class="flex flex-wrap gap-2">
               <button
                 type="button"
-                class="rounded-full px-4 py-2 text-sm font-black transition"
-                [ngClass]="filter === 'all' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200'"
+                class="btn-secondary !min-h-0 rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition"
+                [ngClass]="filter === 'all' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border border-slate-200'"
                 (click)="setFilter('all')"
               >
                 All
               </button>
               <button
                 type="button"
-                class="rounded-full px-4 py-2 text-sm font-black transition"
-                [ngClass]="filter === 'unread' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200'"
+                class="btn-secondary !min-h-0 rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition"
+                [ngClass]="filter === 'unread' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border border-slate-200'"
                 (click)="setFilter('unread')"
               >
                 Unread
               </button>
               <button
                 type="button"
-                class="rounded-full px-4 py-2 text-sm font-black transition"
-                [ngClass]="filter === 'active' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200'"
+                class="btn-secondary !min-h-0 rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition"
+                [ngClass]="filter === 'active' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border border-slate-200'"
                 (click)="setFilter('active')"
               >
                 Active low stock
@@ -106,16 +106,16 @@ type NotificationFilter = 'all' | 'unread' | 'active';
           </p>
         </div>
 
-        <div *ngIf="filteredNotifications.length" class="grid gap-4 border-t border-slate-200 vendor-section-body">
+        <div *ngIf="filteredNotifications.length" class="grid gap-4 border-t border-slate-200 vendor-section-body lg:py-6">
           <article
             *ngFor="let notification of filteredNotifications; trackBy: trackByNotification"
-            class="vendor-mobile-card transition hover:bg-[#fffaf4]"
+            class="vendor-mobile-card p-3 sm:p-4 lg:p-5 transition hover:bg-[#fffaf4]"
             [class.opacity-75]="notification.isRead"
           >
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-3">
-                  <p class="text-lg font-black text-slate-900">{{ notification.title }}</p>
+                  <p class="text-base font-black text-slate-900 sm:text-lg">{{ notification.title }}</p>
                   <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="priorityClass(notification.priority)">
                     {{ notification.priority }} priority
                   </span>
@@ -128,30 +128,30 @@ type NotificationFilter = 'all' | 'unread' | 'active';
 
                 <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <ng-container *ngIf="notification.type === 'bulk_inquiry'; else lowStockCards">
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Customer</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ notification.businessName || notification.fullName || 'Customer' }}</p>
                     </div>
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Inquiry Type</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ notification.orderType || 'Bulk inquiry' }}</p>
                     </div>
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">City</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ notification.city || 'Not provided' }}</p>
                     </div>
                   </ng-container>
 
                   <ng-template #lowStockCards>
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Product</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ notification.productName }}</p>
                     </div>
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Variant</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ notification.variantLabel }}</p>
                     </div>
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-3 sm:p-4 lg:p-5">
                       <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
                       <p class="mt-2 text-sm font-black text-slate-900">{{ notification.currentStock }} / {{ notification.stockThreshold }}</p>
                     </div>

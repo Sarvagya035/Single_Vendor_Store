@@ -7,8 +7,8 @@ import { CustomerUser } from '../../../core/models/customer.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <article class="overflow-hidden rounded-[1.75rem] border border-[#e7dac9] bg-white shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
-      <div class="border-b border-[#eee2d4] app-card-body">
+    <article class="app-card overflow-hidden">
+      <div class="border-b border-[#eee2d4] app-panel-body">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f6ede5] text-xl font-medium text-[#7b5b4d] sm:h-16 sm:w-16 sm:text-2xl">
             {{ user?.username?.charAt(0)?.toUpperCase() || 'C' }}
@@ -32,7 +32,7 @@ import { CustomerUser } from '../../../core/models/customer.models';
         </div>
       </div>
 
-      <div class="app-card-body">
+      <div class="app-panel-body">
         <section>
           <div class="flex items-center gap-2">
             <svg class="h-4 w-4 text-[#7b5b4d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">

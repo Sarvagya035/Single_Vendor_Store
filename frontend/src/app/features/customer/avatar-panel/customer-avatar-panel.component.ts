@@ -7,7 +7,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(47,27,20,0.06)] sm:p-6">
+    <div class="app-card app-panel-body">
       <div class="border-b border-[#f1e4d4] pb-4">
         <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-700">Profile Picture</p>
         <h3 class="mt-2 text-xl font-medium text-slate-900">Avatar and preview</h3>
@@ -35,7 +35,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
         <div class="w-full space-y-6">
           <div class="relative">
             <input type="file" id="avatar-input" (change)="fileSelected.emit($event)" class="hidden">
-            <label for="avatar-input" class="btn-secondary !w-full !py-4 flex cursor-pointer flex-col items-center gap-1">
+            <label for="avatar-input" class="btn-secondary flex w-full cursor-pointer flex-col items-center gap-1 !py-4">
               <span class="text-lg text-amber-700">📁 Select Image</span>
               <span class="text-[10px] font-medium uppercase tracking-widest text-slate-400">{{ selectedFileName || 'PNG, JPG or WEBP (Max 2MB)' }}</span>
             </label>

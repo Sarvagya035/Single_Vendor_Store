@@ -19,9 +19,9 @@ export interface ProductCardVariantActionEvent {
       (click)="productClick.emit(product)"
       (keydown.enter)="productClick.emit(product)"
       (keydown.space)="$event.preventDefault(); productClick.emit(product)"
-      class="product-card group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+      class="product-card group relative flex h-full w-full min-w-0 flex-col cursor-pointer overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_48px_rgba(47,27,20,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
     >
-      <div class="relative h-[240px] w-full overflow-hidden rounded-t-[10px] bg-slate-50">
+      <div class="relative h-[240px] w-full overflow-hidden bg-slate-50">
         <img
           [src]="mainImageUrl"
           [alt]="displayTitle"
@@ -110,7 +110,7 @@ export interface ProductCardVariantActionEvent {
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); addToCart.emit({ product, variant: selectedVariant })"
-            class="inline-flex h-9 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-full bg-[#8B5538] px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[#74452e] sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex h-10 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-full bg-[#8B5538] px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[#74452e] sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >
@@ -122,7 +122,7 @@ export interface ProductCardVariantActionEvent {
             type="button"
             [disabled]="!isProductInStock || !selectedVariant"
             (click)="$event.stopPropagation(); buyNow.emit({ product, variant: selectedVariant })"
-            class="inline-flex h-9 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-full border border-[#8B5538] bg-white px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#8B5538] transition hover:bg-[#fff7f2] sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+            class="inline-flex h-10 min-w-0 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-full border border-[#8B5538] bg-white px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.04em] text-[#8B5538] transition hover:bg-[#fff7f2] sm:text-[11px] md:text-xs disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
             [class.opacity-50]="!isProductInStock || !selectedVariant"
             [class.cursor-not-allowed]="!isProductInStock || !selectedVariant"
           >

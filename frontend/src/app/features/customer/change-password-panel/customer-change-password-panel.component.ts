@@ -17,8 +17,8 @@ import { UserService } from '../../../core/services/user.service';
         aria-label="Close password dialog"
       ></button>
 
-      <div class="relative z-[101] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_30px_80px_rgba(111,78,55,0.2)]">
-        <div class="border-b border-[#f1e4d4] bg-[linear-gradient(180deg,#fffaf5_0%,#fffdf9_100%)] app-card-body">
+      <div class="relative z-[101] w-full max-w-2xl overflow-hidden app-modal-shell">
+        <div class="border-b border-[#f1e4d4] bg-[linear-gradient(180deg,#fffaf5_0%,#fffdf9_100%)] app-panel-body">
           <div class="flex items-start justify-between gap-4">
             <div>
               <p class="text-[11px] font-medium uppercase tracking-[0.28em] text-amber-700">Security</p>
@@ -38,10 +38,10 @@ import { UserService } from '../../../core/services/user.service';
           </div>
         </div>
 
-        <div class="space-y-8 bg-[#fffdfa] app-card-body">
+        <div class="space-y-8 bg-[#fffdfa] app-panel-body">
           <form class="space-y-6" (ngSubmit)="onSubmit()">
             <div class="space-y-2">
-              <label for="oldPassword" class="ml-1 text-[10px] font-medium uppercase tracking-[0.1em] text-slate-400">
+              <label for="oldPassword" class="app-label">
                 Current Password
               </label>
               <div class="relative">
@@ -52,7 +52,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showOldPassword ? 'text' : 'password'"
                   autocomplete="current-password"
                   placeholder="Enter your current password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-[#fff7ed] px-4 py-4 pr-16 font-medium text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
+                  class="app-field pr-16"
                 >
                 <button
                   type="button"
@@ -65,7 +65,7 @@ import { UserService } from '../../../core/services/user.service';
             </div>
 
             <div class="space-y-2">
-              <label for="newPassword" class="ml-1 text-[10px] font-medium uppercase tracking-[0.1em] text-slate-400">
+              <label for="newPassword" class="app-label">
                 New Password
               </label>
               <div class="relative">
@@ -76,7 +76,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showNewPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Enter your new password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-[#fff7ed] px-4 py-4 pr-16 font-medium text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
+                  class="app-field pr-16"
                 >
                 <button
                   type="button"
@@ -89,7 +89,7 @@ import { UserService } from '../../../core/services/user.service';
             </div>
 
             <div class="space-y-2">
-              <label for="confirmPassword" class="ml-1 text-[10px] font-medium uppercase tracking-[0.1em] text-slate-400">
+              <label for="confirmPassword" class="app-label">
                 Confirm Password
               </label>
               <div class="relative">
@@ -100,7 +100,7 @@ import { UserService } from '../../../core/services/user.service';
                   [type]="showConfirmPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Re-enter your new password"
-                  class="block w-full rounded-2xl border border-slate-200 bg-[#fff7ed] px-4 py-4 pr-16 font-medium text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100"
+                  class="app-field pr-16"
                 >
                 <button
                   type="button"

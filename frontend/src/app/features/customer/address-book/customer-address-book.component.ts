@@ -10,7 +10,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
   imports: [CommonModule, FormsModule],
   template: `
     <div class="overflow-hidden">
-      <div class="flex flex-col gap-4 border-b border-[#eee2d4] bg-[#fffaf5] app-card-body lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex flex-col gap-4 border-b border-[#eee2d4] bg-[#fffaf5] app-panel-body lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-700">Saved Addresses</p>
           <h3 class="mt-2 text-[1.45rem] font-medium tracking-tight text-slate-900">Manage delivery destinations</h3>
@@ -21,14 +21,14 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
 
         <button
           type="button"
-          class="btn-primary w-full !py-3 !px-5 sm:w-auto"
+          class="btn-primary w-full !px-5 !py-3 sm:w-auto"
           (click)="startCreate()"
         >
           {{ showForm && !editingAddressId ? 'Adding Address' : 'Add Address' }}
         </button>
       </div>
 
-      <div class="space-y-4 bg-[#fffdfa] app-card-body">
+      <div class="space-y-4 bg-[#fffdfa] app-panel-body">
         <div
           *ngIf="successMessage"
           class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
@@ -36,7 +36,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           {{ successMessage }}
         </div>
 
-        <div *ngIf="showForm" class="rounded-[1.5rem] border border-[#e7dac9] bg-white app-card-tight shadow-[0_18px_40px_rgba(111,78,55,0.06)]">
+        <div *ngIf="showForm" class="app-card app-panel-body">
           <div class="flex items-center justify-between gap-4">
             <div>
               <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">
@@ -59,7 +59,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!fullnameError"
                 [class.focus:border-red-400]="!!fullnameError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
               <p *ngIf="fullnameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ fullnameError }}
@@ -79,7 +79,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!phoneError"
                 [class.focus:border-red-400]="!!phoneError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}
@@ -98,7 +98,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!postalCodeError"
                 [class.focus:border-red-400]="!!postalCodeError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
               <p *ngIf="postalCodeError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ postalCodeError }}
@@ -111,7 +111,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="addressLine1"
                 [(ngModel)]="form.addressLine1"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
@@ -120,7 +120,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               <input
                 name="addressLine2"
                 [(ngModel)]="form.addressLine2"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
@@ -130,7 +130,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="city"
                 [(ngModel)]="form.city"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
@@ -140,7 +140,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="state"
                 [(ngModel)]="form.state"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
@@ -167,7 +167,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           Loading addresses...
         </div>
 
-        <div *ngIf="!loading && addresses.length === 0" class="rounded-[1.75rem] border border-dashed border-[#e7dac9] bg-white/70 app-card-body text-center">
+        <div *ngIf="!loading && addresses.length === 0" class="app-empty-state">
           <p class="text-lg font-medium text-slate-900">No saved addresses yet</p>
           <p class="mt-2 text-sm font-medium text-slate-500">
             Add your first delivery address to get started.
@@ -177,7 +177,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
         <div *ngIf="addresses.length" class="grid gap-4">
           <article
             *ngFor="let address of addresses; trackBy: trackByAddress"
-            class="rounded-[1.5rem] border border-[#e7dac9] bg-white app-card-tight shadow-[0_18px_40px_rgba(111,78,55,0.06)]"
+            class="app-card app-panel-body"
           >
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="space-y-3">
