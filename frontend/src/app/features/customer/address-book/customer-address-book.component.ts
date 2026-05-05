@@ -10,7 +10,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
   imports: [CommonModule, FormsModule],
   template: `
     <div class="overflow-hidden">
-      <div class="flex flex-col gap-4 border-b border-[#eee2d4] bg-[#fffaf5] app-panel-body lg:flex-row lg:items-center lg:justify-between">
+      <div class="storefront-page-header border-b border-[#eee2d4] bg-[#fffaf5] app-panel-body lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-700">Saved Addresses</p>
           <h3 class="mt-2 text-[1.45rem] font-medium tracking-tight text-slate-900">Manage delivery destinations</h3>
@@ -28,7 +28,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
         </button>
       </div>
 
-      <div class="space-y-4 bg-[#fffdfa] app-panel-body">
+      <div class="storefront-page-stack bg-[#fffdfa] app-panel-body">
         <div
           *ngIf="successMessage"
           class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
@@ -154,7 +154,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
               />
             </label>
 
-            <div class="sm:col-span-2 flex flex-col gap-3 pt-2 sm:flex-row">
+            <div class="sm:col-span-2 flex flex-wrap gap-2 pt-2">
               <button type="submit" class="btn-primary w-full !px-6 !py-3 sm:w-auto" [disabled]="isSaving">
                 {{ isSaving ? 'Saving...' : editingAddressId ? 'Update Address' : 'Save Address' }}
               </button>
@@ -200,7 +200,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 </div>
               </div>
 
-              <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div class="flex flex-wrap gap-2 sm:justify-end">
                 <button
                   type="button"
                   class="btn-secondary w-full !px-4 !py-2 sm:w-auto"

@@ -10,10 +10,9 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <section class="storefront-section mt-4 space-y-6">
-      <div class="storefront-container">
-        <div class="app-panel overflow-hidden">
-          <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="storefront-section">
+      <div class="storefront-page-normal storefront-page-stack">
+          <div class="storefront-page-header border-b border-[#eee2d4] pb-4 sm:pb-5 lg:pb-6">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-2xl">
               <p class="app-page-eyebrow !text-amber-700">Order History</p>
@@ -31,7 +30,6 @@ import { OrderService } from '../../core/services/order.service';
           {{ successMessage }}
         </div>
 
-        <div class="border-t border-slate-200 bg-[#fffdfa] app-panel-body">
         <div class="app-card app-panel-body">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -70,11 +68,10 @@ import { OrderService } from '../../core/services/order.service';
             />
           </div>
         </div>
-        </div>
 
-        <div *ngIf="isLoading" class="px-4 pb-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading your orders...</div>
+        <div *ngIf="isLoading" class="px-4 pb-6 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading your orders...</div>
 
-        <div *ngIf="!isLoading && orders.length === 0" class="px-4 pb-10 sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && orders.length === 0" class="px-4 pb-6 sm:px-5 lg:px-6">
         <div class="app-empty-state">
           <h2 class="text-2xl font-medium text-slate-900">No orders yet</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">Your completed checkouts will appear here.</p>
@@ -82,7 +79,7 @@ import { OrderService } from '../../core/services/order.service';
         </div>
         </div>
 
-        <div *ngIf="!isLoading && orders.length > 0 && filteredOrders.length === 0" class="px-4 pb-10 sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && orders.length > 0 && filteredOrders.length === 0" class="px-4 pb-6 sm:px-5 lg:px-6">
         <div class="app-empty-state">
           <h2 class="text-2xl font-medium text-slate-900">No matching orders</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">
@@ -92,7 +89,7 @@ import { OrderService } from '../../core/services/order.service';
         </div>
         </div>
 
-        <div *ngIf="filteredOrders.length" class="grid gap-5 app-panel-body">
+        <div *ngIf="filteredOrders.length" class="storefront-page-grid px-4 pb-6 sm:px-5 lg:px-6">
           <article
             *ngFor="let order of filteredOrders; trackBy: trackByOrder"
             class="app-card app-panel-body transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(111,78,55,0.09)]"
@@ -148,7 +145,6 @@ import { OrderService } from '../../core/services/order.service';
               </div>
             </div>
           </article>
-        </div>
         </div>
       </div>
     </section>

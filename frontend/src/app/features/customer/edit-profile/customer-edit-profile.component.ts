@@ -19,12 +19,12 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
     CustomerAvatarPanelComponent
   ],
   template: `
-    <section class="storefront-section mt-4 space-y-6">
-      <div class="storefront-container">
-        <div class="app-panel overflow-hidden">
+    <section class="storefront-section">
+      <div class="storefront-container storefront-page-stack">
+        <div class="space-y-6">
           <app-customer-edit-header />
 
-          <div class="grid gap-5 bg-[#fffdfa] app-panel-body xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] lg:p-6">
+          <div class="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] lg:p-6">
             <app-customer-account-form
               [user]="user"
               [isSubmitting]="isUpdatingProfile"

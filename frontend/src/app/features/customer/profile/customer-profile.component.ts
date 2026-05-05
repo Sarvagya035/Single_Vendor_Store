@@ -25,10 +25,9 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
     PageHeaderComponent
   ],
   template: `
-    <section class="storefront-section mt-4 space-y-6">
-      <div class="storefront-container">
-        <div class="app-panel overflow-hidden">
-          <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="storefront-section">
+      <div class="storefront-page-wide storefront-page-stack">
+          <div class="storefront-page-header border-b border-[#eee2d4] pb-4 sm:pb-5 lg:pb-6">
             <app-page-header eyebrow="Account Center" title="Customer profile" titleClass="!text-[1.9rem] sm:!text-[2.2rem]" />
           </div>
 
@@ -47,7 +46,7 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
             {{ error }}
           </div>
 
-          <div *ngIf="user" class="grid gap-5 bg-[#fffdfa] app-panel-body xl:grid-cols-[minmax(0,1.75fr)_360px]">
+          <div *ngIf="user" class="storefront-page-grid xl:grid-cols-[minmax(0,1.75fr)_360px]">
             <div class="min-w-0">
               <app-customer-personal-details
                 [user]="user"
@@ -69,7 +68,6 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
               />
             </div>
           </div>
-        </div>
       </div>
 
       <app-customer-change-password-panel

@@ -150,9 +150,36 @@
     @apply w-full;
   }
 
+  .storefront-page-shell {
+    @apply mx-auto w-full max-w-[1440px] px-3 py-4 sm:px-4 sm:py-5 md:px-5 lg:px-6 lg:py-6 xl:px-8;
+  }
+
+  .storefront-page-wide {
+    @apply mx-auto w-full max-w-[1440px] px-3 py-4 sm:px-4 sm:py-5 md:px-5 lg:px-6 lg:py-6 xl:px-8;
+  }
+
+  .storefront-page-normal {
+    @apply mx-auto w-full max-w-[1200px] px-3 py-4 sm:px-4 sm:py-5 md:px-5 lg:px-6 lg:py-6 xl:px-8;
+  }
+
+  .storefront-page-header {
+    @apply flex flex-col gap-2 mb-4 sm:mb-5 lg:mb-6;
+  }
+
+  .storefront-page-actions {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .storefront-page-stack {
+    @apply space-y-4 sm:space-y-5 lg:space-y-6;
+  }
+
+  .storefront-page-grid {
+    @apply grid gap-3 sm:gap-4 lg:gap-6;
+  }
+
   .storefront-container {
-    @apply mx-auto w-full min-w-0 px-4 sm:px-5 lg:px-6 xl:px-8;
-    max-width: 1400px;
+    @apply mx-auto w-full max-w-[1440px] min-w-0 px-3 py-4 sm:px-4 sm:py-5 md:px-5 lg:px-6 lg:py-6 xl:px-8;
   }
 
   .vendor-sidebar-wrap {

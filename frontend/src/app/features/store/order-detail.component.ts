@@ -17,8 +17,8 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="storefront-section mt-4 space-y-6 overflow-x-hidden">
-      <div class="storefront-container">
+    <div class="storefront-section overflow-x-hidden">
+      <div class="storefront-page-normal storefront-page-stack">
         <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
@@ -260,7 +260,7 @@ import { OrderService } from '../../core/services/order.service';
 
           <ng-template #customerOrderLayout>
             <div class="px-4 pb-6 sm:px-5 lg:px-6">
-              <section class="app-panel overflow-hidden">
+              <section class="space-y-6">
                 <div class="border-b border-[#f1e4d4] px-6 py-6 sm:px-7">
                   <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                     <div class="min-w-0">
@@ -288,7 +288,7 @@ import { OrderService } from '../../core/services/order.service';
                   </div>
                 </div>
 
-                <div class="grid gap-6 app-panel-body lg:grid-cols-[minmax(0,1fr)_340px]">
+                <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
                   <div class="space-y-6">
                     <section class="rounded-[1.75rem] border border-[#e7dac9] bg-[#fffaf4] p-5 sm:p-6">
                       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">

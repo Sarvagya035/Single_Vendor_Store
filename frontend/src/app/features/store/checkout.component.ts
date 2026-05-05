@@ -22,10 +22,9 @@ const EMPTY_CART: CustomerCart = {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <section class="storefront-section mt-4 space-y-6">
-      <div class="storefront-container">
-        <div class="app-panel overflow-hidden">
-          <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="storefront-section">
+      <div class="storefront-page-wide storefront-page-stack">
+          <div class="storefront-page-header border-b border-[#eee2d4] pb-4 sm:pb-5 lg:pb-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div class="max-w-2xl">
                 <p class="app-page-eyebrow !text-amber-700">Checkout</p>
@@ -40,7 +39,7 @@ const EMPTY_CART: CustomerCart = {
           </div>
 
           <div class="border-b border-[#eee2d4] bg-gradient-to-r from-white via-[#fffaf5] to-white px-4 py-4 sm:px-5 lg:px-6">
-            <div class="grid gap-3 rounded-[1.4rem] border border-[#eadcc9] bg-white p-4 shadow-[0_12px_32px_rgba(111,78,55,0.05)] md:grid-cols-3">
+            <div class="storefront-page-grid rounded-[1.4rem] border border-[#eadcc9] bg-white p-4 shadow-[0_12px_32px_rgba(111,78,55,0.05)] md:grid-cols-3">
               <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
                 <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">1</span>
                 <div>
@@ -71,7 +70,7 @@ const EMPTY_CART: CustomerCart = {
 
           <div *ngIf="isLoading" class="px-4 py-6 text-sm font-medium text-slate-500 sm:px-5 lg:px-6">Loading checkout details...</div>
 
-          <div *ngIf="!isLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+          <div *ngIf="!isLoading && cart.cartItems.length === 0" class="px-4 pb-6 sm:px-5 lg:px-6">
             <div class="app-empty-state">
               <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
               <p class="mt-3 text-sm font-medium text-slate-500">Add products to your cart before checking out.</p>
@@ -114,7 +113,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </div>
 
-          <div *ngIf="!isLoading && cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+          <div *ngIf="!isLoading && cart.cartItems.length" class="storefront-page-grid px-4 pb-6 sm:px-5 lg:px-6 lg:grid-cols-[minmax(0,1.75fr)_360px]">
             <div class="space-y-5">
               <section class="app-card app-panel-body">
                 <div class="flex flex-col gap-3 border-b border-[#f1e4d4] pb-4 sm:flex-row sm:items-end sm:justify-between">
@@ -232,7 +231,6 @@ const EMPTY_CART: CustomerCart = {
               </div>
             </aside>
           </div>
-        </div>
       </div>
     </section>
   `

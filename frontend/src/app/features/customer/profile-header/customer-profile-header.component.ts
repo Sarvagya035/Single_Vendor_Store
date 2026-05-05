@@ -8,7 +8,7 @@ import { CustomerVendorProfile } from '../../../core/models/customer.models';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="border-b border-[#eee2d4] bg-[linear-gradient(180deg,#fffaf5_0%,#fffdf9_100%)] px-4 py-5 sm:px-5 lg:px-6">
+    <div class="storefront-page-header border-b border-[#eee2d4] bg-[linear-gradient(180deg,#fffaf5_0%,#fffdf9_100%)] px-4 py-5 sm:px-5 lg:px-6">
       <div class="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
         <div class="min-w-0">
           <p class="text-[11px] font-medium uppercase tracking-[0.24em] text-amber-700">Profile Overview</p>

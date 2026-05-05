@@ -39,10 +39,9 @@ interface GuestCartDisplayItem {
   imports: [CommonModule, RouterModule],
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
-      <section class="storefront-section mt-4 space-y-6">
-        <div class="storefront-container">
-          <div class="app-panel overflow-hidden">
-            <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+      <section class="storefront-section">
+        <div class="storefront-page-normal storefront-page-stack">
+            <div class="storefront-page-header border-b border-[#eee2d4] pb-4 sm:pb-5 lg:pb-6">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                   <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
@@ -65,7 +64,7 @@ interface GuestCartDisplayItem {
               {{ cart.alerts }}
             </div>
 
-            <div *ngIf="cartLoading" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+            <div *ngIf="cartLoading" class="storefront-page-grid lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <div *ngFor="let _ of cartSkeletonCards" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
@@ -90,7 +89,7 @@ interface GuestCartDisplayItem {
               </aside>
             </div>
 
-            <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+            <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="mx-auto max-w-[980px] py-8 sm:py-10 lg:py-12">
               <div class="app-empty-state">
                 <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
                 <p class="mt-3 text-sm font-medium text-slate-500">
@@ -100,7 +99,7 @@ interface GuestCartDisplayItem {
               </div>
             </div>
 
-            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+            <div *ngIf="cart.cartItems.length" class="storefront-page-grid lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <article *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
@@ -196,16 +195,14 @@ interface GuestCartDisplayItem {
                 </div>
               </aside>
             </div>
-          </div>
         </div>
       </section>
     </ng-container>
 
     <ng-template #guestState>
-      <section class="storefront-section mt-4 space-y-6">
-        <div class="storefront-container">
-          <div class="app-panel overflow-hidden">
-            <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+      <section class="storefront-section">
+        <div class="storefront-page-normal storefront-page-stack">
+            <div class="storefront-page-header border-b border-[#eee2d4] pb-4 sm:pb-5 lg:pb-6">
               <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                   <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
@@ -217,7 +214,7 @@ interface GuestCartDisplayItem {
               </div>
             </div>
 
-            <div *ngIf="guestCartLoading" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+            <div *ngIf="guestCartLoading" class="storefront-page-grid lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <div *ngFor="let _ of guestCartSkeletonCards" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
@@ -249,7 +246,7 @@ interface GuestCartDisplayItem {
               {{ guestCartMessage }}
             </div>
 
-            <div *ngIf="!guestCartLoading && guestCartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+            <div *ngIf="!guestCartLoading && guestCartItems.length === 0" class="mx-auto max-w-[980px] py-8 sm:py-10 lg:py-12">
               <div class="app-empty-state">
                 <h2 class="text-2xl font-medium text-slate-900">Your guest cart is empty</h2>
                 <p class="mt-3 text-sm font-medium text-slate-500">
@@ -259,7 +256,7 @@ interface GuestCartDisplayItem {
               </div>
             </div>
 
-            <div *ngIf="!guestCartLoading && guestCartItems.length > 0" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+            <div *ngIf="!guestCartLoading && guestCartItems.length > 0" class="storefront-page-grid lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <article *ngFor="let item of guestCartItems; trackBy: trackByGuestCartItem" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
@@ -370,7 +367,6 @@ interface GuestCartDisplayItem {
                 </div>
               </aside>
             </div>
-          </div>
         </div>
       </section>
     </ng-template>

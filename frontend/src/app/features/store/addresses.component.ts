@@ -8,10 +8,9 @@ import { CustomerAddressBookComponent } from '../customer/address-book/customer-
   standalone: true,
   imports: [CommonModule, RouterModule, CustomerAddressBookComponent],
   template: `
-    <section class="storefront-section mt-4 space-y-6">
-      <div class="storefront-container">
-        <div class="app-panel overflow-hidden">
-          <div class="border-b border-slate-200 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
+    <section class="storefront-section">
+      <div class="storefront-page-normal storefront-page-stack">
+          <div class="storefront-page-header border-b border-slate-200 pb-4 sm:pb-5 lg:pb-6">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <p class="app-page-eyebrow !text-amber-700">Customer Address Book</p>
@@ -29,7 +28,6 @@ import { CustomerAddressBookComponent } from '../customer/address-book/customer-
           </div>
 
           <app-customer-address-book />
-        </div>
       </div>
     </section>
   `
