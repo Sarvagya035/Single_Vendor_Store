@@ -125,7 +125,7 @@ interface GuestCartDisplayItem {
 
                         <button
                           type="button"
-                          class="text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                          class="btn-secondary h-10 !px-4 text-sm text-rose-600 hover:text-rose-700"
                           (click)="removeFromCart(item)"
                         >
                           Remove
@@ -136,7 +136,7 @@ interface GuestCartDisplayItem {
                         <div class="flex w-full items-center rounded-xl border border-[#e7dac9] bg-[#fffaf5] sm:w-auto">
                           <button
                             type="button"
-                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            class="btn-secondary h-10 w-10 shrink-0 !px-0 text-sm text-[#6f4e37]"
                             (click)="updateCartItem(item, 'dec')"
                           >
                             -
@@ -146,7 +146,7 @@ interface GuestCartDisplayItem {
                           </span>
                           <button
                             type="button"
-                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            class="btn-secondary h-10 w-10 shrink-0 !px-0 text-sm text-[#6f4e37]"
                             (click)="updateCartItem(item, 'inc')"
                           >
                             +
@@ -296,7 +296,7 @@ interface GuestCartDisplayItem {
 
                         <button
                           type="button"
-                          class="text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                          class="btn-secondary h-10 !px-4 text-sm text-rose-600 hover:text-rose-700"
                           (click)="removeGuestCartItem(item)"
                         >
                           Remove
@@ -307,7 +307,7 @@ interface GuestCartDisplayItem {
                         <div class="flex w-full items-center rounded-xl border border-[#e7dac9] bg-[#fffaf5] sm:w-auto">
                           <button
                             type="button"
-                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            class="btn-secondary h-10 w-10 shrink-0 !px-0 text-sm text-[#6f4e37]"
                             (click)="updateGuestCartItem(item, 'dec')"
                             [disabled]="!item.available"
                           >
@@ -318,7 +318,7 @@ interface GuestCartDisplayItem {
                           </span>
                           <button
                             type="button"
-                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            class="btn-secondary h-10 w-10 shrink-0 !px-0 text-sm text-[#6f4e37]"
                             (click)="updateGuestCartItem(item, 'inc')"
                             [disabled]="!item.available || item.quantity >= item.maxQuantity"
                           >

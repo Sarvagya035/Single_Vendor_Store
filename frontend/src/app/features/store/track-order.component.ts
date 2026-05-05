@@ -17,7 +17,7 @@ import { OrderService } from '../../core/services/order.service';
   template: `
     <section class="storefront-section overflow-x-hidden pt-4 space-y-6 sm:pt-6 lg:pt-8">
       <div class="storefront-container">
-        <div class="vendor-page-shell overflow-hidden">
+        <div class="app-panel overflow-hidden">
           <div class="border-b border-[#eee2d4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div class="min-w-0">

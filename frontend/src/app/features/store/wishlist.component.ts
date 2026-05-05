@@ -45,7 +45,7 @@ interface GuestWishlistDisplayItem {
         </div>
 
         <div *ngIf="loading" class="mt-8 grid gap-4">
-          <article *ngFor="let _ of wishlistSkeletonCards" class="overflow-hidden rounded-[1.4rem] border border-[#e7dac9] bg-[#fffaf5] shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+          <article *ngFor="let _ of wishlistSkeletonCards" class="app-card app-card-tight overflow-hidden transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]">
             <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
               <div class="block shrink-0">
                 <div class="h-24 w-full overflow-hidden rounded-[1.2rem] bg-slate-200/80 sm:h-20 sm:w-20 animate-pulse"></div>
@@ -80,7 +80,7 @@ interface GuestWishlistDisplayItem {
             [routerLink]="['/products', item._id]"
             role="link"
             tabindex="0"
-            class="cursor-pointer overflow-hidden rounded-[1.4rem] border border-[#e7dac9] bg-[#fffaf5] shadow-[0_12px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]"
+            class="cursor-pointer app-card app-card-tight overflow-hidden transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]"
           >
             <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
               <div class="block shrink-0">
@@ -132,7 +132,7 @@ interface GuestWishlistDisplayItem {
               <div class="grid gap-3 sm:grid-cols-2">
                 <button
                   type="button"
-                  class="w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  class="btn-primary h-10 w-full justify-center px-4 text-sm sm:h-11 sm:px-5"
                   [disabled]="busyId === item._id || moveBusyId === item._id"
                   (click)="$event.stopPropagation(); moveItemToCart(item)"
                 >
@@ -140,7 +140,7 @@ interface GuestWishlistDisplayItem {
                 </button>
                 <button
                   type="button"
-                  class="w-full rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  class="btn-secondary h-10 w-full justify-center px-4 text-sm text-rose-700 sm:h-11 sm:px-5"
                   [disabled]="busyId === item._id || moveBusyId === item._id"
                   (click)="$event.stopPropagation(); removeItem(item)"
                 >
@@ -180,7 +180,7 @@ interface GuestWishlistDisplayItem {
             </div>
 
             <div *ngIf="guestWishlistLoading" class="mt-8 grid gap-4">
-              <article *ngFor="let _ of guestWishlistSkeletonCards" class="overflow-hidden rounded-[1.4rem] border border-[#e7dac9] bg-[#fffaf5] shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+              <article *ngFor="let _ of guestWishlistSkeletonCards" class="app-card app-card-tight overflow-hidden transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]">
                 <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
                   <div class="block shrink-0">
                     <div class="h-24 w-full overflow-hidden rounded-[1.2rem] bg-slate-200/80 sm:h-20 sm:w-20 animate-pulse"></div>
@@ -216,7 +216,7 @@ interface GuestWishlistDisplayItem {
             <div *ngIf="!guestWishlistLoading && guestWishlistItems.length > 0" class="mt-8 grid gap-4">
               <article
                 *ngFor="let item of guestWishlistItems; trackBy: trackByGuestWishlistItem"
-                class="overflow-hidden rounded-[1.4rem] border border-[#e7dac9] bg-[#fffaf5] shadow-[0_12px_30px_rgba(15,23,42,0.04)]"
+                class="app-card app-card-tight overflow-hidden transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]"
               >
                 <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
                   <div class="block shrink-0">
@@ -271,7 +271,7 @@ interface GuestWishlistDisplayItem {
                   <div class="grid gap-3 sm:grid-cols-2">
                     <button
                       type="button"
-                      class="w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      class="btn-primary h-10 w-full justify-center px-4 text-sm sm:h-11 sm:px-5"
                       [disabled]="moveBusyId === item.productId"
                       (click)="$event.preventDefault(); $event.stopPropagation(); moveGuestWishlistItemToCart(item)"
                     >
@@ -279,7 +279,7 @@ interface GuestWishlistDisplayItem {
                     </button>
                     <button
                       type="button"
-                      class="w-full rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      class="btn-secondary h-10 w-full justify-center px-4 text-sm text-rose-700 sm:h-11 sm:px-5"
                       [disabled]="busyId === guestWishlistItemKey(item)"
                       (click)="removeGuestItem(item)"
                     >

@@ -161,7 +161,7 @@ import { ErrorService } from '../../core/services/error.service';
                       type="text"
                       formControlName="quantity"
                       placeholder="Approx. quantity or cartons"
-                      class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                      class="app-field"
                     />
                   </div>
                 </div>
@@ -185,17 +185,19 @@ import { ErrorService } from '../../core/services/error.service';
                     type="text"
                     formControlName="city"
                     placeholder="Enter your city or location"
-                    class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                    class="app-field"
                   />
                   <p *ngIf="showError('city')" class="text-xs font-medium text-rose-500">City or location is required.</p>
                 </div>
 
-                <button
-                  type="submit"
-                  class="btn-primary w-full justify-center !px-6 !py-3.5"
-                >
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    type="submit"
+                    class="btn-primary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5"
+                  >
                   Submit Inquiry
-                </button>
+                  </button>
+                </div>
               </form>
             </div>
           </div>

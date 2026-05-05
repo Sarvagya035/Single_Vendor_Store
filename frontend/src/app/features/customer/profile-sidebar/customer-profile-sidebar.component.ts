@@ -32,10 +32,10 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
       </div>
 
       <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-        <button type="button" class="btn-primary !w-full !justify-center !rounded-[1rem] !py-3.5" (click)="editProfile.emit()">
+        <button type="button" class="btn-primary w-full justify-center" (click)="editProfile.emit()">
           Edit Profile
         </button>
-        <button type="button" class="btn-secondary !w-full !justify-center !rounded-[1rem] !py-3.5" (click)="changePassword.emit()">
+        <button type="button" class="btn-secondary w-full justify-center" (click)="changePassword.emit()">
           Change Password
         </button>
       </div>

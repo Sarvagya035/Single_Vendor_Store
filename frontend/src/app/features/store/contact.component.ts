@@ -28,11 +28,11 @@ import { ErrorService } from '../../core/services/error.service';
                   </p>
                 </div>
 
-                <div class="flex flex-col gap-3 sm:flex-row">
-                  <a [href]="phoneHref" class="btn-primary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
+                <div class="flex flex-wrap gap-2">
+                  <a [href]="phoneHref" class="btn-primary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                     Call Now
                   </a>
-                  <a routerLink="/products" class="btn-secondary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
+                  <a routerLink="/products" class="btn-secondary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                     Browse Products
                   </a>
                 </div>
@@ -126,7 +126,7 @@ import { ErrorService } from '../../core/services/error.service';
                           required
                           [(ngModel)]="form.name"
                           placeholder="Enter your full name"
-                          class="block w-full rounded-full border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                          class="app-field"
                         />
                       </div>
 
@@ -142,7 +142,7 @@ import { ErrorService } from '../../core/services/error.service';
                           required
                           [(ngModel)]="form.phone"
                           placeholder="Enter your phone number"
-                          class="block w-full rounded-full border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                          class="app-field"
                         />
                       </div>
                     </div>
@@ -157,7 +157,7 @@ import { ErrorService } from '../../core/services/error.service';
                         required
                         [(ngModel)]="form.email"
                         placeholder="Enter your email"
-                        class="block w-full rounded-full border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                        class="app-field"
                       />
                     </div>
 
@@ -170,7 +170,7 @@ import { ErrorService } from '../../core/services/error.service';
                         required
                         [(ngModel)]="form.subject"
                         placeholder="What can we help you with?"
-                        class="block w-full rounded-full border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                        class="app-field"
                       />
                     </div>
 
@@ -183,11 +183,11 @@ import { ErrorService } from '../../core/services/error.service';
                         required
                         [(ngModel)]="form.message"
                         placeholder="Tell us a little more about your requirements"
-                        class="block w-full rounded-[1.5rem] border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-medium leading-7 text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                        class="app-field"
                       ></textarea>
                     </div>
 
-                    <button type="submit" class="mt-2 w-full sm:w-auto sm:self-start rounded-full bg-[#6f4e37] px-6 py-3 text-sm font-semibold text-white">
+                    <button type="submit" class="btn-primary mt-2 h-10 w-full rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                       Send Message
                     </button>
                   </form>
@@ -253,11 +253,11 @@ import { ErrorService } from '../../core/services/error.service';
                 </p>
               </div>
 
-              <div class="flex flex-col gap-3 sm:flex-row">
-                <a [href]="phoneHref" class="btn-primary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
+              <div class="flex flex-wrap gap-2">
+                <a [href]="phoneHref" class="btn-primary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                   Call Now
                 </a>
-                <a routerLink="/products" class="btn-secondary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
+                <a routerLink="/products" class="btn-secondary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                   Shop Products
                 </a>
               </div>

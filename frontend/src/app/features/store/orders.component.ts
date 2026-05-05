@@ -48,7 +48,7 @@ import { OrderService } from '../../core/services/order.service';
               <button
                 *ngIf="searchTerm"
                 type="button"
-                class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100"
+                class="btn-secondary h-9 px-3 text-[11px]"
                 (click)="clearSearch()"
               >
                 Clear
@@ -139,7 +139,7 @@ import { OrderService } from '../../core/services/order.service';
                   <button
                     *ngIf="canCancel(order)"
                     type="button"
-                    class="w-full rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-medium text-rose-600 transition hover:bg-rose-100 sm:w-auto"
+                    class="btn-secondary h-10 w-full justify-center px-5 text-sm text-rose-600 hover:text-rose-700 sm:h-11 sm:w-auto"
                     (click)="cancelOrder(order)"
                   >
                     Cancel Order

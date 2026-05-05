@@ -60,7 +60,7 @@ import { catchError, finalize, EMPTY } from 'rxjs';
               </div>
             </div>
 
-            <button type="submit" [disabled]="isLoading" class="btn-primary w-full !py-4 text-lg">
+            <button type="submit" [disabled]="isLoading" class="btn-primary h-10 w-full px-4 text-sm sm:h-11">
               {{ isLoading ? 'Logging in...' : 'Sign In' }}
             </button>
           </form>

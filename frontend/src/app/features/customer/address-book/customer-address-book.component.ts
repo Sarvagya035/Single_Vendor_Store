@@ -150,7 +150,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="country"
                 [(ngModel)]="form.country"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
@@ -211,14 +211,14 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 <button
                   *ngIf="!address.isDefault"
                   type="button"
-                  class="btn-secondary w-full !px-4 !py-2 border-amber-100 bg-[#fff7ed]/60 text-amber-800 sm:w-auto"
+                  class="btn-secondary w-full !px-4 !py-2 text-amber-800 sm:w-auto"
                   (click)="setDefault(address)"
                 >
                   Make Default
                 </button>
                 <button
                   type="button"
-                  class="btn-secondary w-full !px-4 !py-2 border-rose-100 bg-rose-50/60 text-rose-600 sm:w-auto"
+                  class="btn-secondary w-full !px-4 !py-2 text-rose-600 sm:w-auto"
                   (click)="deleteAddress(address)"
                 >
                   Delete
