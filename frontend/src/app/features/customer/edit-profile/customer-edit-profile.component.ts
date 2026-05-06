@@ -20,11 +20,11 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
   ],
   template: `
     <section class="storefront-section">
-      <div class="storefront-container storefront-page-stack">
+      <div class="store-page-wide store-page-stack">
         <div class="space-y-6">
           <app-customer-edit-header />
 
-          <div class="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] lg:p-6">
+          <div class="store-page-grid lg:grid-cols-[minmax(0,1.6fr)_320px]">
             <app-customer-account-form
               [user]="user"
               [isSubmitting]="isUpdatingProfile"

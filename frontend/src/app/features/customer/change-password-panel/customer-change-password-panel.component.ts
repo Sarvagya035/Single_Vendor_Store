@@ -117,8 +117,8 @@ import { UserService } from '../../../core/services/user.service';
                 Use at least 8 characters and keep it unique.
               </p>
               <div class="flex gap-3">
-                <button type="button" class="btn-secondary !px-5 !py-3" (click)="closeModal()">Cancel</button>
-                <button type="submit" [disabled]="isSubmitting" class="btn-primary !px-6 !py-3">
+                <button type="button" class="btn-secondary" (click)="closeModal()">Cancel</button>
+                <button type="submit" [disabled]="isSubmitting" class="btn-primary">
                   {{ isSubmitting ? 'Updating...' : 'Update Password' }}
                 </button>
               </div>

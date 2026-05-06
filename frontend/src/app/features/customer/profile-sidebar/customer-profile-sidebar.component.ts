@@ -31,11 +31,11 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
         </div>
       </div>
 
-      <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-        <button type="button" class="btn-primary w-full justify-center" (click)="editProfile.emit()">
+      <div class="mt-5 flex flex-wrap gap-2">
+        <button type="button" class="btn-primary w-full justify-center sm:w-auto" (click)="editProfile.emit()">
           Edit Profile
         </button>
-        <button type="button" class="btn-secondary w-full justify-center" (click)="changePassword.emit()">
+        <button type="button" class="btn-secondary w-full justify-center sm:w-auto" (click)="changePassword.emit()">
           Change Password
         </button>
       </div>

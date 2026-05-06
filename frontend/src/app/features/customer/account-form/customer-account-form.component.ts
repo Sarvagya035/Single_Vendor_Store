@@ -62,7 +62,7 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
           </p>
         </div>
 
-        <button type="submit" [disabled]="isSubmitting" class="btn-primary !w-full !py-4 text-lg">
+        <button type="submit" [disabled]="isSubmitting" class="btn-primary w-full">
           {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
         </button>
       </form>

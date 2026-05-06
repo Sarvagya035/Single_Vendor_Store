@@ -150,6 +150,30 @@
     @apply w-full;
   }
 
+  .store-page {
+    @apply mx-auto w-full max-w-[1180px] px-4 py-5 sm:px-5 sm:py-6 lg:px-6 lg:py-8;
+  }
+
+  .store-page-wide {
+    @apply mx-auto w-full max-w-[1280px] px-4 py-5 sm:px-5 sm:py-6 lg:px-6 lg:py-8;
+  }
+
+  .store-page-header {
+    @apply mb-5 flex flex-col gap-3 border-b border-[#ead8c2] pb-4 sm:mb-6 sm:flex-row sm:items-end sm:justify-between sm:pb-5;
+  }
+
+  .store-page-stack {
+    @apply space-y-5 sm:space-y-6;
+  }
+
+  .store-page-grid {
+    @apply grid gap-4 sm:gap-5 lg:gap-6;
+  }
+
+  .store-section {
+    @apply rounded-2xl border border-[#ead8c2] bg-white/90 shadow-sm;
+  }
+
   .storefront-page-shell {
     @apply mx-auto w-full max-w-[1440px] px-3 py-4 sm:px-4 sm:py-5 md:px-5 lg:px-6 lg:py-6 xl:px-8;
   }

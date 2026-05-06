@@ -11,22 +11,23 @@ import { OrderService } from '../../core/services/order.service';
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <section class="storefront-section">
-      <div class="storefront-page-normal storefront-page-stack">
-          <div class="storefront-page-header border-b border-[#eee2d4] pb-4 sm:pb-5 lg:pb-6">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-2xl">
-              <p class="app-page-eyebrow !text-amber-700">Order History</p>
-              <h1 class="app-page-title !mt-2 !text-[1.7rem] sm:!text-[2rem] md:!text-[2.2rem]">My orders</h1>
-            </div>
+      <div class="store-page store-page-stack">
+          <div class="store-page-header">
+          <div class="max-w-2xl">
+            <p class="app-page-eyebrow text-amber-700">Order History</p>
+            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My orders</h1>
+            <p class="app-page-description">
+              Search, review, and follow every order from one place.
+            </p>
+          </div>
 
-            <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <a routerLink="/cart" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Go To Cart</a>
-              <a routerLink="/" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Continue Shopping</a>
-            </div>
+          <div class="flex flex-wrap gap-2">
+            <a routerLink="/cart" class="btn-secondary w-full justify-center sm:w-auto">Go To Cart</a>
+            <a routerLink="/" class="btn-primary w-full justify-center sm:w-auto">Continue Shopping</a>
           </div>
           </div>
 
-        <div *ngIf="successMessage" class="mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+        <div *ngIf="successMessage" class="rounded-[1.5rem] border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
@@ -46,7 +47,7 @@ import { OrderService } from '../../core/services/order.service';
               <button
                 *ngIf="searchTerm"
                 type="button"
-                class="btn-secondary h-9 px-3 text-[11px]"
+                class="btn-secondary"
                 (click)="clearSearch()"
               >
                 Clear
@@ -69,27 +70,27 @@ import { OrderService } from '../../core/services/order.service';
           </div>
         </div>
 
-        <div *ngIf="isLoading" class="px-4 pb-6 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">Loading your orders...</div>
+        <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading your orders...</div>
 
-        <div *ngIf="!isLoading && orders.length === 0" class="px-4 pb-6 sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && orders.length === 0">
         <div class="app-empty-state">
           <h2 class="text-2xl font-medium text-slate-900">No orders yet</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">Your completed checkouts will appear here.</p>
-          <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Start Shopping</a>
+          <a routerLink="/" class="btn-primary mt-6 inline-flex">Start Shopping</a>
         </div>
         </div>
 
-        <div *ngIf="!isLoading && orders.length > 0 && filteredOrders.length === 0" class="px-4 pb-6 sm:px-5 lg:px-6">
+        <div *ngIf="!isLoading && orders.length > 0 && filteredOrders.length === 0">
         <div class="app-empty-state">
           <h2 class="text-2xl font-medium text-slate-900">No matching orders</h2>
           <p class="mt-3 text-sm font-medium text-slate-500">
             Try a different order number, item name, city, or status.
           </p>
-          <button type="button" class="btn-primary mt-6 inline-flex !px-6 !py-3" (click)="clearSearch()">Clear search</button>
+          <button type="button" class="btn-primary mt-6 inline-flex" (click)="clearSearch()">Clear search</button>
         </div>
         </div>
 
-        <div *ngIf="filteredOrders.length" class="storefront-page-grid px-4 pb-6 sm:px-5 lg:px-6">
+        <div *ngIf="filteredOrders.length" class="store-page-grid">
           <article
             *ngFor="let order of filteredOrders; trackBy: trackByOrder"
             class="app-card app-panel-body transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(111,78,55,0.09)]"
@@ -131,12 +132,12 @@ import { OrderService } from '../../core/services/order.service';
                 </div>
 
                 <div class="flex flex-col gap-3 sm:flex-row xl:justify-end">
-                  <a [routerLink]="['/track-order', order._id]" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Track</a>
-                  <a [routerLink]="['/orders', order._id]" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">View Details</a>
+                  <a [routerLink]="['/track-order', order._id]" class="btn-primary w-full justify-center sm:w-auto">Track</a>
+                  <a [routerLink]="['/orders', order._id]" class="btn-secondary w-full justify-center sm:w-auto">View Details</a>
                   <button
                     *ngIf="canCancel(order)"
                     type="button"
-                    class="btn-secondary h-10 w-full justify-center px-5 text-sm text-rose-600 hover:text-rose-700 sm:h-11 sm:w-auto"
+                    class="btn-secondary w-full justify-center text-rose-600 hover:text-rose-700 sm:w-auto"
                     (click)="cancelOrder(order)"
                   >
                     Cancel Order

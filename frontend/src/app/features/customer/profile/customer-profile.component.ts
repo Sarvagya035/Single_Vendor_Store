@@ -26,9 +26,9 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
   ],
   template: `
     <section class="storefront-section">
-      <div class="storefront-page-wide storefront-page-stack">
-          <div class="storefront-page-header border-b border-[#eee2d4] pb-4 sm:pb-5 lg:pb-6">
-            <app-page-header eyebrow="Account Center" title="Customer profile" titleClass="!text-[1.9rem] sm:!text-[2.2rem]" />
+      <div class="store-page-wide store-page-stack">
+          <div class="store-page-header">
+            <app-page-header eyebrow="Account Center" title="Customer profile" description="View profile details, security tools, and store access in one place." titleClass="!mt-2 !text-[1.9rem] sm:!text-[2.2rem]" />
           </div>
 
           <app-customer-profile-header
@@ -42,11 +42,11 @@ import { CustomerUser, CustomerVendorProfile } from '../../../core/models/custom
             <p class="font-medium tracking-wide text-slate-500">Syncing account data...</p>
           </div>
 
-          <div *ngIf="error" class="mx-4 my-6 rounded-[1.5rem] border border-rose-100 bg-rose-50/60 p-6 text-sm font-medium text-rose-700 sm:mx-5 lg:mx-6">
+          <div *ngIf="error" class="rounded-[1.5rem] border border-rose-100 bg-rose-50/60 p-6 text-sm font-medium text-rose-700">
             {{ error }}
           </div>
 
-          <div *ngIf="user" class="storefront-page-grid xl:grid-cols-[minmax(0,1.75fr)_360px]">
+          <div *ngIf="user" class="store-page-grid lg:grid-cols-[minmax(0,1.6fr)_320px]">
             <div class="min-w-0">
               <app-customer-personal-details
                 [user]="user"

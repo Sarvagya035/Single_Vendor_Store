@@ -34,14 +34,14 @@ import { CustomerProfileForm } from '../../../core/models/customer.models';
 
         <div class="w-full space-y-6">
           <div class="relative">
-            <input type="file" id="avatar-input" (change)="fileSelected.emit($event)" class="hidden">
-            <label for="avatar-input" class="btn-secondary flex w-full cursor-pointer flex-col items-center gap-1 !py-4">
-              <span class="text-lg text-amber-700">📁 Select Image</span>
-              <span class="text-[10px] font-medium uppercase tracking-widest text-slate-400">{{ selectedFileName || 'PNG, JPG or WEBP (Max 2MB)' }}</span>
-            </label>
-          </div>
+          <input type="file" id="avatar-input" (change)="fileSelected.emit($event)" class="hidden">
+          <label for="avatar-input" class="btn-secondary flex w-full cursor-pointer flex-col items-center gap-1">
+            <span class="text-lg text-amber-700">📁 Select Image</span>
+            <span class="text-[10px] font-medium uppercase tracking-widest text-slate-400">{{ selectedFileName || 'PNG, JPG or WEBP (Max 2MB)' }}</span>
+          </label>
+        </div>
 
-          <button type="button" (click)="submit.emit()" [disabled]="!selectedFileName || isSubmitting" class="btn-primary !w-full !py-4">
+          <button type="button" (click)="submit.emit()" [disabled]="!selectedFileName || isSubmitting" class="btn-primary w-full">
             {{ isSubmitting ? 'Uploading...' : 'Update Picture' }}
           </button>
         </div>

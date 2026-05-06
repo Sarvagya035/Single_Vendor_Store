@@ -31,19 +31,22 @@ interface GuestWishlistDisplayItem {
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
       <section class="storefront-section min-h-[calc(100vh-72px)]">
-        <div class="storefront-page-normal storefront-page-stack">
-        <div class="storefront-page-header border-b border-[#f1e4d4] pb-4 sm:pb-5 lg:pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div class="store-page store-page-stack">
+        <div class="store-page-header">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.26em] text-amber-700">Saved items</p>
-            <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">My Wishlist</h1>
+            <p class="app-page-eyebrow text-amber-700">Saved items</p>
+            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My Wishlist</h1>
+            <p class="app-page-description">
+              Save products for later and move them to cart when you’re ready.
+            </p>
           </div>
 
-          <a routerLink="/products" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">
+          <a routerLink="/products" class="btn-secondary w-full justify-center sm:w-auto">
             Continue Shopping
           </a>
         </div>
 
-        <div *ngIf="loading" class="storefront-page-grid">
+        <div *ngIf="loading" class="store-page-grid">
           <article *ngFor="let _ of wishlistSkeletonCards" class="app-card app-card-tight overflow-hidden transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]">
             <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
               <div class="block shrink-0">
@@ -68,12 +71,12 @@ interface GuestWishlistDisplayItem {
           <p class="mx-auto mt-3 max-w-lg text-sm font-medium leading-relaxed text-slate-500">
             Save products from product pages to compare them later or come back when you're ready to buy.
           </p>
-          <a routerLink="/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">
+          <a routerLink="/products" class="btn-primary mt-6 inline-flex">
             Browse Products
           </a>
         </div>
 
-        <div *ngIf="!loading && wishlistItems.length > 0" class="mx-auto grid max-w-[1180px] gap-4">
+        <div *ngIf="!loading && wishlistItems.length > 0" class="store-page-grid">
           <article
             *ngFor="let item of wishlistItems; trackBy: trackByWishlistItem"
             [routerLink]="['/products', item._id]"
@@ -127,11 +130,11 @@ interface GuestWishlistDisplayItem {
 
             </div>
 
-                <div class="border-t border-[#f1e4d4] px-4 py-3">
-              <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div class="border-t border-[#f1e4d4] px-4 py-3">
+              <div class="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  class="btn-primary h-10 w-full justify-center px-4 text-sm sm:h-11 sm:px-5"
+                  class="btn-primary w-full justify-center sm:w-auto"
                   [disabled]="busyId === item._id || moveBusyId === item._id"
                   (click)="$event.stopPropagation(); moveItemToCart(item)"
                 >
@@ -139,7 +142,7 @@ interface GuestWishlistDisplayItem {
                 </button>
                 <button
                   type="button"
-                  class="btn-secondary h-10 w-full justify-center px-4 text-sm text-rose-700 sm:h-11 sm:px-5"
+                  class="btn-secondary w-full justify-center text-rose-700 sm:w-auto"
                   [disabled]="busyId === item._id || moveBusyId === item._id"
                   (click)="$event.stopPropagation(); removeItem(item)"
                 >
@@ -165,18 +168,18 @@ interface GuestWishlistDisplayItem {
 
     <ng-template #guestState>
       <section class="storefront-section min-h-[calc(100vh-72px)]">
-        <div class="storefront-page-normal storefront-page-stack">
-            <div class="storefront-page-header border-b border-[#f1e4d4] pb-4 sm:pb-5 lg:pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div class="store-page store-page-stack">
+            <div class="store-page-header">
               <div>
-                <p class="text-[11px] font-black uppercase tracking-[0.26em] text-amber-700">Saved items</p>
-                <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Guest wishlist</h1>
-                <p class="mx-auto mt-3 max-w-2xl text-sm font-medium leading-relaxed text-slate-500">
+                <p class="app-page-eyebrow text-amber-700">Saved items</p>
+                <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Guest wishlist</h1>
+                <p class="app-page-description">
                   Items saved on this device will merge into your account after login or registration.
                 </p>
               </div>
             </div>
 
-            <div *ngIf="guestWishlistLoading" class="storefront-page-grid">
+            <div *ngIf="guestWishlistLoading" class="store-page-grid">
               <article *ngFor="let _ of guestWishlistSkeletonCards" class="app-card app-card-tight overflow-hidden transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]">
                 <div class="flex flex-col gap-4 app-card-tight sm:flex-row sm:items-center">
                   <div class="block shrink-0">
@@ -205,12 +208,12 @@ interface GuestWishlistDisplayItem {
               <p class="mx-auto mt-3 max-w-lg text-sm font-medium leading-relaxed text-slate-500">
                 Save products from product pages to compare them later or come back when you're ready to buy.
               </p>
-              <a routerLink="/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">
+              <a routerLink="/products" class="btn-primary mt-6 inline-flex">
                 Browse Products
               </a>
             </div>
 
-            <div *ngIf="!guestWishlistLoading && guestWishlistItems.length > 0" class="mx-auto grid max-w-[1180px] gap-4">
+            <div *ngIf="!guestWishlistLoading && guestWishlistItems.length > 0" class="store-page-grid">
               <article
                 *ngFor="let item of guestWishlistItems; trackBy: trackByGuestWishlistItem"
                 class="app-card app-card-tight overflow-hidden transition hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(15,23,42,0.06)]"
@@ -265,10 +268,10 @@ interface GuestWishlistDisplayItem {
                 </div>
 
                 <div class="border-t border-[#f1e4d4] px-4 py-3">
-                  <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div class="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      class="btn-primary h-10 w-full justify-center px-4 text-sm sm:h-11 sm:px-5"
+                      class="btn-primary w-full justify-center sm:w-auto"
                       [disabled]="moveBusyId === item.productId"
                       (click)="$event.preventDefault(); $event.stopPropagation(); moveGuestWishlistItemToCart(item)"
                     >
@@ -276,7 +279,7 @@ interface GuestWishlistDisplayItem {
                     </button>
                     <button
                       type="button"
-                      class="btn-secondary h-10 w-full justify-center px-4 text-sm text-rose-700 sm:h-11 sm:px-5"
+                      class="btn-secondary w-full justify-center text-rose-700 sm:w-auto"
                       [disabled]="busyId === guestWishlistItemKey(item)"
                       (click)="removeGuestItem(item)"
                     >
@@ -288,7 +291,7 @@ interface GuestWishlistDisplayItem {
             </div>
 
             <div *ngIf="!guestWishlistLoading && guestWishlistItems.length > 0" class="mt-4 flex justify-center">
-              <a routerLink="/login" class="btn-primary inline-flex !px-6 !py-3">Go To Login</a>
+              <a routerLink="/login" class="btn-primary inline-flex">Go To Login</a>
             </div>
         </div>
       </section>
