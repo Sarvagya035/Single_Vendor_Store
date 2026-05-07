@@ -15,10 +15,7 @@ import { OrderService } from '../../core/services/order.service';
           <div class="store-page-header">
           <div class="max-w-2xl">
             <p class="app-page-eyebrow text-amber-700">Order History</p>
-            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My orders</h1>
-            <p class="app-page-description">
-              Search, review, and follow every order from one place.
-            </p>
+            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My Orders</h1>
           </div>
 
           <div class="flex flex-wrap gap-2">

@@ -45,9 +45,6 @@ interface GuestCartDisplayItem {
             <div class="max-w-2xl">
               <p class="app-page-eyebrow text-amber-700">Shopping Bag</p>
               <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Your cart</h1>
-              <p class="app-page-description">
-                Review items, quantities, and totals before moving to checkout.
-              </p>
             </div>
           </div>
 

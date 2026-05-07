@@ -36,9 +36,6 @@ interface GuestWishlistDisplayItem {
           <div>
             <p class="app-page-eyebrow text-amber-700">Saved items</p>
             <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My Wishlist</h1>
-            <p class="app-page-description">
-              Save products for later and move them to cart when you’re ready.
-            </p>
           </div>
 
           <a routerLink="/products" class="btn-secondary w-full justify-center sm:w-auto">

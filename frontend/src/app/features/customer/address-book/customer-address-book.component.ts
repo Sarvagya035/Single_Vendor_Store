@@ -10,24 +10,6 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
   imports: [CommonModule, FormsModule],
   template: `
     <div class="overflow-hidden">
-      <div class="store-page-header">
-        <div>
-          <p class="app-page-eyebrow text-amber-700">Saved Addresses</p>
-          <h3 class="app-page-title !mt-2 !text-[1.55rem] sm:!text-[1.75rem]">Manage delivery destinations</h3>
-          <p class="app-page-description">
-            Manage delivery addresses and choose your default destination.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          class="btn-primary w-full sm:w-auto"
-          (click)="startCreate()"
-        >
-          {{ showForm && !editingAddressId ? 'Adding Address' : 'Add Address' }}
-        </button>
-      </div>
-
       <div class="store-page-stack">
         <div
           *ngIf="successMessage"
