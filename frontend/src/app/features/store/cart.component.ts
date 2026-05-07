@@ -39,33 +39,30 @@ interface GuestCartDisplayItem {
   imports: [CommonModule, RouterModule],
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
-      <section class="storefront-section mt-4 space-y-6">
-        <div class="storefront-container">
-          <div class="app-panel overflow-hidden">
-            <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-              <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div class="max-w-2xl">
-                  <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
-                  <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Your cart</h1>
-                </div>
-              </div>
+      <section class="storefront-section">
+        <div class="store-page store-page-stack">
+          <div class="store-page-header">
+            <div class="max-w-2xl">
+              <p class="app-page-eyebrow text-amber-700">Shopping Bag</p>
+              <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Your cart</h1>
             </div>
+          </div>
 
-            <div
-              *ngIf="cartMessage"
-              class="mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800"
-            >
-              {{ cartMessage }}
-            </div>
+          <div
+            *ngIf="cartMessage"
+            class="rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800"
+          >
+            {{ cartMessage }}
+          </div>
 
-            <div
-              *ngIf="cart.alerts"
-              class="mt-4 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-700"
-            >
-              {{ cart.alerts }}
-            </div>
+          <div
+            *ngIf="cart.alerts"
+            class="rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-700"
+          >
+            {{ cart.alerts }}
+          </div>
 
-            <div *ngIf="cartLoading" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+          <div *ngIf="cartLoading" class="store-page-grid lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <div *ngFor="let _ of cartSkeletonCards" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
@@ -90,17 +87,17 @@ interface GuestCartDisplayItem {
               </aside>
             </div>
 
-            <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+          <div *ngIf="!cartLoading && cart.cartItems.length === 0" class="mx-auto max-w-[980px] py-8 sm:py-10 lg:py-12">
               <div class="app-empty-state">
                 <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
                 <p class="mt-3 text-sm font-medium text-slate-500">
                   Browse products and add a variant to start building your order.
                 </p>
-                <a routerLink="/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
+                <a routerLink="/products" class="btn-primary mt-6 inline-flex">Browse Products</a>
               </div>
             </div>
 
-            <div *ngIf="cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+          <div *ngIf="cart.cartItems.length" class="store-page-grid lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <article *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
@@ -125,7 +122,7 @@ interface GuestCartDisplayItem {
 
                         <button
                           type="button"
-                          class="text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                          class="btn-secondary text-rose-600 hover:text-rose-700"
                           (click)="removeFromCart(item)"
                         >
                           Remove
@@ -136,7 +133,7 @@ interface GuestCartDisplayItem {
                         <div class="flex w-full items-center rounded-xl border border-[#e7dac9] bg-[#fffaf5] sm:w-auto">
                           <button
                             type="button"
-                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            class="btn-secondary w-10 shrink-0 px-0 text-sm text-[#6f4e37]"
                             (click)="updateCartItem(item, 'dec')"
                           >
                             -
@@ -146,7 +143,7 @@ interface GuestCartDisplayItem {
                           </span>
                           <button
                             type="button"
-                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            class="btn-secondary w-10 shrink-0 px-0 text-sm text-[#6f4e37]"
                             (click)="updateCartItem(item, 'inc')"
                           >
                             +
@@ -180,44 +177,42 @@ interface GuestCartDisplayItem {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    class="btn-secondary mt-5 w-full !px-4 !py-3"
-                    (click)="clearCart()"
-                  >
-                    Clear Cart
-                  </button>
-                  <a
-                    routerLink="/checkout"
-                    class="btn-primary mt-3 inline-flex w-full items-center justify-center !px-4 !py-3"
-                  >
-                    Proceed To Checkout
-                  </a>
+                  <div class="mt-5 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      class="btn-secondary w-full justify-center sm:w-auto"
+                      (click)="clearCart()"
+                    >
+                      Clear Cart
+                    </button>
+                    <a
+                      routerLink="/checkout"
+                      class="btn-primary w-full justify-center sm:w-auto"
+                    >
+                      Proceed To Checkout
+                    </a>
+                  </div>
                 </div>
               </aside>
             </div>
-          </div>
         </div>
       </section>
     </ng-container>
 
     <ng-template #guestState>
-      <section class="storefront-section mt-4 space-y-6">
-        <div class="storefront-container">
-          <div class="app-panel overflow-hidden">
-            <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-              <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div class="max-w-2xl">
-                  <p class="app-page-eyebrow !text-amber-700">Shopping Bag</p>
-                  <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Guest cart</h1>
-                  <p class="app-page-description !mt-3">
-                    Items saved on this device will merge into your account after login or registration.
-                  </p>
-                </div>
-              </div>
+      <section class="storefront-section">
+        <div class="store-page store-page-stack">
+          <div class="store-page-header">
+            <div class="max-w-2xl">
+              <p class="app-page-eyebrow text-amber-700">Shopping Bag</p>
+              <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Guest cart</h1>
+              <p class="app-page-description">
+                Items saved on this device will merge into your account after login or registration.
+              </p>
             </div>
+          </div>
 
-            <div *ngIf="guestCartLoading" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+          <div *ngIf="guestCartLoading" class="store-page-grid lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <div *ngFor="let _ of guestCartSkeletonCards" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
@@ -242,24 +237,24 @@ interface GuestCartDisplayItem {
               </aside>
             </div>
 
-            <div
-              *ngIf="guestCartMessage"
-              class="mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800"
-            >
-              {{ guestCartMessage }}
-            </div>
+          <div
+            *ngIf="guestCartMessage"
+            class="rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800"
+          >
+            {{ guestCartMessage }}
+          </div>
 
-            <div *ngIf="!guestCartLoading && guestCartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+          <div *ngIf="!guestCartLoading && guestCartItems.length === 0" class="mx-auto max-w-[980px] py-8 sm:py-10 lg:py-12">
               <div class="app-empty-state">
                 <h2 class="text-2xl font-medium text-slate-900">Your guest cart is empty</h2>
                 <p class="mt-3 text-sm font-medium text-slate-500">
                   Browse products and add a variant to start building your order.
                 </p>
-                <a routerLink="/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
+                <a routerLink="/products" class="btn-primary mt-6 inline-flex">Browse Products</a>
               </div>
             </div>
 
-            <div *ngIf="!guestCartLoading && guestCartItems.length > 0" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+          <div *ngIf="!guestCartLoading && guestCartItems.length > 0" class="store-page-grid lg:grid-cols-[minmax(0,1.75fr)_360px]">
               <div class="space-y-5">
                 <article *ngFor="let item of guestCartItems; trackBy: trackByGuestCartItem" class="app-card app-panel-body">
                   <div class="flex flex-col gap-4 sm:flex-row">
@@ -296,7 +291,7 @@ interface GuestCartDisplayItem {
 
                         <button
                           type="button"
-                          class="text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                          class="btn-secondary text-rose-600 hover:text-rose-700"
                           (click)="removeGuestCartItem(item)"
                         >
                           Remove
@@ -307,7 +302,7 @@ interface GuestCartDisplayItem {
                         <div class="flex w-full items-center rounded-xl border border-[#e7dac9] bg-[#fffaf5] sm:w-auto">
                           <button
                             type="button"
-                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            class="btn-secondary w-10 shrink-0 px-0 text-sm text-[#6f4e37]"
                             (click)="updateGuestCartItem(item, 'dec')"
                             [disabled]="!item.available"
                           >
@@ -318,7 +313,7 @@ interface GuestCartDisplayItem {
                           </span>
                           <button
                             type="button"
-                            class="px-4 py-3 text-base font-medium text-[#6f4e37]"
+                            class="btn-secondary w-10 shrink-0 px-0 text-sm text-[#6f4e37]"
                             (click)="updateGuestCartItem(item, 'inc')"
                             [disabled]="!item.available || item.quantity >= item.maxQuantity"
                           >
@@ -353,24 +348,25 @@ interface GuestCartDisplayItem {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    class="btn-secondary mt-5 w-full !px-4 !py-3"
-                    (click)="clearGuestCart()"
-                  >
-                    Clear Cart
-                  </button>
-                  <a
-                    routerLink="/login"
-                    [queryParams]="{ redirectTo: '/checkout', message: 'Please login to continue checkout.' }"
-                    class="btn-primary mt-3 inline-flex w-full items-center justify-center !px-4 !py-3"
-                  >
-                    Proceed To Checkout
-                  </a>
+                  <div class="mt-5 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      class="btn-secondary w-full justify-center sm:w-auto"
+                      (click)="clearGuestCart()"
+                    >
+                      Clear Cart
+                    </button>
+                    <a
+                      routerLink="/login"
+                      [queryParams]="{ redirectTo: '/checkout', message: 'Please login to continue checkout.' }"
+                      class="btn-primary w-full justify-center sm:w-auto"
+                    >
+                      Proceed To Checkout
+                    </a>
+                  </div>
                 </div>
               </aside>
             </div>
-          </div>
         </div>
       </section>
     </ng-template>

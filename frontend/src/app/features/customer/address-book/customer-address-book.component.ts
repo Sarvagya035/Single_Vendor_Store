@@ -10,25 +10,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
   imports: [CommonModule, FormsModule],
   template: `
     <div class="overflow-hidden">
-      <div class="flex flex-col gap-4 border-b border-[#eee2d4] bg-[#fffaf5] app-panel-body lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-700">Saved Addresses</p>
-          <h3 class="mt-2 text-[1.45rem] font-medium tracking-tight text-slate-900">Manage delivery destinations</h3>
-          <p class="mt-2 text-sm leading-7 text-slate-500">
-            Manage delivery addresses and choose your default destination.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          class="btn-primary w-full !px-5 !py-3 sm:w-auto"
-          (click)="startCreate()"
-        >
-          {{ showForm && !editingAddressId ? 'Adding Address' : 'Add Address' }}
-        </button>
-      </div>
-
-      <div class="space-y-4 bg-[#fffdfa] app-panel-body">
+      <div class="store-page-stack">
         <div
           *ngIf="successMessage"
           class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
@@ -150,15 +132,15 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 name="country"
                 [(ngModel)]="form.country"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
-            <div class="sm:col-span-2 flex flex-col gap-3 pt-2 sm:flex-row">
-              <button type="submit" class="btn-primary w-full !px-6 !py-3 sm:w-auto" [disabled]="isSaving">
+            <div class="sm:col-span-2 flex flex-wrap gap-2 pt-2">
+              <button type="submit" class="btn-primary w-full sm:w-auto" [disabled]="isSaving">
                 {{ isSaving ? 'Saving...' : editingAddressId ? 'Update Address' : 'Save Address' }}
               </button>
-              <button type="button" class="btn-secondary w-full !px-6 !py-3 sm:w-auto" (click)="cancelForm()">Cancel</button>
+              <button type="button" class="btn-secondary w-full sm:w-auto" (click)="cancelForm()">Cancel</button>
             </div>
           </form>
         </div>
@@ -174,7 +156,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           </p>
         </div>
 
-        <div *ngIf="addresses.length" class="grid gap-4">
+        <div *ngIf="addresses.length" class="store-page-grid">
           <article
             *ngFor="let address of addresses; trackBy: trackByAddress"
             class="app-card app-panel-body"
@@ -200,10 +182,10 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 </div>
               </div>
 
-              <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div class="flex flex-wrap gap-2 sm:justify-end">
                 <button
                   type="button"
-                  class="btn-secondary w-full !px-4 !py-2 sm:w-auto"
+                  class="btn-secondary w-full sm:w-auto"
                   (click)="startEdit(address)"
                 >
                   Edit
@@ -211,14 +193,14 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 <button
                   *ngIf="!address.isDefault"
                   type="button"
-                  class="btn-secondary w-full !px-4 !py-2 border-amber-100 bg-[#fff7ed]/60 text-amber-800 sm:w-auto"
+                  class="btn-secondary w-full text-amber-800 sm:w-auto"
                   (click)="setDefault(address)"
                 >
                   Make Default
                 </button>
                 <button
                   type="button"
-                  class="btn-secondary w-full !px-4 !py-2 border-rose-100 bg-rose-50/60 text-rose-600 sm:w-auto"
+                  class="btn-secondary w-full text-rose-600 sm:w-auto"
                   (click)="deleteAddress(address)"
                 >
                   Delete

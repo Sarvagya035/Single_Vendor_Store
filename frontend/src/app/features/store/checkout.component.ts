@@ -22,25 +22,25 @@ const EMPTY_CART: CustomerCart = {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <section class="storefront-section mt-4 space-y-6">
-      <div class="storefront-container">
-        <div class="app-panel overflow-hidden">
-          <div class="border-b border-[#eee2d4] px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div class="max-w-2xl">
-                <p class="app-page-eyebrow !text-amber-700">Checkout</p>
-                <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Review and place your order</h1>
-              </div>
+    <section class="storefront-section">
+      <div class="store-page-wide store-page-stack">
+          <div class="store-page-header">
+            <div class="max-w-2xl">
+              <p class="app-page-eyebrow text-amber-700">Checkout</p>
+              <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Review and place your order</h1>
+              <p class="app-page-description">
+                Confirm your address, review the cart, and complete payment in one flow.
+              </p>
+            </div>
 
-              <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                <a routerLink="/cart" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">Back to Cart</a>
-                <a routerLink="/addresses" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">Manage Addresses</a>
-              </div>
+            <div class="flex flex-wrap gap-2">
+              <a routerLink="/cart" class="btn-secondary w-full justify-center sm:w-auto">Back to Cart</a>
+              <a routerLink="/addresses" class="btn-secondary w-full justify-center sm:w-auto">Manage Addresses</a>
             </div>
           </div>
 
-          <div class="border-b border-[#eee2d4] bg-gradient-to-r from-white via-[#fffaf5] to-white px-4 py-4 sm:px-5 lg:px-6">
-            <div class="grid gap-3 rounded-[1.4rem] border border-[#eadcc9] bg-white p-4 shadow-[0_12px_32px_rgba(111,78,55,0.05)] md:grid-cols-3">
+          <div class="rounded-[1.5rem] border border-[#ead8c2] bg-white/90 p-4 shadow-sm">
+            <div class="store-page-grid md:grid-cols-3">
               <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
                 <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">1</span>
                 <div>
@@ -65,21 +65,21 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </div>
 
-        <div *ngIf="successMessage" class="mt-6 rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800">
+        <div *ngIf="successMessage" class="rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800">
             {{ successMessage }}
           </div>
 
-          <div *ngIf="isLoading" class="px-4 py-6 text-sm font-medium text-slate-500 sm:px-5 lg:px-6">Loading checkout details...</div>
+          <div *ngIf="isLoading" class="text-sm font-medium text-slate-500">Loading checkout details...</div>
 
-          <div *ngIf="!isLoading && cart.cartItems.length === 0" class="bg-[#fffdfa] app-panel-body">
+          <div *ngIf="!isLoading && cart.cartItems.length === 0">
             <div class="app-empty-state">
               <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
               <p class="mt-3 text-sm font-medium text-slate-500">Add products to your cart before checking out.</p>
-              <a routerLink="/products" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
+              <a routerLink="/products" class="btn-primary mt-6 inline-flex">Browse Products</a>
             </div>
           </div>
 
-          <div *ngIf="!isLoading && cart.cartItems.length" class="px-4 pb-2 sm:px-5 lg:hidden lg:px-6">
+          <div *ngIf="!isLoading && cart.cartItems.length" class="lg:hidden">
             <div class="app-card app-panel-body">
               <div class="flex items-center justify-between gap-4">
                 <div>
@@ -105,7 +105,7 @@ const EMPTY_CART: CustomerCart = {
 
               <button
                 type="button"
-                class="btn-primary mt-4 w-full !px-4 !py-3 disabled:cursor-not-allowed disabled:opacity-60"
+                class="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60"
                 [disabled]="isSubmitting || !selectedAddressId || addresses.length === 0"
                 (click)="placeOrder()"
               >
@@ -114,7 +114,7 @@ const EMPTY_CART: CustomerCart = {
             </div>
           </div>
 
-          <div *ngIf="!isLoading && cart.cartItems.length" class="grid gap-5 bg-[#fffdfa] app-panel-body lg:grid-cols-[minmax(0,1.75fr)_360px]">
+          <div *ngIf="!isLoading && cart.cartItems.length" class="store-page-grid lg:grid-cols-[minmax(0,1.7fr)_360px]">
             <div class="space-y-5">
               <section class="app-card app-panel-body">
                 <div class="flex flex-col gap-3 border-b border-[#f1e4d4] pb-4 sm:flex-row sm:items-end sm:justify-between">
@@ -219,7 +219,7 @@ const EMPTY_CART: CustomerCart = {
 
                 <button
                   type="button"
-                  class="btn-primary mt-5 w-full !px-4 !py-3 disabled:cursor-not-allowed disabled:opacity-60"
+                  class="btn-primary mt-5 w-full disabled:cursor-not-allowed disabled:opacity-60"
                   [disabled]="isSubmitting || !selectedAddressId || addresses.length === 0"
                   (click)="placeOrder()"
                 >
@@ -232,7 +232,6 @@ const EMPTY_CART: CustomerCart = {
               </div>
             </aside>
           </div>
-        </div>
       </div>
     </section>
   `

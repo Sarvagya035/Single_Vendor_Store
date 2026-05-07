@@ -13,9 +13,9 @@ import { ErrorService } from '../../core/services/error.service';
       <div class="pointer-events-none absolute left-0 top-0 h-80 w-80 rounded-full bg-[#f5e6d3]/70 blur-[120px]"></div>
       <div class="pointer-events-none absolute right-0 top-16 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
-      <section class="storefront-section pt-6 pb-14 sm:pt-8 sm:pb-16 lg:pt-10 lg:pb-20">
-        <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
-          <div class="mx-auto max-w-3xl text-center">
+      <section class="storefront-section py-4 sm:py-5 lg:py-6">
+        <div class="storefront-page-normal storefront-page-stack">
+          <div class="storefront-page-header mx-auto max-w-3xl items-center text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8b5e3c]">Bulk Order Inquiry</p>
             <h1 class="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
               Bulk Order Inquiry
@@ -25,8 +25,8 @@ import { ErrorService } from '../../core/services/error.service';
             </p>
           </div>
 
-          <div class="mt-10 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-            <div class="space-y-6">
+          <div class="storefront-page-grid lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+            <div class="storefront-page-stack">
               <div class="app-panel app-panel-soft p-6 sm:p-7">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8b5e3c]">Why choose us</p>
                 <h2 class="mt-3 text-2xl font-bold tracking-tight text-slate-900">Reliable bulk supply for growing businesses</h2>
@@ -76,7 +76,7 @@ import { ErrorService } from '../../core/services/error.service';
               </div>
             </div>
 
-            <div class="app-panel app-panel-body p-6 sm:p-8">
+              <div class="app-panel app-panel-body p-6 sm:p-8">
               <div class="space-y-3">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Send inquiry</p>
                 <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Tell us about your bulk requirement</h2>
@@ -161,7 +161,7 @@ import { ErrorService } from '../../core/services/error.service';
                       type="text"
                       formControlName="quantity"
                       placeholder="Approx. quantity or cartons"
-                      class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                      class="app-field"
                     />
                   </div>
                 </div>
@@ -185,17 +185,19 @@ import { ErrorService } from '../../core/services/error.service';
                     type="text"
                     formControlName="city"
                     placeholder="Enter your city or location"
-                    class="block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-300/40"
+                    class="app-field"
                   />
                   <p *ngIf="showError('city')" class="text-xs font-medium text-rose-500">City or location is required.</p>
                 </div>
 
-                <button
-                  type="submit"
-                  class="btn-primary w-full justify-center !px-6 !py-3.5"
-                >
+                <div class="storefront-page-actions">
+                  <button
+                    type="submit"
+                    class="btn-primary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5"
+                  >
                   Submit Inquiry
-                </button>
+                  </button>
+                </div>
               </form>
             </div>
           </div>

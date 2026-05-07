@@ -14,11 +14,10 @@ import { ErrorService } from '../../core/services/error.service';
       <div class="pointer-events-none absolute right-0 top-20 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
       <section class="storefront-section py-10 lg:py-16">
-        <div class="storefront-container">
-          <div class="mx-auto w-full max-w-7xl">
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 items-start">
-              <div class="space-y-6">
-                <div class="space-y-5">
+        <div class="storefront-page-normal storefront-page-stack">
+            <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
+              <div class="storefront-page-stack">
+                <div class="storefront-page-header">
                   <p class="app-page-eyebrow text-[#8b5e3c]">CONTACT US</p>
                   <h1 class="max-w-xl text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
                     We’re here for questions, bulk orders, and store visits.
@@ -28,16 +27,16 @@ import { ErrorService } from '../../core/services/error.service';
                   </p>
                 </div>
 
-                <div class="flex flex-col gap-3 sm:flex-row">
-                  <a [href]="phoneHref" class="btn-primary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
+                <div class="storefront-page-actions">
+                  <a [href]="phoneHref" class="btn-primary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                     Call Now
                   </a>
-                  <a routerLink="/products" class="btn-secondary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
+                  <a routerLink="/products" class="btn-secondary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                     Browse Products
                   </a>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="storefront-page-grid sm:grid-cols-2">
                   <article class="group h-full min-h-[190px] rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                     <div class="flex flex-col items-center gap-3 text-center">
                       <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#fff4e6] text-[#6f4e37]">
@@ -126,7 +125,7 @@ import { ErrorService } from '../../core/services/error.service';
                           required
                           [(ngModel)]="form.name"
                           placeholder="Enter your full name"
-                          class="block w-full rounded-full border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                          class="app-field"
                         />
                       </div>
 
@@ -142,7 +141,7 @@ import { ErrorService } from '../../core/services/error.service';
                           required
                           [(ngModel)]="form.phone"
                           placeholder="Enter your phone number"
-                          class="block w-full rounded-full border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                          class="app-field"
                         />
                       </div>
                     </div>
@@ -157,7 +156,7 @@ import { ErrorService } from '../../core/services/error.service';
                         required
                         [(ngModel)]="form.email"
                         placeholder="Enter your email"
-                        class="block w-full rounded-full border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                        class="app-field"
                       />
                     </div>
 
@@ -170,7 +169,7 @@ import { ErrorService } from '../../core/services/error.service';
                         required
                         [(ngModel)]="form.subject"
                         placeholder="What can we help you with?"
-                        class="block w-full rounded-full border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-bold text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                        class="app-field"
                       />
                     </div>
 
@@ -183,11 +182,11 @@ import { ErrorService } from '../../core/services/error.service';
                         required
                         [(ngModel)]="form.message"
                         placeholder="Tell us a little more about your requirements"
-                        class="block w-full rounded-[1.5rem] border border-[#eadcc9] bg-[#fff7ed] px-4 py-4 font-medium leading-7 text-slate-900 shadow-inner transition-all focus:border-[#6f4e37] focus:ring-2 focus:ring-[#6f4e37]/20"
+                        class="app-field"
                       ></textarea>
                     </div>
 
-                    <button type="submit" class="mt-2 w-full sm:w-auto sm:self-start rounded-full bg-[#6f4e37] px-6 py-3 text-sm font-semibold text-white">
+                    <button type="submit" class="btn-primary mt-2 h-10 w-full rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                       Send Message
                     </button>
                   </form>
@@ -201,21 +200,19 @@ import { ErrorService } from '../../core/services/error.service';
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </section>
 
       <section class="storefront-section pb-10 lg:pb-14">
-        <div class="storefront-container">
-          <div class="mx-auto w-full max-w-7xl">
-            <div class="mb-5 max-w-2xl space-y-3">
+        <div class="storefront-page-normal storefront-page-stack">
+            <div class="storefront-page-header max-w-2xl">
               <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Why contact us?</p>
               <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                 We make support simple, helpful, and personal.
               </h2>
             </div>
 
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div class="storefront-page-grid md:grid-cols-3">
               <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                 <p class="text-sm font-bold text-slate-900">Bulk Order Support</p>
                 <p class="mt-2 text-sm font-medium leading-7 text-slate-500">
@@ -235,13 +232,11 @@ import { ErrorService } from '../../core/services/error.service';
                 </p>
               </article>
             </div>
-          </div>
         </div>
       </section>
 
       <section class="storefront-section pb-12 lg:pb-16">
-        <div class="storefront-container">
-          <div class="mx-auto w-full max-w-7xl">
+        <div class="storefront-page-normal storefront-page-stack">
             <div class="flex flex-col gap-5 rounded-[2rem] border border-[#eadcc9] bg-[linear-gradient(135deg,#fffaf4_0%,#fef3e2_100%)] p-6 shadow-[0_20px_60px_rgba(47,27,20,0.06)] sm:p-8 lg:flex-row lg:items-center lg:justify-between lg:p-10">
               <div class="max-w-2xl">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Need help choosing?</p>
@@ -253,16 +248,15 @@ import { ErrorService } from '../../core/services/error.service';
                 </p>
               </div>
 
-              <div class="flex flex-col gap-3 sm:flex-row">
-                <a [href]="phoneHref" class="btn-primary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
+              <div class="flex flex-wrap gap-2">
+                <a [href]="phoneHref" class="btn-primary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                   Call Now
                 </a>
-                <a routerLink="/products" class="btn-secondary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
+                <a routerLink="/products" class="btn-secondary h-10 w-full justify-center rounded-full px-4 text-sm sm:h-11 sm:w-auto sm:px-5">
                   Shop Products
                 </a>
               </div>
             </div>
-          </div>
         </div>
       </section>
     </div>

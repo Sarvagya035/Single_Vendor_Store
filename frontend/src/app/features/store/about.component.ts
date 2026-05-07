@@ -12,11 +12,10 @@ import { RouterModule } from '@angular/router';
       <div class="pointer-events-none absolute right-0 top-20 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
       <section class="storefront-section py-10 lg:py-16">
-        <div class="storefront-container">
-          <div class="mx-auto w-full max-w-7xl">
+        <div class="storefront-container storefront-page-stack">
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
-              <div class="relative z-10 space-y-8">
-                <div class="space-y-5">
+              <div class="relative z-10 storefront-page-stack">
+                <div class="storefront-page-header">
                   <p class="app-page-eyebrow text-[#8b5e3c]">ABOUT DIVYA DRY FRUITS</p>
                   <h1 class="max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
                     Bringing premium dry fruits, spices, and healthy essentials to every home.
@@ -26,7 +25,7 @@ import { RouterModule } from '@angular/router';
                   </p>
                 </div>
 
-                <div class="flex flex-col gap-3 sm:flex-row">
+                <div class="storefront-page-actions">
                   <a routerLink="/products" class="btn-primary w-full justify-center !px-6 !py-3 text-sm sm:w-auto">
                     Browse Products
                   </a>
@@ -48,13 +47,11 @@ import { RouterModule } from '@angular/router';
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </section>
 
       <section class="storefront-section pb-10 lg:pb-14">
-        <div class="storefront-container">
-          <div class="mx-auto w-full max-w-7xl">
+        <div class="storefront-container storefront-page-stack">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <article class="app-card bg-white p-5">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Rating</p>
@@ -77,14 +74,12 @@ import { RouterModule } from '@angular/router';
                 <p class="mt-1 text-sm font-medium text-slate-500">Trusted Experience</p>
               </article>
             </div>
-          </div>
         </div>
       </section>
 
       <section class="storefront-section pb-10 lg:pb-14">
-        <div class="storefront-container">
-          <div class="mx-auto w-full max-w-7xl">
-            <div class="grid grid-cols-1 gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6">
+        <div class="storefront-container storefront-page-stack">
+            <div class="storefront-page-grid lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
               <article class="app-panel app-panel-body sm:p-8 lg:p-10">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Our story</p>
                 <h2 class="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -131,13 +126,11 @@ import { RouterModule } from '@angular/router';
                 </div>
               </article>
             </div>
-          </div>
         </div>
       </section>
 
       <section class="storefront-section pb-10 lg:pb-14">
-        <div class="storefront-container">
-          <div class="mx-auto w-full max-w-7xl">
+        <div class="storefront-container storefront-page-stack">
             <div class="app-panel app-panel-body sm:p-8 lg:p-10">
               <div class="max-w-2xl">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Product range</p>
@@ -170,13 +163,11 @@ import { RouterModule } from '@angular/router';
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </section>
 
       <section class="storefront-section pb-12 lg:pb-16">
-        <div class="storefront-container">
-          <div class="mx-auto w-full max-w-7xl">
+        <div class="storefront-container storefront-page-stack">
             <div class="flex flex-col gap-5 rounded-[2rem] border border-[#eadcc9] bg-[linear-gradient(135deg,#fffaf4_0%,#fef3e2_100%)] p-6 shadow-[0_20px_60px_rgba(47,27,20,0.06)] sm:p-8 lg:flex-row lg:items-center lg:justify-between lg:p-10">
               <div class="max-w-2xl">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Ready to shop</p>
@@ -197,7 +188,6 @@ import { RouterModule } from '@angular/router';
                 </a>
               </div>
             </div>
-          </div>
         </div>
       </section>
     </div>

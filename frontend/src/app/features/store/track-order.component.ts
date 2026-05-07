@@ -15,32 +15,29 @@ import { OrderService } from '../../core/services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section class="storefront-section overflow-x-hidden pt-4 space-y-6 sm:pt-6 lg:pt-8">
-      <div class="storefront-container">
-        <div class="vendor-page-shell overflow-hidden">
-          <div class="border-b border-[#eee2d4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div class="min-w-0">
-                <p class="app-page-eyebrow !text-amber-700">Track Order</p>
-                <h1 class="app-page-title !mt-2 !text-2xl sm:!text-[2.2rem]">Shipment tracking</h1>
-                <p class="app-page-description !mt-3 !max-w-2xl !text-sm sm:!text-[15px]">
-                  Follow courier movement and delivery progress for this order.
-                </p>
-              </div>
+    <section class="storefront-section overflow-x-hidden">
+      <div class="store-page store-page-stack">
+          <div class="store-page-header">
+            <div class="min-w-0">
+              <p class="app-page-eyebrow text-amber-700">Track Order</p>
+              <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Shipment tracking</h1>
+              <p class="app-page-description">
+                Follow courier movement and delivery progress for this order.
+              </p>
+            </div>
 
-              <div class="flex flex-col gap-3 sm:flex-row">
-                <a [routerLink]="orderLink" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">Open Order</a>
-                <a routerLink="/orders" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">Back To Orders</a>
-              </div>
+            <div class="flex flex-wrap gap-2">
+              <a [routerLink]="orderLink" class="btn-secondary w-full justify-center sm:w-auto">Open Order</a>
+              <a routerLink="/orders" class="btn-primary w-full justify-center sm:w-auto">Back To Orders</a>
             </div>
           </div>
 
-          <div *ngIf="isLoading" class="px-4 py-10 text-sm font-semibold text-slate-500 sm:px-5 lg:px-6">
+          <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">
             Loading tracking details...
           </div>
 
-          <div *ngIf="!isLoading && order" class="app-panel app-panel-body">
-            <div class="app-panel app-panel-body">
+          <div *ngIf="!isLoading && order">
+            <div class="store-page-stack">
               <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
                 <div class="min-w-0">
                   <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Order</p>
@@ -56,7 +53,7 @@ import { OrderService } from '../../core/services/order.service';
               </div>
 
               <div class="mt-6">
-                <div class="space-y-4 md:hidden">
+                <div class="store-page-stack md:hidden">
                   <div *ngFor="let step of trackingSteps; let last = last; trackBy: trackByStep" class="flex items-start gap-3">
                     <div class="flex flex-col items-center">
                       <div
@@ -97,7 +94,7 @@ import { OrderService } from '../../core/services/order.service';
                 </div>
               </div>
 
-              <div class="mt-8 rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] app-card-tight">
+              <div class="rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] app-card-tight">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
                   <div class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-600 text-white">
                     <span class="text-lg font-medium">✓</span>
@@ -147,7 +144,7 @@ import { OrderService } from '../../core/services/order.service';
                 </article>
               </div>
 
-              <div class="mt-8 grid gap-4 border-t border-[#f1e4d4] pt-6 md:grid-cols-2">
+              <div class="store-page-grid border-t border-[#f1e4d4] pt-6 md:grid-cols-2">
                 <div class="app-card bg-[#fff7ed]/70 p-5">
                   <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Shipping Address</p>
                   <p class="mt-3 text-sm font-medium leading-7 text-slate-600">
@@ -179,7 +176,6 @@ import { OrderService } from '../../core/services/order.service';
               </div>
             </div>
           </div>
-        </div>
       </div>
     </section>
   `
