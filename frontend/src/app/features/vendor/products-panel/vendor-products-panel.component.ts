@@ -213,7 +213,7 @@ interface ProductMessage {
                   </p>
                   <h3 class="mt-2 text-xl font-black text-slate-900">Add variant</h3>
                 </div>
-                <div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                <div class="mt-5 grid gap-4 lg:grid-cols-5">
                   <input
                     [(ngModel)]="variantCreateForms[product._id].attributesText"
                     [name]="'new-attributes-' + product._id"

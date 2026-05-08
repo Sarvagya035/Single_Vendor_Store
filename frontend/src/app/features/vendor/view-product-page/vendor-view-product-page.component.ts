@@ -148,7 +148,57 @@ import {
           </p>
         </div>
 
-        <div *ngIf="product.variants?.length" class="vendor-table-wrap pt-5">
+        <div *ngIf="product.variants?.length" class="space-y-4 pt-5 lg:space-y-6">
+          <div class="grid gap-4 lg:hidden">
+            <article
+              *ngFor="let variant of product.variants; trackBy: trackByVariant"
+              class="vendor-mobile-card border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(47,27,20,0.04)]"
+            >
+              <div class="flex items-start gap-4">
+                <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                  <img *ngIf="variant.variantImage" [src]="variant.variantImage" [alt]="variant.sku || 'Variant image'" class="h-full w-full object-cover" />
+                  <div *ngIf="!variant.variantImage" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                    No image
+                  </div>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="text-base font-black text-slate-900">{{ variant.sku || 'SKU pending' }}</p>
+                    <span
+                      class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]"
+                      [ngClass]="variant.isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-[#f2ebe7] text-[#8c6c5d]'"
+                    >
+                      {{ variant.isAvailable ? 'Available' : 'Unavailable' }}
+                    </span>
+                  </div>
+
+                  <p class="mt-2 break-words text-sm font-medium text-slate-600">{{ variantAttributeText(variant) }}</p>
+
+                  <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3">
+                      <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Price</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(variant.productPrice) }}</p>
+                    </div>
+                    <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3">
+                      <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Final Price</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(variant.finalPrice) }}</p>
+                    </div>
+                    <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3">
+                      <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
+                      <p class="mt-2 text-sm font-black text-slate-900">{{ variant.productStock || 0 }}</p>
+                    </div>
+                    <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3">
+                      <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">SKU</p>
+                      <p class="mt-2 break-all text-sm font-black text-slate-900">{{ variant.sku || 'Not set' }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="vendor-table-wrap hidden lg:block">
           <table class="min-w-full border-separate border-spacing-0">
             <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">
@@ -207,6 +257,7 @@ import {
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
 
         <ng-template #noVariants>

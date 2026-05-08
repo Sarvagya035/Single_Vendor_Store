@@ -42,13 +42,13 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         </div>
 
         <form *ngIf="!submitted" (ngSubmit)="onSubmit()" class="border-t border-slate-200 vendor-section-body lg:py-6">
-          <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+          <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
             <section class="w-full min-w-0 space-y-6">
               <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                 <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                   Account Details
                 </h2>
-                <div class="mt-6 grid gap-5 sm:grid-cols-2">
+                <div class="mt-6 grid gap-5 lg:grid-cols-2">
                 <label class="space-y-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Full Name</span>
                   <input
@@ -111,7 +111,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </label>
 
                 <label class="space-y-2 sm:col-span-2">
-                  <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Setup Secret Key</span>
+                  <span class="block text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Setup Secret Key</span>
                   <input
                     type="password"
                     required
@@ -171,7 +171,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                   Bank Details
                 </h2>
-                <div class="mt-6 grid gap-5 sm:grid-cols-2">
+                <div class="mt-6 grid gap-5 lg:grid-cols-2">
                 <label class="space-y-2 sm:col-span-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Account Holder Name</span>
                   <input

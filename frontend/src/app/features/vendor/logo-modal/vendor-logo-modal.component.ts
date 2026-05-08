@@ -7,8 +7,8 @@ import { VendorProfile } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="open" class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/45 px-4 py-4 sm:items-center">
-      <div class="glass-card my-auto w-full max-w-xl max-h-[calc(100vh-2rem)] overflow-y-auto p-5 shadow-2xl sm:p-8">
+    <div *ngIf="open" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/45 px-3 py-3 sm:px-4 sm:py-4">
+      <div class="glass-card my-auto w-full max-w-xl max-h-[calc(100dvh-1.5rem)] overflow-y-auto p-5 shadow-2xl sm:p-8">
         <div class="flex flex-col gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p class="vendor-stat-label">Edit Store Logo</p>
