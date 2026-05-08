@@ -166,9 +166,135 @@ interface BestSellingProductRow {
         >
           <article
             *ngFor="let product of visibleProducts; trackBy: trackByProduct"
-            class="vendor-mobile-card transition hover:bg-[#fffaf4]"
+            class="vendor-mobile-card p-3 transition hover:bg-[#fffaf4]"
           >
-            <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div class="flex flex-col gap-3 lg:hidden">
+              <div class="flex items-start gap-2.5">
+                <div
+                  class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 sm:h-20 sm:w-20"
+                >
+                  <img
+                    *ngIf="product.image; else mobileProductFallback"
+                    [src]="product.image"
+                    [alt]="product.displayName"
+                    class="h-full w-full object-cover"
+                  />
+                  <ng-template #mobileProductFallback>
+                    <div
+                      class="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-2xl font-black text-slate-500"
+                    >
+                      {{ product.displayName.charAt(0) || 'P' }}
+                    </div>
+                  </ng-template>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <p class="min-w-0 flex-1 text-sm font-black leading-snug text-slate-900 sm:text-lg">
+                      #{{ product.rank }} {{ product.displayName }}
+                    </p>
+                    <span
+                      class="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.14em]"
+                      [ngClass]="
+                        product.statusTone === 'active'
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-slate-200 text-slate-600'
+                      "
+                    >
+                      {{ product.statusLabel }}
+                    </span>
+                  </div>
+
+                  <p class="mt-0.5 line-clamp-1 text-[12px] font-medium leading-5 text-slate-500 sm:line-clamp-2">
+                    {{ product.description }}
+                  </p>
+
+                  <div class="mt-1 flex flex-wrap gap-1.5">
+                    <span
+                      class="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-slate-600"
+                    >
+                      {{ product.categoryName }}
+                    </span>
+                    <span
+                      class="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-slate-600"
+                    >
+                      {{ product.brand }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-1.5 sm:gap-2">
+                <div class="min-h-[64px] rounded-[1.1rem] border border-slate-200 bg-slate-50/80 p-2.5">
+                  <p class="text-[9px] font-black uppercase tracking-[0.14em] text-slate-400">
+                    Sold
+                  </p>
+                  <p class="mt-0.5 text-[12px] font-black leading-none text-slate-900">
+                    {{ product.soldUnits }} unit{{ product.soldUnits === 1 ? '' : 's' }}
+                  </p>
+                </div>
+                <div class="min-h-[64px] rounded-[1.1rem] border border-slate-200 bg-slate-50/80 p-2.5">
+                  <p class="text-[9px] font-black uppercase tracking-[0.14em] text-slate-400">
+                    Revenue
+                  </p>
+                  <p class="mt-0.5 text-[12px] font-black leading-none text-slate-900">
+                    {{ formatCurrency(product.revenue) }}
+                  </p>
+                </div>
+                <div class="min-h-[64px] rounded-[1.1rem] border border-slate-200 bg-slate-50/80 p-2.5">
+                  <p class="text-[9px] font-black uppercase tracking-[0.14em] text-slate-400">
+                    Stock
+                  </p>
+                  <p class="mt-0.5 text-[12px] font-black leading-none text-slate-900">{{ product.stock }}</p>
+                </div>
+                <div class="min-h-[64px] rounded-[1.1rem] border border-slate-200 bg-slate-50/80 p-2.5">
+                  <p class="text-[9px] font-black uppercase tracking-[0.14em] text-slate-400">
+                    Avg. price
+                  </p>
+                  <p class="mt-0.5 text-[12px] font-black leading-none text-slate-900">
+                    {{ formatCurrency(product.averageSellingPrice) }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="rounded-[1.2rem] border border-slate-200 bg-[#fffaf4] p-2.5 sm:p-3">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="text-[9px] font-black uppercase tracking-[0.14em] text-slate-400">
+                    Sales share
+                  </p>
+                  <div class="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                    <span class="font-black text-slate-900">{{ product.salesShare.toFixed(1) }}%</span>
+                    <span>Added {{ formatDate(product.createdAt) }}</span>
+                  </div>
+                </div>
+
+                <div class="mt-1.5 h-1 overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    class="h-full rounded-full bg-[linear-gradient(90deg,#6f4e37_0%,#d4a017_100%)]"
+                    [style.width.%]="salesBarWidth(product.salesShare)"
+                  ></div>
+                </div>
+
+                <div class="mt-2 grid grid-cols-2 gap-1.5">
+                  <a
+                    *ngIf="product.product?._id"
+                    [routerLink]="['/vendor/products', product.product?._id, 'view']"
+                    class="rounded-2xl border border-slate-200 bg-white px-2.5 py-2 text-center text-[9px] font-black uppercase tracking-[0.12em] text-slate-700 transition hover:bg-slate-50"
+                  >
+                    View Product
+                  </a>
+                  <a
+                    *ngIf="product.product?._id"
+                    [routerLink]="['/vendor/products', product.product?._id, 'edit']"
+                    class="rounded-2xl border border-amber-200 bg-amber-50 px-2.5 py-2 text-center text-[9px] font-black uppercase tracking-[0.12em] text-amber-800 transition hover:bg-amber-100"
+                  >
+                    Edit Listing
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="hidden lg:flex lg:flex-row lg:items-start lg:justify-between">
               <div class="flex min-w-0 flex-1 gap-4">
                 <div
                   class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-slate-100"

@@ -124,7 +124,7 @@ interface CategoryCreateForm {
         <div class="group">
           <div
             class="category-row transition hover:bg-[#fffaf4]"
-            [style.padding-left.px]="18 + ((category.level || 0) * 20)"
+            [style.--category-level]="category.level || 0"
           >
             <div class="category-main">
               <button
@@ -197,7 +197,11 @@ interface CategoryCreateForm {
             </div>
           </div>
 
-          <div *ngIf="editingId === category._id" class="mx-3 my-3 border-t border-slate-200 bg-[#fffaf4] px-4 py-4 sm:mx-4 sm:px-5 sm:py-5 lg:mx-5 lg:px-6" [style.padding-left.px]="18 + ((category.level || 0) * 20)">
+          <div
+            *ngIf="editingId === category._id"
+            class="category-edit-row mx-3 my-3 border-t border-slate-200 bg-[#fffaf4] px-4 py-4 sm:mx-4 sm:px-5 sm:py-5 lg:mx-5 lg:px-6"
+            [style.--category-level]="category.level || 0"
+          >
             <div class="grid gap-3 sm:gap-4 md:grid-cols-2">
               <div class="space-y-2 md:col-span-1">
                 <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category Name</label>

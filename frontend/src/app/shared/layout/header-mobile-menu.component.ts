@@ -47,6 +47,7 @@ import { RouterModule } from '@angular/router';
             Register
           </a>
         </section>
+
       </div>
     </div>
   `

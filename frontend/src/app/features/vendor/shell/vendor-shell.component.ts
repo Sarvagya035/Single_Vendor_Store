@@ -40,7 +40,7 @@ import { VendorMobileNavService } from '../vendor-mobile-nav.service';
         />
       </aside>
 
-      <main class="vendor-main min-w-0 w-full max-w-full overflow-x-hidden">
+      <main class="vendor-main min-w-0 w-full max-w-full">
         <div class="vendor-page-frame">
           <section class="vendor-page vendor-content min-w-0 lg:pt-0">
             @if (isNavigating()) {

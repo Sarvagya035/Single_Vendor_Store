@@ -1,23 +1,26 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, HostListener, Input, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { fromEvent } from 'rxjs';
+import { forkJoin, fromEvent } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { AppRefreshService } from '../../core/services/app-refresh.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { GuestDataService } from '../../core/services/guest-data.service';
+import { OrderService } from '../../core/services/order.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { VendorService } from '../../core/services/vendor.service';
+import { VendorSidebarComponent } from '../../features/vendor/sidebar/vendor-sidebar.component';
 import { VendorMobileNavService } from '../../features/vendor/vendor-mobile-nav.service';
+import { VendorDashboardView } from '../../core/models/vendor.models';
 import { HeaderAccountDropdownComponent, HeaderDropdownItem } from './header-account-dropdown.component';
 import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent],
+  imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent, VendorSidebarComponent],
   template: `
     <div class="sticky top-0 z-50 relative">
       <div *ngIf="showAnnouncementBar()" class="announcement-bar overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] px-0 py-2 text-white" tabindex="0" aria-label="Top announcements">
@@ -255,6 +258,52 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
       } @placeholder {
         <ng-container></ng-container>
       }
+
+      @if (shouldRenderVendorMobileNav()) {
+        <div class="fixed inset-0 z-50 lg:hidden">
+          <button
+            type="button"
+            class="absolute inset-0 bg-slate-950/40"
+            aria-label="Close vendor navigation"
+            (click)="closeVendorMobileNav()"
+          ></button>
+
+          <aside class="absolute right-0 top-0 h-full w-[min(88vw,22rem)] overflow-y-auto border-l border-[#ead8c2] bg-[#fbf4e8] p-4 shadow-2xl">
+            <div class="mb-5 flex items-center justify-between border-b border-[#eee2d4] pb-4">
+              <div>
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                  Vendor Navigation
+                </p>
+                <h2 class="text-lg font-black text-slate-900">
+                  Menu
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                class="rounded-full border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700"
+                (click)="closeVendorMobileNav()"
+              >
+                Close
+              </button>
+            </div>
+
+            <app-vendor-sidebar
+              class="block"
+              [activeView]="vendorMobileNavView()"
+              [productCount]="productCount"
+              [categoryCount]="categoryCount"
+              [customerCount]="customerCount"
+              [orderCount]="orderCount"
+              [shipmentCount]="shipmentCount"
+              [bulkInquiryCount]="bulkInquiryCount"
+              [showShipments]="true"
+              [showBulkInquiries]="isVendor() || isAdmin()"
+              (closeMobile)="closeVendorMobileNav()"
+            />
+          </aside>
+        </div>
+      }
       <div *ngIf="isNavigating" class="pointer-events-none border-b border-[#e7dac9] bg-white/75 px-4 py-3 backdrop-blur">
         <div class="header-shell px-0">
           <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
@@ -270,6 +319,12 @@ export class HeaderComponent implements OnInit {
   user: any = null;
   @Input() isNavigating = false;
   isMenuOpen = false;
+  productCount = 0;
+  categoryCount = 0;
+  customerCount = 0;
+  orderCount = 0;
+  shipmentCount = 0;
+  bulkInquiryCount = 0;
   cartCount = 0;
   wishlistCount = 0;
   vendorNotificationCount = 0;
@@ -303,6 +358,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private cartService: CartService,
+    private orderService: OrderService,
     private wishlistService: WishlistService,
     private guestDataService: GuestDataService,
     private vendorService: VendorService,
@@ -327,6 +383,7 @@ export class HeaderComponent implements OnInit {
         this.refreshCustomerCounts();
       } else if (this.isVendor() || this.isAdmin()) {
         this.loadVendorNotificationCount();
+        this.loadVendorMenuSummary();
         this.cartCount = 0;
         this.wishlistCount = 0;
       } else {
@@ -382,6 +439,7 @@ export class HeaderComponent implements OnInit {
 
       if (scope === 'global' || scope === 'vendor') {
         this.loadVendorNotificationCount();
+        this.loadVendorMenuSummary();
       }
     });
   }
@@ -412,7 +470,7 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleMenu() {
-    if (this.isVendorRoute()) {
+    if (this.shouldUseVendorMobileNav()) {
       this.closeDropdown();
       this.closeVendorDropdown();
       this.isMenuOpen = false;
@@ -430,11 +488,27 @@ export class HeaderComponent implements OnInit {
   }
 
   mobileMenuButtonLabel(): string {
-    return this.isVendorRoute() ? 'Open vendor navigation' : 'Toggle menu';
+    return this.shouldUseVendorMobileNav() ? 'Open vendor navigation' : 'Toggle menu';
   }
 
   closeMobileMenu(): void {
     this.isMenuOpen = false;
+  }
+
+  get isVendorMobileNavOpen(): boolean {
+    return this.vendorMobileNav.isOpen();
+  }
+
+  closeVendorMobileNav(): void {
+    this.vendorMobileNav.close();
+  }
+
+  private shouldUseVendorMobileNav(): boolean {
+    return this.isVendor() || this.isAdmin() || this.isVendorRoute();
+  }
+
+  shouldRenderVendorMobileNav(): boolean {
+    return this.isVendorMobileNavOpen && !this.isVendorRoute();
   }
 
   toggleDropdown(event?: Event): void {
@@ -608,8 +682,111 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  private loadVendorMenuSummary(): void {
+    if (!this.user || (!this.isVendor() && !this.isAdmin())) {
+      this.productCount = 0;
+      this.categoryCount = 0;
+      this.customerCount = 0;
+      this.orderCount = 0;
+      this.shipmentCount = 0;
+      this.bulkInquiryCount = 0;
+      return;
+    }
+
+    forkJoin({
+      products: this.vendorService.getMyProducts(),
+      orders: this.orderService.getVendorOrders(),
+      categories: this.vendorService.getCategoryTree(),
+      users: this.vendorService.getAllUsers(1, 1000),
+      shipments: this.vendorService.getAdminShipments(),
+      bulkInquiries: this.vendorService.getBulkInquiriesSummary()
+    }).subscribe({
+      next: ({ products, orders, categories, users, shipments, bulkInquiries }) => {
+        this.productCount = products?.data?.docs?.length || 0;
+        this.orderCount = orders.length || 0;
+        this.categoryCount = this.countCategories(categories?.data || []);
+        this.customerCount = this.countCustomers(users?.users || []);
+        this.shipmentCount = shipments?.summary?.totalShipments || 0;
+        this.bulkInquiryCount = bulkInquiries?.newCount || 0;
+      },
+      error: () => {
+        this.productCount = 0;
+        this.categoryCount = 0;
+        this.customerCount = 0;
+        this.orderCount = 0;
+        this.shipmentCount = 0;
+        this.bulkInquiryCount = 0;
+      }
+    });
+  }
+
   private isVendorRoute(): boolean {
     return this.router.url.includes('/vendor');
+  }
+
+  vendorMobileNavView(): VendorDashboardView {
+    if (this.router.url.includes('/vendor/dashboard')) {
+      return 'dashboard';
+    }
+
+    if (this.router.url.includes('/profile')) {
+      return 'profile';
+    }
+
+    if (this.router.url.includes('/vendor/best-selling-products')) {
+      return 'best-selling-products';
+    }
+
+    if (this.router.url.includes('/vendor/orders')) {
+      return 'orders';
+    }
+
+    if (this.router.url.includes('/vendor/notifications')) {
+      return 'notifications';
+    }
+
+    if (this.router.url.includes('/vendor/bulk-inquiries')) {
+      return 'bulk-inquiries';
+    }
+
+    if (this.router.url.includes('/vendor/shipments')) {
+      return 'shipments';
+    }
+
+    if (this.router.url.includes('/vendor/categories')) {
+      return 'categories';
+    }
+
+    if (this.router.url.includes('/vendor/customers')) {
+      return 'customers';
+    }
+
+    return 'products';
+  }
+
+  private countCategories(categories: Array<{ children?: Array<any> }>): number {
+    return categories.reduce((total, category) => {
+      return total + 1 + this.countCategories(category.children || []);
+    }, 0);
+  }
+
+  private countCustomers(users: Array<{ role?: unknown }>): number {
+    return users.filter((user) => {
+      const roles = Array.isArray(user.role)
+        ? user.role.map((role) => String(role).toLowerCase())
+        : user.role
+          ? [String(user.role).toLowerCase()]
+          : [];
+
+      if (roles.length === 0) {
+        return false;
+      }
+
+      const hasCustomer = roles.includes('customer');
+      const hasRestrictedRole = roles.some((role) => role === 'vendor' || role === 'admin');
+
+      return hasCustomer && !hasRestrictedRole;
+    }).length;
   }
 
   private refreshCustomerCounts(): void {

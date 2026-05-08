@@ -52,7 +52,7 @@ import {
         </div>
 
         <form *ngIf="!isLoading && product" class="border-t border-slate-200 vendor-section-body lg:py-6" (ngSubmit)="saveProduct()">
-          <div class="vendor-grid-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+          <div class="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
               <div class="border-b border-slate-100 pb-4">
                 <p class="vendor-stat-label">Customer Facing</p>
