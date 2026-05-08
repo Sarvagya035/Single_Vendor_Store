@@ -63,7 +63,7 @@ interface ShipmentCardView {
           </app-page-header>
         </div>
 
-        <div *ngIf="summary" class="vendor-grid-3 vendor-section-body">
+        <div *ngIf="summary" class="grid grid-cols-2 gap-2.5 vendor-section-body lg:grid-cols-3 lg:gap-6">
           <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
             <p class="vendor-stat-label">Total</p>
             <p class="vendor-stat-value">{{ summary.totalShipments }}</p>
@@ -98,11 +98,11 @@ interface ShipmentCardView {
             *ngFor="let shipment of shipments; trackBy: trackByShipment"
             class="vendor-mobile-card"
           >
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-3">
-                  <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f3eee9] text-[#7c5646]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
+                  <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#f3eee9] text-[#7c5646]">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
                       <path d="M3 7h11v8H3z" />
                       <path d="M14 10h3l3 3v2h-6z" />
                       <circle cx="7" cy="18" r="1.5" />
@@ -122,22 +122,22 @@ interface ShipmentCardView {
                   </div>
                 </div>
 
-                <div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div class="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
                   <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Courier</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.courierName || 'DHL' }}</p>
+                    <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ shipment.courierName || 'DHL' }}</p>
                   </div>
                   <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Tracking Number</p>
-                    <p class="mt-2 break-all text-sm font-black text-slate-900">{{ shipment.trackingNumber || 'Not assigned' }}</p>
+                    <p class="mt-1 break-all text-xs font-black text-slate-900 sm:text-sm">{{ shipment.trackingNumber || 'Not assigned' }}</p>
                   </div>
                   <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Estimated Delivery</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.estimatedDeliveryDate ? formatDate(shipment.estimatedDeliveryDate) : 'Not set' }}</p>
+                    <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ shipment.estimatedDeliveryDate ? formatDate(shipment.estimatedDeliveryDate) : 'Not set' }}</p>
                   </div>
                   <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Last Synced</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ shipment.lastSyncedAt ? formatDateTime(shipment.lastSyncedAt) : 'Not synced' }}</p>
+                    <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ shipment.lastSyncedAt ? formatDateTime(shipment.lastSyncedAt) : 'Not synced' }}</p>
                   </div>
                 </div>
               </div>
@@ -160,7 +160,7 @@ interface ShipmentCardView {
 
             <div *ngIf="isExpanded(shipment.orderId)" class="mt-5 border-t border-slate-200 pt-5">
               <div class="grid gap-0 overflow-hidden rounded-[1.5rem] border border-slate-200 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.95fr)]">
-                <section class="border-b border-slate-200 bg-[#fffaf4] p-5 lg:border-b-0 lg:border-r">
+                <section class="border-b border-slate-200 bg-[#fffaf4] p-4 lg:border-b-0 lg:border-r sm:p-5">
                   <div class="flex items-center gap-2">
                     <span class="text-[#7c5646]">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
@@ -171,16 +171,16 @@ interface ShipmentCardView {
                     <h3 class="text-lg font-black text-slate-900">Tracking Timeline ({{ shipment.trackingEvents.length }} events)</h3>
                   </div>
 
-                  <div class="mt-5 space-y-5">
+                  <div class="mt-4 space-y-4">
                     <article
                       *ngFor="let event of shipment.trackingEvents || []; trackBy: trackByEvent"
-                      class="relative pl-6"
+                      class="relative pl-5"
                     >
-                      <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full" [ngClass]="timelineDotClass(event.status)"></span>
-                      <span class="absolute left-[5px] top-4 bottom-0 w-px bg-slate-200"></span>
+                      <span class="absolute left-0 top-1.5 h-2.5 w-2.5 rounded-full" [ngClass]="timelineDotClass(event.status)"></span>
+                      <span class="absolute left-[4px] top-4 bottom-0 w-px bg-slate-200"></span>
                       <div class="space-y-1">
                         <p class="text-sm font-black text-slate-900">{{ event.status }}</p>
-                        <p class="text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
+                        <p class="line-clamp-2 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
                         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#9c5f39]">
                           {{ event.location || 'Location unavailable' }} • {{ formatDateTime(event.eventTime) }}
                         </p>
@@ -189,7 +189,7 @@ interface ShipmentCardView {
                   </div>
                 </section>
 
-                <section class="bg-white p-5">
+                <section class="bg-white p-4 sm:p-5">
                   <div class="flex items-center gap-2">
                     <span class="text-[#7c5646]">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
@@ -202,7 +202,7 @@ interface ShipmentCardView {
                     </h3>
                   </div>
 
-                  <div *ngIf="drafts[shipment.orderId] as draft" class="mt-5 space-y-4">
+                  <div *ngIf="drafts[shipment.orderId] as draft" class="mt-4 space-y-3">
                     <label class="block space-y-2">
                       <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Courier Name</span>
                       <input
@@ -270,17 +270,17 @@ interface ShipmentCardView {
                       Shipment editing is currently limited to admin users. Vendors can still review the shipment timeline here.
                     </div>
 
-                    <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+                    <div class="grid grid-cols-2 gap-2 pt-2 sm:flex sm:flex-row">
                       <button
                         *ngIf="isAdminUser"
                         type="button"
-                        class="rounded-2xl bg-[#7c5646] px-5 py-3 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
+                        class="rounded-2xl bg-[#7c5646] px-4 py-2.5 text-xs font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
                         [disabled]="savingOrderId === shipment.orderId"
                         (click)="saveShipment(shipment)"
                       >
                         {{ savingOrderId === shipment.orderId ? 'Saving...' : 'Save Shipment' }}
                       </button>
-                      <a [routerLink]="['/vendor/orders', shipment.orderId, 'tracking']" class="rounded-2xl border border-[#eadcc9] bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-[#fffaf4]">
+                      <a [routerLink]="['/vendor/orders', shipment.orderId, 'tracking']" class="rounded-2xl border border-[#eadcc9] bg-white px-4 py-2.5 text-xs font-black text-slate-700 transition hover:bg-[#fffaf4]">
                         Open Track Page
                       </a>
                     </div>

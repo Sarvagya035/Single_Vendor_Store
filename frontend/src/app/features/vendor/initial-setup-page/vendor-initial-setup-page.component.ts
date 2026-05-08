@@ -19,18 +19,18 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </app-page-header>
         </div>
 
-        <div *ngIf="submitted" class="vendor-section-body py-10 lg:py-12">
-          <div class="w-full rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm sm:p-14">
-            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-amber-600/10 text-4xl font-black text-amber-700">
+        <div *ngIf="submitted" class="vendor-section-body py-8 lg:py-12">
+          <div class="w-full rounded-[2rem] border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-10">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-amber-600/10 text-3xl font-black text-amber-700 sm:h-20 sm:w-20 sm:text-4xl">
               ✓
             </div>
-            <h2 class="mt-6 text-3xl font-black tracking-tight text-slate-900">
+            <h2 class="mt-5 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
               Setup completed
             </h2>
-            <p class="mx-auto mt-4 max-w-xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
+            <p class="mx-auto mt-3 max-w-xl text-sm font-medium leading-6 text-slate-500 sm:text-base">
               The store account and profile were created successfully. You can now sign in and open the store dashboard.
             </p>
-            <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <div class="mt-6 grid grid-cols-1 gap-3 sm:flex sm:flex-row sm:justify-center">
               <a routerLink="/login" class="btn-primary w-full !px-8 !py-3 sm:w-auto">
                 Go to Login
               </a>
@@ -44,11 +44,11 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         <form *ngIf="!submitted" (ngSubmit)="onSubmit()" class="border-t border-slate-200 vendor-section-body lg:py-6">
           <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
             <section class="w-full min-w-0 space-y-6">
-              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                 <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                   Account Details
                 </h2>
-                <div class="mt-6 grid gap-5 lg:grid-cols-2">
+                <div class="mt-5 grid gap-4 lg:grid-cols-2">
                 <label class="space-y-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Full Name</span>
                   <input
@@ -124,11 +124,11 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </div>
               </div>
 
-              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                 <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                   Store Details
                 </h2>
-                <div class="mt-6 grid gap-5">
+                <div class="mt-5 grid gap-4">
                 <label class="space-y-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Shop Name</span>
                   <input
@@ -167,11 +167,11 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </div>
               </div>
 
-              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                 <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                   Bank Details
                 </h2>
-                <div class="mt-6 grid gap-5 lg:grid-cols-2">
+                <div class="mt-5 grid gap-4 lg:grid-cols-2">
                 <label class="space-y-2 sm:col-span-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Account Holder Name</span>
                   <input
@@ -252,7 +252,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             </section>
 
             <aside class="space-y-6 lg:sticky lg:top-8 lg:self-start">
-              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                 <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                   Store Logo
                 </h2>
@@ -260,17 +260,17 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   Upload the logo that will represent the store.
                 </p>
 
-                <div class="mt-6 flex flex-col items-center gap-5 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/70 p-6 text-center">
+                <div class="mt-5 flex flex-col items-center gap-4 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/70 p-4 text-center">
                   <div class="relative">
                     <img
                       *ngIf="logoPreview"
                       [src]="logoPreview"
                       alt="Logo preview"
-                      class="h-28 w-28 rounded-3xl border-4 border-white object-cover shadow-xl"
+                      class="h-24 w-24 rounded-3xl border-4 border-white object-cover shadow-xl sm:h-28 sm:w-28"
                     />
                     <div
                       *ngIf="!logoPreview"
-                      class="flex h-28 w-28 items-center justify-center rounded-3xl bg-amber-700 text-4xl font-black text-white shadow-xl"
+                      class="flex h-24 w-24 items-center justify-center rounded-3xl bg-amber-700 text-3xl font-black text-white shadow-xl sm:h-28 sm:w-28 sm:text-4xl"
                     >
                       S
                     </div>
@@ -292,7 +292,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </div>
               </div>
 
-              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              <div class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
                 <h2 class="text-lg font-black uppercase tracking-[0.18em] text-slate-900">
                   Setup Secret
                 </h2>
@@ -304,7 +304,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               <button
                 type="submit"
                 [disabled]="isLoading"
-                class="btn-primary w-full !py-5 text-lg shadow-2xl shadow-amber-200/60"
+                class="btn-primary w-full !py-4 text-base shadow-2xl shadow-amber-200/60"
               >
                 {{ isLoading ? 'Creating Store...' : 'Create Store Account' }}
               </button>

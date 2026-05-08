@@ -181,63 +181,65 @@ interface VendorCustomerRow {
           </table>
         </div>
 
-        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="grid gap-3 px-4 pb-4 sm:gap-4 sm:px-5 lg:hidden">
+        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="grid gap-3 pb-4 sm:gap-4 lg:hidden">
           <article
             *ngFor="let customer of filteredCustomers; trackBy: trackByCustomer"
-            class="vendor-mobile-card"
+            class="vendor-mobile-card w-full"
           >
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div class="flex items-start gap-4">
-                <div
-                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-black uppercase text-white"
-                  [ngClass]="customer.avatarClass"
-                >
-                  {{ initials(customer.user) }}
-                </div>
+            <div class="flex items-start gap-3">
+              <div
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-black uppercase text-white sm:h-10 sm:w-10 sm:text-sm"
+                [ngClass]="customer.avatarClass"
+              >
+                {{ initials(customer.user) }}
+              </div>
 
-                <div class="min-w-0">
-                  <p class="truncate text-base font-black text-slate-900">
+              <div class="min-w-0 flex-1">
+                <div class="vendor-meta-row">
+                  <p class="min-w-0 flex-1 truncate text-sm font-black leading-5 text-slate-900 sm:text-base">
                     {{ customer.user.fullName || customer.user.username || customer.user.email || 'Customer' }}
                   </p>
-                  <p class="mt-1 break-words text-sm font-medium text-[#9c5f39]">
-                    {{ customer.user.email || 'No email provided' }}
-                  </p>
+
+                  <span
+                    class="inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-black leading-none sm:px-3 sm:py-1 sm:text-xs"
+                    [ngClass]="customer.status === 'Active'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-[#f2ebe7] text-[#8c6c5d]'"
+                  >
+                    {{ customer.status }}
+                  </span>
                 </div>
-              </div>
 
-              <span
-                class="inline-flex w-fit rounded-full px-3 py-1 text-xs font-black"
-                [ngClass]="customer.status === 'Active'
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-[#f2ebe7] text-[#8c6c5d]'"
-              >
-                {{ customer.status }}
-              </span>
-            </div>
-
-            <div class="mt-4 grid gap-3 sm:grid-cols-2">
-              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Orders</p>
-                <p class="mt-2 text-sm font-black text-slate-900">{{ customer.orderCount }}</p>
-              </div>
-              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Total Spent</p>
-                <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(customer.totalSpent) }}</p>
-              </div>
-              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4 sm:col-span-2">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Joined</p>
-                <p class="mt-2 text-sm font-black text-slate-900">{{ customer.joinedAt }}</p>
+                <p class="mt-0.5 truncate text-xs font-medium leading-5 text-[#9c5f39] sm:text-sm">
+                  {{ customer.user.email || 'No email provided' }}
+                </p>
               </div>
             </div>
 
-            <div class="mt-4 flex justify-end">
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              <div class="vendor-stat-tile-compact flex flex-col justify-center">
+                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Orders</p>
+                <p class="mt-0.5 text-sm font-black leading-none text-slate-900 sm:text-base">{{ customer.orderCount }}</p>
+              </div>
+              <div class="vendor-stat-tile-compact flex flex-col justify-center">
+                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Total Spent</p>
+                <p class="mt-0.5 text-sm font-black leading-none text-slate-900 sm:text-base">{{ formatCurrency(customer.totalSpent) }}</p>
+              </div>
+            </div>
+
+            <div class="vendor-meta-row mt-2 rounded-[1rem] border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs font-black text-slate-700">
+              <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Joined</span>
+              <span class="truncate text-sm font-black text-slate-900">{{ customer.joinedAt }}</span>
+            </div>
+
+            <div class="mt-2">
               <button
                 type="button"
-                class="inline-flex items-center gap-2 rounded-full bg-[#7c5646] px-4 py-2.5 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#7c5646] px-4 py-2 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d] sm:w-auto sm:px-4 sm:py-2.5"
                 title="Open customer details"
                 (click)="openCustomerDetails(customer); $event.stopPropagation()"
               >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0c-1.8 4.5-6 8-12 8S1.8 16.5 0 12c1.8-4.5 6-8 12-8s10.2 3.5 12 8Z" />
                   <circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle>
                 </svg>

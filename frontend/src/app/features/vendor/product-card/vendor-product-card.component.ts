@@ -14,10 +14,10 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
         (click)="open.emit()"
         (keydown.enter)="open.emit()"
         (keydown.space)="open.emit(); $event.preventDefault()"
-        class="grid w-full gap-4 px-5 py-5 text-left sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))_auto] lg:items-center"
+        class="grid w-full gap-3 px-4 py-4 text-left sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))_auto] lg:items-center"
       >
-        <div class="flex min-w-0 items-center gap-4 sm:col-span-2 lg:col-span-1">
-          <div class="h-16 w-16 overflow-hidden rounded-[10px] bg-slate-100">
+        <div class="flex min-w-0 items-center gap-3 sm:col-span-2 lg:col-span-1">
+          <div class="h-14 w-14 overflow-hidden rounded-[10px] bg-slate-100">
             <img
               *ngIf="imageUrl"
               [src]="imageUrl"
@@ -39,29 +39,29 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
         </div>
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Created</p>
-          <p class="mt-1 text-sm font-semibold text-slate-700">{{ createdLabel }}</p>
+          <p class="mt-1 text-xs font-semibold text-slate-700 sm:text-sm">{{ createdLabel }}</p>
         </div>
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Variants</p>
-          <p class="mt-1 text-sm font-semibold text-slate-700">{{ variantCount }}</p>
+          <p class="mt-1 text-xs font-semibold text-slate-700 sm:text-sm">{{ variantCount }}</p>
         </div>
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
-          <p class="mt-1 text-sm font-semibold text-slate-700">{{ stockLabel }}</p>
+          <p class="mt-1 text-xs font-semibold text-slate-700 sm:text-sm">{{ stockLabel }}</p>
           <span
             *ngIf="lowStock"
-            class="mt-2 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800"
+            class="mt-1.5 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-amber-800"
           >
             Low stock
           </span>
         </div>
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Start Price</p>
-          <p class="mt-1 text-sm font-semibold text-slate-700">{{ priceLabel }}</p>
+          <p class="mt-1 text-xs font-semibold text-slate-700 sm:text-sm">{{ priceLabel }}</p>
         </div>
         <div>
           <span
-            class="inline-flex rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em]"
+            class="inline-flex rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em]"
             [ngClass]="product.isActive ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-700'"
           >
             {{ product.isActive ? 'Active' : 'Inactive' }}
@@ -71,7 +71,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
           <button
             type="button"
             (click)="$event.stopPropagation(); edit.emit()"
-            class="rounded-[10px] border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:border-[#e7dac9] hover:bg-[#fff7ed]"
+            class="rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-700 transition hover:border-[#e7dac9] hover:bg-[#fff7ed]"
           >
             Edit
           </button>
@@ -79,7 +79,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
             type="button"
             (click)="$event.stopPropagation(); toggleStatus.emit()"
             [disabled]="statusBusy"
-            class="rounded-[10px] border px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-70"
+            class="rounded-[10px] border px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition disabled:cursor-not-allowed disabled:opacity-70"
             [ngClass]="
               product.isActive
                 ? 'border-[#e7dac9] bg-[#fff7ed] text-[#6f4e37] hover:bg-[#fef6eb]'
@@ -92,7 +92,7 @@ import { VendorProductRecord } from '../../../core/models/vendor.models';
             type="button"
             (click)="$event.stopPropagation(); delete.emit()"
             [disabled]="deleteBusy"
-            class="rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-70"
+            class="rounded-[10px] border border-rose-200 bg-rose-50 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {{ deleteBusy ? 'Deleting...' : 'Delete' }}
           </button>

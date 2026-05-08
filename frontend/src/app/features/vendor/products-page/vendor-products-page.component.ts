@@ -229,48 +229,48 @@ import {
         <div *ngIf="!isLoading && filteredProducts.length > 0" class="mt-6 grid gap-4 lg:hidden">
           <article
             *ngFor="let product of filteredProducts; trackBy: trackByProductId"
-            class="vendor-mobile-card"
+            class="vendor-card-compact"
           >
-            <div class="flex items-start gap-4">
-              <div class="h-14 w-14 overflow-hidden rounded-full bg-[#f5ede5]">
+            <div class="flex items-start gap-3">
+              <div class="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-[#f5ede5] sm:h-14 sm:w-14">
                 <img *ngIf="imageFor(product)" [src]="imageFor(product)" [alt]="product.productName" class="h-full w-full object-cover" />
-                <div *ngIf="!imageFor(product)" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#f2ebe7] to-[#fff7f1] text-xl font-black text-[#7c5646]">
+                <div *ngIf="!imageFor(product)" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#f2ebe7] to-[#fff7f1] text-lg font-black text-[#7c5646]">
                   {{ product.productName.charAt(0) || 'P' }}
                 </div>
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                   <div class="min-w-0">
-                <h3 class="truncate text-base font-black text-slate-900 md:text-lg">{{ product.productName }}</h3>
-                    <p class="mt-1 text-sm font-semibold text-slate-600">{{ product.brand || 'Generic' }}</p>
+                <h3 class="truncate text-sm font-black text-slate-900 md:text-lg">{{ product.productName }}</h3>
+                    <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-600">{{ product.brand || 'Generic' }}</p>
                   </div>
                   <span
-                  class="app-badge"
+                  class="app-badge px-2 py-1 text-[10px]"
                     [ngClass]="product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'"
                   >
                     {{ product.isActive ? 'Active' : 'Inactive' }}
                   </span>
                 </div>
 
-                <div class="mt-4 grid grid-cols-1 gap-3 text-sm font-semibold text-slate-600 sm:grid-cols-2">
-                  <p><span class="font-black text-slate-900">Category:</span> {{ product.categoryDetails?.name || 'Uncategorized' }}</p>
-                  <p><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
-                  <p>
+                <div class="mt-3 grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600 sm:gap-3 sm:text-sm">
+                  <p class="leading-5"><span class="font-black text-slate-900">Category:</span> {{ product.categoryDetails?.name || 'Uncategorized' }}</p>
+                  <p class="leading-5"><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
+                  <p class="leading-5">
                     <span class="font-black text-slate-900">Stock:</span>
                     {{ stockFor(product) }}
                     <span
                       *ngIf="isLowStock(product)"
-                      class="ml-2 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800"
+                      class="ml-1 inline-flex rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-amber-800"
                     >
                       Low stock
                     </span>
                   </p>
-                  <p><span class="font-black text-slate-900">Created:</span> {{ createdLabel(product.createdAt) }}</p>
+                  <p class="leading-5"><span class="font-black text-slate-900">Created:</span> {{ createdLabel(product.createdAt) }}</p>
                 </div>
               </div>
             </div>
 
-            <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
               <a [routerLink]="['/vendor/products', product._id, 'view']" class="btn-secondary rounded-full px-4 py-2.5 text-center text-[11px] uppercase tracking-[0.16em]">
                 View
               </a>

@@ -136,10 +136,10 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         <div *ngIf="!isLoading && filteredOrders().length > 0" class="grid gap-4 sm:gap-5">
           <article
             *ngFor="let order of filteredOrders(); trackBy: trackByOrder"
-            class="vendor-mobile-card p-3 sm:p-4 lg:p-5 cursor-pointer transition hover:-translate-y-0.5 hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)]"
+            class="vendor-mobile-card p-3 cursor-pointer transition hover:-translate-y-0.5 hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)]"
             (click)="openOrder(order)"
           >
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-3">
                   <p class="text-base font-black text-slate-900 sm:text-lg">Order #{{ shortOrderId(order._id) }}</p>
@@ -148,42 +148,42 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   </span>
                 </div>
 
-                <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
+                <div class="mt-3 grid grid-cols-2 gap-2 sm:gap-3 xl:grid-cols-3">
+                  <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 lg:p-4">
                     <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Items</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ order.orderItems?.length || 0 }} item(s)</p>
+                    <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ order.orderItems?.length || 0 }} item(s)</p>
                   </div>
-                  <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
+                  <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 lg:p-4">
                     <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Amount</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(orderTotal(order)) }}</p>
+                    <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ formatCurrency(orderTotal(order)) }}</p>
                   </div>
-                  <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5">
+                  <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 lg:p-4">
                     <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Placed</p>
-                    <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(order.createdAt) }}</p>
+                    <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ formatDate(order.createdAt) }}</p>
                   </div>
                 </div>
 
-                <div class="mt-4 grid gap-3">
+                <div class="mt-3 grid gap-2.5">
                   <div
                     *ngFor="let item of order.orderItems || []; trackBy: trackByOrderItem"
-                    class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4 lg:p-5"
+                    class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 lg:p-4"
                     (click)="$event.stopPropagation()"
                   >
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div class="min-w-0">
-                        <p class="text-sm font-black text-slate-900">{{ item.name || 'Order item' }}</p>
-                        <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                        <p class="text-xs font-black text-slate-900 sm:text-sm">{{ item.name || 'Order item' }}</p>
+                        <p class="mt-1 line-clamp-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 sm:text-xs">
                           {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
                         </p>
                       </div>
 
-                      <p class="text-sm font-black text-slate-900">{{ formatCurrency(itemTotal(item)) }}</p>
+                      <p class="text-xs font-black text-slate-900 sm:text-sm">{{ formatCurrency(itemTotal(item)) }}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="flex flex-col items-start gap-3 lg:min-w-[220px] lg:items-end">
+              <div class="flex flex-col items-start gap-2.5 lg:min-w-[220px] lg:items-end">
                 <button
                   type="button"
                   class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100"

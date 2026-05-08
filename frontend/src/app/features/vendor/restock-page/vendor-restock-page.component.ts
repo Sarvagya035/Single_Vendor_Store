@@ -48,13 +48,13 @@ import {
                     <img *ngIf="primaryImageUrl" [src]="primaryImageUrl" [alt]="product.productName" class="h-full w-full object-cover" />
                     <div *ngIf="!primaryImageUrl" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-4xl font-black text-slate-400">{{ product.productName.charAt(0) || 'P' }}</div>
                   </div>
-                  <div class="p-5">
+                  <div class="p-4 sm:p-5">
                     <h2 class="vendor-panel-title">{{ product.productName }}</h2>
                     <p class="mt-2 text-sm font-semibold text-slate-500">{{ product.brand || 'Generic' }}</p>
                   </div>
                 </div>
 
-                <div class="grid gap-3 rounded-[1.5rem] border border-slate-200 bg-white p-5 text-sm font-medium text-slate-600">
+                <div class="grid gap-2 rounded-[1.35rem] border border-slate-200 bg-white p-3 text-sm font-medium text-slate-600">
                   <p><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
                   <p><span class="font-black text-slate-900">Current Stock:</span> {{ totalStock }}</p>
                   <p><span class="font-black text-slate-900">Status:</span> {{ product.isActive ? 'Active' : 'Inactive' }}</p>
@@ -63,17 +63,17 @@ import {
             </app-vendor-form-section>
 
             <app-vendor-form-section eyebrow="Restock Workspace" title="Variant stock updates">
-              <div *ngIf="!(product.variants?.length)" class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm font-medium text-slate-500">
+              <div *ngIf="!(product.variants?.length)" class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm font-medium text-slate-500">
                 No variants available for inventory management yet.
               </div>
 
               <div class="space-y-4" *ngIf="product.variants?.length">
-                <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5">
-                  <div class="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.65fr))_auto] lg:items-end">
+                <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.45rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4">
+                  <div class="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.65fr))_auto] lg:items-end">
                     <div class="space-y-2">
-                      <p class="text-lg font-black text-slate-900">{{ variantAttributeSummaryLabel(variant) }}</p>
-                      <p class="text-sm font-semibold text-slate-500">{{ variant.sku || 'SKU pending' }}</p>
-                      <p class="text-sm font-medium text-slate-600">Current Stock: <span class="font-black text-slate-900">{{ variant.productStock || 0 }}</span></p>
+                      <p class="text-base font-black text-slate-900 sm:text-lg">{{ variantAttributeSummaryLabel(variant) }}</p>
+                      <p class="text-xs font-semibold text-slate-500 sm:text-sm">{{ variant.sku || 'SKU pending' }}</p>
+                      <p class="text-xs font-medium text-slate-600 sm:text-sm">Current Stock: <span class="font-black text-slate-900">{{ variant.productStock || 0 }}</span></p>
                     </div>
 
                     <div class="space-y-2">
@@ -83,19 +83,19 @@ import {
 
                     <div class="space-y-2">
                       <p class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">New Stock Preview</p>
-                      <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-lg font-black text-slate-900">
+                      <div class="rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-base font-black text-slate-900">
                         {{ projectedStock(variant) }}
                       </div>
                     </div>
 
                     <div class="space-y-2">
                       <p class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Availability</p>
-                      <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700">
+                      <div class="rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700">
                         {{ projectedStock(variant) > 0 ? 'In stock' : 'Out of stock' }}
                       </div>
                     </div>
 
-                    <button type="button" (click)="restockVariant(variant)" [disabled]="!variant._id || busyVariantId === variant._id" class="btn-primary w-full !px-6 !py-3 disabled:opacity-60">
+                    <button type="button" (click)="restockVariant(variant)" [disabled]="!variant._id || busyVariantId === variant._id" class="btn-primary w-full !px-4 !py-2.5 text-xs disabled:opacity-60">
                       {{ busyVariantId === variant._id ? 'Updating...' : 'Update Stock' }}
                     </button>
                   </div>

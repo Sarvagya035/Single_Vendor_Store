@@ -335,7 +335,27 @@
   }
 
   .vendor-mobile-card {
-    @apply rounded-[1.5rem] border border-[#e7dac9] bg-white p-3.5 shadow-[0_10px_26px_rgba(47,27,20,0.05)] sm:p-4 lg:p-5;
+    @apply rounded-[1.5rem] border border-[#e7dac9] bg-white p-3 shadow-[0_10px_26px_rgba(47,27,20,0.05)] sm:p-4 lg:p-5;
+  }
+
+  .vendor-card-compact {
+    @apply rounded-[1.35rem] border border-[#e7dac9] bg-white p-3 shadow-[0_10px_24px_rgba(47,27,20,0.05)] sm:p-4 lg:p-5;
+  }
+
+  .vendor-card-compact-tight {
+    @apply w-full rounded-[1.25rem] border border-[#e7dac9] bg-white p-2.5 shadow-[0_8px_20px_rgba(47,27,20,0.04)] sm:p-3.5 lg:p-4;
+  }
+
+  .vendor-stat-tile-compact {
+    @apply min-h-[64px] rounded-[1.1rem] border border-slate-200 bg-slate-50/80 p-2.5;
+  }
+
+  .vendor-action-grid-2 {
+    @apply grid grid-cols-2 gap-1.5 sm:gap-2;
+  }
+
+  .vendor-meta-row {
+    @apply flex flex-wrap items-center gap-2;
   }
 
   .product-card {
@@ -576,7 +596,7 @@
   }
 
   .vendor-stat-card {
-    @apply rounded-[1.5rem] border border-[#e7dac9] bg-white px-4 py-4 shadow-[0_10px_24px_rgba(47,27,20,0.04)] sm:px-5 sm:py-5;
+    @apply rounded-[1.5rem] border border-[#e7dac9] bg-white px-3 py-3 shadow-[0_10px_24px_rgba(47,27,20,0.04)] sm:px-4 sm:py-4;
   }
 
   .vendor-stat-label {
@@ -588,7 +608,7 @@
   }
 
   .vendor-stat-copy {
-    @apply mt-2 text-sm font-medium text-slate-500;
+    @apply mt-1.5 text-xs font-medium text-slate-500 sm:text-sm;
   }
 
   .vendor-panel-title {

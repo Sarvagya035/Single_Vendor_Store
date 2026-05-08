@@ -145,10 +145,10 @@ interface DashboardProduct {
           </div>
 
           <div *ngIf="recentOrders.length" class="divide-y divide-slate-100">
-            <article *ngFor="let order of recentOrders" class="flex flex-col gap-4 px-0 py-5 md:flex-row md:items-center md:justify-between">
+            <article *ngFor="let order of recentOrders" class="flex flex-col gap-3 px-0 py-4 md:flex-row md:items-center md:justify-between">
               <div class="min-w-0">
                 <p class="text-sm font-black text-slate-900">{{ order.id }} • {{ order.itemCount }} item(s)</p>
-                <p class="mt-1 break-words text-sm font-medium text-slate-500">{{ order.item }}</p>
+                <p class="mt-1 line-clamp-2 break-words text-sm font-medium text-slate-500">{{ order.item }}</p>
               </div>
               <div class="flex items-center gap-4">
                 <p class="text-sm font-black text-slate-900">{{ order.total }}</p>
@@ -168,9 +168,9 @@ interface DashboardProduct {
             </div>
 
             <div class="grid gap-3 sm:gap-4 lg:gap-6">
-              <a *ngFor="let action of quickActions" [routerLink]="action.link" class="min-w-0 rounded-[1.5rem] border border-[#e7dac9] bg-white p-3 transition hover:border-[#e7dac9] hover:bg-[#fffaf4] sm:p-4 lg:p-5">
+              <a *ngFor="let action of quickActions" [routerLink]="action.link" class="min-w-0 rounded-[1.35rem] border border-[#e7dac9] bg-white p-3 transition hover:border-[#e7dac9] hover:bg-[#fffaf4] sm:p-4 lg:p-5">
                 <p class="text-sm font-black text-slate-900">{{ action.title }}</p>
-                <p class="mt-1 break-words text-sm font-medium text-slate-500">{{ action.description }}</p>
+                <p class="mt-1 line-clamp-2 break-words text-sm font-medium text-slate-500">{{ action.description }}</p>
               </a>
             </div>
           </section>
@@ -190,15 +190,15 @@ interface DashboardProduct {
             </div>
 
             <div *ngIf="topProducts.length" class="space-y-3">
-              <article *ngFor="let product of topProducts" class="min-w-0 rounded-[1.5rem] border border-[#e7dac9] bg-white p-3 sm:p-4 lg:p-5">
-                <div class="flex items-start justify-between gap-4">
+              <article *ngFor="let product of topProducts" class="min-w-0 rounded-[1.35rem] border border-[#e7dac9] bg-white p-3 sm:p-4 lg:p-5">
+                <div class="flex items-start justify-between gap-3">
                   <div class="min-w-0">
                     <p class="text-sm font-black text-slate-900">{{ product.name }}</p>
                     <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Sold {{ product.units }} unit(s)</p>
                   </div>
                   <p class="text-sm font-black text-amber-800">{{ product.value }}</p>
                 </div>
-                <p class="mt-3 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
+                <p class="mt-2 line-clamp-2 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
               </article>
               <a routerLink="/vendor/best-selling-products" class="mt-4 inline-flex rounded-full border border-[#e7dac9] bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-[#fffaf4]">
                 View full best sellers

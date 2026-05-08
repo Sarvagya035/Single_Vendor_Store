@@ -48,7 +48,7 @@ import {
         </div>
 
         <div *ngIf="!isLoading && product" class="vendor-grid-2 vendor-section-body lg:grid-cols-[1.1fr_0.9fr]">
-          <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
+          <section class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <div class="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div class="space-y-4">
               <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-50">
@@ -81,7 +81,7 @@ import {
                 <p class="mt-2 text-sm font-semibold text-slate-600">{{ product.brand || 'Generic brand' }}</p>
               </div>
 
-              <div class="grid gap-3 rounded-[1.5rem] border border-slate-200 bg-[#fffaf4] p-5 text-sm font-medium text-slate-600">
+              <div class="grid grid-cols-2 gap-2 rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] p-3 text-sm font-medium text-slate-600 sm:grid-cols-3 sm:p-5">
                 <p><span class="font-black text-slate-900">Category:</span> {{ categoryName }}</p>
                 <p><span class="font-black text-slate-900">Created:</span> {{ createdLabel }}</p>
                 <p><span class="font-black text-slate-900">Variants:</span> {{ product.variants?.length || 0 }}</p>
@@ -98,9 +98,9 @@ import {
                 </p>
               </div>
 
-              <div class="rounded-[1.5rem] border border-slate-200 bg-white p-5">
+              <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4 sm:p-5">
                 <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Description</p>
-                <p class="mt-3 text-sm font-medium leading-7 text-slate-600">
+                <p class="mt-2 line-clamp-2 text-sm font-medium leading-6 text-slate-600">
                   {{ product.productDescription || 'No description available for this product.' }}
                 </p>
               </div>
@@ -109,24 +109,24 @@ import {
         </section>
 
         <section class="w-full min-w-0 space-y-6">
-          <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
+          <div class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Product images</p>
             <h3 class="mt-2 text-2xl font-black text-slate-900">Gallery summary</h3>
-            <div class="mt-5 grid gap-3 text-sm font-medium text-slate-600">
+            <div class="mt-4 grid gap-2 text-sm font-medium text-slate-600">
               <p><span class="font-black text-slate-900">Main images:</span> {{ product.mainImages?.length || 0 }}</p>
               <p><span class="font-black text-slate-900">Primary image:</span> {{ activeImage ? 'Available' : 'Not uploaded' }}</p>
               <p><span class="font-black text-slate-900">Variant images:</span> {{ variantImageCount }}</p>
             </div>
           </div>
 
-          <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
+          <div class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Variant options</p>
             <h3 class="mt-2 text-2xl font-black text-slate-900">Configured attributes</h3>
 
-            <div *ngIf="product.variantOptions?.length; else noOptions" class="mt-5 space-y-3">
-              <div *ngFor="let option of product.variantOptions; trackBy: trackByOption" class="rounded-[1.25rem] border border-slate-200 bg-white p-4">
+            <div *ngIf="product.variantOptions?.length; else noOptions" class="mt-4 space-y-2.5">
+              <div *ngFor="let option of product.variantOptions; trackBy: trackByOption" class="rounded-[1.25rem] border border-slate-200 bg-white p-3">
                 <p class="text-sm font-black text-slate-900">{{ option.name || 'Option' }}</p>
-                <p class="mt-2 text-sm font-medium text-slate-600">{{ (option.values || []).join(', ') || 'No values' }}</p>
+                <p class="mt-1.5 line-clamp-2 text-sm font-medium text-slate-600">{{ (option.values || []).join(', ') || 'No values' }}</p>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ import {
         </section>
       </div>
 
-      <section *ngIf="!isLoading && product" class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
+      <section *ngIf="!isLoading && product" class="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-[0_10px_30px_rgba(47,27,20,0.04)] sm:p-6">
         <div class="flex flex-col gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Variant inventory</p>
@@ -152,45 +152,45 @@ import {
           <div class="grid gap-4 lg:hidden">
             <article
               *ngFor="let variant of product.variants; trackBy: trackByVariant"
-              class="vendor-mobile-card border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(47,27,20,0.04)]"
+              class="vendor-mobile-card border border-slate-200 bg-white p-3 shadow-[0_10px_24px_rgba(47,27,20,0.04)]"
             >
-              <div class="flex items-start gap-4">
-                <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+              <div class="flex items-start gap-3">
+                <div class="h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white sm:h-14 sm:w-14">
                   <img *ngIf="variant.variantImage" [src]="variant.variantImage" [alt]="variant.sku || 'Variant image'" class="h-full w-full object-cover" />
-                  <div *ngIf="!variant.variantImage" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                  <div *ngIf="!variant.variantImage" class="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50 text-[9px] font-black uppercase tracking-[0.16em] text-slate-500">
                     No image
                   </div>
                 </div>
 
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
-                    <p class="text-base font-black text-slate-900">{{ variant.sku || 'SKU pending' }}</p>
+                    <p class="text-sm font-black text-slate-900">{{ variant.sku || 'SKU pending' }}</p>
                     <span
-                      class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]"
+                      class="rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.14em]"
                       [ngClass]="variant.isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-[#f2ebe7] text-[#8c6c5d]'"
                     >
                       {{ variant.isAvailable ? 'Available' : 'Unavailable' }}
                     </span>
                   </div>
 
-                  <p class="mt-2 break-words text-sm font-medium text-slate-600">{{ variantAttributeText(variant) }}</p>
+                  <p class="mt-1.5 line-clamp-2 break-words text-xs font-medium text-slate-600">{{ variantAttributeText(variant) }}</p>
 
-                  <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                    <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3">
+                  <div class="mt-3 grid grid-cols-2 gap-2">
+                    <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-2.5">
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Price</p>
-                      <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(variant.productPrice) }}</p>
+                      <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ formatCurrency(variant.productPrice) }}</p>
                     </div>
-                    <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3">
+                    <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-2.5">
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Final Price</p>
-                      <p class="mt-2 text-sm font-black text-slate-900">{{ formatCurrency(variant.finalPrice) }}</p>
+                      <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ formatCurrency(variant.finalPrice) }}</p>
                     </div>
-                    <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3">
+                    <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-2.5">
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
-                      <p class="mt-2 text-sm font-black text-slate-900">{{ variant.productStock || 0 }}</p>
+                      <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ variant.productStock || 0 }}</p>
                     </div>
-                    <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-3">
+                    <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-2.5">
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">SKU</p>
-                      <p class="mt-2 break-all text-sm font-black text-slate-900">{{ variant.sku || 'Not set' }}</p>
+                      <p class="mt-1 break-all text-xs font-black text-slate-900 sm:text-sm">{{ variant.sku || 'Not set' }}</p>
                     </div>
                   </div>
                 </div>
