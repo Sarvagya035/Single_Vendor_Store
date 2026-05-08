@@ -35,9 +35,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
       <div *ngIf="!isLoading && customer" class="vendor-content border-t border-slate-200 vendor-section-body lg:py-6">
         <div class="vendor-grid-2 lg:grid-cols-[0.9fr_1.1fr]">
-          <section class="vendor-mobile-card p-4 sm:p-5 lg:p-6">
-            <div class="flex items-center gap-4">
-              <div class="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-2xl font-black text-slate-500">
+          <section class="vendor-card-compact">
+            <div class="flex items-center gap-3">
+              <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 text-xl font-black text-slate-500 sm:h-20 sm:w-20 sm:text-2xl">
                 <img *ngIf="customer.avatar; else initialsBlock" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
                 <ng-template #initialsBlock>{{ initials(customer) }}</ng-template>
               </div>
@@ -53,31 +53,31 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </div>
 
-            <dl class="mt-6 space-y-3 sm:mt-8 sm:space-y-4">
-              <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+            <dl class="mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:gap-3">
+              <div class="rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
                 <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Email</dt>
-                <dd class="mt-2 break-words text-sm font-bold text-slate-900">{{ customer.email || 'Not provided' }}</dd>
+                <dd class="mt-1.5 line-clamp-2 break-words text-xs font-bold text-slate-900 sm:text-sm">{{ customer.email || 'Not provided' }}</dd>
               </div>
-              <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+              <div class="rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
                 <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Phone</dt>
-                <dd class="mt-2 break-words text-sm font-bold text-slate-900">{{ customer.phone || 'Not provided' }}</dd>
+                <dd class="mt-1.5 break-words text-xs font-bold text-slate-900 sm:text-sm">{{ customer.phone || 'Not provided' }}</dd>
               </div>
-              <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+              <div class="rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
                 <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Role</dt>
-                <dd class="mt-2 text-sm font-bold text-slate-900">{{ formatRole(customer.role) }}</dd>
+                <dd class="mt-1.5 text-xs font-bold text-slate-900 sm:text-sm">{{ formatRole(customer.role) }}</dd>
               </div>
-              <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+              <div class="rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
                 <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Joined</dt>
-                <dd class="mt-2 text-sm font-bold text-slate-900">{{ customer.createdAt ? formatDate(customer.createdAt) : 'Unknown' }}</dd>
+                <dd class="mt-1.5 text-xs font-bold text-slate-900 sm:text-sm">{{ customer.createdAt ? formatDate(customer.createdAt) : 'Unknown' }}</dd>
               </div>
-              <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+              <div class="col-span-2 rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
                 <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Customer ID</dt>
-                <dd class="mt-2 break-all text-sm font-bold text-slate-900">{{ customer._id || 'Unknown' }}</dd>
+                <dd class="mt-1.5 break-all text-xs font-bold text-slate-900 sm:text-sm">{{ customer._id || 'Unknown' }}</dd>
               </div>
             </dl>
           </section>
 
-          <section class="vendor-mobile-card p-4 sm:p-5 lg:p-6">
+          <section class="vendor-card-compact">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
               <div>
                 <p class="vendor-stat-label">Activity</p>
@@ -90,21 +90,21 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </div>
 
-            <div class="mt-5 grid gap-4 sm:grid-cols-2">
+            <div class="mt-4 grid grid-cols-2 gap-2 sm:gap-3">
               <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
                 <p class="vendor-stat-label !text-amber-700">Latest Order</p>
-                <p class="mt-3 text-lg font-black text-slate-900">{{ latestOrderLabel() }}</p>
+                <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ latestOrderLabel() }}</p>
               </article>
               <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
                 <p class="vendor-stat-label !text-amber-700">Wishlist Status</p>
-                <p class="mt-3 text-lg font-black text-slate-900">{{ customerWishlistItems.length ? 'Has saved items' : 'No saved items' }}</p>
+                <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ customerWishlistItems.length ? 'Has saved items' : 'No saved items' }}</p>
               </article>
             </div>
           </section>
         </div>
 
-        <section *ngIf="loadingProduct || selectedProduct" class="vendor-mobile-card p-4 sm:p-5 lg:p-6">
-          <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <section *ngIf="loadingProduct || selectedProduct" class="vendor-card-compact">
+          <div class="flex flex-col gap-2.5 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Product Preview</p>
               <h2 class="vendor-panel-title mt-2">Open product here</h2>
@@ -123,8 +123,8 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             Loading product preview...
           </div>
 
-          <div *ngIf="selectedProduct" class="mt-5 grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
-            <div class="overflow-hidden rounded-[1.8rem] border border-slate-200 bg-slate-50">
+          <div *ngIf="selectedProduct" class="mt-4 grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <div class="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-slate-50">
               <img
                 [src]="selectedProduct.mainImages?.[0] || 'https://via.placeholder.com/720x720?text=Product'"
                 [alt]="selectedProduct.productName || 'Product preview'"
@@ -133,7 +133,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             </div>
 
             <div class="space-y-4">
-              <div class="flex flex-wrap items-center gap-3">
+              <div class="flex flex-wrap items-center gap-2">
                 <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
                   {{ selectedProduct.brand || 'Product' }}
                 </p>
@@ -149,29 +149,29 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 {{ selectedProduct.productName || 'Product' }}
               </h3>
 
-              <p class="max-w-3xl text-sm font-medium leading-7 text-slate-500">
+              <p class="max-w-3xl text-sm font-medium leading-6 text-slate-500 line-clamp-2">
                 {{ selectedProduct.productDescription || 'No product description available.' }}
               </p>
 
-              <div class="grid gap-4 sm:grid-cols-3">
-                <article class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+              <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                <article class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Category</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ selectedProduct.categoryDetails?.name || 'General Category' }}</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ selectedProduct.categoryDetails?.name || 'General Category' }}</p>
                 </article>
-                <article class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                <article class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Variants</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ (selectedProduct.variants || []).length }} variant{{ (selectedProduct.variants || []).length === 1 ? '' : 's' }}</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ (selectedProduct.variants || []).length }} variant{{ (selectedProduct.variants || []).length === 1 ? '' : 's' }}</p>
                 </article>
-                <article class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                <article class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ totalStock(selectedProduct) }} units</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ totalStock(selectedProduct) }} units</p>
                 </article>
               </div>
             </div>
           </div>
         </section>
 
-        <section class="vendor-mobile-card p-4 sm:p-5 lg:p-6">
+        <section class="vendor-card-compact">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Order History</p>
@@ -190,12 +190,12 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </button>
             </div>
           </div>
-          <p class="mt-4 text-sm font-medium leading-7 text-slate-500">
+          <p class="mt-3 text-sm font-medium leading-6 text-slate-500">
             Open the full order history page to review every purchase, payment state, and item detail for this customer.
           </p>
         </section>
 
-        <section class="vendor-mobile-card p-4 sm:p-5 lg:p-6">
+        <section class="vendor-card-compact">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Buying Pattern</p>
@@ -206,51 +206,51 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             </p>
           </div>
 
-          <div *ngIf="!loadingOrders && frequentItems().length === 0" class="py-10 text-center">
+          <div *ngIf="!loadingOrders && frequentItems().length === 0" class="py-8 text-center">
             <h3 class="vendor-empty-title">No purchase pattern yet</h3>
-            <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
+            <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-slate-500">
               Once this customer places a few more orders, the most frequently bought products will appear here.
             </p>
           </div>
 
-          <div *ngIf="!loadingOrders && frequentItems().length > 0" class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div *ngIf="!loadingOrders && frequentItems().length > 0" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <article
               *ngFor="let item of frequentItems(); trackBy: trackByFrequentItem"
-              class="rounded-[1.6rem] border border-slate-200 bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)]"
+              class="rounded-[1.45rem] border border-slate-200 bg-white p-3 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)] sm:p-4"
             >
-              <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
                   <p class="truncate text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
                     {{ item.brand || 'Most purchased' }}
                   </p>
-                  <h3 class="mt-1 line-clamp-2 text-lg font-black text-slate-900">
+                  <h3 class="mt-1 line-clamp-2 text-base font-black text-slate-900 sm:text-lg">
                     {{ item.name }}
                   </h3>
                 </div>
 
-                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-slate-900">
+                <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black text-slate-900">
                   {{ item.totalQuantity }} bought
                 </span>
               </div>
 
-              <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+              <div class="mt-3 grid grid-cols-2 gap-2 sm:gap-3">
+                <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Orders</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ item.orderCount }} order{{ item.orderCount === 1 ? '' : 's' }}</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ item.orderCount }} order{{ item.orderCount === 1 ? '' : 's' }}</p>
                 </div>
-                <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Last Seen</p>
-                  <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(item.lastPurchasedAt) }}</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ formatDate(item.lastPurchasedAt) }}</p>
                 </div>
               </div>
 
-              <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
-                <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800">
+              <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+                <span class="rounded-full bg-[#fff7ed] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-800">
                   Product history
                 </span>
                 <button
                   type="button"
-                  class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800 transition hover:bg-amber-100"
+                  class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-800 transition hover:bg-amber-100"
                   (click)="openProductById(item.productId)"
                 >
                   View product
@@ -260,7 +260,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </section>
 
-        <section class="vendor-mobile-card p-6 lg:p-8">
+        <section class="vendor-card-compact">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Wishlist</p>
@@ -269,43 +269,43 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             <p class="text-sm font-medium text-slate-500">{{ customerWishlistItems.length }} item{{ customerWishlistItems.length === 1 ? '' : 's' }} saved</p>
           </div>
 
-          <div *ngIf="loadingWishlist" class="py-8 text-sm font-semibold text-slate-500">Loading customer wishlist...</div>
+          <div *ngIf="loadingWishlist" class="py-6 text-sm font-semibold text-slate-500">Loading customer wishlist...</div>
 
-          <div *ngIf="!loadingWishlist && customerWishlistItems.length === 0" class="py-10 text-center">
+          <div *ngIf="!loadingWishlist && customerWishlistItems.length === 0" class="py-8 text-center">
             <h3 class="vendor-empty-title">Wishlist is empty</h3>
-            <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
+            <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-slate-500">
               This customer has not saved any products yet.
             </p>
           </div>
 
-          <div *ngIf="!loadingWishlist && customerWishlistItems.length > 0" class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div *ngIf="!loadingWishlist && customerWishlistItems.length > 0" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <article
               *ngFor="let item of customerWishlistItems; trackBy: trackByWishlistItem"
-              class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)]"
+              class="rounded-[1.45rem] border border-slate-200 bg-white p-3 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)] sm:p-4"
             >
-              <div class="flex items-center gap-4">
-                <div class="h-20 w-20 overflow-hidden rounded-[1.25rem] bg-slate-100">
+              <div class="flex items-center gap-3">
+                <div class="h-16 w-16 shrink-0 overflow-hidden rounded-[1.1rem] bg-slate-100 sm:h-20 sm:w-20">
                   <img [src]="productImage(item)" [alt]="item.productName || 'Wishlist item'" class="h-full w-full object-cover" />
                 </div>
 
                 <div class="min-w-0 flex-1">
                   <p class="truncate text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{{ item.brand || 'Product' }}</p>
-                  <h3 class="mt-1 line-clamp-2 text-base font-black text-slate-900">{{ item.productName || 'Wishlist item' }}</h3>
-                  <p class="mt-2 text-sm font-semibold text-slate-500">{{ item.categoryDetails?.name || 'General Category' }}</p>
+                  <h3 class="mt-1 line-clamp-2 text-sm font-black text-slate-900 sm:text-base">{{ item.productName || 'Wishlist item' }}</h3>
+                  <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-500 sm:text-sm">{{ item.categoryDetails?.name || 'General Category' }}</p>
                 </div>
               </div>
 
-              <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
-                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-slate-900">{{ formatCurrency(item.basePrice || 0) }}</span>
+              <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+                <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black text-slate-900">{{ formatCurrency(item.basePrice || 0) }}</span>
                 <span
-                  class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]"
+                  class="rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em]"
                   [ngClass]="item.isActive === false ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700'"
                 >
                   {{ item.isActive === false ? 'Inactive' : 'Active' }}
                 </span>
                 <button
                   type="button"
-                  class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800 transition hover:bg-amber-100"
+                  class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-800 transition hover:bg-amber-100"
                   (click)="openProductById(item._id)"
                 >
                   View product

@@ -7,12 +7,12 @@ import { VendorProfile } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.9fr)_minmax(320px,0.95fr)] lg:p-6">
+    <section class="grid gap-4 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.9fr)_minmax(320px,0.95fr)] lg:p-6">
       <article class="overflow-hidden rounded-[1.75rem] border border-[#e7dac9] bg-white shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
-        <div class="p-5 sm:p-6">
-          <div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
-              <div class="relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-[1rem] bg-[#7b5b4d] sm:h-20 sm:w-20">
+        <div class="p-4 sm:p-5">
+          <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
+              <div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-[1rem] bg-[#7b5b4d] sm:h-20 sm:w-20">
                 <img
                   *ngIf="logoPreview || vendor.vendorLogo"
                   [src]="logoPreview || vendor.vendorLogo"
@@ -38,7 +38,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
                   </span>
                 </div>
 
-                <p class="mt-2 max-w-3xl text-sm leading-7 text-[#7a6556]">
+                <p class="mt-2 max-w-3xl line-clamp-2 text-sm leading-6 text-[#7a6556]">
                   {{ vendor.vendorDescription || 'Add a concise store description to tell customers what makes your brand special.' }}
                 </p>
 
@@ -68,7 +68,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
           </div>
         </div>
 
-        <div class="border-t border-[#eee2d4] px-5 py-5 sm:px-6">
+        <div class="border-t border-[#eee2d4] px-4 py-4 sm:px-6">
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-2">
               <svg class="h-4 w-4 text-[#7b5b4d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -78,7 +78,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
             </div>
           </div>
 
-          <div class="mt-5 grid gap-x-8 gap-y-5 md:grid-cols-2">
+          <div class="mt-4 grid gap-x-6 gap-y-4 md:grid-cols-2">
             <div>
               <p class="text-xs font-medium text-slate-500">Shop Name</p>
               <p class="mt-1 text-sm text-slate-900">{{ vendor.shopName || 'Not provided' }}</p>
@@ -100,7 +100,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
           </div>
         </div>
 
-        <div class="border-t border-[#eee2d4] px-5 py-5 sm:px-6">
+        <div class="border-t border-[#eee2d4] px-4 py-4 sm:px-6">
           <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center gap-2">
               <svg class="h-4 w-4 text-[#7b5b4d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -122,7 +122,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
             </button>
           </div>
 
-          <div class="mt-5 grid gap-x-8 gap-y-5 md:grid-cols-2">
+          <div class="mt-4 grid gap-x-6 gap-y-4 md:grid-cols-2">
             <div>
               <p class="text-xs font-medium text-slate-500">Account Holder</p>
               <p class="mt-1 text-sm text-slate-900">{{ vendor.bankDetails?.accountHolderName || 'Not added' }}</p>
@@ -147,8 +147,8 @@ import { VendorProfile } from '../../../core/models/vendor.models';
         </div>
       </article>
 
-      <aside class="space-y-5">
-        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
+      <aside class="space-y-4">
+        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-4 shadow-[0_18px_40px_rgba(47,27,20,0.06)] sm:p-5">
           <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.78-9.72a.75.75 0 0 0-1.06-1.06L9.25 10.69 7.78 9.22a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4Z" clip-rule="evenodd" />
@@ -172,7 +172,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
           </div>
         </article>
 
-        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-5 shadow-[0_18px_40px_rgba(47,27,20,0.06)]">
+        <article class="rounded-[1.5rem] border border-[#e7dac9] bg-white p-4 shadow-[0_18px_40px_rgba(47,27,20,0.06)] sm:p-5">
           <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-600">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-6m3 6V7m3 10v-3m4 7H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9l7 7v9a2 2 0 0 1-2 2Z" />

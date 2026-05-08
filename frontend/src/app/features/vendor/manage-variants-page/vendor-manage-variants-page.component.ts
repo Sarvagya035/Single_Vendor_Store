@@ -89,32 +89,32 @@ import {
               </div>
 
               <div class="grid grid-cols-1 gap-4 lg:grid-cols-2" *ngIf="product.variants?.length">
-                <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.6rem] border border-slate-200 bg-slate-50/70 p-5">
-                  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div class="flex min-w-0 items-center gap-4">
-                      <div class="h-16 w-16 overflow-hidden rounded-2xl bg-slate-100">
+                <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.45rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <div class="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100 sm:h-16 sm:w-16">
                         <img *ngIf="variant.variantImage" [src]="variant.variantImage" [alt]="variant.sku || 'Variant'" class="h-full w-full object-cover" />
                         <img *ngIf="!variant.variantImage && productImageUrl" [src]="productImageUrl" [alt]="product.productName || 'Product'" class="h-full w-full object-cover opacity-80" />
                       </div>
                       <div class="min-w-0">
-                        <h3 class="truncate text-lg font-black text-slate-900">{{ variantAttributeSummaryLabel(variant) }}</h3>
-                        <p class="mt-1 text-sm font-semibold text-slate-500">{{ variant.sku || 'SKU pending' }}</p>
+                        <h3 class="truncate text-base font-black text-slate-900 sm:text-lg">{{ variantAttributeSummaryLabel(variant) }}</h3>
+                        <p class="mt-1 text-xs font-semibold text-slate-500 sm:text-sm">{{ variant.sku || 'SKU pending' }}</p>
                       </div>
                     </div>
-                    <button type="button" (click)="deleteVariant(variant)" [disabled]="busyDeleteId === variant._id" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-rose-700 disabled:opacity-60 sm:shrink-0">
+                    <button type="button" (click)="deleteVariant(variant)" [disabled]="busyDeleteId === variant._id" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-rose-700 disabled:opacity-60 sm:shrink-0">
                       {{ busyDeleteId === variant._id ? 'Deleting...' : 'Delete' }}
                     </button>
                   </div>
   
-                  <div class="mt-5 grid gap-4">
+                  <div class="mt-4 grid gap-3">
                     <input [(ngModel)]="variantForms[variant._id || ''].attributesText" [name]="'attributes-' + (variant._id || '')" placeholder="Attributes" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
 
-                    <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
                       <input type="number" [(ngModel)]="variantForms[variant._id || ''].productPrice" [name]="'price-' + (variant._id || '')" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                       <input type="number" [(ngModel)]="variantForms[variant._id || ''].discountPercentage" [name]="'discount-' + (variant._id || '')" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                     </div>
 
-                    <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
                       <input type="number" [(ngModel)]="variantForms[variant._id || ''].productStock" [name]="'stock-' + (variant._id || '')" min="0" placeholder="Stock" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                       <input type="text" [(ngModel)]="variantForms[variant._id || ''].sku" [name]="'sku-' + (variant._id || '')" placeholder="SKU" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold uppercase text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                     </div>
@@ -124,17 +124,17 @@ import {
                       <input type="file" accept="image/*" class="hidden" (change)="onVariantImageSelected($event, variant)" />
                     </label>
 
-                    <div class="grid gap-2 rounded-[1.4rem] border border-slate-200 bg-white p-4 text-sm font-medium text-slate-600">
+                    <div class="grid gap-2 rounded-[1.3rem] border border-slate-200 bg-white p-3 text-sm font-medium text-slate-600">
                       <p><span class="font-black text-slate-900">Final Price:</span> {{ finalPriceLabel(variant) }}</p>
                       <p><span class="font-black text-slate-900">Current SKU:</span> {{ variant.sku || 'Pending' }}</p>
                     </div>
                   </div>
 
-                  <div class="mt-5 flex flex-col gap-3 sm:flex-row">
-                    <button type="button" (click)="saveVariant(variant)" [disabled]="busySaveId === variant._id" class="btn-primary w-full !px-6 !py-3 disabled:opacity-60 sm:w-auto">
+                  <div class="mt-4 grid grid-cols-2 gap-2">
+                    <button type="button" (click)="saveVariant(variant)" [disabled]="busySaveId === variant._id" class="btn-primary w-full !px-4 !py-2.5 text-xs disabled:opacity-60 sm:w-auto">
                       {{ busySaveId === variant._id ? 'Saving...' : 'Save Variant' }}
                     </button>
-                    <button type="button" (click)="resetVariantForm(variant)" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Reset</button>
+                    <button type="button" (click)="resetVariantForm(variant)" class="btn-secondary w-full !px-4 !py-2.5 text-xs sm:w-auto">Reset</button>
                   </div>
                 </article>
               </div>

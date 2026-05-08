@@ -74,36 +74,36 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
 
               <div class="vendor-grid-4 mt-6">
-                <article class="app-card bg-[#fffaf4] p-4">
+                <article class="app-card bg-[#fffaf4] p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Courier</p>
-                  <p class="mt-3 text-lg font-black text-slate-900">{{ shipment?.courierName || 'DHL' }}</p>
+                  <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ shipment?.courierName || 'DHL' }}</p>
                 </article>
-                <article class="app-card bg-[#fffaf4] p-4">
+                <article class="app-card bg-[#fffaf4] p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Tracking Number</p>
-                  <p class="mt-3 break-all text-base font-black text-slate-900">{{ shipment?.trackingNumber || 'Not assigned' }}</p>
+                  <p class="mt-2 break-all text-sm font-black text-slate-900 sm:text-base">{{ shipment?.trackingNumber || 'Not assigned' }}</p>
                 </article>
-                <article class="app-card bg-[#fffaf4] p-4">
+                <article class="app-card bg-[#fffaf4] p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Estimated Delivery</p>
-                  <p class="mt-3 text-lg font-black text-slate-900">{{ shipment?.estimatedDeliveryDate ? formatDate(shipment?.estimatedDeliveryDate) : 'Not set' }}</p>
+                  <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ shipment?.estimatedDeliveryDate ? formatDate(shipment?.estimatedDeliveryDate) : 'Not set' }}</p>
                 </article>
-                <article class="app-card bg-[#fffaf4] p-4">
+                <article class="app-card bg-[#fffaf4] p-3">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Updates</p>
-                  <p class="mt-3 text-lg font-black text-slate-900">{{ shipment?.trackingEvents?.length || 0 }}</p>
+                  <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ shipment?.trackingEvents?.length || 0 }}</p>
                 </article>
               </div>
 
-              <div class="mt-6 app-card bg-[linear-gradient(135deg,#fff7ed_0%,#fffaf4_100%)] p-5">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div class="flex items-start gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm">
-                      <span class="text-lg font-black">✓</span>
+              <div class="mt-5 app-card bg-[linear-gradient(135deg,#fff7ed_0%,#fffaf4_100%)] p-4 sm:p-5">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div class="flex items-start gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm">
+                      <span class="text-sm font-black">✓</span>
                     </div>
                     <div class="min-w-0">
-                      <p class="text-lg font-black text-emerald-700">{{ bannerTitle }}</p>
-                      <p class="mt-2 text-sm font-semibold leading-7 text-slate-700">{{ bannerMessage }}</p>
+                      <p class="text-base font-black text-emerald-700 sm:text-lg">{{ bannerTitle }}</p>
+                      <p class="mt-1.5 line-clamp-2 text-sm font-semibold leading-6 text-slate-700">{{ bannerMessage }}</p>
                     </div>
                   </div>
-                  <p class="text-sm font-semibold text-slate-500">{{ bannerDate }}</p>
+                  <p class="text-right text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ bannerDate }}</p>
                 </div>
               </div>
 
@@ -113,20 +113,20 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ trackingSteps.length }} stages</p>
                 </div>
 
-                <div class="mt-5 app-panel-soft p-4 sm:p-5">
+                <div class="mt-4 app-panel-soft p-3 sm:p-4">
                   <div class="relative">
                     <div class="absolute left-6 right-6 top-6 hidden h-[2px] bg-[#e7dac9] md:block"></div>
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                      <div *ngFor="let step of trackingSteps; trackBy: trackByStep" class="relative z-10 app-card bg-white p-4 text-center">
+                    <div class="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
+                      <div *ngFor="let step of trackingSteps; trackBy: trackByStep" class="relative z-10 app-card bg-white p-3 text-center">
                         <div
-                          class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-4 text-sm font-black shadow-sm"
+                          class="mx-auto flex h-10 w-10 items-center justify-center rounded-full border-4 text-xs font-black shadow-sm"
                           [ngClass]="stepCircleClass(step)"
                         >
                           <span *ngIf="step.completed">✓</span>
                           <span *ngIf="!step.completed">{{ step.index + 1 }}</span>
                         </div>
-                        <p class="mt-3 text-sm font-black text-slate-900">{{ step.label }}</p>
-                        <p class="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        <p class="mt-2 text-xs font-black text-slate-900 sm:text-sm">{{ step.label }}</p>
+                        <p class="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                           {{ step.time || 'Waiting' }}
                         </p>
                       </div>
@@ -136,7 +136,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               </div>
             </section>
 
-            <div class="vendor-grid-2 gap-4 lg:gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
+              <div class="vendor-grid-2 gap-4 lg:gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
               <section class="space-y-6">
                 <div class="app-panel app-panel-body">
                   <div class="flex items-end justify-between gap-4 border-b border-[#eee2d4] pb-4">
@@ -156,10 +156,10 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                       *ngFor="let item of visibleItems; trackBy: trackByItem"
                       class="app-card bg-[#fffaf4] p-3 sm:p-4 lg:p-5"
                     >
-                      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <div class="min-w-0">
-                          <p class="text-base font-black text-slate-900">{{ item.name || 'Order item' }}</p>
-                          <p class="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                          <p class="text-sm font-black text-slate-900">{{ item.name || 'Order item' }}</p>
+                          <p class="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
                             {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
                           </p>
                         </div>
@@ -191,11 +191,11 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                       *ngFor="let event of shipment?.trackingEvents || []; trackBy: trackByEvent"
                       class="app-card bg-[#fff7ed]/70 p-3 sm:p-4 lg:p-5"
                     >
-                      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div class="min-w-0">
                           <p class="text-sm font-black text-slate-900">{{ event.status }}</p>
-                          <p class="mt-1 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
-                          <p *ngIf="event.location" class="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
+                          <p class="mt-1 line-clamp-2 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
+                          <p *ngIf="event.location" class="mt-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700">
                             {{ event.location }}
                           </p>
                         </div>
@@ -219,45 +219,45 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   <p class="vendor-stat-label">Delivery</p>
                   <h3 class="vendor-panel-title mt-2">Shipping address</h3>
                   <div class="mt-5 space-y-4">
-                    <div class="app-card bg-[#fffaf4] p-4">
+                    <div class="app-card bg-[#fffaf4] p-3">
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Address</p>
-                      <p class="mt-2 text-sm font-black leading-7 text-slate-900">
+                      <p class="mt-1.5 line-clamp-2 text-sm font-black leading-6 text-slate-900">
                         {{ order.shippingAddress?.address || 'Address unavailable' }}
                       </p>
                     </div>
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-                      <div class="app-card bg-[#fffaf4] p-4">
+                    <div class="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-1">
+                      <div class="app-card bg-[#fffaf4] p-3">
                         <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">City</p>
-                        <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress?.city || '-' }}</p>
+                        <p class="mt-1.5 text-xs font-black text-slate-900 sm:text-sm">{{ order.shippingAddress?.city || '-' }}</p>
                       </div>
-                      <div class="app-card bg-[#fffaf4] p-4">
+                      <div class="app-card bg-[#fffaf4] p-3">
                         <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Pincode</p>
-                        <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress?.pincode || '-' }}</p>
+                        <p class="mt-1.5 text-xs font-black text-slate-900 sm:text-sm">{{ order.shippingAddress?.pincode || '-' }}</p>
                       </div>
                     </div>
-                    <div class="app-card bg-[#fffaf4] p-4">
+                    <div class="app-card bg-[#fffaf4] p-3">
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Phone</p>
-                      <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress?.phone || '-' }}</p>
+                      <p class="mt-1.5 text-xs font-black text-slate-900 sm:text-sm">{{ order.shippingAddress?.phone || '-' }}</p>
                     </div>
                   </div>
                 </div>
 
-                <div class="rounded-[1.75rem] border border-[#2f1b14] bg-[#2f1b14] p-5 text-white shadow-[0_18px_50px_rgba(111,78,55,0.16)] sm:p-6">
+                <div class="rounded-[1.75rem] border border-[#2f1b14] bg-[#2f1b14] p-4 text-white shadow-[0_18px_50px_rgba(111,78,55,0.16)] sm:p-6">
                   <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Vendor Summary</p>
-                  <div class="mt-5 space-y-3 text-sm font-medium text-slate-300">
-                    <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-4 py-3">
+                  <div class="mt-4 space-y-2.5 text-sm font-medium text-slate-300">
+                    <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-3 py-2.5">
                       <span>Order Status</span>
                       <span class="font-black text-white">{{ order.orderStatus || 'Processing' }}</span>
                     </div>
-                    <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-4 py-3">
+                    <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-3 py-2.5">
                       <span>Payment</span>
                       <span class="font-black text-white">{{ order.paymentInfo?.status || 'Pending' }}</span>
                     </div>
-                    <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-4 py-3">
+                    <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-3 py-2.5">
                       <span>Courier</span>
                       <span class="font-black text-white">{{ shipment?.courierName || 'DHL' }}</span>
                     </div>
-                    <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-4 py-3">
+                    <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-3 py-2.5">
                       <span>Tracking</span>
                       <span class="font-black text-white">{{ shipment?.trackingNumber || 'Not assigned' }}</span>
                     </div>

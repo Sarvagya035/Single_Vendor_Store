@@ -105,14 +105,14 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         <div *ngIf="filteredOrders.length" class="space-y-4 border-t border-slate-200 vendor-section-body">
           <article
             *ngFor="let order of filteredOrders; trackBy: trackByOrder"
-            class="vendor-mobile-card cursor-pointer transition hover:border-[#e7dac9] hover:shadow-[0_16px_40px_rgba(111,78,55,0.08)] sm:px-5 sm:py-5"
+            class="vendor-mobile-card cursor-pointer transition hover:border-[#e7dac9] hover:shadow-[0_16px_40px_rgba(111,78,55,0.08)]"
             (click)="openOrder(order)"
           >
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div class="min-w-0 flex-1">
                 <div class="flex items-start gap-3">
-                  <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#f2ebe7] text-[#7c5646]">
-                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#f2ebe7] text-[#7c5646]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M7 4.5 12 2l5 2.5v5L12 12 7 9.5z" />
                       <path d="M7 9.5 12 12l5-2.5" />
                       <path d="M12 12v8" />
@@ -127,23 +127,23 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                   </div>
                 </div>
 
-                <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <div>
+                <div class="mt-3 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3">
+                  <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 lg:p-4">
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Products</p>
-                    <p class="mt-2 text-sm font-medium text-slate-900">{{ orderProductsText(order) }}</p>
+                    <p class="mt-1 line-clamp-2 text-xs font-medium text-slate-900 sm:text-sm">{{ orderProductsText(order) }}</p>
                   </div>
-                  <div>
+                  <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 lg:p-4">
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Placed On</p>
-                    <p class="mt-2 text-sm font-medium text-slate-900">{{ formatDateTime(order.createdAt) }}</p>
+                    <p class="mt-1 text-xs font-medium text-slate-900 sm:text-sm">{{ formatDateTime(order.createdAt) }}</p>
                   </div>
-                  <div>
+                  <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 lg:p-4">
                     <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Total Amount</p>
-                    <p class="mt-2 text-2xl font-black text-slate-900">{{ formatCurrency(vendorOrderTotal(order)) }}</p>
+                    <p class="mt-1 text-lg font-black text-slate-900 sm:text-xl">{{ formatCurrency(vendorOrderTotal(order)) }}</p>
                   </div>
                 </div>
               </div>
 
-              <div class="flex shrink-0 flex-col items-start gap-3 lg:items-end">
+              <div class="flex shrink-0 flex-col items-start gap-2.5 lg:items-end">
                 <span class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-black" [ngClass]="statusClass(vendorOrderStatus(order))">
                   <span class="h-2.5 w-2.5 rounded-full" [ngClass]="statusDotClass(vendorOrderStatus(order))"></span>
                   {{ vendorOrderStatus(order) }}
