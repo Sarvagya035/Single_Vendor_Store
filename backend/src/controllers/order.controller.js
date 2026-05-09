@@ -11,6 +11,7 @@ import { Shipment } from "../models/shipment.model.js";
 import crypto from "crypto";
 import { sendShipmentCreatedEmail } from "../utils/shipmentNotifications.js";
 import { syncLowStockNotificationsForProduct } from "../utils/vendorNotifications.js";
+import { emitOrderCreatedRealtime, emitOrderStatusUpdatedRealtime } from "../realtime/order-events.js";
 
 const cloneOrderWithItems = (orderDoc, filteredItems) => {
     const order = orderDoc.toObject ? orderDoc.toObject() : { ...orderDoc };
@@ -289,6 +290,10 @@ const verifyPayment = asyncHandler(async (req, res) => {
         }
     }
 
+    if (notifiedOrder) {
+        emitOrderCreatedRealtime(notifiedOrder);
+    }
+
     const responsePayload = order.toObject ? order.toObject() : { ...order };
     responsePayload.shipment = shipment ? (shipment.toObject ? shipment.toObject() : { ...shipment }) : null;
 
@@ -319,6 +324,8 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Order item is already delivered");
     }
 
+    const previousOrderStatus = order.orderStatus;
+    const previousOrderItemStatus = orderItem.orderItemStatus;
     orderItem.orderItemStatus = status;
     order.orderStatus = calculateOrderStatusFromItems(order.orderItems);
 
@@ -328,6 +335,13 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     }
 
     await order.save();
+
+    const realtimeOrder = await Order.findById(order._id).populate("user", "fullName username email");
+    if (previousOrderStatus !== order.orderStatus || previousOrderItemStatus !== orderItem.orderItemStatus) {
+        emitOrderStatusUpdatedRealtime(realtimeOrder || order, {
+            previousStatus: previousOrderStatus
+        });
+    }
 
     const filteredItems = order.orderItems.filter(
         (item) => item.vendor?.toString() === vendor._id.toString()

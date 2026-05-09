@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorNotificationRecord, VendorNotificationsPayload } from '../../../core/models/vendor.models';
 import { VendorService } from '../../../core/services/vendor.service';
+import { SocketService } from '../../../core/services/socket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 type NotificationFilter = 'all' | 'unread' | 'active';
@@ -187,6 +189,7 @@ type NotificationFilter = 'all' | 'unread' | 'active';
   `
 })
 export class VendorNotificationsPageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   notifications: VendorNotificationRecord[] = [];
   summary: VendorNotificationsPayload['summary'] = {
     totalNotifications: 0,
@@ -203,11 +206,20 @@ export class VendorNotificationsPageComponent implements OnInit {
   constructor(
     private vendorService: VendorService,
     private errorService: ErrorService,
-    private appRefreshService: AppRefreshService
+    private appRefreshService: AppRefreshService,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
     this.reload();
+
+    this.socketService.events$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.name === 'inquiry:new' || event.name === 'stock:low') {
+          this.reload();
+        }
+      });
   }
 
   get filteredNotifications(): VendorNotificationRecord[] {

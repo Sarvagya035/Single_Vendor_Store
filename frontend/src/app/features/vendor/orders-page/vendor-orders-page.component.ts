@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OrderItemRecord, OrderRecord, OrderStatus } from '../../../core/models/order.models';
 import { OrderService } from '../../../core/services/order.service';
+import { SocketService } from '../../../core/services/socket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
@@ -165,6 +167,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   `
 })
 export class VendorOrdersPageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   orders: OrderRecord[] = [];
   statuses: OrderStatus[] = ['Processing', 'Shipped', 'Delivered', 'Cancelled'];
   activeFilter: 'all' | OrderStatus = 'all';
@@ -181,11 +184,20 @@ export class VendorOrdersPageComponent implements OnInit {
 
   constructor(
     private orderService: OrderService,
-    private router: Router
+    private router: Router,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
     this.loadOrders();
+
+    this.socketService.events$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.name === 'order:new' || event.name === 'order:status-updated') {
+          this.loadOrders();
+        }
+      });
   }
 
   get totalOrdersCount(): number {

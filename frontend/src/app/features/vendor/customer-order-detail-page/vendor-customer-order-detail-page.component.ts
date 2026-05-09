@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { CustomerUser } from '../../../core/models/customer.models';
 import { OrderItemRecord, OrderRecord, OrderStatus } from '../../../core/models/order.models';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { SocketService } from '../../../core/services/socket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
@@ -124,6 +126,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
   `
 })
 export class VendorCustomerOrderDetailPageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   customer: CustomerUser | null = null;
   order: OrderRecord | null = null;
   isLoading = true;
@@ -132,10 +135,23 @@ export class VendorCustomerOrderDetailPageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private vendorService: VendorService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
+    this.loadData();
+
+    this.socketService.events$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if ((event.name === 'order:new' || event.name === 'order:status-updated') && this.isCurrentOrderEvent(event.payload)) {
+          this.loadData();
+        }
+      });
+  }
+
+  private loadData(): void {
     const userId = this.route.parent?.snapshot.paramMap.get('userId') || this.route.snapshot.paramMap.get('userId');
     const orderId = this.route.snapshot.paramMap.get('orderId');
 
@@ -262,5 +278,15 @@ export class VendorCustomerOrderDetailPageComponent implements OnInit {
 
   trackByOrderItem(index: number, item: OrderItemRecord): string {
     return item._id || item.variantId || item.product || String(index);
+  }
+
+  private isCurrentOrderEvent(payload: unknown): boolean {
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+
+    if (!orderId || !payload || typeof payload !== 'object') {
+      return false;
+    }
+
+    return String((payload as Record<string, unknown>)['orderId'] || '') === orderId;
   }
 }

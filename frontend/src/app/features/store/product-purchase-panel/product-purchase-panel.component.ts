@@ -145,7 +145,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             <button
               type="button"
               class="btn-secondary !w-full !justify-center !py-3.5"
-              [disabled]="!selectedVariant?._id || isBuying"
+              [disabled]="!selectedVariant?._id || selectedVariantStock <= 0 || isBuying"
               (click)="buyNow.emit()"
             >
               {{ isBuying ? 'Processing...' : 'Buy Now' }}
@@ -154,7 +154,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             <button
               type="button"
               class="btn-primary !w-full !justify-center !py-3.5"
-              [disabled]="!selectedVariant?._id || isAdding"
+              [disabled]="!selectedVariant?._id || selectedVariantStock <= 0 || isAdding"
               (click)="addToCart.emit()"
             >
               {{ isAdding ? 'Adding...' : 'Add To Cart' }}

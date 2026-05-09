@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { OrderRecord } from '../../core/models/order.models';
 import { OrderService } from '../../core/services/order.service';
+import { SocketService } from '../../core/services/socket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-orders',
@@ -149,15 +151,27 @@ import { OrderService } from '../../core/services/order.service';
   `
 })
 export class OrdersComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   orders: OrderRecord[] = [];
   isLoading = false;
   successMessage = '';
   searchTerm = '';
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private socketService: SocketService
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
+
+    this.socketService.events$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.name === 'order:new' || event.name === 'order:status-updated') {
+          this.loadOrders();
+        }
+      });
   }
 
   get filteredOrders(): OrderRecord[] {

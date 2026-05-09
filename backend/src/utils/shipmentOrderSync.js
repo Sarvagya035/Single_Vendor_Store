@@ -1,4 +1,5 @@
 import { Order } from "../models/order.model.js";
+import { emitOrderStatusUpdatedRealtime } from "../realtime/order-events.js";
 
 const SHIPMENT_TO_ORDER_STATUS = {
     Created: "Processing",
@@ -19,6 +20,10 @@ const syncOrderFromShipment = async (orderOrId, shipment) => {
         return null;
     }
 
+    const previousOrderStatus = order.orderStatus;
+    const previousItemStatusSnapshot = (order.orderItems || [])
+        .map((item) => `${item._id?.toString?.() || item._id}:${item.orderItemStatus || ""}`)
+        .join("|");
     const nextOrderStatus = SHIPMENT_TO_ORDER_STATUS[shipment.shipmentStatus] || order.orderStatus;
 
     if (nextOrderStatus === "Delivered") {
@@ -47,6 +52,19 @@ const syncOrderFromShipment = async (orderOrId, shipment) => {
     }
 
     await order.save();
+
+    const nextItemStatusSnapshot = (order.orderItems || [])
+        .map((item) => `${item._id?.toString?.() || item._id}:${item.orderItemStatus || ""}`)
+        .join("|");
+
+    if (previousOrderStatus !== order.orderStatus || previousItemStatusSnapshot !== nextItemStatusSnapshot) {
+        const populatedOrder = await Order.findById(order._id).populate("user", "fullName username email");
+        emitOrderStatusUpdatedRealtime(populatedOrder || order, {
+            previousStatus: previousOrderStatus,
+            source: "shipment-sync"
+        });
+    }
+
     return order;
 };
 

@@ -23,9 +23,12 @@ const isCustomerUser = (value: unknown): value is CustomerUser => {
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/users`;
   private readonly sessionStorageKey = 'auth-session-active';
+  private readonly accessTokenStorageKey = 'auth-access-token';
   private currentUserSubject = new BehaviorSubject<CustomerUser | null>(null);
+  private accessTokenSubject = new BehaviorSubject<string | null>(this.readStoredAccessToken());
   private currentUserRequest$: Observable<AuthActionResponse> | null = null;
   public currentUser$ = this.currentUserSubject.asObservable();
+  public accessToken$ = this.accessTokenSubject.asObservable();
 
   constructor(private api: ApiService) { }
 
@@ -37,6 +40,10 @@ export class AuthService {
     return !!this.currentUserSubject.value;
   }
 
+  getAccessTokenSnapshot(): string | null {
+    return this.accessTokenSubject.value;
+  }
+
   register(userData: Record<string, unknown>): Observable<AuthActionResponse> {
     return this.api.post<AuthActionResponse>(`${this.apiUrl}/register`, userData, { withCredentials: false });
   }
@@ -45,6 +52,7 @@ export class AuthService {
     return this.api.post<AuthActionResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((res) => {
         if (res.success) {
+          this.setAccessToken(this.extractAccessToken(res));
           this.currentUserSubject.next(this.extractCurrentUser(res));
           this.setSessionActive(true);
         }
@@ -93,14 +101,15 @@ export class AuthService {
       request$ = this.api.get<AuthActionResponse>(`${this.apiUrl}/current-user`, {
         context: new HttpContext().set(SKIP_AUTH_ERROR_HANDLING, true)
       }).pipe(
-        tap((res) => {
-          const currentUser = this.extractCurrentUser(res);
-          if (res.success) {
-            this.currentUserSubject.next(currentUser);
-            this.setSessionActive(true);
-          } else {
-            this.clearCurrentUser();
-          }
+      tap((res) => {
+        const currentUser = this.extractCurrentUser(res);
+        if (res.success) {
+          this.currentUserSubject.next(currentUser);
+          this.setAccessToken(this.extractAccessToken(res));
+          this.setSessionActive(true);
+        } else {
+          this.clearCurrentUser();
+        }
         }),
         catchError((error) => {
           if (error?.status === 401) {
@@ -139,11 +148,18 @@ export class AuthService {
       {
         context: new HttpContext().set(SKIP_AUTH_ERROR_HANDLING, true)
       }
+    ).pipe(
+      tap((res) => {
+        if (res.success) {
+          this.setAccessToken(this.extractAccessToken(res));
+        }
+      })
     );
   }
 
   clearCurrentUser(): void {
     this.currentUserSubject.next(null);
+    this.setAccessToken(null);
     this.currentUserRequest$ = null;
     this.setSessionActive(false);
   }
@@ -191,6 +207,32 @@ export class AuthService {
     return data as CustomerUser;
   }
 
+  private extractAccessToken(response: AuthActionResponse | null | undefined): string | null {
+    if (!response?.success || !response.data || typeof response.data !== 'object') {
+      return null;
+    }
+
+    const data = response.data as Record<string, unknown>;
+    return typeof data['accessToken'] === 'string' && data['accessToken'].trim()
+      ? data['accessToken']
+      : null;
+  }
+
+  private setAccessToken(token: string | null): void {
+    this.accessTokenSubject.next(token);
+
+    if (typeof window === 'undefined' || typeof window.sessionStorage === 'undefined') {
+      return;
+    }
+
+    if (token) {
+      window.sessionStorage.setItem(this.accessTokenStorageKey, token);
+      return;
+    }
+
+    window.sessionStorage.removeItem(this.accessTokenStorageKey);
+  }
+
   private setSessionActive(active: boolean): void {
     if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
       return;
@@ -210,5 +252,14 @@ export class AuthService {
     }
 
     return window.localStorage.getItem(this.sessionStorageKey) === 'true';
+  }
+
+  private readStoredAccessToken(): string | null {
+    if (typeof window === 'undefined' || typeof window.sessionStorage === 'undefined') {
+      return null;
+    }
+
+    const token = window.sessionStorage.getItem(this.accessTokenStorageKey);
+    return token && token.trim() ? token : null;
   }
 }

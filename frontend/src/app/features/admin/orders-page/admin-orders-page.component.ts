@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { AdminOrdersResponse, OrderRecord } from '../../../core/models/order.models';
 import { AdminService } from '../../../core/services/admin.service';
 import { OrderService } from '../../../core/services/order.service';
+import { SocketService } from '../../../core/services/socket.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { StatCardComponent } from '../../../shared/ui/stat-card.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-admin-orders-page',
@@ -153,6 +155,7 @@ import { StatCardComponent } from '../../../shared/ui/stat-card.component';
   `
 })
 export class AdminOrdersPageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   summary: AdminOrdersResponse = {
     orders: [],
     totalRevenue: 0
@@ -167,11 +170,20 @@ export class AdminOrdersPageComponent implements OnInit {
   constructor(
     private orderService: OrderService,
     private adminService: AdminService,
-    private appRefreshService: AppRefreshService
+    private appRefreshService: AppRefreshService,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
     this.loadOrders();
+
+    this.socketService.events$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.name === 'order:new' || event.name === 'order:status-updated') {
+          this.loadOrders();
+        }
+      });
   }
 
   loadOrders(): void {

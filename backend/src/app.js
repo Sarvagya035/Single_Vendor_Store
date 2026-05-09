@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser"
 import helmet from "helmet"
 import rateLimit from "express-rate-limit"
 import { errorHandler, notFoundHandler } from "./middlewares/error.middleware.js"
+import { createOriginChecker } from "./utils/origin.js"
 
 //router imports begin here
 import userRouter from "./routes/user.routes.js"
@@ -19,13 +20,8 @@ import bulkInquiryRouter from "./routes/bulkInquiry.routes.js"
 
 const app = express()
 
-const frontendOrigin = process.env.FRONTEND_URL || "http://localhost:4200"
-const allowedOrigins = new Set([frontendOrigin])
-
-const normalizeOrigin = (origin) => String(origin || "").replace(/\/$/, "")
-
 const corsOptions = {
-    origin: true,
+    origin: createOriginChecker(),
     credentials: true
 }
 
@@ -48,7 +44,7 @@ const rateLimitPaths = new Set([
 ])
 
 app.use((req, res, next) => {
-    const normalizedPath = normalizeOrigin(req.path)
+    const normalizedPath = String(req.path || "").replace(/\/$/, "")
 
     if (req.method === "POST" && rateLimitPaths.has(normalizedPath)) {
         return authRouteLimiter(req, res, next)

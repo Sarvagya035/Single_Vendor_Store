@@ -1,6 +1,7 @@
 import { Product } from "../models/product.model.js";
 import { Vendor } from "../models/vendor.model.js";
 import { VendorNotification } from "../models/vendorNotification.model.js";
+import { emitToVendor } from "../realtime/socket.js";
 
 const LOW_STOCK_THRESHOLD = Number(process.env.VENDOR_LOW_STOCK_THRESHOLD || 5);
 
@@ -59,6 +60,14 @@ const buildLowStockPayload = (product, variant) => {
         currentStock,
         variantLabel
     };
+};
+
+const serializeNotificationForSocket = (notificationDoc) => {
+    if (!notificationDoc) {
+        return null;
+    }
+
+    return notificationDoc.toObject ? notificationDoc.toObject() : { ...notificationDoc };
 };
 
 const createOrUpdateLowStockNotification = async (product, variant) => {
@@ -131,6 +140,26 @@ const createOrUpdateLowStockNotification = async (product, variant) => {
             setDefaultsOnInsert: true
         }
     );
+
+    if (notification && currentStock <= LOW_STOCK_THRESHOLD) {
+        const notificationPayload = {
+            eventId: `stock:${product._id}:${variant._id}`,
+            notification: serializeNotificationForSocket(notification),
+            productId: product._id.toString(),
+            variantId: variant._id.toString(),
+            vendorId: product.vendor.toString(),
+            title: payload.title,
+            message: payload.message,
+            currentStock
+        };
+
+        emitToVendor(product.vendor.toString(), "stock:low", notificationPayload);
+        emitToVendor(product.vendor.toString(), "notification:new", {
+            ...notificationPayload,
+            eventId: `stock:${product._id}:${variant._id}`,
+            type: "stock_low"
+        });
+    }
 
     return notification;
 };
@@ -269,6 +298,29 @@ const createOrUpdateBulkInquiryNotifications = async (inquiry) => {
             )
         )
     );
+
+    for (const result of results) {
+        if (result.status !== "fulfilled" || !result.value) {
+            continue;
+        }
+
+        const notification = result.value;
+        const vendorId = String(notification.vendor?.toString?.() || notification.vendor || "");
+        const notificationPayload = {
+            eventId: `inquiry:${notification.referenceId?.toString?.() || notification._id}`,
+            notification: serializeNotificationForSocket(notification),
+            vendorId,
+            referenceId: notification.referenceId?.toString?.() || "",
+            title: notification.title,
+            message: notification.message,
+            type: "bulk_inquiry"
+        };
+
+        if (vendorId) {
+            emitToVendor(vendorId, "inquiry:new", notificationPayload);
+            emitToVendor(vendorId, "notification:new", notificationPayload);
+        }
+    }
 
     return results;
 };

@@ -5,6 +5,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { emitToRole } from "../realtime/socket.js";
 
 const notifyAdminsAboutBulkInquiry = async (inquiry) => {
     const adminUsers = await User.find({
@@ -88,6 +89,20 @@ const createBulkInquiry = asyncHandler(async (req, res) => {
     });
 
     await notifyAdminsAboutBulkInquiry(inquiry);
+
+    emitToRole("admin", "inquiry:new", {
+        eventId: `inquiry:${inquiry._id}`,
+        inquiryId: inquiry._id.toString(),
+        title: "New Bulk Order Inquiry",
+        message: `${String(inquiry.businessName || inquiry.fullName || "Unknown").trim()} submitted a ${String(inquiry.orderType || "bulk order").trim()} bulk inquiry.`
+    });
+
+    emitToRole("admin", "notification:new", {
+        eventId: `inquiry:${inquiry._id}`,
+        inquiryId: inquiry._id.toString(),
+        title: "New Bulk Order Inquiry",
+        message: `${String(inquiry.businessName || inquiry.fullName || "Unknown").trim()} submitted a ${String(inquiry.orderType || "bulk order").trim()} bulk inquiry.`
+    });
 
     return res.status(201).json(
         new ApiResponse(201, inquiry, "Bulk inquiry submitted successfully")

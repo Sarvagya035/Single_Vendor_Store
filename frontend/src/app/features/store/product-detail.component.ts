@@ -411,6 +411,11 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
+    if (variant.isAvailable === false || Number(variant.productStock || 0) <= 0) {
+      this.errorService.showToast('This variant is out of stock.', 'error');
+      return;
+    }
+
     if (!this.isCustomer()) {
       this.guestDataService.addToGuestCart(this.product._id, variant._id, this.quantity);
       this.successMessage = 'Item saved to this device. Sign in to sync your cart.';
@@ -442,6 +447,11 @@ export class ProductDetailComponent implements OnInit {
     const variant = this.selectedVariant();
     if (!this.product?._id || !variant?._id) {
       this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (variant.isAvailable === false || Number(variant.productStock || 0) <= 0) {
+      this.errorService.showToast('This variant is out of stock.', 'error');
       return;
     }
 

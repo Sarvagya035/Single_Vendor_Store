@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   OrderItemRecord,
@@ -11,6 +11,8 @@ import {
 import { AuthService } from '../../core/services/auth.service';
 import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
+import { SocketService } from '../../core/services/socket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-order-detail',
@@ -479,6 +481,7 @@ import { OrderService } from '../../core/services/order.service';
   `
 })
 export class OrderDetailComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   order: OrderRecord | null = null;
   shipment: ShipmentRecord | null = null;
   isLoading = false;
@@ -490,7 +493,8 @@ export class OrderDetailComponent implements OnInit {
     private router: Router,
     private orderService: OrderService,
     private authService: AuthService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
@@ -507,6 +511,14 @@ export class OrderDetailComponent implements OnInit {
     }
 
     this.loadOrder();
+
+    this.socketService.events$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if ((event.name === 'order:new' || event.name === 'order:status-updated') && this.isCurrentOrderEvent(event.payload)) {
+          this.loadOrder();
+        }
+      });
   }
 
   get backLink(): string {
@@ -714,6 +726,16 @@ export class OrderDetailComponent implements OnInit {
     }
 
     return [];
+  }
+
+  private isCurrentOrderEvent(payload: unknown): boolean {
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+
+    if (!orderId || !payload || typeof payload !== 'object') {
+      return false;
+    }
+
+    return String((payload as Record<string, unknown>)['orderId'] || '') === orderId;
   }
 }
 
