@@ -33,8 +33,9 @@ export class SocketService {
   private accessToken: string | null = null;
   private connectedToken: string | null = null;
   private refreshingToken = false;
+  private socketWarningShown = false;
   private readonly processedEventIds = new Set<string>();
-  private readonly socketUrl = this.resolveSocketUrl(environment.apiUrl);
+  private readonly socketUrl = this.resolveSocketUrl(environment.socketUrl || environment.apiUrl);
 
   constructor(
     private readonly authService: AuthService,
@@ -60,6 +61,7 @@ export class SocketService {
     this.socket?.disconnect();
     this.socket = null;
     this.connectedToken = null;
+    this.socketWarningShown = false;
   }
 
   private syncConnection(): void {
@@ -104,6 +106,7 @@ export class SocketService {
     this.socket = io(this.socketUrl, {
       withCredentials: true,
       transports: ['websocket', 'polling'],
+      reconnection: false,
       auth: {
         token
       }
@@ -129,7 +132,12 @@ export class SocketService {
         return;
       }
 
-      this.errorService.showToast(message, 'warning');
+      if (!this.socketWarningShown) {
+        this.socketWarningShown = true;
+        this.errorService.showToast('Realtime updates are currently unavailable. The app will keep working normally.', 'warning');
+      }
+
+      this.socket?.disconnect();
     });
 
     this.registerSocketHandlers(this.socket);
@@ -234,7 +242,8 @@ export class SocketService {
     try {
       return new URL(apiUrl).origin;
     } catch {
-      return apiUrl.replace(/\/api\/v1\/?$/, '');
+      const normalized = apiUrl.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '');
+      return normalized || 'http://localhost:5000';
     }
   }
 }
