@@ -25,19 +25,7 @@ const allowedOrigins = new Set([frontendOrigin])
 const normalizeOrigin = (origin) => String(origin || "").replace(/\/$/, "")
 
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin) {
-            return callback(null, true)
-        }
-
-        const normalizedOrigin = normalizeOrigin(origin)
-
-        if (allowedOrigins.has(normalizedOrigin)) {
-            return callback(null, true)
-        }
-
-        return callback(new Error("Not allowed by CORS"))
-    },
+    origin: true,
     credentials: true
 }
 
