@@ -46,4 +46,17 @@ const getUserWishlist = async (req, res) => {
     return res.status(200).json(wishlist);
 };
 
-export { toggleWishlist, getUserWishlist };
+const getCustomerWishlistForVendor = async (req, res) => {
+    const { customerId } = req.params;
+
+    const wishlist = await Wishlist.findOne({ owner: customerId })
+        .populate("products", "productName mainImages basePrice variants isActive");
+
+    if (!wishlist) {
+        return res.status(200).json({ products: [] });
+    }
+
+    return res.status(200).json(wishlist);
+};
+
+export { toggleWishlist, getUserWishlist, getCustomerWishlistForVendor };

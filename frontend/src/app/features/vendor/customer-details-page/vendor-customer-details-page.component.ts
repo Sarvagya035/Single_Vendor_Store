@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { CustomerUser, CustomerWishlist, CustomerWishlistProduct } from '../../../core/models/customer.models';
 import { OrderRecord } from '../../../core/models/order.models';
 import { VendorProductRecord } from '../../../core/models/vendor.models';
@@ -374,8 +374,24 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
     this.loadingWishlist = true;
 
     forkJoin({
-      orders: this.vendorService.getCustomerOrderHistory(customerId),
-      wishlist: this.vendorService.getCustomerWishlist(customerId)
+      orders: this.vendorService.getCustomerOrderHistory(customerId).pipe(
+        catchError((error) => {
+          this.errorService.showToast(
+            this.errorService.extractErrorMessage(error) || 'Unable to load customer order history right now.',
+            'error'
+          );
+          return of([]);
+        })
+      ),
+      wishlist: this.vendorService.getCustomerWishlist(customerId).pipe(
+        catchError((error) => {
+          this.errorService.showToast(
+            this.errorService.extractErrorMessage(error) || 'Unable to load customer wishlist right now.',
+            'error'
+          );
+          return of({ products: [] } as CustomerWishlist);
+        })
+      )
     }).subscribe({
       next: ({ orders, wishlist }) => {
         this.customerOrders = orders || [];
@@ -386,13 +402,9 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.customerOrders = [];
-        this.customerWishlist = null;
-        this.customerWishlistItems = [];
         this.loadingOrders = false;
         this.loadingWishlist = false;
         this.isLoading = false;
-        this.errorService.showToast('Unable to load order history or wishlist.', 'error');
       }
     });
   }
