@@ -8,7 +8,7 @@ const productionTargetPath = path.join(projectRoot, 'src', 'environments', 'envi
 
 const defaults = {
   FRONTEND_PRODUCTION: 'false',
-  FRONTEND_API_URL: 'http://localhost:5000/api/v1',
+  FRONTEND_API_URL: '/api/v1',
   FRONTEND_RAZORPAY_KEY_ID: ''
 };
 
