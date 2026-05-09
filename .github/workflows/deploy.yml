@@ -1,4 +1,4 @@
-name: Deploy to AWS
+name: Deploy to EC2
 
 on:
   push:
@@ -10,26 +10,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Deploy app on EC2
+        uses: appleboy/ssh-action@v1.2.0
+
         with:
           host: ${{ secrets.SERVER_IP }}
-          username: ec2-user
+          username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+
           script: |
-            set -e
-            cd ~/Single_Vendor_Store
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            cd ~/app
 
             git fetch origin
             git reset --hard origin/feature/working-backend-frontend-setup
 
+            # Backend
             cd backend
-            npm install
-            pm2 restart backend --update-env
+            npm ci
+            pm2 restart backend || pm2 start npm --name backend -- run dev
+            pm2 save
 
+            # Frontend
             cd ../frontend
-            mkdir -p src/environments
-            npm install
+
+            npm ci
+
+            export NODE_OPTIONS=--max-old-space-size=512
+
+            rm -rf dist
+
             npm run build
+
+            sudo rm -rf /usr/share/nginx/html/*
+
+            sudo cp -r ~/app/frontend/dist/frontend/browser/* /usr/share/nginx/html/
 
             sudo systemctl restart nginx
