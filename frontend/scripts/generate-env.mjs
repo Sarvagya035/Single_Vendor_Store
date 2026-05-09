@@ -9,7 +9,7 @@ const productionTargetPath = path.join(projectRoot, 'src', 'environments', 'envi
 const defaults = {
   FRONTEND_PRODUCTION: 'false',
   FRONTEND_API_URL: '/api/v1',
-  FRONTEND_RAZORPAY_KEY_ID: ''
+  FRONTEND_RAZORPAY_KEY_ID: 'rzp_test_RZZV733MtjTZIA'
 };
 
 function getEnvValue(fileValues, key) {
