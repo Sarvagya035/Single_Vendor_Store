@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ErrorService } from '../../core/services/error.service';
 import { GuestDataService } from '../../core/services/guest-data.service';
-import { catchError, finalize, EMPTY } from 'rxjs';
+import { catchError, finalize, EMPTY, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -132,7 +132,9 @@ export class LoginComponent {
         }
 
         if (this.redirectTo && this.redirectTo.startsWith('/')) {
-          this.guestDataService.mergeGuestDataAfterAuth().subscribe({
+          this.authService.ensureCurrentUser().pipe(
+            switchMap(() => this.guestDataService.mergeGuestDataAfterAuth())
+          ).subscribe({
             next: (mergeResult) => {
               if (mergeResult?.hasFailures) {
                 this.errorService.showToast(mergeResult.message, 'warning');
@@ -147,7 +149,9 @@ export class LoginComponent {
           return;
         }
 
-        this.guestDataService.mergeGuestDataAfterAuth().subscribe({
+        this.authService.ensureCurrentUser().pipe(
+          switchMap(() => this.guestDataService.mergeGuestDataAfterAuth())
+        ).subscribe({
           next: (mergeResult) => {
             if (mergeResult?.hasFailures) {
               this.errorService.showToast(mergeResult.message, 'warning');

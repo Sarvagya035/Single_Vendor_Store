@@ -168,11 +168,15 @@ export class RegisterComponent {
 
           return this.authService.login({ email: this.email, password: this.password }).pipe(
             switchMap(() =>
-              this.guestDataService.mergeGuestDataAfterAuth().pipe(
-                catchError((error) => {
-                  this.errorService.showToast(this.errorService.extractErrorMessage(error), 'warning');
-                  return of(null);
-                })
+              this.authService.ensureCurrentUser().pipe(
+                switchMap(() =>
+                  this.guestDataService.mergeGuestDataAfterAuth().pipe(
+                    catchError((error) => {
+                      this.errorService.showToast(this.errorService.extractErrorMessage(error), 'warning');
+                      return of(null);
+                    })
+                  )
+                )
               )
             )
           );
