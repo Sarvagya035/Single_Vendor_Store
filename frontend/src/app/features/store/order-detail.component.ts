@@ -13,14 +13,15 @@ import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
 import { SocketService } from '../../core/services/socket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
     <div class="storefront-section overflow-x-hidden">
-      <div class="store-page-wide store-page-stack">
+      <div [ngClass]="isVendorView() ? 'vendor-content' : 'store-page-wide store-page-stack'">
         <div *ngIf="successMessage" class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
@@ -29,232 +30,159 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
         <div *ngIf="!isLoading && order as currentOrder" [ngClass]="isVendorView() ? 'mt-0' : 'mt-2'">
           <ng-container *ngIf="isVendorView(); else customerOrderLayout">
-            <section class="app-card overflow-hidden">
-              <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                <div class="min-w-0 flex-1">
-                  <p class="vendor-stat-label">Vendor Order</p>
-                  <h2 class="vendor-panel-title mt-2 truncate">Order #{{ shortOrderId(currentOrder._id) }}</h2>
-                  <p class="mt-3 max-w-3xl text-sm font-medium leading-7 text-slate-500">
-                    Review item totals, shipping details, payment status, and tracking from one clean vendor-friendly layout.
-                  </p>
+            <section class="vendor-content">
+              <div class="vendor-section">
+                <div class="vendor-page-header">
+                  <app-page-header
+                    eyebrow="Vendor Order"
+                    [title]="'Order #' + shortOrderId(currentOrder._id)"
+                    description="Review item totals, shipping details, payment status, and tracking from one clean vendor-friendly layout."
+                    titleClass="!text-[1.8rem] md:!text-[2.2rem]"
+                  >
+                    <a [routerLink]="backLink" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">
+                      Back To Orders
+                    </a>
+                    <a *ngIf="currentOrder._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">
+                      Track Order
+                    </a>
+                  </app-page-header>
                 </div>
 
-                <div class="flex flex-col gap-3 sm:flex-row">
-                  <a [routerLink]="backLink" class="btn-secondary w-full justify-center sm:w-auto">Back To Orders</a>
-                  <a *ngIf="currentOrder._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary w-full justify-center sm:w-auto">
-                    Track Order
-                  </a>
+                <div class="vendor-grid-3 vendor-section-body items-stretch">
+                  <article class="vendor-stat-card h-full !border-amber-100 !bg-[#fff7ed]/80">
+                    <p class="vendor-stat-label !text-amber-700">Order Total</p>
+                    <p class="vendor-stat-value">{{ formatCurrency(displayTotal) }}</p>
+                  </article>
+                  <article class="vendor-stat-card h-full !border-amber-100 !bg-[#fff7ed]/80">
+                    <p class="vendor-stat-label !text-amber-700">Items</p>
+                    <p class="vendor-stat-value">{{ visibleItems.length }}</p>
+                  </article>
+                  <article class="vendor-stat-card h-full !border-amber-100 !bg-[#fff7ed]/80">
+                    <p class="vendor-stat-label !text-amber-600">Status</p>
+                    <p class="vendor-stat-value">{{ displayStatus }}</p>
+                  </article>
                 </div>
-              </div>
 
-              <div class="mt-6 grid gap-4 md:grid-cols-3">
-                <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-                  <p class="vendor-stat-label !text-amber-700">Order Total</p>
-                  <p class="vendor-stat-value">{{ formatCurrency(displayTotal) }}</p>
-                </article>
-                <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-                  <p class="vendor-stat-label !text-amber-700">Items</p>
-                  <p class="vendor-stat-value">{{ visibleItems.length }}</p>
-                </article>
-                <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-                  <p class="vendor-stat-label !text-amber-600">Status</p>
-                  <p class="vendor-stat-value">{{ displayStatus }}</p>
-                </article>
-              </div>
-
-              <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
-                <div class="space-y-6">
-                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#fffaf4] app-panel-body">
-                    <div class="flex items-end justify-between gap-4 border-b border-slate-200 pb-4">
-                      <div>
-                        <p class="vendor-stat-label">Order Items</p>
-                        <h2 class="vendor-panel-title mt-2">Purchased products</h2>
-                      </div>
-                      <p class="text-sm font-medium text-slate-500">{{ visibleItems.length }} item{{ visibleItems.length === 1 ? '' : 's' }}</p>
-                    </div>
-
-                    <div *ngIf="visibleItems.length === 0" class="py-8 text-sm font-semibold text-slate-500">
-                      No order items are attached to this order.
-                    </div>
-
-                    <div *ngIf="visibleItems.length" class="mt-5 space-y-4">
-                      <article
-                        *ngFor="let item of visibleItems; trackBy: trackByItem"
-                        class="rounded-[1.4rem] border border-slate-200 bg-white/90 px-5 py-4"
-                      >
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div class="vendor-section-body lg:py-6">
+                  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(360px,0.8fr)]">
+                    <div class="min-w-0 space-y-6">
+                      <section class="app-panel min-w-0 overflow-hidden">
+                        <div class="flex items-end justify-between gap-4 border-b border-[#eee2d4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-5">
                           <div class="min-w-0">
-                            <p class="text-lg font-black text-slate-900">{{ item.name || 'Order item' }}</p>
-                            <p class="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                              {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
-                            </p>
+                            <p class="vendor-stat-label">Order Items</p>
+                            <h2 class="vendor-panel-title mt-2">Purchased products</h2>
+                          </div>
+                          <p class="shrink-0 text-sm font-medium text-slate-500">{{ visibleItems.length }} item{{ visibleItems.length === 1 ? '' : 's' }}</p>
+                        </div>
+
+                        <div class="px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
+                          <div *ngIf="visibleItems.length === 0" class="py-4 text-sm font-semibold text-slate-500">
+                            No order items are attached to this order.
                           </div>
 
-                          <div class="flex flex-wrap items-center gap-2">
-                            <span class="rounded-full bg-[#fffaf4] px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
-                              {{ formatCurrency(itemTotal(item)) }}
-                            </span>
-                            <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]" [ngClass]="statusClass(item.orderItemStatus)">
-                              {{ item.orderItemStatus || 'Processing' }}
-                            </span>
+                          <div *ngIf="visibleItems.length" class="space-y-4">
+                            <article
+                              *ngFor="let item of visibleItems; trackBy: trackByItem"
+                              class="rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] px-4 py-4 shadow-[0_12px_30px_rgba(47,27,20,0.04)] sm:px-5 sm:py-5"
+                            >
+                              <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                                <div class="min-w-0">
+                                  <p class="text-base font-black text-slate-900 sm:text-lg">{{ item.name || 'Order item' }}</p>
+                                  <p class="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                                    {{ item.sku || 'Variant' }} • Qty {{ item.quantity || 0 }}
+                                  </p>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2 sm:justify-end">
+                                  <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
+                                    {{ formatCurrency(itemTotal(item)) }}
+                                  </span>
+                                  <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]" [ngClass]="statusClass(item.orderItemStatus)">
+                                    {{ item.orderItemStatus || 'Processing' }}
+                                  </span>
+                                </div>
+                              </div>
+                            </article>
                           </div>
                         </div>
-                      </article>
-                    </div>
-                  </section>
-
-                  <section class="rounded-[1.75rem] border border-slate-200 bg-[#2f1b14] app-panel-body text-white">
-                    <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Vendor Summary</p>
-                    <div class="mt-5 grid gap-3 sm:grid-cols-3">
-                      <div class="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Visible Items</p>
-                        <p class="mt-2 text-lg font-black text-white">{{ formatCurrency(displayItemsPrice) }}</p>
-                      </div>
-                      <div class="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Payment</p>
-                        <p class="mt-2 text-lg font-black text-white">{{ order.paymentInfo?.status || 'Pending' }}</p>
-                      </div>
-                      <div class="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Method</p>
-                        <p class="mt-2 text-lg font-black text-white">{{ order.paymentInfo?.method || 'Payment' }}</p>
-                      </div>
-                    </div>
-                    <div class="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
-                      <span class="text-sm font-bold text-slate-300">Vendor Total</span>
-                      <span class="text-2xl font-black">{{ formatCurrency(displayTotal) }}</span>
-                    </div>
-                  </section>
-                </div>
-
-                <div class="space-y-6">
-                  <section class="app-card app-panel-body">
-                    <div class="flex flex-col gap-3 border-b border-slate-200 pb-4">
-                      <div>
-                        <p class="vendor-stat-label">Delivery</p>
-                        <h2 class="vendor-panel-title mt-2">Shipping address</h2>
-                      </div>
-                      <span class="w-fit rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="order.shippingAddress ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'">
-                        {{ order.shippingAddress ? 'Address available' : 'No shipping address' }}
-                      </span>
+                      </section>
                     </div>
 
-                    <div *ngIf="order.shippingAddress; else vendorNoShipping" class="mt-5 grid gap-4 sm:grid-cols-2">
-                      <div class="rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] p-4 sm:col-span-2">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Address</p>
-                        <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress.address || 'Not provided' }}</p>
-                      </div>
-                      <div class="rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] p-4">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">City</p>
-                        <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress.city || 'Not provided' }}</p>
-                      </div>
-                      <div class="rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] p-4">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Pincode</p>
-                        <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress.pincode || 'Not provided' }}</p>
-                      </div>
-                      <div class="rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] p-4 sm:col-span-2">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Phone</p>
-                        <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress.phone || 'Not provided' }}</p>
-                      </div>
-                    </div>
-
-                    <ng-template #vendorNoShipping>
-                      <p class="mt-5 text-sm font-medium leading-7 text-slate-500">
-                        Shipping address has not been attached to this order yet.
-                      </p>
-                    </ng-template>
-                  </section>
-
-                  <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 sm:p-6">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
-                      <div>
-                        <p class="vendor-stat-label">Tracking</p>
-                        <h2 class="vendor-panel-title mt-2">Shipment progress</h2>
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <span *ngIf="shipment?.isTestMode" class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800">
-                          Test Mode
-                        </span>
-                        <button
-                          *ngIf="canRefreshShipment()"
-                          type="button"
-                          class="btn-secondary text-xs uppercase tracking-[0.16em] text-amber-800 hover:bg-amber-100"
-                          (click)="refreshShipment()"
-                        >
-                          Refresh Tracking
-                        </button>
-                      </div>
-                    </div>
-
-                    <div *ngIf="shipment; else vendorNoShipment" class="mt-5 space-y-4">
-                      <div class="grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] p-4">
-                          <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Courier</p>
-                          <p class="mt-2 text-base font-black text-slate-900">{{ shipment.courierName || 'DHL' }}</p>
-                        </div>
-                        <div class="rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] p-4">
-                          <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Tracking Number</p>
-                          <p class="mt-2 break-all text-base font-black text-slate-900">{{ shipment.trackingNumber || 'Not assigned yet' }}</p>
-                        </div>
-                      </div>
-
-                      <div class="rounded-[1.4rem] border border-slate-200 bg-[#fffaf4] p-4">
-                        <div class="flex flex-wrap items-center justify-between gap-3">
-                          <div>
-                            <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Shipment Status</p>
-                            <p class="mt-2 text-lg font-black text-slate-900">{{ shipment.shipmentStatus || 'Created' }}</p>
-                          </div>
-                          <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(shipment.shipmentStatus)">
-                            {{ shipment.shipmentStatus || 'Created' }}
+                    <aside class="min-w-0 space-y-6">
+                      <section class="app-panel min-w-0 overflow-hidden">
+                        <div class="border-b border-[#eee2d4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-5">
+                          <p class="vendor-stat-label">Delivery</p>
+                          <h2 class="vendor-panel-title mt-2">Shipping address</h2>
+                          <span
+                            class="mt-3 inline-flex w-fit rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]"
+                            [ngClass]="order.shippingAddress ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
+                          >
+                            {{ order.shippingAddress ? 'Address available' : 'No shipping address' }}
                           </span>
                         </div>
-                        <div class="mt-4 text-sm font-medium leading-7 text-slate-600">
-                          <p *ngIf="shipment.estimatedDeliveryDate">Estimated delivery: {{ formatDate(shipment.estimatedDeliveryDate) }}</p>
-                          <p *ngIf="shipment.lastSyncedAt">Last synced: {{ formatDateTime(shipment.lastSyncedAt) }}</p>
-                        </div>
-                      </div>
 
-                      <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                          <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Timeline</p>
-                          <p class="text-xs font-semibold text-slate-500">{{ shipment.trackingEvents?.length || 0 }} updates</p>
-                        </div>
-
-                        <div *ngIf="shipment.trackingEvents?.length; else vendorNoEvents" class="space-y-3">
-                          <article
-                            *ngFor="let event of shipment.trackingEvents; trackBy: trackByEvent"
-                            class="rounded-[1.2rem] border border-slate-200 bg-white p-4"
-                          >
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                              <div>
-                                <p class="text-sm font-black text-slate-900">{{ event.status }}</p>
-                                <p class="mt-1 text-sm font-medium text-slate-600">{{ event.description || 'Tracking update' }}</p>
-                              </div>
-                              <p class="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                                {{ formatDateTime(event.eventTime) }}
+                        <div class="space-y-4 px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
+                          <ng-container *ngIf="order.shippingAddress; else vendorNoShipping">
+                            <div class="rounded-[1.35rem] border border-slate-200 bg-[#fffaf4] p-4">
+                              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Address</p>
+                              <p class="mt-2 text-sm font-black leading-6 text-slate-900">
+                                {{ order.shippingAddress.address || 'Not provided' }}
                               </p>
                             </div>
-                            <p *ngIf="event.location" class="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
-                              {{ event.location }}
-                            </p>
-                          </article>
+
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                              <div class="rounded-[1.35rem] border border-slate-200 bg-[#fffaf4] p-4">
+                                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">City</p>
+                                <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress.city || 'Not provided' }}</p>
+                              </div>
+                              <div class="rounded-[1.35rem] border border-slate-200 bg-[#fffaf4] p-4">
+                                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Pincode</p>
+                                <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress.pincode || 'Not provided' }}</p>
+                              </div>
+                            </div>
+
+                            <div class="rounded-[1.35rem] border border-slate-200 bg-[#fffaf4] p-4">
+                              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Phone</p>
+                              <p class="mt-2 text-sm font-black text-slate-900">{{ order.shippingAddress.phone || 'Not provided' }}</p>
+                            </div>
+                          </ng-container>
                         </div>
-                      </div>
-                    </div>
 
-                    <ng-template #vendorNoShipment>
-                      <div class="mt-5 rounded-[1.5rem] border border-dashed border-slate-200 bg-[#fffaf4] p-5">
-                        <p class="text-sm font-semibold text-slate-600">
-                          Shipment details will appear here after payment verification creates a tracking record.
-                        </p>
-                      </div>
-                    </ng-template>
+                        <ng-template #vendorNoShipping>
+                          <div class="px-4 pb-4 sm:px-5 sm:pb-5 lg:px-6 lg:pb-6">
+                            <div class="rounded-[1.35rem] border border-dashed border-slate-200 bg-[#fffaf4] p-4">
+                              <p class="text-sm font-semibold leading-7 text-slate-500">
+                                Shipping address has not been attached to this order yet.
+                              </p>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </section>
 
-                    <ng-template #vendorNoEvents>
-                      <div class="rounded-[1.5rem] border border-dashed border-slate-200 bg-[#fffaf4] p-5">
-                        <p class="text-sm font-semibold text-slate-600">No tracking events recorded yet.</p>
-                      </div>
-                    </ng-template>
-                  </section>
+                      <section class="rounded-[2rem] border border-[#2f1b14] bg-[#2f1b14] px-4 py-4 text-white shadow-[0_18px_50px_rgba(111,78,55,0.16)] sm:px-5 sm:py-5 lg:px-6 lg:py-6">
+                        <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Vendor Summary</p>
+                        <div class="mt-4 space-y-2.5 text-sm font-medium text-slate-300">
+                          <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-3 py-2.5">
+                            <span>Visible Items</span>
+                            <span class="font-black text-white">{{ formatCurrency(displayItemsPrice) }}</span>
+                          </div>
+                          <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-3 py-2.5">
+                            <span>Payment</span>
+                            <span class="font-black text-white">{{ order.paymentInfo?.status || 'Pending' }}</span>
+                          </div>
+                          <div class="flex items-center justify-between gap-4 rounded-[1rem] border border-white/10 bg-white/5 px-3 py-2.5">
+                            <span>Method</span>
+                            <span class="font-black text-white">{{ order.paymentInfo?.method || 'Payment' }}</span>
+                          </div>
+                        </div>
+
+                        <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+                          <span class="text-sm font-bold text-slate-300">Vendor Total</span>
+                          <span class="text-2xl font-black">{{ formatCurrency(displayTotal) }}</span>
+                        </div>
+                      </section>
+                    </aside>
+                  </div>
                 </div>
               </div>
             </section>
