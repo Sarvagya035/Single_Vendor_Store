@@ -20,26 +20,8 @@ interface CategoryCreateForm {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <section class="vendor-content border-t border-slate-200 vendor-section-body lg:py-6">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div class="min-w-0">
-          <p class="app-page-eyebrow">CATEGORY MANAGEMENT</p>
-          <h3 class="app-page-title !text-[1.8rem] md:!text-[2.2rem]">Category Tree</h3>
-          <p class="app-page-description !mt-2 !max-w-2xl">
-            Manage your category hierarchy. Click the arrow to expand or collapse subcategories.
-          </p>
-        </div>
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center lg:shrink-0">
-          <button type="button" (click)="toggleCreateForm()" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">
-            {{ showCreateForm ? 'Close Form' : 'Add Category' }}
-          </button>
-          <button type="button" (click)="refresh.emit()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
-            {{ isLoading ? 'Refreshing...' : 'Refresh Categories' }}
-          </button>
-        </div>
-      </div>
-
-      <div *ngIf="showCreateForm" class="mt-4 border-t border-slate-200 bg-[#fffaf4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6">
+    <section class="pt-0">
+      <div *ngIf="showCreateForm" class="mb-4 border-t border-slate-200 bg-[#fffaf4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6">
         <form class="grid gap-3 sm:gap-4 lg:grid-cols-2" (ngSubmit)="submitCreateForm()">
           <div class="space-y-2">
             <label class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category Name</label>
@@ -100,21 +82,21 @@ interface CategoryCreateForm {
         </form>
       </div>
 
-      <div *ngIf="isLoading" class="py-10 sm:py-12">
+      <div *ngIf="isLoading" class="py-8 sm:py-10">
         <div class="flex flex-col items-center gap-4">
           <div class="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="font-medium text-slate-500">Loading categories...</p>
         </div>
       </div>
 
-      <div *ngIf="!isLoading && categories.length === 0" class="py-10 text-center">
+      <div *ngIf="!isLoading && categories.length === 0" class="py-8 text-center">
         <h3 class="vendor-empty-title">No Categories Yet</h3>
         <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
           Categories from your backend will appear here once they are created.
         </p>
       </div>
 
-      <div *ngIf="!isLoading && categories.length > 0" class="mt-5 divide-y divide-slate-200 border-t border-slate-200">
+      <div *ngIf="!isLoading && categories.length > 0" class="mt-0 divide-y divide-slate-200 border-t border-slate-200">
         <ng-container *ngFor="let category of categories; trackBy: trackByCategoryId">
           <ng-container *ngTemplateOutlet="categoryNode; context: { $implicit: category }"></ng-container>
         </ng-container>

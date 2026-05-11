@@ -33,7 +33,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         Loading customer details...
       </div>
 
-      <div *ngIf="!isLoading && customer" class="vendor-content border-t border-slate-200 vendor-section-body lg:py-6">
+      <div *ngIf="!isLoading && customer" class="border-t border-slate-200 vendor-section-body lg:py-6">
         <div class="vendor-grid-2 lg:grid-cols-[0.9fr_1.1fr]">
           <section class="vendor-card-compact">
             <div class="flex items-center gap-3">

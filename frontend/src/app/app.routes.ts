@@ -316,11 +316,13 @@ export const routes: Routes = [
                 (m) => m.VendorOrderTrackingPageComponent
               )
           },
-          {
-            path: ':orderId',
-            loadComponent: () =>
-              import('./features/store/order-detail.component').then((m) => m.OrderDetailComponent)
-          }
+            {
+              path: ':orderId',
+              loadComponent: () =>
+                import('./features/vendor/order-detail-page/vendor-order-detail-page.component').then(
+                  (m) => m.VendorOrderDetailPageComponent
+                )
+            }
         ]
       },
       {

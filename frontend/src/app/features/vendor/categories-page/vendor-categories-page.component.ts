@@ -13,16 +13,25 @@ import { ToastType } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule, VendorCategoriesPanelComponent, PageHeaderComponent, ToastBannerComponent],
   template: `
-    <section class="vendor-content">
+    <section class="vendor-content vendor-categories-content">
       <div class="vendor-page-header">
         <app-page-header
           eyebrow="VENDOR CATEGORY MANAGEMENT"
           title="Manage your store categories"
+          description="Manage your category hierarchy. Click the arrow to expand or collapse subcategories."
           titleClass="!text-[1.8rem] md:!text-[2.2rem]"
-        />
+        >
+          <button type="button" (click)="categoriesPanel.toggleCreateForm()" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">
+            {{ categoriesPanel?.showCreateForm ? 'Close Form' : 'Add Category' }}
+          </button>
+          <button type="button" (click)="loadCategories()" [disabled]="isCategorySyncing" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">
+            {{ isCategorySyncing ? 'Refreshing...' : 'Refresh Categories' }}
+          </button>
+        </app-page-header>
       </div>
 
       <app-vendor-categories-panel
+        #categoriesPanel
         [categories]="categories"
         [isLoading]="isCategorySyncing"
         [isCreating]="isCreatingCategory"
