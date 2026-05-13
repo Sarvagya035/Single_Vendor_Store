@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
 import { VendorProductRecord, VendorProductVariant } from '../../../core/models/vendor.models';
 import { VendorFormSectionComponent } from '../form-section/vendor-form-section.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
@@ -17,7 +18,7 @@ import {
 @Component({
   selector: 'app-vendor-restock-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent, AppButtonComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -28,9 +29,9 @@ import {
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="This page is only for stock updates. Product details and variant editing stay separate so inventory work stays fast and focused."
           >
-            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Edit Product</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Variants</a>
+            <app-button routerLink="/vendor/products" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Back to Products</app-button>
+            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Edit Product</app-button>
+            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Manage Variants</app-button>
           </app-page-header>
         </div>
 
@@ -95,9 +96,9 @@ import {
                       </div>
                     </div>
 
-                    <button type="button" (click)="restockVariant(variant)" [disabled]="!variant._id || busyVariantId === variant._id" class="btn-primary w-full !px-4 !py-2.5 text-xs disabled:opacity-60">
+                    <app-button type="button" (click)="restockVariant(variant)" [disabled]="!variant._id || busyVariantId === variant._id" buttonClass="w-full !px-4 !py-2.5 text-xs">
                       {{ busyVariantId === variant._id ? 'Updating...' : 'Update Stock' }}
-                    </button>
+                    </app-button>
                   </div>
                 </article>
               </div>

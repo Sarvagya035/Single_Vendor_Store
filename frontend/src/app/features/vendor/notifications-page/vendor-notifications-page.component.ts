@@ -8,6 +8,10 @@ import { VendorNotificationRecord, VendorNotificationsPayload } from '../../../c
 import { VendorService } from '../../../core/services/vendor.service';
 import { SocketService } from '../../../core/services/socket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { CardComponent } from '../../../shared/ui/card/card.component';
+import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 type NotificationFilter = 'all' | 'unread' | 'active';
@@ -15,20 +19,28 @@ type NotificationFilter = 'all' | 'unread' | 'active';
 @Component({
   selector: 'app-vendor-notifications-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    PageHeaderComponent,
+    ButtonComponent,
+    BadgeComponent,
+    CardComponent,
+    EmptyStateComponent,
+  ],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
-        <div class="vendor-page-header">
+        <div class="app-page-header">
           <app-page-header
             eyebrow="Notifications"
             title="Notification center"
             description="Track low-stock alerts and keep product availability under control from one place."
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button type="button" (click)="reload()" [disabled]="isLoading" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">
+            <app-button variant="secondary" buttonClass="w-full !px-5 !py-3 sm:w-auto" [disabled]="isLoading" (click)="reload()">
               {{ isLoading ? 'Refreshing...' : 'Refresh Notifications' }}
-            </button>
+            </app-button>
           </app-page-header>
         </div>
 
@@ -51,45 +63,48 @@ type NotificationFilter = 'all' | 'unread' | 'active';
           </article>
         </div>
 
-        <div class="border-t border-slate-200 vendor-section-body lg:py-6">
+        <app-card variant="default" cardClass="border-t border-slate-200 !rounded-none !border-x-0 !border-b-0 !bg-transparent !shadow-none vendor-section-body lg:py-6">
           <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div class="flex flex-wrap gap-2">
-              <button
-                type="button"
-                class="btn-secondary !min-h-0 rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition"
-                [ngClass]="filter === 'all' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border border-slate-200'"
+              <app-button
+                variant="secondary"
+                [buttonClass]="filter === 'all'
+                  ? 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-slate-900 !border-slate-900 !text-white transition'
+                  : 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-white !border !border-slate-200 !text-slate-600 transition'"
                 (click)="setFilter('all')"
               >
                 All
-              </button>
-              <button
-                type="button"
-                class="btn-secondary !min-h-0 rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition"
-                [ngClass]="filter === 'unread' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border border-slate-200'"
+              </app-button>
+              <app-button
+                variant="secondary"
+                [buttonClass]="filter === 'unread'
+                  ? 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-slate-900 !border-slate-900 !text-white transition'
+                  : 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-white !border !border-slate-200 !text-slate-600 transition'"
                 (click)="setFilter('unread')"
               >
                 Unread
-              </button>
-              <button
-                type="button"
-                class="btn-secondary !min-h-0 rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition"
-                [ngClass]="filter === 'active' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border border-slate-200'"
+              </app-button>
+              <app-button
+                variant="secondary"
+                [buttonClass]="filter === 'active'
+                  ? 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-slate-900 !border-slate-900 !text-white transition'
+                  : 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-white !border !border-slate-200 !text-slate-600 transition'"
                 (click)="setFilter('active')"
               >
                 Active low stock
-              </button>
+              </app-button>
             </div>
 
-            <button
-              type="button"
-              class="btn-primary w-full !px-5 !py-3 sm:w-auto"
+            <app-button
+              variant="primary"
+              buttonClass="w-full !px-5 !py-3 sm:w-auto"
               [disabled]="!summary.unreadNotifications || isMarkingAllRead"
               (click)="markAllRead()"
             >
               {{ isMarkingAllRead ? 'Updating...' : 'Mark all as read' }}
-            </button>
+            </app-button>
           </div>
-        </div>
+        </app-card>
 
         <div *ngIf="successMessage" class="border-t border-slate-200 vendor-section-body py-4">
           <div class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
@@ -101,12 +116,11 @@ type NotificationFilter = 'all' | 'unread' | 'active';
           Loading notifications...
         </div>
 
-        <div *ngIf="!isLoading && filteredNotifications.length === 0" class="border-t border-slate-200 vendor-section-body py-12 text-center">
-          <h2 class="vendor-empty-title">No active notifications right now</h2>
-          <p class="mt-3 text-sm font-medium text-slate-500">
-            Resolved low-stock alerts disappear automatically after restock.
-          </p>
-        </div>
+        <app-empty-state
+          *ngIf="!isLoading && filteredNotifications.length === 0"
+          title="No active notifications right now"
+          description="Resolved low-stock alerts disappear automatically after restock."
+        />
 
         <div *ngIf="filteredNotifications.length" class="grid gap-4 border-t border-slate-200 vendor-section-body lg:py-6">
           <article
@@ -118,12 +132,12 @@ type NotificationFilter = 'all' | 'unread' | 'active';
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-2">
                   <p class="text-sm font-black text-slate-900 sm:text-lg">{{ notification.title }}</p>
-                  <span class="rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.16em]" [ngClass]="priorityClass(notification.priority)">
+                  <app-badge [tone]="notification.priority === 'high' ? 'danger' : notification.priority === 'medium' ? 'warning' : 'neutral'" badgeClass="px-2.5 py-0.5 text-[10px] font-black">
                     {{ notification.priority }} priority
-                  </span>
-                  <span *ngIf="notification.isRead" class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.16em] text-slate-600">
+                  </app-badge>
+                  <app-badge *ngIf="notification.isRead" tone="neutral" badgeClass="px-2.5 py-0.5 text-[10px] font-black">
                     Read
-                  </span>
+                  </app-badge>
                 </div>
 
                 <p class="mt-2 line-clamp-2 text-sm font-medium text-slate-600">{{ notification.message }}</p>
@@ -172,14 +186,14 @@ type NotificationFilter = 'all' | 'unread' | 'active';
                 >
                   {{ notification.type === 'bulk_inquiry' ? 'View inquiry' : 'Restock now' }}
                 </a>
-                <button
-                  type="button"
-                  class="btn-secondary w-full !px-4 !py-2.5 text-xs"
+                <app-button
+                  variant="secondary"
+                  buttonClass="w-full !px-4 !py-2.5 text-xs"
                   [disabled]="notification.isRead || markingId === notification._id"
                   (click)="markAsRead(notification)"
                 >
                   {{ markingId === notification._id ? 'Saving...' : notification.isRead ? 'Already read' : 'Mark as read' }}
-                </button>
+                </app-button>
               </div>
             </div>
           </article>
@@ -303,17 +317,6 @@ export class VendorNotificationsPageComponent implements OnInit {
           this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
         }
       });
-  }
-
-  priorityClass(priority: VendorNotificationRecord['priority']): string {
-    switch (priority) {
-      case 'high':
-        return 'bg-rose-100 text-rose-700';
-      case 'medium':
-        return 'bg-amber-100 text-amber-800';
-      default:
-        return 'bg-slate-100 text-slate-700';
-    }
   }
 
   resolveActionLink(notification: VendorNotificationRecord): string {

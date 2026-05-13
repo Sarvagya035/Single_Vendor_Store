@@ -1,0 +1,43 @@
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 font-normal antialiased;
+    font-family: 'roboto';
+    background-color: var(--background);
+    background-image:
+      radial-gradient(circle at top left, rgba(212, 160, 23, 0.12), transparent 30%),
+      radial-gradient(circle at top right, rgba(111, 78, 55, 0.12), transparent 26%),
+      radial-gradient(circle at bottom center, rgba(245, 230, 211, 0.24), transparent 34%);
+    color: var(--text-main);
+    text-rendering: optimizeLegibility;
+  }
+
+  *,
+  *::before,
+  *::after {
+    font-family: inherit;
+  }
+
+  app-root,
+  input,
+  textarea,
+  select,
+  option,
+  button {
+    font-family: inherit;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  img {
+    height: auto;
+  }
+}

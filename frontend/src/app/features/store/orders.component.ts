@@ -6,51 +6,52 @@ import { OrderRecord } from '../../core/models/order.models';
 import { OrderService } from '../../core/services/order.service';
 import { SocketService } from '../../core/services/socket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BadgeComponent as AppBadgeComponent } from '../../shared/ui/badge/badge.component';
+import { ButtonComponent as AppButtonComponent } from '../../shared/ui/button/button.component';
+import { CardComponent as AppCardComponent } from '../../shared/ui/card/card.component';
+import { EmptyStateComponent as AppEmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, AppBadgeComponent, AppButtonComponent, AppCardComponent, AppEmptyStateComponent, PageHeaderComponent],
   template: `
     <section class="storefront-section">
       <div class="store-page store-page-stack">
-          <div class="store-page-header">
-          <div class="max-w-2xl">
-            <p class="app-page-eyebrow text-amber-700">Order History</p>
-            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My Orders</h1>
-          </div>
-
-          <div class="flex flex-wrap gap-2">
-            <a routerLink="/cart" class="btn-secondary w-full justify-center sm:w-auto">Go To Cart</a>
-            <a routerLink="/" class="btn-primary w-full justify-center sm:w-auto">Continue Shopping</a>
-          </div>
-          </div>
+        <app-card cardClass="p-6 sm:p-8">
+          <app-page-header eyebrow="Order History" title="My Orders" eyebrowClass="text-amber-700">
+            <app-button routerLink="/cart" variant="secondary" type="button" buttonClass="w-full justify-center sm:w-auto">Go To Cart</app-button>
+            <app-button routerLink="/" variant="primary" type="button" buttonClass="w-full justify-center sm:w-auto">Continue Shopping</app-button>
+          </app-page-header>
+        </app-card>
 
         <div *ngIf="successMessage" class="rounded-[1.5rem] border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
-        <div class="app-card app-panel-body">
+        <app-card cardClass="p-6 sm:p-8">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p class="text-xs font-medium uppercase tracking-[0.28em] text-slate-400">Search Orders</p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <span class="rounded-full border border-[#e7dac9] bg-[#fff7ed] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-[#6f4e37]">
+              <app-badge tone="warning" badgeClass="rounded-full border border-[#e7dac9] bg-[#fff7ed] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-[#6f4e37]">
                 {{ filteredOrders.length }} visible
-              </span>
-              <span class="rounded-full border border-[#e7dac9] bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600">
+              </app-badge>
+              <app-badge tone="neutral" badgeClass="rounded-full border border-[#e7dac9] bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600">
                 {{ orders.length }} total
-              </span>
-              <button
+              </app-badge>
+              <app-button
                 *ngIf="searchTerm"
                 type="button"
-                class="btn-secondary"
+                variant="secondary"
+                buttonClass="!px-4 !py-2.5"
                 (click)="clearSearch()"
               >
                 Clear
-              </button>
+              </app-button>
             </div>
           </div>
 
@@ -67,26 +68,20 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
               class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
             />
           </div>
-        </div>
+        </app-card>
 
         <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading your orders...</div>
 
         <div *ngIf="!isLoading && orders.length === 0">
-        <div class="app-empty-state">
-          <h2 class="text-2xl font-medium text-slate-900">No orders yet</h2>
-          <p class="mt-3 text-sm font-medium text-slate-500">Your completed checkouts will appear here.</p>
-          <a routerLink="/" class="btn-primary mt-6 inline-flex">Start Shopping</a>
-        </div>
+          <app-empty-state title="No orders yet" description="Your completed checkouts will appear here.">
+            <app-button routerLink="/" variant="primary" type="button">Start Shopping</app-button>
+          </app-empty-state>
         </div>
 
         <div *ngIf="!isLoading && orders.length > 0 && filteredOrders.length === 0">
-        <div class="app-empty-state">
-          <h2 class="text-2xl font-medium text-slate-900">No matching orders</h2>
-          <p class="mt-3 text-sm font-medium text-slate-500">
-            Try a different order number, item name, city, or status.
-          </p>
-          <button type="button" class="btn-primary mt-6 inline-flex" (click)="clearSearch()">Clear search</button>
-        </div>
+          <app-empty-state title="No matching orders" description="Try a different order number, item name, city, or status.">
+            <app-button type="button" variant="primary" (click)="clearSearch()">Clear search</app-button>
+          </app-empty-state>
         </div>
 
         <div *ngIf="filteredOrders.length" class="store-page-grid">
@@ -98,9 +93,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-3">
               <p class="break-all text-lg font-medium text-slate-900 sm:break-normal sm:text-xl">Order #{{ shortOrderId(order._id) }}</p>
-              <span class="rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(order.orderStatus)">
+              <app-badge [tone]="statusTone(order.orderStatus)" badgeClass="rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em]">
                     {{ order.orderStatus || 'Processing' }}
-                  </span>
+              </app-badge>
                 </div>
 
                 <div class="mt-4 grid gap-4 sm:grid-cols-3">
@@ -131,16 +126,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
                 </div>
 
                 <div class="flex flex-col gap-3 sm:flex-row xl:justify-end">
-                  <a [routerLink]="['/track-order', order._id]" class="btn-primary w-full justify-center sm:w-auto">Track</a>
-                  <a [routerLink]="['/orders', order._id]" class="btn-secondary w-full justify-center sm:w-auto">View Details</a>
-                  <button
+                  <app-button [routerLink]="['/track-order', order._id]" variant="primary" type="button" buttonClass="w-full justify-center sm:w-auto">Track</app-button>
+                  <app-button [routerLink]="['/orders', order._id]" variant="secondary" type="button" buttonClass="w-full justify-center sm:w-auto">View Details</app-button>
+                  <app-button
                     *ngIf="canCancel(order)"
                     type="button"
-                    class="btn-secondary w-full justify-center text-rose-600 hover:text-rose-700 sm:w-auto"
+                    variant="secondary"
+                    buttonClass="w-full justify-center text-rose-600 hover:text-rose-700 sm:w-auto"
                     (click)="cancelOrder(order)"
                   >
                     Cancel Order
-                  </button>
+                  </app-button>
                 </div>
               </div>
             </div>
@@ -263,16 +259,16 @@ export class OrdersComponent implements OnInit {
     }).format(amount || 0);
   }
 
-  statusClass(status?: string): string {
+  statusTone(status?: string): 'success' | 'warning' | 'danger' | 'neutral' {
     switch (status) {
       case 'Delivered':
-        return 'bg-[#f5e6d3] text-[#6f4e37]';
+        return 'success';
       case 'Shipped':
-        return 'bg-[#fff7ed] text-[#6f4e37]';
+        return 'neutral';
       case 'Cancelled':
-        return 'bg-rose-100 text-rose-700';
+        return 'danger';
       default:
-        return 'bg-[#fff7ed] text-[#6f4e37]';
+        return 'warning';
     }
   }
 

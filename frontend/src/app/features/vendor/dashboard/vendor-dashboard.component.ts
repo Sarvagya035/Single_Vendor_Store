@@ -11,7 +11,9 @@ import {
 } from '../../../core/models/vendor.models';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
+import { StatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 
 interface DashboardMetric {
   label: string;
@@ -37,24 +39,27 @@ interface DashboardProduct {
 @Component({
   selector: 'app-vendor-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, StatCardComponent, ButtonComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
         <div class="vendor-page-header">
           <app-page-header eyebrow="Dashboard" title="Vendor Overview" titleClass="!text-[1.8rem] md:!text-[2.2rem]">
-            <a routerLink="/vendor/products/add" class="btn-primary w-full !px-6 !py-3 sm:w-auto">+ Add Product</a>
-            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Products</a>
-            <a routerLink="/vendor/best-selling-products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Best Sellers</a>
+            <app-button routerLink="/vendor/products/add" variant="primary" buttonClass="w-full !px-6 !py-3 sm:w-auto">+ Add Product</app-button>
+            <app-button routerLink="/vendor/products" variant="secondary" buttonClass="w-full !px-6 !py-3 sm:w-auto">Manage Products</app-button>
+            <app-button routerLink="/vendor/best-selling-products" variant="secondary" buttonClass="w-full !px-6 !py-3 sm:w-auto">Best Sellers</app-button>
           </app-page-header>
         </div>
 
         <div class="vendor-grid-4 vendor-section-body">
-          <article *ngFor="let metric of metrics" class="vendor-stat-card p-3 sm:p-4 lg:p-5 transition hover:-translate-y-0.5" [ngClass]="metricCardClass(metric.tone)">
-            <p class="vendor-stat-label">{{ metric.label }}</p>
-            <p class="vendor-stat-value">{{ metric.value }}</p>
-            <p class="vendor-stat-copy !mt-3 !text-[15px] !text-current">{{ metric.change }}</p>
-          </article>
+          <app-stat-card
+            *ngFor="let metric of metrics"
+            [label]="metric.label"
+            [value]="metric.value"
+            [copy]="metric.change"
+            [cardClass]="'p-3 sm:p-4 lg:p-5 transition hover:-translate-y-0.5 ' + metricCardClass(metric.tone)"
+            copyClass="!mt-3 !text-[15px] !text-current"
+          ></app-stat-card>
         </div>
 
         <div class="border-t border-slate-200 vendor-section-body lg:py-6">
@@ -200,9 +205,9 @@ interface DashboardProduct {
                 </div>
                 <p class="mt-2 line-clamp-2 text-sm font-medium text-slate-500">Revenue generated from paid orders</p>
               </article>
-              <a routerLink="/vendor/best-selling-products" class="mt-4 inline-flex rounded-full border border-[#e7dac9] bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-[#fffaf4]">
+              <app-button routerLink="/vendor/best-selling-products" variant="secondary" buttonClass="mt-4 rounded-full px-5 py-3 text-xs font-black uppercase tracking-[0.18em]">
                 View full best sellers
-              </a>
+              </app-button>
             </div>
           </section>
         </div>

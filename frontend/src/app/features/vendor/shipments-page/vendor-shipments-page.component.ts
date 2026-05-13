@@ -9,6 +9,9 @@ import {
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { StatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 interface ShipmentDraft {
@@ -47,7 +50,7 @@ interface ShipmentCardView {
 @Component({
   selector: 'app-vendor-shipments-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, ButtonComponent, BadgeComponent, StatCardComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -57,25 +60,36 @@ interface ShipmentCardView {
             title="Shipment management"
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button type="button" (click)="loadShipments()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
+            <app-button
+              variant="secondary"
+              buttonClass="w-full !py-3 sm:w-auto"
+              [disabled]="isLoading"
+              (click)="loadShipments()"
+            >
               {{ isLoading ? 'Refreshing...' : 'Refresh Shipments' }}
-            </button>
+            </app-button>
           </app-page-header>
         </div>
 
         <div *ngIf="summary" class="grid grid-cols-2 gap-2.5 vendor-section-body lg:grid-cols-3 lg:gap-6">
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label">Total</p>
-            <p class="vendor-stat-value">{{ summary.totalShipments }}</p>
-          </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label">Open</p>
-            <p class="vendor-stat-value">{{ summary.openShipments }}</p>
-          </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label">Delivered</p>
-            <p class="vendor-stat-value">{{ summary.deliveredShipments }}</p>
-          </article>
+          <app-stat-card
+            label="Total"
+            [value]="summary.totalShipments.toString()"
+            cardClass="!border-amber-100 !bg-[#fff7ed]/80"
+            valueClass="!mt-0"
+          ></app-stat-card>
+          <app-stat-card
+            label="Open"
+            [value]="summary.openShipments.toString()"
+            cardClass="!border-amber-100 !bg-[#fff7ed]/80"
+            valueClass="!mt-0"
+          ></app-stat-card>
+          <app-stat-card
+            label="Delivered"
+            [value]="summary.deliveredShipments.toString()"
+            cardClass="!border-amber-100 !bg-[#fff7ed]/80"
+            valueClass="!mt-0"
+          ></app-stat-card>
         </div>
 
         <div *ngIf="successMessage" class="border-t border-slate-200 vendor-section-body py-3 text-sm font-semibold text-emerald-800">
@@ -112,9 +126,9 @@ interface ShipmentCardView {
                   <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
                       <p class="text-lg font-black text-slate-900 sm:text-xl">ORD-{{ shortOrderId(shipment.orderId) }}</p>
-                      <span *ngIf="shipment.isTestMode" class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-700">
+                      <app-badge *ngIf="shipment.isTestMode" tone="warning" badgeClass="px-2.5 py-1 text-[10px] font-black">
                         Test Mode
-                      </span>
+                      </app-badge>
                     </div>
                     <p class="mt-1 text-sm font-medium text-[#9c5f39]">
                       {{ shipment.customerName || 'Customer' }} • {{ shipment.customerEmail || '-' }}
@@ -143,10 +157,10 @@ interface ShipmentCardView {
               </div>
 
               <div class="flex shrink-0 flex-col items-start gap-3 lg:items-end">
-                <span class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-black" [ngClass]="statusClass(shipment.shipmentStatus)">
+                <app-badge [badgeClass]="statusClass(shipment.shipmentStatus) + ' px-3 py-1.5 text-sm font-black'" tone="neutral">
                   <span class="h-2.5 w-2.5 rounded-full" [ngClass]="statusDotClass(shipment.shipmentStatus)"></span>
                   {{ shipment.shipmentStatus || 'Created' }}
-                </span>
+                </app-badge>
 
                 <button
                   type="button"
@@ -280,9 +294,13 @@ interface ShipmentCardView {
                       >
                         {{ savingOrderId === shipment.orderId ? 'Saving...' : 'Save Shipment' }}
                       </button>
-                      <a [routerLink]="['/vendor/orders', shipment.orderId, 'tracking']" class="rounded-2xl border border-[#eadcc9] bg-white px-4 py-2.5 text-xs font-black text-slate-700 transition hover:bg-[#fffaf4]">
+                      <app-button
+                        [routerLink]="['/vendor/orders', shipment.orderId, 'tracking']"
+                        variant="secondary"
+                        buttonClass="rounded-2xl px-4 py-2.5 text-xs font-black"
+                      >
                         Open Track Page
-                      </a>
+                      </app-button>
                     </div>
                   </div>
                 </section>

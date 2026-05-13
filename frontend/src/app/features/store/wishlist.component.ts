@@ -13,6 +13,9 @@ import { WishlistService } from '../../core/services/wishlist.service';
 import { ErrorService } from '../../core/services/error.service';
 import { CustomerCatalogProduct, CustomerCatalogVariant, CustomerWishlist, CustomerWishlistProduct } from '../../core/models/customer.models';
 import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
+import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../shared/ui/badge/badge.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 
 interface GuestWishlistDisplayItem {
   productId: string;
@@ -27,20 +30,22 @@ interface GuestWishlistDisplayItem {
 @Component({
   selector: 'app-wishlist',
   standalone: true,
-  imports: [CommonModule, RouterModule, VariantModalComponent],
+  imports: [CommonModule, RouterModule, VariantModalComponent, ButtonComponent, BadgeComponent, PageHeaderComponent],
   template: `
     <ng-container *ngIf="isCustomer(); else guestState">
       <section class="storefront-section min-h-[calc(100vh-72px)]">
         <div class="store-page store-page-stack">
         <div class="store-page-header">
-          <div>
-            <p class="app-page-eyebrow text-amber-700">Saved items</p>
-            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My Wishlist</h1>
-          </div>
-
-          <a routerLink="/products" class="btn-secondary w-full justify-center sm:w-auto">
-            Continue Shopping
-          </a>
+          <app-page-header
+            eyebrow="Saved items"
+            title="My Wishlist"
+            eyebrowClass="text-amber-700"
+            titleClass="!mt-2 !text-[1.9rem] sm:!text-[2.2rem]"
+          >
+            <app-button routerLink="/products" variant="secondary" buttonClass="w-full justify-center sm:w-auto">
+              Continue Shopping
+            </app-button>
+          </app-page-header>
         </div>
 
         <div *ngIf="loading" class="store-page-grid">
@@ -68,9 +73,9 @@ interface GuestWishlistDisplayItem {
           <p class="mx-auto mt-3 max-w-lg text-sm font-medium leading-relaxed text-slate-500">
             Save products from product pages to compare them later or come back when you're ready to buy.
           </p>
-          <a routerLink="/products" class="btn-primary mt-6 inline-flex">
+          <app-button routerLink="/products" variant="primary" buttonClass="mt-6">
             Browse Products
-          </a>
+          </app-button>
         </div>
 
         <div *ngIf="!loading && wishlistItems.length > 0" class="store-page-grid">
@@ -103,9 +108,9 @@ interface GuestWishlistDisplayItem {
                     </h2>
                   </div>
 
-                  <span class="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-black text-slate-900">
+                  <app-badge tone="warning" badgeClass="shrink-0 !bg-amber-100 !px-2.5 !py-1 !text-[11px] !font-black !text-slate-900">
                     {{ formatCurrency(item.basePrice || 0) }}
-                  </span>
+                  </app-badge>
                 </div>
 
                 <p class="mt-2 text-sm font-semibold text-slate-500">
@@ -113,15 +118,15 @@ interface GuestWishlistDisplayItem {
                 </p>
 
                 <div class="mt-3 flex flex-wrap items-center gap-2">
-                  <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-600">
+                  <app-badge tone="neutral" badgeClass="normal-case border border-slate-200 bg-white text-slate-600 tracking-[0.04em]">
                     {{ (item.variants || []).length }} variant{{ (item.variants || []).length === 1 ? '' : 's' }}
-                  </span>
-                  <span
-                    class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]"
-                    [ngClass]="item.isActive === false ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700'"
+                  </app-badge>
+                  <app-badge
+                    [tone]="item.isActive === false ? 'neutral' : 'success'"
+                    [badgeClass]="item.isActive === false ? 'bg-slate-200 text-slate-600' : ''"
                   >
                     {{ item.isActive === false ? 'Inactive' : 'Active' }}
-                  </span>
+                  </app-badge>
                 </div>
               </div>
 
@@ -129,22 +134,24 @@ interface GuestWishlistDisplayItem {
 
             <div class="border-t border-[#f1e4d4] px-4 py-3">
               <div class="flex flex-wrap gap-2">
-                <button
+                <app-button
                   type="button"
-                  class="btn-primary w-full justify-center sm:w-auto"
+                  variant="primary"
+                  buttonClass="w-full justify-center sm:w-auto"
                   [disabled]="busyId === item._id || moveBusyId === item._id"
                   (click)="$event.stopPropagation(); moveItemToCart(item)"
                 >
                   {{ moveBusyId === item._id ? 'Moving...' : 'Move To Cart' }}
-                </button>
-                <button
+                </app-button>
+                <app-button
                   type="button"
-                  class="btn-secondary w-full justify-center text-rose-700 sm:w-auto"
+                  variant="secondary"
+                  buttonClass="w-full justify-center !text-rose-700 sm:w-auto"
                   [disabled]="busyId === item._id || moveBusyId === item._id"
                   (click)="$event.stopPropagation(); removeItem(item)"
                 >
                   {{ busyId === item._id ? 'Removing...' : 'Remove' }}
-                </button>
+                </app-button>
               </div>
             </div>
           </article>
@@ -167,13 +174,13 @@ interface GuestWishlistDisplayItem {
       <section class="storefront-section min-h-[calc(100vh-72px)]">
         <div class="store-page store-page-stack">
             <div class="store-page-header">
-              <div>
-                <p class="app-page-eyebrow text-amber-700">Saved items</p>
-                <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Guest wishlist</h1>
-                <p class="app-page-description">
-                  Items saved on this device will merge into your account after login or registration.
-                </p>
-              </div>
+              <app-page-header
+                eyebrow="Saved items"
+                title="Guest wishlist"
+                description="Items saved on this device will merge into your account after login or registration."
+                eyebrowClass="text-amber-700"
+                titleClass="!mt-2 !text-[1.9rem] sm:!text-[2.2rem]"
+              />
             </div>
 
             <div *ngIf="guestWishlistLoading" class="store-page-grid">
@@ -205,9 +212,9 @@ interface GuestWishlistDisplayItem {
               <p class="mx-auto mt-3 max-w-lg text-sm font-medium leading-relaxed text-slate-500">
                 Save products from product pages to compare them later or come back when you're ready to buy.
               </p>
-              <a routerLink="/products" class="btn-primary mt-6 inline-flex">
+              <app-button routerLink="/products" variant="primary" buttonClass="mt-6">
                 Browse Products
-              </a>
+              </app-button>
             </div>
 
             <div *ngIf="!guestWishlistLoading && guestWishlistItems.length > 0" class="store-page-grid">
@@ -237,9 +244,9 @@ interface GuestWishlistDisplayItem {
                         </h2>
                       </div>
 
-                      <span class="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-black text-slate-900">
+                      <app-badge tone="warning" badgeClass="shrink-0 !bg-amber-100 !px-2.5 !py-1 !text-[11px] !font-black !text-slate-900">
                         {{ formatCurrency(item.priceLabel || 0) }}
-                      </span>
+                      </app-badge>
                     </div>
 
                     <p class="mt-2 text-sm font-semibold text-slate-500">
@@ -247,15 +254,15 @@ interface GuestWishlistDisplayItem {
                     </p>
 
                     <div class="mt-3 flex flex-wrap items-center gap-2">
-                      <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-600">
+                      <app-badge tone="neutral" badgeClass="normal-case border border-slate-200 bg-white text-slate-600 tracking-[0.04em]">
                         {{ guestWishlistVariantLabel(item) }}
-                      </span>
-                      <span
-                        class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]"
-                        [ngClass]="item.available ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'"
+                      </app-badge>
+                      <app-badge
+                        [tone]="item.available ? 'success' : 'neutral'"
+                        [badgeClass]="item.available ? '' : 'bg-slate-200 text-slate-600'"
                       >
                         {{ item.available ? 'Active' : 'Unavailable' }}
-                      </span>
+                      </app-badge>
                     </div>
 
                     <p *ngIf="item.warning" class="mt-3 text-sm font-medium text-amber-700">
@@ -266,29 +273,33 @@ interface GuestWishlistDisplayItem {
 
                 <div class="border-t border-[#f1e4d4] px-4 py-3">
                   <div class="flex flex-wrap gap-2">
-                    <button
+                    <app-button
                       type="button"
-                      class="btn-primary w-full justify-center sm:w-auto"
+                      variant="primary"
+                      buttonClass="w-full justify-center sm:w-auto"
                       [disabled]="moveBusyId === item.productId"
                       (click)="$event.preventDefault(); $event.stopPropagation(); moveGuestWishlistItemToCart(item)"
                     >
                       {{ moveBusyId === item.productId ? 'Moving...' : 'Move To Cart' }}
-                    </button>
-                    <button
+                    </app-button>
+                    <app-button
                       type="button"
-                      class="btn-secondary w-full justify-center text-rose-700 sm:w-auto"
+                      variant="secondary"
+                      buttonClass="w-full justify-center !text-rose-700 sm:w-auto"
                       [disabled]="busyId === guestWishlistItemKey(item)"
                       (click)="removeGuestItem(item)"
                     >
                       {{ busyId === guestWishlistItemKey(item) ? 'Removing...' : 'Remove' }}
-                    </button>
+                    </app-button>
                   </div>
                 </div>
               </article>
             </div>
 
             <div *ngIf="!guestWishlistLoading && guestWishlistItems.length > 0" class="mt-4 flex justify-center">
-              <a routerLink="/login" class="btn-primary inline-flex">Go To Login</a>
+              <app-button routerLink="/login" variant="primary">
+                Go To Login
+              </app-button>
             </div>
         </div>
       </section>

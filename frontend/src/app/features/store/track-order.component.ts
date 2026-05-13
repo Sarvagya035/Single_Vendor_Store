@@ -9,28 +9,28 @@ import {
 } from '../../core/models/order.models';
 import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
+import { BadgeComponent as AppBadgeComponent } from '../../shared/ui/badge/badge.component';
+import { ButtonComponent as AppButtonComponent } from '../../shared/ui/button/button.component';
+import { CardComponent as AppCardComponent } from '../../shared/ui/card/card.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-track-order',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, AppBadgeComponent, AppButtonComponent, AppCardComponent, PageHeaderComponent],
   template: `
     <section class="storefront-section overflow-x-hidden">
       <div class="store-page store-page-stack">
-          <div class="store-page-header">
-            <div class="min-w-0">
-              <p class="app-page-eyebrow text-amber-700">Track Order</p>
-              <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Shipment tracking</h1>
-              <p class="app-page-description">
-                Follow courier movement and delivery progress for this order.
-              </p>
-            </div>
-
-            <div class="flex flex-wrap gap-2">
-              <a [routerLink]="orderLink" class="btn-secondary w-full justify-center sm:w-auto">Open Order</a>
-              <a routerLink="/orders" class="btn-primary w-full justify-center sm:w-auto">Back To Orders</a>
-            </div>
-          </div>
+          <app-card cardClass="p-6 sm:p-8">
+            <app-page-header
+              eyebrow="Track Order"
+              title="Shipment tracking"
+              description="Follow courier movement and delivery progress for this order."
+            >
+              <app-button [routerLink]="orderLink" variant="secondary" type="button" buttonClass="w-full justify-center sm:w-auto">Open Order</app-button>
+              <app-button routerLink="/orders" variant="primary" type="button" buttonClass="w-full justify-center sm:w-auto">Back To Orders</app-button>
+            </app-page-header>
+          </app-card>
 
           <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">
             Loading tracking details...
@@ -47,9 +47,9 @@ import { OrderService } from '../../core/services/order.service';
                   </p>
                 </div>
 
-                <span class="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(trackingStage)">
+                <app-badge [tone]="statusTone(trackingStage)" badgeClass="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.18em]">
                   {{ trackingStage }}
-                </span>
+                </app-badge>
               </div>
 
               <div class="mt-6">
@@ -94,7 +94,7 @@ import { OrderService } from '../../core/services/order.service';
                 </div>
               </div>
 
-              <div class="rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] app-card-tight">
+              <app-card cardClass="rounded-[1.75rem] border border-[#d9e7df] bg-[#f8fcf9] p-5">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
                   <div class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-600 text-white">
                     <span class="text-lg font-medium">✓</span>
@@ -105,7 +105,7 @@ import { OrderService } from '../../core/services/order.service';
                     <p *ngIf="bannerDate" class="mt-2 text-sm font-medium text-slate-500">{{ bannerDate }}</p>
                   </div>
                 </div>
-              </div>
+              </app-card>
 
               <div class="my-8 border-t border-dashed border-[#d8c7b4]"></div>
 
@@ -145,7 +145,7 @@ import { OrderService } from '../../core/services/order.service';
               </div>
 
               <div class="store-page-grid border-t border-[#f1e4d4] pt-6 md:grid-cols-2">
-                <div class="app-card bg-[#fff7ed]/70 p-5">
+                <app-card cardClass="bg-[#fff7ed]/70 p-5">
                   <p class="text-xs font-medium uppercase tracking-[0.18em] text-amber-700">Shipping Address</p>
                   <p class="mt-3 text-sm font-medium leading-7 text-slate-600">
                     {{ order.shippingAddress?.address || 'Address unavailable' }}
@@ -154,9 +154,9 @@ import { OrderService } from '../../core/services/order.service';
                     {{ order.shippingAddress?.city || '-' }}, {{ order.shippingAddress?.pincode || '-' }}
                   </p>
                   <p class="mt-2 text-sm font-semibold text-slate-700">{{ order.shippingAddress?.phone || '-' }}</p>
-                </div>
+                </app-card>
 
-                <div class="rounded-[1.5rem] border border-[#2f1b14] bg-[#2f1b14] p-5 text-white">
+                <app-card cardClass="rounded-[1.5rem] border border-[#2f1b14] bg-[#2f1b14] p-5 text-white">
                   <p class="text-xs font-medium uppercase tracking-[0.22em] text-slate-400">Payment</p>
                   <div class="mt-4 space-y-3 text-sm font-medium text-slate-300">
                     <div class="flex items-center justify-between">
@@ -172,7 +172,7 @@ import { OrderService } from '../../core/services/order.service';
                       <span>{{ shipment?.trackingNumber || 'Not assigned' }}</span>
                     </div>
                   </div>
-                </div>
+                </app-card>
               </div>
             </div>
           </div>
@@ -349,21 +349,21 @@ export class TrackOrderComponent implements OnInit {
     return Number(item?.price || 0) * Number(item?.quantity || 0);
   }
 
-  statusClass(status?: string): string {
+  statusTone(status?: string): 'success' | 'warning' | 'danger' | 'neutral' {
     switch (status) {
       case 'Delivered':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'success';
       case 'Shipped':
       case 'Out for Delivery':
       case 'In Transit':
       case 'Picked Up':
       case 'Order Confirmed':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'neutral';
       case 'Cancelled':
       case 'Exception':
-        return 'bg-rose-100 text-rose-700';
+        return 'danger';
       default:
-        return 'bg-emerald-100 text-emerald-700';
+        return 'warning';
     }
   }
 

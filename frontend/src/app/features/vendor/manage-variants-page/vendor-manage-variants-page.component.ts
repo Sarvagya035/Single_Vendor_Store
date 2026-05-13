@@ -5,6 +5,10 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
+import { EmptyStateComponent as AppEmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
+import { StatCardComponent as AppStatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   VendorProductRecord,
@@ -25,46 +29,35 @@ import {
 @Component({
   selector: 'app-vendor-manage-variants-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent, AppButtonComponent, AppCardComponent, AppEmptyStateComponent, AppStatCardComponent],
   template: `
-    <section class="vendor-content">
-      <div class="vendor-section">
-        <div class="vendor-page-header">
-          <app-page-header
-            eyebrow="Variant Management"
-            title="Manage Variants"
-            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
-            description="Edit product combinations here without mixing inventory-only changes into the product details page."
-          >
-            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Edit Product</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Restock</a>
-          </app-page-header>
-        </div>
+    <section class="space-y-6">
+      <app-card cardClass="p-6 sm:p-8">
+        <app-page-header
+          eyebrow="Variant Management"
+          title="Manage Variants"
+          titleClass="!text-[1.8rem] md:!text-[2.2rem]"
+          description="Edit product combinations here without mixing inventory-only changes into the product details page."
+        >
+          <app-button routerLink="/vendor/products" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Back to Products</app-button>
+          <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Edit Product</app-button>
+          <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Restock</app-button>
+        </app-page-header>
+      </app-card>
 
-        <div *ngIf="isLoading" class="px-6 py-20 text-center">
+      <app-card *ngIf="isLoading" cardClass="py-20 text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading variants...</p>
-        </div>
+      </app-card>
 
-        <div *ngIf="!isLoading && product" class="border-t border-slate-200 vendor-section-body lg:py-6">
+      <div *ngIf="!isLoading && product" class="space-y-6">
           <div class="grid gap-6">
             <div class="vendor-grid-3">
-              <article class="vendor-stat-card">
-                <p class="vendor-stat-label">Product</p>
-                <p class="vendor-stat-value !text-2xl">{{ product.productName }}</p>
-                <p class="mt-2 text-sm font-semibold text-slate-500">{{ product.brand || 'Generic' }}</p>
-              </article>
-              <article class="vendor-stat-card">
-                <p class="vendor-stat-label">Variant Count</p>
-                <p class="vendor-stat-value">{{ product.variants?.length || 0 }}</p>
-                <p class="vendor-stat-copy">Each combination is managed independently here.</p>
-              </article>
-              <article class="vendor-stat-card">
-                <p class="vendor-stat-label">Total Stock</p>
-                <p class="vendor-stat-value">{{ totalStock }}</p>
-                <p class="vendor-stat-copy">Combined inventory across all variants.</p>
-              </article>
+              <app-stat-card label="Product" [value]="product.productName" cardClass="border-l-4 border-l-indigo-500">
+                <div appStatCardBody class="mt-2 text-sm font-semibold text-slate-500">{{ product.brand || 'Generic' }}</div>
+              </app-stat-card>
+              <app-stat-card label="Variant Count" [value]="(product.variants?.length || 0).toString()" cardClass="border-l-4 border-l-sky-500" copy="Each combination is managed independently here." />
+              <app-stat-card label="Total Stock" [value]="totalStock.toString()" cardClass="border-l-4 border-l-emerald-500" copy="Combined inventory across all variants." />
             </div>
 
             <app-vendor-form-section eyebrow="Add Variant" title="Create a new variant">
@@ -78,15 +71,13 @@ import {
                   <input type="file" accept="image/*" class="hidden" (change)="onNewVariantImageSelected($event)" />
                 </label>
               </div>
-              <button type="button" (click)="addVariant()" [disabled]="isAddingVariant" class="btn-primary mt-5 w-full !px-6 !py-3 disabled:opacity-60 sm:w-auto">
+              <app-button type="button" (click)="addVariant()" [disabled]="isAddingVariant" buttonClass="mt-5 w-full !px-6 !py-3 sm:w-auto">
                 {{ isAddingVariant ? 'Adding Variant...' : 'Add Variant' }}
-              </button>
+              </app-button>
             </app-vendor-form-section>
 
             <app-vendor-form-section eyebrow="Variant Cards" title="Edit existing variants">
-              <div *ngIf="!(product.variants?.length)" class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm font-medium text-slate-500">
-                No variants exist for this product yet.
-              </div>
+              <app-empty-state *ngIf="!(product.variants?.length)" title="No variants yet" description="Add the first variant to start managing combinations and inventory here." cardClass="border-dashed" />
 
               <div class="grid grid-cols-1 gap-4 lg:grid-cols-2" *ngIf="product.variants?.length">
                 <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.45rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4">
@@ -101,9 +92,9 @@ import {
                         <p class="mt-1 text-xs font-semibold text-slate-500 sm:text-sm">{{ variant.sku || 'SKU pending' }}</p>
                       </div>
                     </div>
-                    <button type="button" (click)="deleteVariant(variant)" [disabled]="busyDeleteId === variant._id" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-rose-700 disabled:opacity-60 sm:shrink-0">
+                    <app-button type="button" (click)="deleteVariant(variant)" [disabled]="busyDeleteId === variant._id" variant="secondary" buttonClass="rounded-xl !border-rose-200 !text-rose-700 hover:!bg-rose-50 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] sm:shrink-0">
                       {{ busyDeleteId === variant._id ? 'Deleting...' : 'Delete' }}
-                    </button>
+                    </app-button>
                   </div>
   
                   <div class="mt-4 grid gap-3">
@@ -131,16 +122,15 @@ import {
                   </div>
 
                   <div class="mt-4 grid grid-cols-2 gap-2">
-                    <button type="button" (click)="saveVariant(variant)" [disabled]="busySaveId === variant._id" class="btn-primary w-full !px-4 !py-2.5 text-xs disabled:opacity-60 sm:w-auto">
+                    <app-button type="button" (click)="saveVariant(variant)" [disabled]="busySaveId === variant._id" buttonClass="w-full !px-4 !py-2.5 text-xs sm:w-auto">
                       {{ busySaveId === variant._id ? 'Saving...' : 'Save Variant' }}
-                    </button>
-                    <button type="button" (click)="resetVariantForm(variant)" class="btn-secondary w-full !px-4 !py-2.5 text-xs sm:w-auto">Reset</button>
+                    </app-button>
+                    <app-button type="button" (click)="resetVariantForm(variant)" variant="secondary" buttonClass="w-full !px-4 !py-2.5 text-xs sm:w-auto">Reset</app-button>
                   </div>
                 </article>
               </div>
             </app-vendor-form-section>
           </div>
-        </div>
       </div>
     </section>
   `,

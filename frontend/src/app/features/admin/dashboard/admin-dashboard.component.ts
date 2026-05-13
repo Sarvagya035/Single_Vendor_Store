@@ -5,33 +5,34 @@ import { forkJoin } from 'rxjs';
 import { AdminService } from '../../../core/services/admin.service';
 import { CategoryRecord } from '../../../core/models/admin.models';
 import { OrderService } from '../../../core/services/order.service';
+import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
-import { StatCardComponent } from '../../../shared/ui/stat-card.component';
+import { StatCardComponent as AppStatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, StatCardComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AppButtonComponent, AppCardComponent, AppStatCardComponent],
   template: `
     <section class="space-y-6">
-      <div class="app-surface p-6 sm:p-8">
+      <app-card cardClass="p-6 sm:p-8">
         <app-page-header
           eyebrow="Admin Dashboard"
           title="Marketplace overview"
           eyebrowClass="text-indigo-500"
-          titleClass="text-4xl"
         >
-          <button type="button" (click)="loadSummary()" [disabled]="isLoading" class="btn-secondary !py-3">
+          <app-button variant="secondary" type="button" (click)="loadSummary()" [disabled]="isLoading" buttonClass="!py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Overview' }}
-          </button>
+          </app-button>
         </app-page-header>
-      </div>
+      </app-card>
 
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <app-stat-card label="Users" [value]="userCount" tone="indigo" />
-        <app-stat-card label="Categories" [value]="categoryCount" tone="sky" />
-        <app-stat-card label="Products" [value]="productCount" tone="emerald" />
-        <app-stat-card label="Orders" [value]="orderCount" tone="amber" />
+        <app-stat-card label="Users" [value]="userCount.toString()" cardClass="border-l-4 border-l-indigo-500" />
+        <app-stat-card label="Categories" [value]="categoryCount.toString()" cardClass="border-l-4 border-l-sky-500" />
+        <app-stat-card label="Products" [value]="productCount.toString()" cardClass="border-l-4 border-l-emerald-500" />
+        <app-stat-card label="Orders" [value]="orderCount.toString()" cardClass="border-l-4 border-l-amber-500" />
       </div>
 
       <div class="grid gap-5 xl:grid-cols-4">

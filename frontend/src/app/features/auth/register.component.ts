@@ -27,7 +27,7 @@ import { catchError, finalize, switchMap, EMPTY, of } from 'rxjs';
             <div class="space-y-2">
               <label for="username" class="app-label">Full Name</label>
               <div class="relative">
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">👤</div>
+                <div class="pointer-events-none absolute left-4 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-sm text-amber-700">👤</div>
                 <input
                   id="username"
                   name="username"
@@ -43,7 +43,7 @@ import { catchError, finalize, switchMap, EMPTY, of } from 'rxjs';
                   [class.ring-2]="!!usernameError"
                   [class.ring-red-500]="!!usernameError"
                   [class.focus:ring-red-500]="!!usernameError"
-                  class="app-field pl-12">
+                  class="app-field auth-input-with-icon">
               </div>
               <p *ngIf="usernameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ usernameError }}
@@ -53,24 +53,24 @@ import { catchError, finalize, switchMap, EMPTY, of } from 'rxjs';
             <div class="space-y-2">
               <label for="email" class="app-label">Email Address</label>
               <div class="relative">
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">📧</div>
+                <div class="pointer-events-none absolute left-4 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-sm text-amber-700">📧</div>
                 <input id="email" name="email" type="email" autocomplete="email" required [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="app-field pl-12">
+                  class="app-field auth-input-with-icon">
               </div>
             </div>
 
             <div class="space-y-2">
               <label for="phone" class="app-label">Phone Number</label>
               <div class="relative">
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">📞</div>
+                <div class="pointer-events-none absolute left-4 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-sm text-amber-700">📞</div>
                 <input id="phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required [(ngModel)]="phone"
                   (ngModelChange)="validatePhone($event)"
                   placeholder="Enter your phone number"
                   [class.ring-2]="!!phoneError"
                   [class.ring-red-500]="!!phoneError"
                   [class.focus:ring-red-500]="!!phoneError"
-                  class="app-field pl-12">
+                  class="app-field auth-input-with-icon">
               </div>
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}
@@ -80,7 +80,7 @@ import { catchError, finalize, switchMap, EMPTY, of } from 'rxjs';
             <div class="space-y-2">
               <label for="password" class="app-label">Password</label>
               <div class="relative">
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">🔑</div>
+                <div class="pointer-events-none absolute left-4 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-sm text-amber-700">🔑</div>
                 <input
                   id="password"
                   name="password"
@@ -89,12 +89,12 @@ import { catchError, finalize, switchMap, EMPTY, of } from 'rxjs';
                   required
                   [(ngModel)]="password"
                   placeholder="Enter your password"
-                  class="app-field pl-12 pr-16"
+                  class="app-field auth-input-with-icon auth-input-with-password-toggle"
                 >
                 <button
                   type="button"
                   (click)="showPassword = !showPassword"
-                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
+                  class="absolute right-4 top-1/2 flex h-8 -translate-y-1/2 items-center px-0 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                 >
                   {{ showPassword ? 'Hide' : 'Show' }}
                 </button>

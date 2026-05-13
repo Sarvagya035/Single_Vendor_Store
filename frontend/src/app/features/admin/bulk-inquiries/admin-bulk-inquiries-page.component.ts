@@ -9,63 +9,65 @@ import {
   BulkInquirySummary
 } from '../../../core/models/bulk-inquiry.models';
 import { AdminBulkInquiryService } from '../../../core/services/admin-bulk-inquiry.service';
+import { BadgeComponent as AppBadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
+import { EmptyStateComponent as AppEmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { ErrorService } from '../../../core/services/error.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
+import { StatCardComponent as AppStatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 
 const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'closed'];
 
 @Component({
   selector: 'app-admin-bulk-inquiries-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    PageHeaderComponent,
+    AppBadgeComponent,
+    AppButtonComponent,
+    AppCardComponent,
+    AppEmptyStateComponent,
+    AppStatCardComponent
+  ],
   template: `
-    <section class="vendor-content">
-      <div class="vendor-section">
-        <div class="vendor-page-header">
+    <section class="space-y-6">
+      <div class="space-y-6">
+        <app-card cardClass="p-6 sm:p-8">
           <app-page-header
             eyebrow="Bulk Inquiries"
             title="Bulk inquiry management"
             description="Review customer and business bulk order requests, then update the inquiry status as your team works through them."
-            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button type="button" (click)="loadInquiries()" [disabled]="isLoading" class="btn-secondary w-full !py-3 sm:w-auto">
+            <app-button variant="secondary" type="button" (click)="loadInquiries()" [disabled]="isLoading" buttonClass="w-full !py-3 sm:w-auto">
               {{ isLoading ? 'Refreshing...' : 'Refresh Inquiries' }}
-            </button>
+            </app-button>
           </app-page-header>
+        </app-card>
+
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <app-stat-card label="Total" [value]="summary.totalInquiries.toString()" cardClass="border-l-4 border-l-amber-500 !border-amber-100 !bg-[#fff7ed]/80" />
+          <app-stat-card label="New" [value]="summary.newCount.toString()" cardClass="border-l-4 border-l-sky-500 !border-amber-100 !bg-[#fff7ed]/80" />
+          <app-stat-card label="Reviewed" [value]="summary.reviewedCount.toString()" cardClass="border-l-4 border-l-emerald-500 !border-amber-100 !bg-[#fff7ed]/80" />
+          <app-stat-card label="Contacted" [value]="summary.contactedCount.toString()" cardClass="border-l-4 border-l-indigo-500 !border-amber-100 !bg-[#fff7ed]/80" />
         </div>
 
-        <div class="vendor-grid-4 vendor-section-body">
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label">Total</p>
-            <p class="vendor-stat-value">{{ summary.totalInquiries }}</p>
-          </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label">New</p>
-            <p class="vendor-stat-value">{{ summary.newCount }}</p>
-          </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label">Reviewed</p>
-            <p class="vendor-stat-value">{{ summary.reviewedCount }}</p>
-          </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label">Contacted</p>
-            <p class="vendor-stat-value">{{ summary.contactedCount }}</p>
-          </article>
-        </div>
+        <app-card *ngIf="isLoading" cardClass="border-t border-slate-200 px-6 py-10">
+          <p class="text-sm font-semibold text-slate-500">Loading bulk inquiries...</p>
+        </app-card>
 
-        <div *ngIf="isLoading" class="border-t border-slate-200 vendor-section-body py-10 text-sm font-semibold text-slate-500">
-          Loading bulk inquiries...
-        </div>
+        <app-empty-state
+          *ngIf="!isLoading && inquiries.length === 0"
+          title="No bulk inquiries yet"
+          description="New bulk order requests will appear here when customers submit the form."
+          cardClass="border-t border-dashed"
+        />
 
-        <div *ngIf="!isLoading && inquiries.length === 0" class="border-t border-slate-200 vendor-section-body py-12 text-center">
-          <h2 class="vendor-empty-title">No bulk inquiries yet</h2>
-          <p class="mt-3 text-sm font-medium text-slate-500">
-            New bulk order requests will appear here when customers submit the form.
-          </p>
-        </div>
-
-        <div *ngIf="!isLoading && inquiries.length" class="vendor-table-wrap hidden lg:block">
+        <div *ngIf="!isLoading && inquiries.length" class="hidden overflow-x-auto lg:block">
           <table class="min-w-full border-separate border-spacing-0">
             <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">
@@ -105,9 +107,9 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
                 </td>
 
                 <td class="border-t border-slate-200 vendor-table-cell">
-                  <span class="inline-flex rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(inquiry.status)">
+                  <app-badge [tone]="statusTone(inquiry.status)" badgeClass="px-3 py-1 text-xs font-black uppercase tracking-[0.18em]">
                     {{ inquiry.status }}
-                  </span>
+                  </app-badge>
                 </td>
 
                 <td class="border-t border-slate-200 vendor-table-cell text-sm font-medium text-[#9c5f39]">
@@ -126,13 +128,9 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
                       <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}</option>
                     </select>
 
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-2 rounded-full bg-[#7c5646] px-4 py-2.5 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
-                      (click)="openDetails(inquiry)"
-                    >
+                    <app-button variant="primary" type="button" buttonClass="!px-4 !py-2.5 text-sm" (click)="openDetails(inquiry)">
                       View
-                    </button>
+                    </app-button>
                   </div>
                 </td>
               </tr>
@@ -140,16 +138,16 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
           </table>
         </div>
 
-        <div *ngIf="!isLoading && inquiries.length" class="grid gap-4 px-5 pb-5 sm:px-6 lg:hidden">
+        <div *ngIf="!isLoading && inquiries.length" class="grid gap-4 lg:hidden">
           <article *ngFor="let inquiry of inquiries; trackBy: trackByInquiry" class="vendor-mobile-card">
             <div class="flex items-start justify-between gap-4">
               <div class="min-w-0">
                 <p class="truncate text-base font-black text-slate-900">{{ inquiry.fullName }}</p>
                 <p class="mt-1 break-words text-sm font-medium text-[#9c5f39]">{{ inquiry.phone }}</p>
               </div>
-              <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]" [ngClass]="statusClass(inquiry.status)">
+              <app-badge [tone]="statusTone(inquiry.status)" badgeClass="px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]">
                 {{ inquiry.status }}
-              </span>
+              </app-badge>
             </div>
 
             <div class="mt-4 grid gap-3 sm:grid-cols-2">
@@ -182,13 +180,9 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
                 <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}</option>
               </select>
 
-              <button
-                type="button"
-                class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#7c5646] px-4 py-3 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
-                (click)="openDetails(inquiry)"
-              >
+              <app-button variant="primary" type="button" buttonClass="w-full !px-4 !py-3 text-sm" (click)="openDetails(inquiry)">
                 View Details
-              </button>
+              </app-button>
             </div>
           </article>
         </div>
@@ -404,18 +398,18 @@ export class AdminBulkInquiriesPageComponent implements OnInit {
       });
   }
 
-  statusClass(status: BulkInquiryStatus): string {
+  statusTone(status: BulkInquiryStatus): 'success' | 'warning' | 'danger' | 'neutral' {
     switch (status) {
       case 'new':
-        return 'bg-amber-100 text-amber-800';
+        return 'warning';
       case 'reviewed':
-        return 'bg-sky-100 text-sky-800';
+        return 'neutral';
       case 'contacted':
-        return 'bg-emerald-100 text-emerald-800';
+        return 'success';
       case 'closed':
-        return 'bg-slate-100 text-slate-700';
+        return 'neutral';
       default:
-        return 'bg-slate-100 text-slate-700';
+        return 'neutral';
     }
   }
 

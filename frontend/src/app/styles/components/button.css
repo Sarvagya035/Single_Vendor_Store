@@ -1,0 +1,31 @@
+@layer components {
+  .btn-primary {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent px-4 py-2.5 font-semibold tracking-[0.04em] text-white shadow-[0_12px_28px_rgba(111,78,55,0.16)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(111,78,55,0.2)] focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60 sm:px-5;
+    background: linear-gradient(135deg, var(--primary), #8b5e3c);
+  }
+
+  .btn-secondary {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 font-semibold tracking-[0.04em] text-slate-700 shadow-[0_8px_22px_rgba(47,27,20,0.05)] transition-all duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60 sm:px-5;
+  }
+
+  .app-button {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.04em] transition-all duration-200 active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:pointer-events-none disabled:opacity-60 sm:px-5;
+  }
+
+  .app-button--primary {
+    @apply border-transparent text-white shadow-[0_12px_28px_rgba(111,78,55,0.16)] hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(111,78,55,0.2)];
+    background: linear-gradient(135deg, var(--primary), #8b5e3c);
+  }
+
+  .app-button--secondary {
+    @apply border-slate-200 bg-white text-slate-700 shadow-[0_8px_22px_rgba(47,27,20,0.05)] hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-slate-900;
+  }
+
+  .app-button--ghost {
+    @apply border-transparent bg-transparent text-slate-700 hover:bg-[#fffaf4] hover:text-slate-900;
+  }
+
+  .app-button--disabled {
+    @apply hover:translate-y-0 hover:shadow-none;
+  }
+}

@@ -6,12 +6,15 @@ import { OrderItemRecord, OrderRecord, OrderStatus } from '../../../core/models/
 import { OrderService } from '../../../core/services/order.service';
 import { SocketService } from '../../../core/services/socket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
+import { StatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-vendor-orders-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, ButtonComponent, BadgeComponent, StatCardComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -21,29 +24,43 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             title="Vendor Orders"
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary w-full !px-5 !py-2.5 sm:w-auto">
+            <app-button
+              type="button"
+              variant="secondary"
+              (click)="loadOrders()"
+              [disabled]="isLoading"
+              buttonClass="w-full !px-5 !py-2.5 sm:w-auto"
+            >
               {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
-            </button>
+            </app-button>
           </app-page-header>
         </div>
 
         <div class="vendor-grid-4 vendor-section-body">
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label !text-amber-700">Total Orders</p>
-            <p class="vendor-stat-value">{{ totalOrdersCount }}</p>
-          </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label !text-amber-700">Processing</p>
-            <p class="vendor-stat-value">{{ processingOrdersCount }}</p>
-          </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label !text-amber-600">Shipped</p>
-            <p class="vendor-stat-value">{{ shippedOrdersCount }}</p>
-          </article>
-          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80">
-            <p class="vendor-stat-label !text-amber-700">Delivered</p>
-            <p class="vendor-stat-value">{{ deliveredOrdersCount }}</p>
-          </article>
+          <app-stat-card
+            eyebrow="Total Orders"
+            [value]="totalOrdersCount.toString()"
+            cardClass="!border-amber-100 !bg-[#fff7ed]/80"
+            eyebrowClass="!text-amber-700"
+          />
+          <app-stat-card
+            eyebrow="Processing"
+            [value]="processingOrdersCount.toString()"
+            cardClass="!border-amber-100 !bg-[#fff7ed]/80"
+            eyebrowClass="!text-amber-700"
+          />
+          <app-stat-card
+            eyebrow="Shipped"
+            [value]="shippedOrdersCount.toString()"
+            cardClass="!border-amber-100 !bg-[#fff7ed]/80"
+            eyebrowClass="!text-amber-600"
+          />
+          <app-stat-card
+            eyebrow="Delivered"
+            [value]="deliveredOrdersCount.toString()"
+            cardClass="!border-amber-100 !bg-[#fff7ed]/80"
+            eyebrowClass="!text-amber-700"
+          />
         </div>
 
         <div class="border-b border-slate-200 vendor-section-body lg:py-5">
@@ -94,13 +111,14 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </p>
 
           <div class="mt-6 flex flex-wrap justify-center gap-3" *ngIf="orders.length">
-            <button
+            <app-button
               type="button"
+              variant="secondary"
               (click)="resetFilters()"
-              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-black text-slate-800 transition hover:border-amber-200 hover:bg-[#fff7ed]"
+              buttonClass="!px-5 !py-2.5"
             >
               Clear filters
-            </button>
+            </app-button>
           </div>
       </div>
 
@@ -145,19 +163,22 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </div>
               </div>
 
-              <div class="flex shrink-0 flex-col items-start gap-2.5 lg:items-end">
-                <span class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-black" [ngClass]="statusClass(vendorOrderStatus(order))">
+                <div class="flex shrink-0 flex-col items-start gap-2.5 lg:items-end">
+                <app-badge
+                  [badgeClass]="statusBadgeClass(vendorOrderStatus(order))"
+                >
                   <span class="h-2.5 w-2.5 rounded-full" [ngClass]="statusDotClass(vendorOrderStatus(order))"></span>
                   {{ vendorOrderStatus(order) }}
-                </span>
+                </app-badge>
 
-                <button
+                <app-button
                   type="button"
-                  class="inline-flex items-center justify-center rounded-full bg-[#7c5646] px-4 py-2.5 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
+                  variant="primary"
+                  buttonClass="!bg-none !bg-[#7c5646] !border-transparent !shadow-[0_10px_24px_rgba(124,86,70,0.18)] hover:!bg-[#6e4b3d] !px-4 !py-2.5"
                   (click)="$event.stopPropagation(); openOrder(order)"
                 >
                   View Details
-                </button>
+                </app-button>
               </div>
             </div>
           </article>
@@ -398,6 +419,10 @@ export class VendorOrdersPageComponent implements OnInit {
       default:
         return 'border-amber-200 bg-amber-50 text-amber-700';
     }
+  }
+
+  statusBadgeClass(status?: string): string {
+    return `!gap-2 !border !px-3 !py-1.5 !text-sm !font-black !normal-case !tracking-normal ${this.statusClass(status)}`;
   }
 
   statusDotClass(status?: string): string {

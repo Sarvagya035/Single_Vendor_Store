@@ -17,6 +17,8 @@ import { CatalogActiveFiltersComponent } from './components/catalog-active-filte
 import { CatalogSearchBarComponent } from './components/catalog-search-bar/catalog-search-bar.component';
 import { CatalogPaginationComponent } from './components/catalog-pagination/catalog-pagination.component';
 import { CatalogFilterFormComponent } from './components/catalog-filter-form/catalog-filter-form.component';
+import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../shared/ui/badge/badge.component';
 import {
   LandingCategoryNode,
   buildCategoryTree,
@@ -32,7 +34,7 @@ import {
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent, CatalogActiveFiltersComponent, CatalogSearchBarComponent, CatalogPaginationComponent, CatalogFilterFormComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent, CatalogActiveFiltersComponent, CatalogSearchBarComponent, CatalogPaginationComponent, CatalogFilterFormComponent, ButtonComponent, BadgeComponent],
   template: `
     <div class="relative min-h-[calc(100vh-72px)] w-full bg-[#fffaf3]">
       <div class="pointer-events-none absolute inset-0 overflow-hidden">
@@ -49,13 +51,14 @@ import {
                   <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-600">Filters</p>
                   <h3 class="mt-1 text-sm font-semibold text-slate-900">Refine results</h3>
                 </div>
-                <button
+                <app-button
                   type="button"
-                  class="text-xs font-semibold uppercase tracking-wide text-[#8a4f2a] transition hover:text-[#6d3c20]"
+                  variant="ghost"
+                  buttonClass="!min-h-0 !px-0 !py-0 !text-xs !font-semibold !uppercase !tracking-wide !text-[#8a4f2a] hover:!text-[#6d3c20] hover:!bg-transparent"
                   (click)="resetFilters()"
                 >
                   Clear all
-                </button>
+                </app-button>
               </div>
 
               <div class="pt-4">
@@ -110,16 +113,17 @@ import {
 
                     <div class="grid gap-3 lg:hidden">
                       <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
-                        <button
+                        <app-button
                           type="button"
-                          class="btn-primary justify-between !px-4 !py-3 text-sm"
+                          variant="primary"
+                          buttonClass="justify-between !px-4 !py-3 text-sm"
                           (click)="openFilters()"
                         >
                           <span>Filters</span>
-                          <span class="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-black tracking-[0.14em]">
+                          <app-badge badgeClass="rounded-full !bg-white/15 !px-2 !py-0.5 !text-[10px] !font-black !tracking-[0.14em] !text-inherit">
                             {{ activeFilterCount() }}
-                          </span>
-                        </button>
+                          </app-badge>
+                        </app-button>
                       </div>
 
                       <app-catalog-active-filters
@@ -152,13 +156,14 @@ import {
                   <p class="mt-3 text-sm font-medium text-slate-500">
                     Try another dry fruit type, adjust filters, or search for a different pack.
                   </p>
-                  <button
+                  <app-button
                     type="button"
-                    class="mt-5 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                    variant="secondary"
+                    buttonClass="mt-5 !px-4 !py-2 !text-xs !font-black !uppercase !tracking-[0.16em] !text-slate-600 hover:!border-slate-300 hover:!text-slate-900"
                     (click)="resetFilters()"
                   >
                     Reset filters
-                  </button>
+                  </app-button>
                 </div>
 
                 <section *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
@@ -209,13 +214,14 @@ import {
               <h2 class="text-lg font-black text-slate-900">Refine results</h2>
             </div>
 
-            <button
-              type="button"
-              class="rounded-full border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-              (click)="closeFilters()"
-            >
-              Close
-            </button>
+              <app-button
+                type="button"
+                variant="secondary"
+                buttonClass="!rounded-full !border-slate-200 !px-3 !py-2 !text-sm !font-bold !text-slate-700 hover:!border-slate-300 hover:!bg-slate-50"
+                (click)="closeFilters()"
+              >
+                Close
+              </app-button>
           </div>
 
           <div class="rounded-[1.6rem] border border-slate-200 bg-[#fffaf3] p-4 shadow-sm">
@@ -249,20 +255,22 @@ import {
             </div>
 
             <div class="mt-5 flex items-center gap-3">
-              <button
+              <app-button
                 type="button"
-                class="btn-secondary flex-1 !px-4 !py-3 text-sm"
+                variant="secondary"
+                buttonClass="flex-1 !px-4 !py-3 text-sm"
                 (click)="resetFilters()"
               >
                 Reset
-              </button>
-              <button
+              </app-button>
+              <app-button
                 type="button"
-                class="btn-primary flex-1 !px-4 !py-3 text-sm"
+                variant="primary"
+                buttonClass="flex-1 !px-4 !py-3 text-sm"
                 (click)="closeFilters()"
               >
                 Apply
-              </button>
+              </app-button>
             </div>
           </div>
         </aside>

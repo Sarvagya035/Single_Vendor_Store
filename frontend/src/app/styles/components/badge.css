@@ -1,0 +1,25 @@
+@layer components {
+  .app-chip {
+    @apply inline-flex items-center rounded-full border border-[#eadcc9] bg-[#fffaf4] px-3 py-1.5 text-xs font-semibold text-slate-700;
+  }
+
+  .app-badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em];
+  }
+
+  .app-badge--success {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .app-badge--warning {
+    @apply bg-amber-100 text-amber-800;
+  }
+
+  .app-badge--danger {
+    @apply bg-rose-100 text-rose-700;
+  }
+
+  .app-badge--neutral {
+    @apply bg-slate-100 text-slate-700;
+  }
+}

@@ -26,7 +26,7 @@ import { ErrorService } from '../../core/services/error.service';
             <div class="space-y-2">
               <label for="email" class="app-label">Email Address</label>
               <div class="relative">
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">📧</div>
+                <div class="pointer-events-none absolute left-4 top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-sm text-amber-700">📧</div>
                 <input
                   id="email"
                   name="email"
@@ -35,7 +35,7 @@ import { ErrorService } from '../../core/services/error.service';
                   required
                   [(ngModel)]="email"
                   placeholder="Enter your email"
-                  class="app-field pl-12"
+                  class="app-field auth-input-with-icon"
                 >
               </div>
             </div>

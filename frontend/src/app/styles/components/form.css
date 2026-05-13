@@ -1,0 +1,74 @@
+.app-form-shell {
+  @apply flex flex-col gap-4;
+}
+
+.app-form-field {
+  @apply flex w-full min-w-0 flex-col gap-2;
+}
+
+.app-form-label,
+.app-label {
+  @apply ml-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400;
+}
+
+.app-form-helper {
+  @apply ml-1 text-xs font-medium leading-5 text-slate-500;
+}
+
+.app-form-error {
+  @apply ml-1 text-xs font-semibold leading-5 text-rose-600;
+}
+
+.app-input-shell {
+  @apply relative;
+}
+
+.app-input,
+.app-field {
+  @apply block w-full rounded-2xl border border-slate-200 bg-[#fffaf5] px-4 py-3.5 text-sm font-medium text-slate-900 shadow-inner transition-all placeholder:text-slate-400 focus:border-amber-300 focus:bg-white focus:ring-4 focus:ring-amber-100;
+}
+
+.app-input--dark,
+.app-field--dark {
+  @apply bg-white;
+}
+
+.app-input--textarea {
+  @apply min-h-28 resize-y;
+}
+
+.app-input--error {
+  @apply border-rose-300 focus:border-rose-400 focus:ring-rose-100;
+}
+
+.app-input--disabled {
+  @apply cursor-not-allowed bg-slate-100 text-slate-400 placeholder:text-slate-400;
+}
+
+.app-input--with-leading-icon {
+  @apply pl-12;
+}
+
+.app-input--with-trailing-icon {
+  @apply pr-12;
+}
+
+input.auth-input-with-icon {
+  padding-left: 3rem;
+}
+
+input.auth-input-with-password-toggle {
+  padding-right: 6rem;
+}
+
+.app-input-icon {
+  @apply pointer-events-none absolute inset-y-0 flex items-center text-[#8a5f44];
+}
+
+.app-input-icon--leading {
+  @apply left-4;
+}
+
+.app-input-icon--trailing {
+  @apply right-4;
+}

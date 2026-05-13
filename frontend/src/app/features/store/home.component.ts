@@ -13,11 +13,13 @@ import { WishlistService } from '../../core/services/wishlist.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
 import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
 import { ProductCardComponent, ProductCardVariantActionEvent } from './components/product-card/product-card.component';
+import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../shared/ui/badge/badge.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent, ButtonComponent, BadgeComponent],
   template: `
     <div class="min-h-[calc(100vh-72px)] bg-slate-50">
       <section class="w-full -mt-2 sm:mt-0 bg-[#fff3e8]">
@@ -46,19 +48,21 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
             <div class="mx-auto flex h-full w-full max-w-[1480px] items-end px-0 pb-6 sm:px-6 lg:px-8 lg:pb-10">
               <div class="flex w-full flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-start sm:gap-3">
                 <div class="flex w-full items-center justify-center gap-2 sm:w-auto sm:justify-start sm:gap-3">
-                <a
+                <app-button
                   routerLink="/products"
-                  class="inline-flex h-10 w-[46%] max-w-[150px] items-center justify-center whitespace-nowrap rounded-full bg-[#3f2418] px-3 text-xs font-semibold tracking-[0.04em] text-white shadow-[0_14px_30px_rgba(63,36,24,0.25)] transition hover:-translate-y-0.5 hover:bg-[#2f1b14] sm:h-auto sm:w-auto sm:max-w-none sm:px-6 sm:py-3 sm:text-sm"
+                  variant="primary"
+                  buttonClass="h-10 w-[46%] max-w-[150px] whitespace-nowrap !bg-[#3f2418] !px-3 !text-xs !font-semibold !tracking-[0.04em] !shadow-[0_14px_30px_rgba(63,36,24,0.25)] hover:!bg-[#2f1b14] sm:h-auto sm:w-auto sm:max-w-none sm:px-6 sm:py-3 sm:text-sm"
                 >
                   Shop Now
-                </a>
-                <a
+                </app-button>
+                <app-button
                   href="#categories"
+                  variant="secondary"
+                  buttonClass="h-10 w-[46%] max-w-[150px] whitespace-nowrap !border-[#3f2418] !bg-white/90 !px-3 !text-xs !font-semibold !tracking-[0.04em] !text-[#3f2418] !shadow-[0_12px_28px_rgba(63,36,24,0.12)] hover:!bg-white sm:h-auto sm:w-auto sm:max-w-none sm:px-6 sm:py-3 sm:text-sm"
                   (click)="scrollToCategories($event)"
-                  class="inline-flex h-10 w-[46%] max-w-[150px] items-center justify-center whitespace-nowrap rounded-full border border-[#3f2418] bg-white/90 px-3 text-xs font-semibold tracking-[0.04em] text-[#3f2418] shadow-[0_12px_28px_rgba(63,36,24,0.12)] transition hover:-translate-y-0.5 hover:bg-white sm:h-auto sm:w-auto sm:max-w-none sm:px-6 sm:py-3 sm:text-sm"
                 >
                   View Categories
-                </a>
+                </app-button>
                 </div>
 
                 <div class="mt-1 flex items-center justify-center gap-2 rounded-full bg-black/10 px-3 py-2 backdrop-blur-sm sm:mt-0 sm:ml-2">
@@ -198,12 +202,13 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
           </div>
 
           <div class="mt-6 text-center">
-            <a
+            <app-button
               routerLink="/products"
-              class="btn-primary inline-flex items-center justify-center !px-6 !py-3 text-sm tracking-[0.04em]"
+              variant="primary"
+              buttonClass="!px-6 !py-3 !text-sm !tracking-[0.04em]"
             >
               All Products
-            </a>
+            </app-button>
           </div>
 
           <app-variant-modal
@@ -248,9 +253,12 @@ import { ProductCardComponent, ProductCardVariantActionEvent } from './component
                         <p class="truncate text-base font-semibold text-slate-900">{{ review.name }}</p>
                         <p class="mt-1 truncate text-xs font-semibold uppercase tracking-[0.12em] text-[#8b5e3c]">{{ review.product }}</p>
                       </div>
-                      <div class="rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-semibold text-[#6f4e37]">
+                      <app-badge
+                        tone="warning"
+                        badgeClass="normal-case border border-[#f5e6d3] !bg-[#f5e6d3] !px-3 !py-1 !text-xs !font-semibold !tracking-normal !text-[#6f4e37]"
+                      >
                         {{ review.rating }}/5
-                      </div>
+                      </app-badge>
                     </div>
 
                     <p class="mt-4 text-sm font-medium leading-7 text-slate-600">

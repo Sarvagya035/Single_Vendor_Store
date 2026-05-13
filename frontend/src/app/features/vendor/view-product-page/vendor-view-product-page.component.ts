@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { BadgeComponent as AppBadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
 import { VendorProductRecord, VendorProductVariant } from '../../../core/models/vendor.models';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
@@ -16,7 +18,7 @@ import {
 @Component({
   selector: 'app-vendor-view-product-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AppBadgeComponent, AppButtonComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -27,10 +29,10 @@ import {
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="Review this product exactly as a vendor record, with images, pricing, stock, and variants, without any customer purchase actions."
           >
-            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Edit</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Restock</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-primary w-full !px-6 !py-3 sm:w-auto">Manage Variants</a>
+            <app-button routerLink="/vendor/products" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Back to Products</app-button>
+            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Edit</app-button>
+            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Restock</app-button>
+            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" variant="primary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Manage Variants</app-button>
           </app-page-header>
         </div>
 
@@ -44,7 +46,7 @@ import {
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
             We could not load this vendor product. It may have been removed or the link may be outdated.
           </p>
-          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</a>
+          <app-button routerLink="/vendor/products" variant="primary" type="button" buttonClass="mt-6 w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</app-button>
         </div>
 
         <div *ngIf="!isLoading && product" class="vendor-grid-2 vendor-section-body lg:grid-cols-[1.1fr_0.9fr]">
@@ -165,12 +167,9 @@ import {
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
                     <p class="text-sm font-black text-slate-900">{{ variant.sku || 'SKU pending' }}</p>
-                    <span
-                      class="rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.14em]"
-                      [ngClass]="variant.isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-[#f2ebe7] text-[#8c6c5d]'"
-                    >
+                    <app-badge [tone]="variant.isAvailable ? 'success' : 'neutral'" badgeClass="rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.14em]">
                       {{ variant.isAvailable ? 'Available' : 'Unavailable' }}
-                    </span>
+                    </app-badge>
                   </div>
 
                   <p class="mt-1.5 line-clamp-2 break-words text-xs font-medium text-slate-600">{{ variantAttributeText(variant) }}</p>
@@ -247,12 +246,9 @@ import {
                 </td>
 
                 <td class="border-t border-slate-200 vendor-table-cell">
-                  <span
-                    class="inline-flex rounded-full px-3 py-1 text-xs font-black"
-                    [ngClass]="variant.isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-[#f2ebe7] text-[#8c6c5d]'"
-                  >
+                  <app-badge [tone]="variant.isAvailable ? 'success' : 'neutral'" badgeClass="inline-flex rounded-full px-3 py-1 text-xs font-black">
                     {{ variant.isAvailable ? 'Available' : 'Unavailable' }}
-                  </span>
+                  </app-badge>
                 </td>
               </tr>
             </tbody>

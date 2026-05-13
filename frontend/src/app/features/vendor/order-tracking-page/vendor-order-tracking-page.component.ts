@@ -10,12 +10,15 @@ import {
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { OrderService } from '../../../core/services/order.service';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { StatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-vendor-order-tracking-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, ButtonComponent, BadgeComponent, StatCardComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -26,16 +29,21 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
             <div class="vendor-page-actions w-full sm:w-auto">
-              <a [routerLink]="orderLink" class="btn-secondary w-full !px-5 !py-3 sm:w-auto">Open Order</a>
-              <a routerLink="/vendor/orders" class="btn-primary w-full !px-5 !py-3 sm:w-auto">Back To Orders</a>
-              <button
+              <app-button [routerLink]="orderLink" variant="secondary" buttonClass="w-full !px-5 !py-3 sm:w-auto">
+                Open Order
+              </app-button>
+              <app-button routerLink="/vendor/orders" variant="primary" buttonClass="w-full !px-5 !py-3 sm:w-auto">
+                Back To Orders
+              </app-button>
+              <app-button
                 *ngIf="canRefreshShipment()"
                 type="button"
+                variant="secondary"
+                buttonClass="w-full !px-5 !py-3 text-sm uppercase tracking-[0.16em] sm:w-auto"
                 (click)="refreshShipment()"
-                class="btn-secondary w-full !px-5 !py-3 text-sm uppercase tracking-[0.16em] sm:w-auto"
               >
                 Refresh Tracking
-              </button>
+              </app-button>
             </div>
           </app-page-header>
         </div>
@@ -50,12 +58,12 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
               <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-3">
-                    <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">
+                    <app-badge tone="warning" badgeClass="!bg-[#fff7ed] !px-3 !py-1 !text-[11px] !font-black !uppercase !tracking-[0.18em] !text-amber-700">
                       Shipment Overview
-                    </span>
-                    <span *ngIf="shipment?.isTestMode" class="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-amber-700">
+                    </app-badge>
+                    <app-badge *ngIf="shipment?.isTestMode" tone="warning" badgeClass="!bg-amber-50 !px-3 !py-1 !text-[11px] !font-black !uppercase !tracking-[0.16em] !text-amber-700">
                       Test Mode
-                    </span>
+                    </app-badge>
                   </div>
                   <h2 class="mt-4 text-[1.9rem] font-black tracking-tight text-slate-900 sm:text-[2.25rem]">
                     Order #{{ shortOrderId(order._id) }}
@@ -66,30 +74,46 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </div>
 
                 <div class="flex flex-col items-start gap-3 lg:items-end">
-                  <span class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(trackingStage)">
+                  <app-badge [badgeClass]="statusClass(trackingStage) + ' !px-4 !py-2 !text-xs !font-black !uppercase !tracking-[0.18em]'">
                     {{ trackingStage }}
-                  </span>
+                  </app-badge>
                   <p class="text-sm font-semibold text-slate-500">{{ bannerDate }}</p>
                 </div>
               </div>
 
               <div class="vendor-grid-4 mt-6">
-                <article class="app-card bg-[#fffaf4] p-3">
-                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Courier</p>
-                  <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ shipment?.courierName || 'DHL' }}</p>
-                </article>
-                <article class="app-card bg-[#fffaf4] p-3">
-                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Tracking Number</p>
-                  <p class="mt-2 break-all text-sm font-black text-slate-900 sm:text-base">{{ shipment?.trackingNumber || 'Not assigned' }}</p>
-                </article>
-                <article class="app-card bg-[#fffaf4] p-3">
-                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Estimated Delivery</p>
-                  <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ shipment?.estimatedDeliveryDate ? formatDate(shipment?.estimatedDeliveryDate) : 'Not set' }}</p>
-                </article>
-                <article class="app-card bg-[#fffaf4] p-3">
-                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Updates</p>
-                  <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ shipment?.trackingEvents?.length || 0 }}</p>
-                </article>
+                <app-stat-card
+                  eyebrow="Courier"
+                  [value]="shipment?.courierName || 'DHL'"
+                  copy="Shipment partner"
+                  cardClass="!p-3"
+                  valueClass="!mt-2 !text-sm !font-black !text-slate-900 sm:!text-lg"
+                  copyClass="!mt-2"
+                />
+                <app-stat-card
+                  eyebrow="Tracking Number"
+                  [value]="shipment?.trackingNumber || 'Not assigned'"
+                  copy="Parcel reference"
+                  cardClass="!p-3"
+                  valueClass="!mt-2 !break-all !text-sm !font-black !text-slate-900 sm:!text-base"
+                  copyClass="!mt-2"
+                />
+                <app-stat-card
+                  eyebrow="Estimated Delivery"
+                  [value]="shipment?.estimatedDeliveryDate ? formatDate(shipment?.estimatedDeliveryDate) : 'Not set'"
+                  copy="Expected date"
+                  cardClass="!p-3"
+                  valueClass="!mt-2 !text-sm !font-black !text-slate-900 sm:!text-lg"
+                  copyClass="!mt-2"
+                />
+                <app-stat-card
+                  eyebrow="Updates"
+                  [value]="(shipment?.trackingEvents?.length || 0).toString()"
+                  copy="Tracking events"
+                  cardClass="!p-3"
+                  valueClass="!mt-2 !text-sm !font-black !text-slate-900 sm:!text-lg"
+                  copyClass="!mt-2"
+                />
               </div>
 
               <div class="mt-5 app-card bg-[linear-gradient(135deg,#fff7ed_0%,#fffaf4_100%)] p-4 sm:p-5">
@@ -165,12 +189,12 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                         </div>
 
                         <div class="flex flex-wrap items-center gap-2">
-                          <span class="app-badge bg-white text-slate-700">
+                          <app-badge tone="neutral" badgeClass="!bg-white !text-slate-700">
                             {{ formatCurrency(itemTotal(item)) }}
-                          </span>
-                          <span class="app-badge" [ngClass]="statusClass(item.orderItemStatus)">
+                          </app-badge>
+                          <app-badge [badgeClass]="statusClass(item.orderItemStatus)">
                             {{ item.orderItemStatus || 'Processing' }}
-                          </span>
+                          </app-badge>
                         </div>
                       </div>
                     </article>

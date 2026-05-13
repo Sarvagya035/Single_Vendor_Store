@@ -6,50 +6,66 @@ import { AdminOrdersResponse, OrderRecord } from '../../../core/models/order.mod
 import { AdminService } from '../../../core/services/admin.service';
 import { OrderService } from '../../../core/services/order.service';
 import { SocketService } from '../../../core/services/socket.service';
+import { BadgeComponent as AppBadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
+import { EmptyStateComponent as AppEmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
-import { StatCardComponent } from '../../../shared/ui/stat-card.component';
+import { StatCardComponent as AppStatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-admin-orders-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, StatCardComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PageHeaderComponent,
+    AppBadgeComponent,
+    AppButtonComponent,
+    AppCardComponent,
+    AppEmptyStateComponent,
+    AppStatCardComponent
+  ],
   template: `
     <section class="space-y-6">
-      <div class="app-surface p-6 sm:p-8">
+      <app-card cardClass="p-6 sm:p-8">
         <app-page-header
           eyebrow="Order Administration"
           title="Marketplace orders"
           eyebrowClass="text-amber-500"
-          titleClass="text-4xl"
         >
-          <button type="button" (click)="loadOrders()" [disabled]="isLoading" class="btn-secondary !py-3">
+          <app-button variant="secondary" type="button" (click)="loadOrders()" [disabled]="isLoading" buttonClass="!py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
-          </button>
+          </app-button>
         </app-page-header>
 
         <p class="mt-4 max-w-3xl text-sm font-medium leading-7 text-slate-500">
           Monitor total revenue and review every order currently flowing through the marketplace.
         </p>
-      </div>
+      </app-card>
 
       <div *ngIf="errorMessage" class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
         {{ errorMessage }}
       </div>
 
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <app-stat-card label="Total Orders" [value]="summary.orders.length" tone="amber" />
-        <app-stat-card label="Paid Revenue" [value]="formatCurrency(summary.totalRevenue)" tone="emerald" />
-        <app-stat-card label="Processing" [value]="countByStatus('Processing')" tone="indigo" />
-        <app-stat-card label="Delivered" [value]="countByStatus('Delivered')" tone="sky" />
+        <app-stat-card label="Total Orders" [value]="summary.orders.length.toString()" cardClass="border-l-4 border-l-amber-500" />
+        <app-stat-card label="Paid Revenue" [value]="formatCurrency(summary.totalRevenue)" cardClass="border-l-4 border-l-emerald-500" />
+        <app-stat-card label="Processing" [value]="countByStatus('Processing').toString()" cardClass="border-l-4 border-l-indigo-500" />
+        <app-stat-card label="Delivered" [value]="countByStatus('Delivered').toString()" cardClass="border-l-4 border-l-sky-500" />
       </div>
 
-      <div *ngIf="isLoading" class="app-card-soft px-6 py-12 text-sm font-semibold text-slate-500">Loading marketplace orders...</div>
+      <app-card *ngIf="isLoading" cardClass="px-6 py-12">
+        <p class="text-sm font-semibold text-slate-500">Loading marketplace orders...</p>
+      </app-card>
 
-      <div *ngIf="!isLoading && summary.orders.length === 0" class="app-card-soft border-dashed px-8 py-16 text-center">
-        <h2 class="text-2xl font-black text-slate-900">No orders found</h2>
-        <p class="mt-3 text-sm font-medium text-slate-500">Marketplace orders will appear here once customers start checking out.</p>
-      </div>
+      <app-empty-state
+        *ngIf="!isLoading && summary.orders.length === 0"
+        title="No orders found"
+        description="Marketplace orders will appear here once customers start checking out."
+        cardClass="border-dashed"
+      />
 
       <div *ngIf="summary.orders.length" class="grid gap-5">
         <article
@@ -60,9 +76,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-3">
                 <p class="text-lg font-black text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
-                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(order.orderStatus)">
+                <app-badge [tone]="statusTone(order.orderStatus)" badgeClass="px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]">
                   {{ order.orderStatus || 'Processing' }}
-                </span>
+                </app-badge>
               </div>
 
               <div class="mt-4 grid gap-4 md:grid-cols-4">
@@ -113,12 +129,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
                         <option value="Cancelled">Cancelled</option>
                       </select>
 
-                      <span
-                        class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]"
-                        [ngClass]="statusClass(item.orderItemStatus)"
+                      <app-badge
+                        [tone]="statusTone(item.orderItemStatus)"
+                        badgeClass="px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]"
                       >
                         {{ item.orderItemStatus || 'Processing' }}
-                      </span>
+                      </app-badge>
                     </div>
                   </div>
                   <p *ngIf="messageKey(order, item) && messageType(messageKey(order, item)) === 'success'" class="mt-3 text-sm font-semibold text-emerald-700">
@@ -136,14 +152,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
               <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                 Created {{ formatDate(order.createdAt) }}
               </p>
-              <button
+              <app-button
+                variant="secondary"
                 type="button"
-                class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
                 [disabled]="isBusy(deleteBusyKey(order))"
                 (click)="deleteOrder(order)"
+                buttonClass="!rounded-xl !border-rose-200 !bg-rose-50 !px-4 !py-2 text-xs !text-rose-700 hover:!bg-rose-100"
               >
                 {{ isBusy(deleteBusyKey(order)) ? 'Deleting...' : 'Delete Order' }}
-              </button>
+              </app-button>
               <p *ngIf="deleteMessages[order._id || '']" class="text-right text-sm font-semibold text-rose-700">
                 {{ deleteMessages[order._id || ''] }}
               </p>
@@ -375,16 +392,16 @@ export class AdminOrdersPageComponent implements OnInit {
     }).format(amount || 0);
   }
 
-  statusClass(status?: string): string {
+  statusTone(status?: string): 'success' | 'warning' | 'danger' | 'neutral' {
     switch (status) {
       case 'Delivered':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'success';
       case 'Shipped':
-        return 'bg-sky-100 text-sky-700';
+        return 'neutral';
       case 'Cancelled':
-        return 'bg-rose-100 text-rose-700';
+        return 'danger';
       default:
-        return 'bg-amber-100 text-amber-700';
+        return 'warning';
     }
   }
 

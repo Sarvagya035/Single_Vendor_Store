@@ -1,0 +1,36 @@
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.01em;
+    @apply text-slate-900;
+  }
+
+  h1 {
+    @apply text-3xl font-bold sm:text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-2xl font-bold sm:text-3xl lg:text-4xl;
+  }
+
+  h3 {
+    @apply text-xl font-bold sm:text-2xl lg:text-3xl;
+  }
+
+  p {
+    color: var(--text-main);
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  button {
+    @apply cursor-pointer transition-all duration-200;
+    font: inherit;
+  }
+}

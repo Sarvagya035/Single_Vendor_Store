@@ -24,6 +24,9 @@ import { ProductReviewsSummaryComponent } from './components/product-reviews-sum
 import { ProductReviewsListComponent } from './components/product-reviews-list/product-reviews-list.component';
 import { ProductReviewFormComponent } from './components/product-review-form/product-review-form.component';
 import { ProductPurchasePanelComponent } from './product-purchase-panel/product-purchase-panel.component';
+import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { CardComponent } from '../../shared/ui/card/card.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import {
   buildActiveImage,
   buildAttributeEntries,
@@ -43,9 +46,9 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent, ProductRelatedProductsSectionComponent, ProductReviewsSummaryComponent, ProductReviewsListComponent, ProductReviewFormComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent, ProductRelatedProductsSectionComponent, ProductReviewsSummaryComponent, ProductReviewsListComponent, ProductReviewFormComponent, ButtonComponent, CardComponent, PageHeaderComponent],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
+    <div class="min-h-[calc(100vh-64px)] overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
       <section class="storefront-section pt-2 pb-8 sm:pt-4 sm:pb-10 lg:pt-5 lg:pb-12">
         <div class="storefront-container">
           <a routerLink="/products" class="mb-2 inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 transition hover:text-slate-900">
@@ -79,9 +82,10 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
           </div>
 
           <ng-container *ngIf="product && !loading">
-            <div class="mt-0 rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-tight shadow-[0_24px_60px_rgba(47,27,20,0.08)]">
-              <div class="grid gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:gap-8">
-                <app-product-gallery
+            <app-card cardClass="mt-0 w-full max-w-full min-w-0 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white/90 shadow-[0_24px_60px_rgba(47,27,20,0.08)]">
+              <div class="grid w-full min-w-0 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-8">
+                <div class="min-w-0 w-full">
+                  <app-product-gallery
                   [productName]="product.productName"
                   [activeImage]="activeImage()"
                   [selectedImage]="selectedImage"
@@ -89,7 +93,9 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
                   [offerBadgeText]="offerBadgeText()"
                   (imageSelected)="selectedImage = $event"
                 />
+                </div>
 
+              <div class="min-w-0 w-full">
               <app-product-purchase-panel
                 [product]="product"
                 [variants]="product.variants || []"
@@ -112,9 +118,11 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
                 (toggleWishlist)="toggleWishlist()"
               />
               </div>
-            </div>
+              </div>
+            </app-card>
 
             <app-product-related-products-section
+              class="w-full min-w-0 max-w-full"
               [relatedProducts]="visibleRelatedProducts()"
               [wishlistBusyId]="wishlistBusyId"
               [wishlistedProductIds]="wishlistedProductIds"
@@ -124,56 +132,65 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
               (buyNow)="handleRelatedProductCardBuyNow($event)"
             />
 
-            <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
-              <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Ratings & Reviews</p>
-                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Customer Reviews</h2>
-                </div>
-                <button
-                  type="button"
-                  class="inline-flex items-center justify-center rounded-full bg-[#f08a00] px-5 py-3 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(240,138,0,0.22)] transition hover:-translate-y-0.5 hover:bg-[#e07d00]"
-                  [attr.aria-expanded]="showReviewForm"
-                  (click)="toggleReviewForm()"
+            <app-card cardClass="mt-10 w-full max-w-full min-w-0 rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <div class="border-b border-[#f1e4d4] pb-6">
+                <app-page-header
+                  eyebrow="Ratings & Reviews"
+                  title="Customer Reviews"
+                  eyebrowClass="text-amber-700"
+                  titleClass="!mt-2 !text-2xl !font-extrabold"
                 >
-                  {{ showReviewForm ? 'Hide Review Form' : 'Write a Review' }}
-                </button>
+                  <app-button
+                    type="button"
+                    variant="primary"
+                    [attr.aria-expanded]="showReviewForm"
+                    buttonClass="shrink-0 whitespace-nowrap !rounded-full !bg-[#f08a00] !px-5 !py-3 !text-sm !font-extrabold !shadow-[0_14px_30px_rgba(240,138,0,0.22)] hover:!bg-[#e07d00]"
+                    (click)="toggleReviewForm()"
+                  >
+                    {{ showReviewForm ? 'Hide Review Form' : 'Write a Review' }}
+                  </app-button>
+                </app-page-header>
               </div>
 
-              <app-product-reviews-summary
-                [averageRating]="product.averageRating || 0"
-                [reviewTotalCount]="reviewTotalCount()"
-                [ratingBreakdown]="ratingBreakdown()"
-                [starSlots]="reviewStarSlots"
-              />
+              <div class="w-full min-w-0">
+                <app-product-reviews-summary
+                  [averageRating]="product.averageRating || 0"
+                  [reviewTotalCount]="reviewTotalCount()"
+                  [ratingBreakdown]="ratingBreakdown()"
+                  [starSlots]="reviewStarSlots"
+                />
+              </div>
 
-              <app-product-reviews-list
-                [reviews]="reviews"
-                [currentUserId]="user?._id || ''"
-                [starSlots]="reviewStarSlots"
-                (editReview)="editReview($event)"
-              />
-            </section>
+              <div class="w-full min-w-0">
+                <app-product-reviews-list
+                  [reviews]="reviews"
+                  [currentUserId]="user?._id || ''"
+                  [starSlots]="reviewStarSlots"
+                  (editReview)="editReview($event)"
+                />
+              </div>
+            </app-card>
 
-            <section *ngIf="showReviewForm" #reviewFormSection class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
-              <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
-                <div class="border-b border-[#f1e4d4] pb-5">
-                  <div class="flex items-start justify-between gap-4">
-                    <div>
-                      <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Write A Review</p>
-                      <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Share your experience</h2>
-                      <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-                        Reviews are allowed only after this product has been delivered to you.
-                      </p>
-                    </div>
-                    <button
+            <section *ngIf="showReviewForm" #reviewFormSection class="mt-10">
+              <app-card cardClass="w-full max-w-full min-w-0 rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+                <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
+                  <div class="border-b border-[#f1e4d4] pb-5">
+                    <app-page-header
+                    eyebrow="Write A Review"
+                    title="Share your experience"
+                    description="Reviews are allowed only after this product has been delivered to you."
+                    eyebrowClass="text-amber-700"
+                    titleClass="!mt-2 !text-2xl !font-extrabold"
+                  >
+                    <app-button
                       type="button"
-                      class="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                      variant="secondary"
+                      buttonClass="!rounded-full !border-slate-200 !bg-white !px-4 !py-2 !text-xs !font-extrabold !uppercase !tracking-[0.18em] !text-slate-600 hover:!border-slate-300 hover:!text-slate-900"
                       (click)="toggleReviewForm()"
                     >
                       Hide
-                    </button>
-                  </div>
+                    </app-button>
+                  </app-page-header>
                 </div>
                 <app-product-review-form
                   [reviewForm]="reviewForm"
@@ -189,15 +206,18 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
               </ng-container>
 
               <ng-template #guestReviewPrompt>
-                <div class="flex h-full flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fffaf5] px-6 py-10 text-center">
+                <div class="flex h-full w-full min-w-0 flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fffaf5] px-6 py-10 text-center">
                   <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review access</p>
                   <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Sign in to leave a review</h2>
                   <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
                     Guest visitors can read product details and reviews, but only signed-in customers can write one.
                   </p>
-                  <a routerLink="/login" class="btn-primary mt-6 inline-flex !px-6 !py-3">Go To Login</a>
+                  <app-button routerLink="/login" variant="primary" buttonClass="mt-6 !px-6 !py-3">
+                    Go To Login
+                  </app-button>
                 </div>
-              </ng-template>
+                  </ng-template>
+              </app-card>
             </section>
           </ng-container>
         </div>

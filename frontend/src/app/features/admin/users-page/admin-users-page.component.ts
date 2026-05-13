@@ -4,52 +4,68 @@ import { Router } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { AdminService } from '../../../core/services/admin.service';
 import { AdminUserRecord, AdminUserPagination, ToastType } from '../../../core/models/admin.models';
+import { BadgeComponent as AppBadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
+import { EmptyStateComponent as AppEmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
-import { StatCardComponent } from '../../../shared/ui/stat-card.component';
+import { StatCardComponent as AppStatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 import { ToastBannerComponent } from '../../../shared/ui/toast-banner.component';
 
 @Component({
   selector: 'app-admin-users-page',
   standalone: true,
-  imports: [CommonModule, PageHeaderComponent, StatCardComponent, ToastBannerComponent],
+  imports: [
+    CommonModule,
+    PageHeaderComponent,
+    AppBadgeComponent,
+    AppButtonComponent,
+    AppCardComponent,
+    AppEmptyStateComponent,
+    AppStatCardComponent,
+    ToastBannerComponent
+  ],
   template: `
     <section class="space-y-6">
-      <div class="app-surface p-6 sm:p-8">
+      <app-card cardClass="p-6 sm:p-8">
         <app-page-header
           title="All marketplace users"
           eyebrowClass="text-slate-500"
-          titleClass="text-4xl"
         >
-          <button type="button" (click)="loadUsers()" [disabled]="isLoading" class="btn-secondary !py-3">
+          <app-button variant="secondary" type="button" (click)="loadUsers()" [disabled]="isLoading" buttonClass="!py-3">
             {{ isLoading ? 'Refreshing...' : 'Refresh Users' }}
-          </button>
+          </app-button>
         </app-page-header>
-      </div>
+      </app-card>
 
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <app-stat-card label="Total Users" [value]="pagination.totalUsers" tone="indigo" />
-        <app-stat-card label="Current Page" [value]="pagination.currentPage" tone="sky" />
-        <app-stat-card label="Admins on Page" [value]="adminCount()" tone="emerald" />
-        <app-stat-card label="Customers on Page" [value]="customerCount()" tone="amber" />
+        <app-stat-card label="Total Users" [value]="pagination.totalUsers.toString()" cardClass="border-l-4 border-l-indigo-500" />
+        <app-stat-card label="Current Page" [value]="pagination.currentPage.toString()" cardClass="border-l-4 border-l-sky-500" />
+        <app-stat-card label="Admins on Page" [value]="adminCount().toString()" cardClass="border-l-4 border-l-emerald-500" />
+        <app-stat-card label="Customers on Page" [value]="customerCount().toString()" cardClass="border-l-4 border-l-amber-500" />
       </div>
 
       <div *ngIf="errorMessage" class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
         {{ errorMessage }}
       </div>
 
-      <div *ngIf="isLoading" class="app-card-soft py-20">
+      <app-card *ngIf="isLoading" cardClass="py-20">
         <div class="flex flex-col items-center gap-4">
           <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-slate-700"></div>
           <p class="font-medium text-slate-500">Loading users...</p>
         </div>
-      </div>
+      </app-card>
 
-      <div *ngIf="!isLoading && users.length === 0" class="app-card-soft border-dashed px-8 py-16 text-center">
-        <h2 class="text-2xl font-black text-slate-900">No users found</h2>
-        <p class="mt-3 text-sm font-medium text-slate-500">
-          Registered users will appear here once accounts are created.
-        </p>
-      </div>
+      <app-empty-state
+        *ngIf="!isLoading && users.length === 0"
+        title="No users found"
+        description="Registered users will appear here once accounts are created."
+        cardClass="border-dashed"
+      >
+        <app-button variant="secondary" type="button" (click)="loadUsers()" buttonClass="!px-5 !py-3">
+          Refresh Users
+        </app-button>
+      </app-empty-state>
 
       <div *ngIf="users.length" class="grid gap-4">
         <article
@@ -69,9 +85,9 @@ import { ToastBannerComponent } from '../../../shared/ui/toast-banner.component'
                   </h3>
                   <p class="truncate text-sm font-semibold text-slate-500">{{ user.email || 'No email available' }}</p>
                 </div>
-                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="roleBadgeClass(user)">
+                <app-badge [tone]="roleBadgeTone(user)" badgeClass="px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]">
                   {{ roleLabel(user) }}
-                </span>
+                </app-badge>
               </div>
 
               <div class="mt-5 grid gap-4 md:grid-cols-3">
@@ -91,14 +107,15 @@ import { ToastBannerComponent } from '../../../shared/ui/toast-banner.component'
             </div>
 
             <div class="flex min-w-[180px] flex-col items-start gap-3 xl:items-end">
-              <button
+              <app-button
+                variant="secondary"
                 type="button"
                 (click)="openDeleteModal(user)"
-                [disabled]="user._processing"
-                class="rounded-2xl border border-rose-200 px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                [disabled]="!!user._processing"
+                buttonClass="!border-rose-200 !text-rose-700 hover:!bg-rose-50 !px-4 !py-3"
               >
                 {{ user._processing ? 'Deleting...' : 'Delete User' }}
-              </button>
+              </app-button>
             </div>
           </div>
         </article>
@@ -109,12 +126,12 @@ import { ToastBannerComponent } from '../../../shared/ui/toast-banner.component'
           Page {{ pagination.currentPage }} of {{ pagination.totalPages || 1 }}
         </p>
         <div class="flex items-center gap-3">
-          <button type="button" class="btn-secondary !py-3" (click)="changePage(-1)" [disabled]="!pagination.hasPrevPage || isLoading">
+          <app-button variant="secondary" type="button" (click)="changePage(-1)" [disabled]="!pagination.hasPrevPage || isLoading" buttonClass="!py-3">
             Previous
-          </button>
-          <button type="button" class="btn-secondary !py-3" (click)="changePage(1)" [disabled]="!pagination.hasNextPage || isLoading">
+          </app-button>
+          <app-button variant="secondary" type="button" (click)="changePage(1)" [disabled]="!pagination.hasNextPage || isLoading" buttonClass="!py-3">
             Next
-          </button>
+          </app-button>
         </div>
       </div>
 
@@ -284,10 +301,10 @@ export class AdminUsersPageComponent implements OnInit {
     return 'Customer';
   }
 
-  roleBadgeClass(user: AdminUserRecord): string {
+  roleBadgeTone(user: AdminUserRecord): 'neutral' | 'warning' {
     const role = this.rolesText(user).toLowerCase();
-    if (role.includes('admin')) return 'bg-slate-100 text-slate-700';
-    return 'bg-amber-100 text-amber-700';
+    if (role.includes('admin')) return 'neutral';
+    return 'warning';
   }
 
   adminCount(): number {

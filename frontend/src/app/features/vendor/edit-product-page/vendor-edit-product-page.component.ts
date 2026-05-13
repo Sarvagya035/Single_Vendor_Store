@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   VendorCategoryRecord,
@@ -21,39 +23,38 @@ import {
 @Component({
   selector: 'app-vendor-edit-product-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, AppButtonComponent, AppCardComponent, PageHeaderComponent],
   template: `
-    <section class="vendor-content">
-      <div class="vendor-section">
-        <div class="vendor-page-header">
-          <app-page-header
-            eyebrow="Vendor Products"
-            title="Edit Product Details"
-            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
-            description="This page is only for customer-facing product information. Inventory and variant operations live in their own dedicated workspaces."
-          >
-            <a routerLink="/vendor/products" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Back to Products</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Go to Restock</a>
-            <a *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">Manage Variants</a>
-          </app-page-header>
-        </div>
+    <section class="space-y-6">
+      <app-card cardClass="p-6 sm:p-8">
+        <app-page-header
+          eyebrow="Vendor Products"
+          title="Edit Product Details"
+          titleClass="!text-[1.8rem] md:!text-[2.2rem]"
+          description="This page is only for customer-facing product information. Inventory and variant operations live in their own dedicated workspaces."
+        >
+          <app-button routerLink="/vendor/products" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Back to Products</app-button>
+          <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Go to Restock</app-button>
+          <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Manage Variants</app-button>
+        </app-page-header>
+      </app-card>
 
-        <div *ngIf="isLoading" class="px-6 py-20 text-center lg:px-8">
+      <app-card *ngIf="isLoading" cardClass="py-20 text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading product details...</p>
-        </div>
+      </app-card>
 
-        <div *ngIf="!isLoading && !product" class="px-6 py-16 text-center lg:px-8">
+      <app-card *ngIf="!isLoading && !product" cardClass="py-16 text-center">
           <h2 class="vendor-empty-title">Product not found</h2>
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
             We couldn't load that product. It may have been deleted or the link may be outdated.
           </p>
-          <a routerLink="/vendor/products" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</a>
-        </div>
+          <app-button routerLink="/vendor/products" variant="primary" type="button" buttonClass="mt-6 w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</app-button>
+      </app-card>
 
-        <form *ngIf="!isLoading && product" class="border-t border-slate-200 vendor-section-body lg:py-6" (ngSubmit)="saveProduct()">
+      <form *ngIf="!isLoading && product" class="space-y-6" (ngSubmit)="saveProduct()">
           <div class="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
+            <app-card cardClass="p-5 sm:p-6 lg:p-7">
               <div class="border-b border-slate-100 pb-4">
                 <p class="vendor-stat-label">Customer Facing</p>
                 <h2 class="vendor-panel-title">Editable product details</h2>
@@ -89,14 +90,14 @@ import {
                 </label>
 
                 <div class="flex flex-col gap-3 sm:flex-row md:col-span-2">
-                  <button type="submit" [disabled]="isSubmitting" class="btn-primary w-full !px-8 !py-4 sm:w-auto">{{ isSubmitting ? 'Saving Changes...' : 'Save Changes' }}</button>
-                  <button type="button" (click)="cancel()" class="btn-secondary w-full !px-8 !py-4 sm:w-auto">Cancel</button>
+                  <app-button type="submit" [disabled]="isSubmitting" buttonClass="w-full !px-8 !py-4 sm:w-auto">{{ isSubmitting ? 'Saving Changes...' : 'Save Changes' }}</app-button>
+                  <app-button type="button" (click)="cancel()" variant="secondary" buttonClass="w-full !px-8 !py-4 sm:w-auto">Cancel</app-button>
                 </div>
               </div>
-            </section>
+            </app-card>
 
             <aside class="space-y-6">
-              <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7">
+              <app-card cardClass="p-5 sm:p-6 lg:p-7">
                 <div class="border-b border-slate-100 pb-4">
                   <p class="vendor-stat-label">Preview</p>
                   <h2 class="vendor-panel-title">Product summary</h2>
@@ -128,11 +129,10 @@ import {
                     {{ form.productDescription || 'Your product description preview appears here as you edit.' }}
                   </div>
                 </div>
-              </section>
+              </app-card>
             </aside>
           </div>
-        </form>
-      </div>
+      </form>
     </section>
   `,
 })

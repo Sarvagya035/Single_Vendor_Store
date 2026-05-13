@@ -10,6 +10,8 @@ import {
 } from '../../../core/models/vendor.models';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   formatVendorCurrency,
@@ -41,7 +43,7 @@ interface BestSellingProductRow {
 @Component({
   selector: 'app-vendor-best-selling-products-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, ButtonComponent, BadgeComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -122,19 +124,20 @@ interface BestSellingProductRow {
         </div>
 
         <div class="flex flex-wrap gap-2 vendor-section-body pb-4">
-          <span
-            class="rounded-full border border-[#e7dac9] bg-[#fff7ed] px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#6f4e37]"
+          <app-badge
+            tone="warning"
+            badgeClass="border border-[#e7dac9] !bg-[#fff7ed] !px-3 !py-2 !text-xs !font-black !uppercase !tracking-[0.16em] !text-[#6f4e37]"
           >
             Showing {{ visibleProducts.length }} result{{ visibleProducts.length === 1 ? '' : 's' }}
-          </span>
-          <button
+          </app-badge>
+          <app-button
             *ngIf="searchTerm"
-            type="button"
-            class="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50"
+            variant="secondary"
+            buttonClass="rounded-full px-3 py-2 text-xs font-black uppercase tracking-[0.16em] !min-h-0 transition hover:bg-slate-50"
             (click)="searchTerm = ''"
           >
             Clear Search
-          </button>
+          </app-button>
         </div>
 
         <div *ngIf="isLoading" class="vendor-section-body py-14 text-center">
@@ -153,11 +156,13 @@ interface BestSellingProductRow {
             Once paid orders are available, your highest performing products will appear here with
             sales and catalog details.
           </p>
-          <a
+          <app-button
             routerLink="/vendor/products"
-            class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto"
-            >Go to Products</a
+            variant="primary"
+            buttonClass="mt-6 w-full justify-center !px-6 !py-3 sm:w-auto"
           >
+            Go to Products
+          </app-button>
         </div>
 
         <div
@@ -191,25 +196,21 @@ interface BestSellingProductRow {
                     <p class="min-w-0 flex-1 text-sm font-black leading-snug text-slate-900 sm:text-lg">
                       #{{ product.rank }} {{ product.displayName }}
                     </p>
-                    <span
-                      class="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em]"
-                      [ngClass]="
-                        product.statusTone === 'active'
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-slate-200 text-slate-600'
-                      "
+                    <app-badge
+                      [tone]="product.statusTone === 'active' ? 'success' : 'neutral'"
+                      badgeClass="shrink-0 px-2.5 py-1 text-[10px] font-black"
                     >
                       {{ product.statusLabel }}
-                    </span>
+                    </app-badge>
                   </div>
 
                   <div class="mt-2 flex flex-wrap gap-1.5">
-                    <span class="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-slate-600">
+                    <app-badge tone="neutral" badgeClass="px-2.5 py-1 text-[9px] font-black !bg-white !text-slate-600 !border !border-slate-200">
                       {{ product.categoryName }}
-                    </span>
-                    <span class="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-slate-600">
+                    </app-badge>
+                    <app-badge tone="neutral" badgeClass="px-2.5 py-1 text-[9px] font-black !bg-white !text-slate-600 !border !border-slate-200">
                       {{ product.brand }}
-                    </span>
+                    </app-badge>
                   </div>
 
                   <p class="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
@@ -223,29 +224,21 @@ interface BestSellingProductRow {
                   <p class="min-w-0 text-lg font-black text-slate-900">
                     #{{ product.rank }} {{ product.displayName }}
                   </p>
-                  <span
-                    class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]"
-                    [ngClass]="
-                      product.statusTone === 'active'
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-slate-200 text-slate-600'
-                    "
+                  <app-badge
+                    [tone]="product.statusTone === 'active' ? 'success' : 'neutral'"
+                    badgeClass="px-3 py-1 text-[11px] font-black"
                   >
                     {{ product.statusLabel }}
-                  </span>
+                  </app-badge>
                 </div>
 
                 <div class="hidden xl:mt-3 xl:flex xl:flex-wrap xl:gap-2">
-                  <span
-                    class="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-600"
-                  >
+                  <app-badge tone="neutral" badgeClass="px-3 py-1 text-[11px] font-black !bg-white !text-slate-600 !border !border-slate-200">
                     {{ product.categoryName }}
-                  </span>
-                  <span
-                    class="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-600"
-                  >
+                  </app-badge>
+                  <app-badge tone="neutral" badgeClass="px-3 py-1 text-[11px] font-black !bg-white !text-slate-600 !border !border-slate-200">
                     {{ product.brand }}
-                  </span>
+                  </app-badge>
                 </div>
 
                 <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:mt-4">
@@ -300,20 +293,22 @@ interface BestSellingProductRow {
               </div>
 
               <div class="flex flex-wrap items-center gap-2 xl:justify-end xl:self-stretch xl:pl-2">
-                <a
+                <app-button
                   *ngIf="product.product?._id"
                   [routerLink]="['/vendor/products', product.product?._id, 'view']"
-                  class="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50 sm:w-auto xl:w-full"
+                  variant="secondary"
+                  buttonClass="w-full justify-center rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.16em] sm:w-auto xl:w-full"
                 >
                   View Product
-                </a>
-                <a
+                </app-button>
+                <app-button
                   *ngIf="product.product?._id"
                   [routerLink]="['/vendor/products', product.product?._id, 'edit']"
-                  class="inline-flex w-full items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-amber-800 transition hover:bg-amber-100 sm:w-auto xl:w-full"
+                  variant="secondary"
+                  buttonClass="w-full justify-center rounded-2xl !border-amber-200 !bg-amber-50 px-4 py-3 text-xs font-black uppercase tracking-[0.16em] !text-amber-800 hover:!bg-amber-100 sm:w-auto xl:w-full"
                 >
                   Edit Listing
-                </a>
+                </app-button>
               </div>
             </div>
           </article>

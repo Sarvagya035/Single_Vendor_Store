@@ -6,6 +6,11 @@ import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorCategoryRecord, VendorProductRecord } from '../../../core/models/vendor.models';
+import { CardComponent } from '../../../shared/ui/card/card.component';
+import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { InputComponent } from '../../../shared/ui/input/input.component';
+import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   FlatCategoryOption,
@@ -18,15 +23,25 @@ import {
 @Component({
   selector: 'app-vendor-products-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    PageHeaderComponent,
+    ButtonComponent,
+    BadgeComponent,
+    CardComponent,
+    InputComponent,
+    EmptyStateComponent,
+  ],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
         <div class="vendor-page-header">
           <app-page-header eyebrow="VENDOR PRODUCTS" title="Products" titleClass="!text-[1.8rem] md:!text-[2.2rem]">
-            <a routerLink="/vendor/products/add" class="btn-primary w-full !px-5 !py-2.5 sm:w-auto">
+            <app-button routerLink="/vendor/products/add" variant="primary" buttonClass="w-full !px-5 !py-2.5 sm:w-auto">
               + Add New Product
-            </a>
+            </app-button>
           </app-page-header>
         </div>
 
@@ -45,26 +60,20 @@ import {
           </article>
         </div>
 
-        <div class="border-t border-slate-200 vendor-section-body lg:py-6">
+        <app-card variant="default" cardClass="border-t border-slate-200 !rounded-none !border-x-0 !border-b-0 !bg-transparent !shadow-none vendor-section-body lg:py-6">
           <div class="space-y-4">
-            <div class="relative">
-              <svg
-                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
+            <app-input
+              type="search"
+              [(value)]="searchQuery"
+              (valueChange)="onSearchChange()"
+              placeholder="Search by name, brand, SKU, or category..."
+              inputClass="!pl-12"
+              [leadingIcon]="true"
+            >
+              <svg appInputLeading class="h-5 w-5 text-[#8a5f44]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
               </svg>
-              <input
-                type="text"
-                [(ngModel)]="searchQuery"
-                (ngModelChange)="onSearchChange()"
-                placeholder="Search by name, brand, SKU, or category..."
-                class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
-              />
-            </div>
+            </app-input>
 
             <div class="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-center">
               <label class="block w-full">
@@ -92,36 +101,36 @@ import {
                 </select>
               </label>
 
-              <button
-                type="button"
-                (click)="loadVendorProducts(currentPage)"
+              <app-button
+                variant="secondary"
+                buttonClass="w-full justify-center gap-2 !px-5 !py-3.5 lg:w-auto lg:justify-self-end"
                 [disabled]="isLoading"
-                class="btn-secondary w-full justify-center gap-2 !px-5 !py-3.5 lg:w-auto lg:justify-self-end"
+                (click)="loadVendorProducts(currentPage)"
               >
                 <svg class="h-4 w-4 text-[#7c5646]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M20 11a8.5 8.5 0 1 0 1.5 4.8" />
                   <path d="M20 4v7h-7" />
                 </svg>
                 Refresh Products
-              </button>
+              </app-button>
             </div>
           </div>
-        </div>
+        </app-card>
 
         <div *ngIf="isLoading" class="vendor-section-body text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading vendor products...</p>
         </div>
 
-        <div *ngIf="!isLoading && filteredProducts.length === 0" class="vendor-section-body text-center">
-          <h3 class="vendor-empty-title">No products found</h3>
-          <p class="mx-auto mt-3 max-w-xl text-sm font-medium leading-relaxed text-slate-500">
-            Try a different search or filter, or add a new product to start building out your storefront catalog.
-          </p>
-          <a routerLink="/vendor/products/add" class="btn-primary mt-6 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">
+        <app-empty-state
+          *ngIf="!isLoading && filteredProducts.length === 0"
+          title="No products found"
+          description="Try a different search or filter, or add a new product to start building out your storefront catalog."
+        >
+          <app-button routerLink="/vendor/products/add" variant="primary" buttonClass="w-full justify-center !px-6 !py-3 sm:w-auto">
             Add Product
-          </a>
-        </div>
+          </app-button>
+        </app-empty-state>
 
         <div *ngIf="!isLoading && filteredProducts.length > 0" class="vendor-table-wrap hidden lg:block">
           <table class="min-w-full border-separate border-spacing-0">
@@ -179,12 +188,12 @@ import {
                 </td>
 
                 <td class="border-t border-slate-200 vendor-table-cell">
-                  <span
-                    class="inline-flex rounded-full px-3 py-1 text-xs font-black"
-                    [ngClass]="product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-[#f2ebe7] text-[#8c6c5d]'"
+                  <app-badge
+                    [tone]="product.isActive ? 'success' : 'neutral'"
+                    badgeClass="text-xs font-black"
                   >
                     {{ product.isActive ? 'Active' : 'Inactive' }}
-                  </span>
+                  </app-badge>
                 </td>
 
                 <td class="border-t border-slate-200 vendor-table-cell text-right">
@@ -244,12 +253,12 @@ import {
                 <h3 class="truncate text-sm font-black text-slate-900 md:text-lg">{{ product.productName }}</h3>
                     <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-600">{{ product.brand || 'Generic' }}</p>
                   </div>
-                  <span
-                  class="app-badge px-2 py-1 text-[10px]"
-                    [ngClass]="product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'"
+                  <app-badge
+                    [tone]="product.isActive ? 'success' : 'neutral'"
+                    badgeClass="px-2 py-1 text-[10px] font-black"
                   >
                     {{ product.isActive ? 'Active' : 'Inactive' }}
-                  </span>
+                  </app-badge>
                 </div>
 
                 <div class="mt-3 grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600 sm:gap-3 sm:text-sm">

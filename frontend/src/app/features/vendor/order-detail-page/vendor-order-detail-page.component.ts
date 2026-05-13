@@ -7,38 +7,43 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { OrderService } from '../../../core/services/order.service';
 import { SocketService } from '../../../core/services/socket.service';
+import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent } from '../../../shared/ui/card/card.component';
+import { StatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-vendor-order-detail-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, ButtonComponent, BadgeComponent, CardComponent, StatCardComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
-        <div class="vendor-page-header">
+        <app-card cardClass="p-6 sm:p-8">
           <app-page-header
             eyebrow="Vendor Order"
             [title]="'Order #' + shortOrderId(order?._id)"
             description="Review item totals, shipping details, payment status, and tracking from one clean vendor-friendly layout."
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <button
+            <app-button
               *ngIf="canRefreshShipment()"
               type="button"
+              variant="secondary"
               (click)="refreshShipment()"
-              class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto"
+              buttonClass="w-full justify-center !px-5 !py-3 sm:w-auto"
             >
               Refresh Tracking
-            </button>
-            <a routerLink="/vendor/orders" class="btn-secondary w-full justify-center !px-5 !py-3 sm:w-auto">
+            </app-button>
+            <app-button routerLink="/vendor/orders" variant="secondary" type="button" buttonClass="w-full justify-center !px-5 !py-3 sm:w-auto">
               Back To Orders
-            </a>
-            <a *ngIf="order?._id as orderId" [routerLink]="trackOrderLink(orderId)" class="btn-primary w-full justify-center !px-5 !py-3 sm:w-auto">
+            </app-button>
+            <app-button *ngIf="order?._id as orderId" [routerLink]="trackOrderLink(orderId)" variant="primary" type="button" buttonClass="w-full justify-center !px-5 !py-3 sm:w-auto">
               Track Order
-            </a>
+            </app-button>
           </app-page-header>
-        </div>
+        </app-card>
 
         <div *ngIf="successMessage" class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
@@ -58,24 +63,15 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
         <ng-container *ngIf="!isLoading && order; else vendorEmptyState">
           <div class="vendor-section-body lg:py-6" *ngIf="order as currentOrder">
             <div class="vendor-grid-3 items-stretch">
-            <article class="vendor-stat-card h-full !border-amber-100 !bg-[#fff7ed]/80">
-              <p class="vendor-stat-label !text-amber-700">Order Total</p>
-              <p class="vendor-stat-value">{{ formatCurrency(displayTotal(currentOrder)) }}</p>
-            </article>
-            <article class="vendor-stat-card h-full !border-amber-100 !bg-[#fff7ed]/80">
-              <p class="vendor-stat-label !text-amber-700">Items</p>
-              <p class="vendor-stat-value">{{ visibleItems(currentOrder).length }}</p>
-            </article>
-            <article class="vendor-stat-card h-full !border-amber-100 !bg-[#fff7ed]/80">
-              <p class="vendor-stat-label !text-amber-600">Status</p>
-              <p class="vendor-stat-value">{{ displayStatus(currentOrder) }}</p>
-            </article>
+            <app-stat-card label="Order Total" [value]="formatCurrency(displayTotal(currentOrder))" cardClass="border-l-4 border-l-amber-500 !border-amber-100 !bg-[#fff7ed]/80" />
+            <app-stat-card label="Items" [value]="visibleItems(currentOrder).length.toString()" cardClass="border-l-4 border-l-sky-500 !border-amber-100 !bg-[#fff7ed]/80" />
+            <app-stat-card label="Status" [value]="displayStatus(currentOrder)" cardClass="border-l-4 border-l-emerald-500 !border-amber-100 !bg-[#fff7ed]/80" />
           </div>
 
             <div class="vendor-section-body lg:py-6">
               <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(360px,0.8fr)]">
                 <div class="min-w-0 space-y-6">
-                  <section class="app-panel min-w-0 overflow-hidden">
+                  <section class="app-card min-w-0 overflow-hidden">
                     <div class="flex items-end justify-between gap-4 border-b border-[#eee2d4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-5">
                       <div class="min-w-0">
                         <p class="vendor-stat-label">Order Items</p>
@@ -108,9 +104,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                               <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-slate-700">
                                 {{ formatCurrency(itemTotal(item)) }}
                               </span>
-                              <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]" [ngClass]="statusClass(item.orderItemStatus)">
+                              <app-badge [tone]="statusTone(item.orderItemStatus)" badgeClass="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]">
                                 {{ item.orderItemStatus || 'Processing' }}
-                              </span>
+                              </app-badge>
                             </div>
                           </div>
                         </article>
@@ -120,7 +116,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                 </div>
 
                 <aside class="min-w-0 space-y-6">
-                  <section *ngIf="customerSummary(currentOrder)" class="app-panel min-w-0 overflow-hidden">
+                  <section *ngIf="customerSummary(currentOrder)" class="app-card min-w-0 overflow-hidden">
                     <div class="border-b border-[#eee2d4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-5">
                       <p class="vendor-stat-label">Customer</p>
                       <h2 class="vendor-panel-title mt-2">Order placed by</h2>
@@ -141,7 +137,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
                     </div>
                   </section>
 
-                  <section class="app-panel min-w-0 overflow-hidden">
+                  <section class="app-card min-w-0 overflow-hidden">
                     <div class="border-b border-[#eee2d4] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-5">
                       <p class="vendor-stat-label">Delivery</p>
                       <h2 class="vendor-panel-title mt-2">Shipping address</h2>
@@ -399,16 +395,16 @@ export class VendorOrderDetailPageComponent implements OnInit {
     }).format(amount || 0);
   }
 
-  statusClass(status?: string): string {
+  statusTone(status?: string): 'success' | 'warning' | 'danger' | 'neutral' {
     switch (status) {
       case 'Delivered':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'success';
       case 'Shipped':
-        return 'bg-amber-100 text-amber-800';
+        return 'warning';
       case 'Cancelled':
-        return 'bg-rose-100 text-rose-700';
+        return 'danger';
       default:
-        return 'bg-slate-100 text-slate-700';
+        return 'neutral';
     }
   }
 
