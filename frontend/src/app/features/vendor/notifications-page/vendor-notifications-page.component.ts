@@ -8,7 +8,6 @@ import { VendorNotificationRecord, VendorNotificationsPayload } from '../../../c
 import { VendorService } from '../../../core/services/vendor.service';
 import { SocketService } from '../../../core/services/socket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
 import { CardComponent } from '../../../shared/ui/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
@@ -23,7 +22,6 @@ type NotificationFilter = 'all' | 'unread' | 'active';
     CommonModule,
     RouterModule,
     PageHeaderComponent,
-    ButtonComponent,
     BadgeComponent,
     CardComponent,
     EmptyStateComponent,
@@ -31,16 +29,21 @@ type NotificationFilter = 'all' | 'unread' | 'active';
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
-        <div class="app-page-header">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Notifications"
-            title="Notification center"
+            title="Notification Center"
             description="Track low-stock alerts and keep product availability under control from one place."
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <app-button variant="secondary" buttonClass="w-full !px-5 !py-3 sm:w-auto" [disabled]="isLoading" (click)="reload()">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-[#7c5646] shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+              [disabled]="isLoading"
+              (click)="reload()"
+            >
               {{ isLoading ? 'Refreshing...' : 'Refresh Notifications' }}
-            </app-button>
+            </button>
           </app-page-header>
         </div>
 
@@ -66,43 +69,46 @@ type NotificationFilter = 'all' | 'unread' | 'active';
         <app-card variant="default" cardClass="border-t border-slate-200 !rounded-none !border-x-0 !border-b-0 !bg-transparent !shadow-none vendor-section-body lg:py-6">
           <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div class="flex flex-wrap gap-2">
-              <app-button
-                variant="secondary"
-                [buttonClass]="filter === 'all'
-                  ? 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-slate-900 !border-slate-900 !text-white transition'
-                  : 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-white !border !border-slate-200 !text-slate-600 transition'"
+              <button
+                type="button"
+                class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.16em] transition"
+                [ngClass]="filter === 'all'
+                  ? 'bg-slate-900 text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)]'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'"
                 (click)="setFilter('all')"
               >
                 All
-              </app-button>
-              <app-button
-                variant="secondary"
-                [buttonClass]="filter === 'unread'
-                  ? 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-slate-900 !border-slate-900 !text-white transition'
-                  : 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-white !border !border-slate-200 !text-slate-600 transition'"
+              </button>
+              <button
+                type="button"
+                class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.16em] transition"
+                [ngClass]="filter === 'unread'
+                  ? 'bg-slate-900 text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)]'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'"
                 (click)="setFilter('unread')"
               >
                 Unread
-              </app-button>
-              <app-button
-                variant="secondary"
-                [buttonClass]="filter === 'active'
-                  ? 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-slate-900 !border-slate-900 !text-white transition'
-                  : 'rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] !min-h-0 bg-white !border !border-slate-200 !text-slate-600 transition'"
+              </button>
+              <button
+                type="button"
+                class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.16em] transition"
+                [ngClass]="filter === 'active'
+                  ? 'bg-slate-900 text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)]'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'"
                 (click)="setFilter('active')"
               >
                 Active low stock
-              </app-button>
+              </button>
             </div>
 
-            <app-button
-              variant="primary"
-              buttonClass="w-full !px-5 !py-3 sm:w-auto"
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
               [disabled]="!summary.unreadNotifications || isMarkingAllRead"
               (click)="markAllRead()"
             >
               {{ isMarkingAllRead ? 'Updating...' : 'Mark all as read' }}
-            </app-button>
+            </button>
           </div>
         </app-card>
 
@@ -182,18 +188,18 @@ type NotificationFilter = 'all' | 'unread' | 'active';
               <div class="grid grid-cols-2 gap-2 lg:min-w-[220px] lg:grid-cols-1">
                 <a
                   [routerLink]="resolveActionLink(notification)"
-                  class="btn-primary w-full !px-4 !py-2.5 text-center text-xs"
+                  class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-4 py-2.5 text-center text-xs font-extrabold text-white shadow-sm transition hover:bg-[#754c30]"
                 >
                   {{ notification.type === 'bulk_inquiry' ? 'View inquiry' : 'Restock now' }}
                 </a>
-                <app-button
-                  variant="secondary"
-                  buttonClass="w-full !px-4 !py-2.5 text-xs"
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-xs font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
                   [disabled]="notification.isRead || markingId === notification._id"
                   (click)="markAsRead(notification)"
                 >
                   {{ markingId === notification._id ? 'Saving...' : notification.isRead ? 'Already read' : 'Mark as read' }}
-                </app-button>
+                </button>
               </div>
             </div>
           </article>

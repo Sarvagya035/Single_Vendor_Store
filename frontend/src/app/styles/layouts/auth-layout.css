@@ -1,0 +1,14 @@
+/* Authentication shell primitives for login, register, forgot password, and reset password pages. */
+@layer components {
+  .auth-layout {
+    @apply w-full min-w-0;
+  }
+
+  .auth-layout__container {
+    @apply mx-auto w-full min-w-0;
+  }
+
+  .auth-layout__section {
+    @apply w-full min-w-0;
+  }
+}

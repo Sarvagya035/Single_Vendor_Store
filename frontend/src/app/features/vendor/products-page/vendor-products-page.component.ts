@@ -101,9 +101,9 @@ import {
                 </select>
               </label>
 
-              <app-button
-                variant="secondary"
-                buttonClass="w-full justify-center gap-2 !px-5 !py-3.5 lg:w-auto lg:justify-self-end"
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3.5 text-sm font-extrabold text-[#7c5646] shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60 lg:justify-self-end"
                 [disabled]="isLoading"
                 (click)="loadVendorProducts(currentPage)"
               >
@@ -112,7 +112,7 @@ import {
                   <path d="M20 4v7h-7" />
                 </svg>
                 Refresh Products
-              </app-button>
+              </button>
             </div>
           </div>
         </app-card>

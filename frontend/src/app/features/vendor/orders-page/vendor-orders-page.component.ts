@@ -24,15 +24,14 @@ import { StatCardComponent } from '../../../shared/ui/stat-card/stat-card.compon
             title="Vendor Orders"
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <app-button
+            <button
               type="button"
-              variant="secondary"
-              (click)="loadOrders()"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-[#7c5646] shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
               [disabled]="isLoading"
-              buttonClass="w-full !px-5 !py-2.5 sm:w-auto"
+              (click)="loadOrders()"
             >
               {{ isLoading ? 'Refreshing...' : 'Refresh Orders' }}
-            </app-button>
+            </button>
           </app-page-header>
         </div>
 
@@ -171,14 +170,13 @@ import { StatCardComponent } from '../../../shared/ui/stat-card/stat-card.compon
                   {{ vendorOrderStatus(order) }}
                 </app-badge>
 
-                <app-button
+                <button
                   type="button"
-                  variant="primary"
-                  buttonClass="!bg-none !bg-[#7c5646] !border-transparent !shadow-[0_10px_24px_rgba(124,86,70,0.18)] hover:!bg-[#6e4b3d] !px-4 !py-2.5"
+                  class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
                   (click)="$event.stopPropagation(); openOrder(order)"
                 >
                   View Details
-                </app-button>
+                </button>
               </div>
             </div>
           </article>

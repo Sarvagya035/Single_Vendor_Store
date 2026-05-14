@@ -51,6 +51,7 @@ interface BestSellingProductRow {
           <app-page-header
             eyebrow="Top Performers"
             title="Best Selling Products"
+            description="Compare sold units, revenue, stock, and listing status for your strongest products."
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           />
         </div>

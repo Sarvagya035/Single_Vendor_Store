@@ -1,0 +1,18 @@
+/* Checkout flow shell primitives for cart, checkout, and payment pages. */
+@layer components {
+  .checkout-layout {
+    @apply w-full min-w-0;
+  }
+
+  .checkout-layout__container {
+    @apply mx-auto w-full min-w-0;
+  }
+
+  .checkout-layout__section {
+    @apply w-full min-w-0;
+  }
+
+  .checkout-layout__stack {
+    @apply space-y-5 sm:space-y-6;
+  }
+}

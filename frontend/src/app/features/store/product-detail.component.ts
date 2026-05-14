@@ -25,7 +25,6 @@ import { ProductReviewsListComponent } from './components/product-reviews-list/p
 import { ProductReviewFormComponent } from './components/product-review-form/product-review-form.component';
 import { ProductPurchasePanelComponent } from './product-purchase-panel/product-purchase-panel.component';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
-import { CardComponent } from '../../shared/ui/card/card.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import {
   buildActiveImage,
@@ -46,11 +45,11 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent, ProductRelatedProductsSectionComponent, ProductReviewsSummaryComponent, ProductReviewsListComponent, ProductReviewFormComponent, ButtonComponent, CardComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent, ProductRelatedProductsSectionComponent, ProductReviewsSummaryComponent, ProductReviewsListComponent, ProductReviewFormComponent, ButtonComponent, PageHeaderComponent],
   template: `
     <div class="min-h-[calc(100vh-64px)] overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
       <section class="storefront-section pt-2 pb-8 sm:pt-4 sm:pb-10 lg:pt-5 lg:pb-12">
-        <div class="storefront-container">
+        <div class="store-page-wide store-page-stack">
           <a routerLink="/products" class="mb-2 inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 transition hover:text-slate-900">
             <span>&larr;</span>
             Back to products
@@ -82,8 +81,8 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
           </div>
 
           <ng-container *ngIf="product && !loading">
-            <app-card cardClass="mt-0 w-full max-w-full min-w-0 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white/90 shadow-[0_24px_60px_rgba(47,27,20,0.08)]">
-              <div class="grid w-full min-w-0 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-8">
+            <section class="rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <div class="grid w-full min-w-0 gap-5 lg:grid-cols-2 lg:gap-6">
                 <div class="min-w-0 w-full">
                   <app-product-gallery
                   [productName]="product.productName"
@@ -119,7 +118,7 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
               />
               </div>
               </div>
-            </app-card>
+            </section>
 
             <app-product-related-products-section
               class="w-full min-w-0 max-w-full"
@@ -132,7 +131,7 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
               (buyNow)="handleRelatedProductCardBuyNow($event)"
             />
 
-            <app-card cardClass="mt-10 w-full max-w-full min-w-0 rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+            <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
               <div class="border-b border-[#f1e4d4] pb-6">
                 <app-page-header
                   eyebrow="Ratings & Reviews"
@@ -140,15 +139,17 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
                   eyebrowClass="text-amber-700"
                   titleClass="!mt-2 !text-2xl !font-extrabold"
                 >
-                  <app-button
-                    type="button"
-                    variant="primary"
-                    [attr.aria-expanded]="showReviewForm"
-                    buttonClass="shrink-0 whitespace-nowrap !rounded-full !bg-[#f08a00] !px-5 !py-3 !text-sm !font-extrabold !shadow-[0_14px_30px_rgba(240,138,0,0.22)] hover:!bg-[#e07d00]"
-                    (click)="toggleReviewForm()"
-                  >
-                    {{ showReviewForm ? 'Hide Review Form' : 'Write a Review' }}
-                  </app-button>
+                  <div class="flex shrink-0 items-center justify-end">
+                    <app-button
+                      type="button"
+                      variant="primary"
+                      [attr.aria-expanded]="showReviewForm"
+                      buttonClass="inline-flex items-center justify-center min-w-[150px] shrink-0 whitespace-nowrap !rounded-full !bg-[#f08a00] !px-5 !py-3 !text-sm !font-extrabold !shadow-[0_14px_30px_rgba(240,138,0,0.22)] hover:!bg-[#e07d00]"
+                      (click)="toggleReviewForm()"
+                    >
+                      {{ showReviewForm ? 'Hide Review Form' : 'Write a Review' }}
+                    </app-button>
+                  </div>
                 </app-page-header>
               </div>
 
@@ -169,10 +170,10 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
                   (editReview)="editReview($event)"
                 />
               </div>
-            </app-card>
+            </section>
 
             <section *ngIf="showReviewForm" #reviewFormSection class="mt-10">
-              <app-card cardClass="w-full max-w-full min-w-0 rounded-[2rem] border border-[#e7dac9] bg-white shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <section class="w-full max-w-full min-w-0 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
                 <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
                   <div class="border-b border-[#f1e4d4] pb-5">
                     <app-page-header
@@ -217,7 +218,7 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
                   </app-button>
                 </div>
                   </ng-template>
-              </app-card>
+              </section>
             </section>
           </ng-container>
         </div>

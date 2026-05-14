@@ -16,8 +16,8 @@ import { ToastType } from '../../../core/models/vendor.models';
     <section class="vendor-content vendor-categories-content">
       <div class="vendor-page-header">
         <app-page-header
-          eyebrow="VENDOR CATEGORY MANAGEMENT"
-          title="Manage your store categories"
+          eyebrow="Categories"
+          title="Vendor Categories"
           description="Manage your category hierarchy. Click the arrow to expand or collapse subcategories."
           titleClass="!text-[1.8rem] md:!text-[2.2rem]"
         >
@@ -30,21 +30,23 @@ import { ToastType } from '../../../core/models/vendor.models';
         </app-page-header>
       </div>
 
-      <app-vendor-categories-panel
-        #categoriesPanel
-        [categories]="categories"
-        [isLoading]="isCategorySyncing"
-        [isCreating]="isCreatingCategory"
-        [isUpdating]="isUpdatingCategory"
-        [createForm]="categoryCreateForm"
-        [createError]="categoryCreateError"
-        [createImageName]="selectedCategoryImage?.name || ''"
-        (selectCreateImage)="onCategoryImageSelected($event)"
-        (submitCreate)="createCategory($event)"
-        (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
-        (deleteCategory)="deleteCategory($event)"
-        (refresh)="loadCategories()"
-      />
+      <div class="vendor-section-body">
+        <app-vendor-categories-panel
+          #categoriesPanel
+          [categories]="categories"
+          [isLoading]="isCategorySyncing"
+          [isCreating]="isCreatingCategory"
+          [isUpdating]="isUpdatingCategory"
+          [createForm]="categoryCreateForm"
+          [createError]="categoryCreateError"
+          [createImageName]="selectedCategoryImage?.name || ''"
+          (selectCreateImage)="onCategoryImageSelected($event)"
+          (submitCreate)="createCategory($event)"
+          (submitUpdate)="updateCategory($event.categoryId, $event.payload)"
+          (deleteCategory)="deleteCategory($event)"
+          (refresh)="loadCategories()"
+        />
+      </div>
 
       <app-toast-banner [visible]="toast.visible" [message]="toast.message" [type]="toast.type" />
     </section>

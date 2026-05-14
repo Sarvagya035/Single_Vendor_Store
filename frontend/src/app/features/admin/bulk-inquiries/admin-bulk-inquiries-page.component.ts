@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 import {
   BulkInquiryRecord,
@@ -10,8 +9,6 @@ import {
 } from '../../../core/models/bulk-inquiry.models';
 import { AdminBulkInquiryService } from '../../../core/services/admin-bulk-inquiry.service';
 import { BadgeComponent as AppBadgeComponent } from '../../../shared/ui/badge/badge.component';
-import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
-import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
 import { EmptyStateComponent as AppEmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { ErrorService } from '../../../core/services/error.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
@@ -26,39 +23,43 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule,
     PageHeaderComponent,
     AppBadgeComponent,
-    AppButtonComponent,
-    AppCardComponent,
     AppEmptyStateComponent,
     AppStatCardComponent
   ],
   template: `
-    <section class="space-y-6">
-      <div class="space-y-6">
-        <app-card cardClass="p-6 sm:p-8">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
           <app-page-header
             eyebrow="Bulk Inquiries"
             title="Bulk inquiry management"
             description="Review customer and business bulk order requests, then update the inquiry status as your team works through them."
           >
-            <app-button variant="secondary" type="button" (click)="loadInquiries()" [disabled]="isLoading" buttonClass="w-full !py-3 sm:w-auto">
-              {{ isLoading ? 'Refreshing...' : 'Refresh Inquiries' }}
-            </app-button>
+            <div class="vendor-page-actions">
+              <button
+                type="button"
+                class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-[#7c5646] shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                (click)="loadInquiries()"
+                [disabled]="isLoading"
+              >
+                {{ isLoading ? 'Refreshing...' : 'Refresh Inquiries' }}
+              </button>
+            </div>
           </app-page-header>
-        </app-card>
+        </div>
 
-        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div class="vendor-grid-4 vendor-section-body">
           <app-stat-card label="Total" [value]="summary.totalInquiries.toString()" cardClass="border-l-4 border-l-amber-500 !border-amber-100 !bg-[#fff7ed]/80" />
           <app-stat-card label="New" [value]="summary.newCount.toString()" cardClass="border-l-4 border-l-sky-500 !border-amber-100 !bg-[#fff7ed]/80" />
           <app-stat-card label="Reviewed" [value]="summary.reviewedCount.toString()" cardClass="border-l-4 border-l-emerald-500 !border-amber-100 !bg-[#fff7ed]/80" />
           <app-stat-card label="Contacted" [value]="summary.contactedCount.toString()" cardClass="border-l-4 border-l-indigo-500 !border-amber-100 !bg-[#fff7ed]/80" />
         </div>
 
-        <app-card *ngIf="isLoading" cardClass="border-t border-slate-200 px-6 py-10">
+        <div *ngIf="isLoading" class="border-t border-slate-200 vendor-section-body py-10">
           <p class="text-sm font-semibold text-slate-500">Loading bulk inquiries...</p>
-        </app-card>
+        </div>
 
         <app-empty-state
           *ngIf="!isLoading && inquiries.length === 0"
@@ -67,7 +68,8 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
           cardClass="border-t border-dashed"
         />
 
-        <div *ngIf="!isLoading && inquiries.length" class="hidden overflow-x-auto lg:block">
+        <div *ngIf="!isLoading && inquiries.length" class="border-t border-slate-200 vendor-section-body lg:py-6">
+          <div class="hidden overflow-x-auto lg:block">
           <table class="min-w-full border-separate border-spacing-0">
             <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">
@@ -128,63 +130,72 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
                       <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}</option>
                     </select>
 
-                    <app-button variant="primary" type="button" buttonClass="!px-4 !py-2.5 text-sm" (click)="openDetails(inquiry)">
+                    <button
+                      type="button"
+                      class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
+                      (click)="openDetails(inquiry)"
+                    >
                       View
-                    </app-button>
+                    </button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
-        </div>
+          </div>
 
-        <div *ngIf="!isLoading && inquiries.length" class="grid gap-4 lg:hidden">
-          <article *ngFor="let inquiry of inquiries; trackBy: trackByInquiry" class="vendor-mobile-card">
-            <div class="flex items-start justify-between gap-4">
-              <div class="min-w-0">
-                <p class="truncate text-base font-black text-slate-900">{{ inquiry.fullName }}</p>
-                <p class="mt-1 break-words text-sm font-medium text-[#9c5f39]">{{ inquiry.phone }}</p>
+          <div class="mt-6 flex flex-col gap-4 lg:hidden">
+            <article *ngFor="let inquiry of inquiries; trackBy: trackByInquiry" class="vendor-mobile-card w-full min-w-0">
+              <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="truncate text-base font-black text-slate-900">{{ inquiry.fullName }}</p>
+                  <p class="mt-1 break-words text-sm font-medium text-[#9c5f39]">{{ inquiry.phone }}</p>
+                </div>
+                <app-badge [tone]="statusTone(inquiry.status)" badgeClass="px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]">
+                  {{ inquiry.status }}
+                </app-badge>
               </div>
-              <app-badge [tone]="statusTone(inquiry.status)" badgeClass="px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]">
-                {{ inquiry.status }}
-              </app-badge>
-            </div>
 
-            <div class="mt-4 grid gap-3 sm:grid-cols-2">
-              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Business</p>
-                <p class="mt-2 text-sm font-black text-slate-900">{{ inquiry.businessName || 'Individual buyer' }}</p>
+              <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Business</p>
+                  <p class="mt-2 text-sm font-black text-slate-900">{{ inquiry.businessName || 'Individual buyer' }}</p>
+                </div>
+                <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Order Type</p>
+                  <p class="mt-2 text-sm font-black text-slate-900">{{ inquiry.orderType }}</p>
+                </div>
+                <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">City</p>
+                  <p class="mt-2 text-sm font-black text-slate-900">{{ inquiry.city }}</p>
+                </div>
+                <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Submitted</p>
+                  <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(inquiry.createdAt) }}</p>
+                </div>
               </div>
-              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Order Type</p>
-                <p class="mt-2 text-sm font-black text-slate-900">{{ inquiry.orderType }}</p>
-              </div>
-              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">City</p>
-                <p class="mt-2 text-sm font-black text-slate-900">{{ inquiry.city }}</p>
-              </div>
-              <div class="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Submitted</p>
-                <p class="mt-2 text-sm font-black text-slate-900">{{ formatDate(inquiry.createdAt) }}</p>
-              </div>
-            </div>
 
-            <div class="mt-4 flex flex-col gap-3 sm:flex-row">
-              <select
-                class="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-slate-700 outline-none transition focus:border-[#d4a017] focus:ring-2 focus:ring-amber-100"
-                [ngModel]="inquiry.status"
-                [ngModelOptions]="{ standalone: true }"
-                (ngModelChange)="updateStatus(inquiry, $event)"
-                [disabled]="updatingId === inquiry._id"
-              >
-                <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}</option>
-              </select>
+              <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+                <select
+                  class="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-slate-700 outline-none transition focus:border-[#d4a017] focus:ring-2 focus:ring-amber-100"
+                  [ngModel]="inquiry.status"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="updateStatus(inquiry, $event)"
+                  [disabled]="updatingId === inquiry._id"
+                >
+                  <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}</option>
+                </select>
 
-              <app-button variant="primary" type="button" buttonClass="w-full !px-4 !py-3 text-sm" (click)="openDetails(inquiry)">
-                View Details
-              </app-button>
-            </div>
-          </article>
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
+                  (click)="openDetails(inquiry)"
+                >
+                  View Details
+                </button>
+              </div>
+            </article>
+          </div>
         </div>
       </div>
     </section>

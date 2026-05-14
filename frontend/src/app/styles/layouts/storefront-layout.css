@@ -1,0 +1,18 @@
+/* Customer-facing storefront shell primitives for shopping and marketing pages. */
+@layer components {
+  .storefront-layout {
+    @apply w-full min-w-0;
+  }
+
+  .storefront-layout__container {
+    @apply mx-auto w-full min-w-0;
+  }
+
+  .storefront-layout__section {
+    @apply w-full min-w-0;
+  }
+
+  .storefront-layout__stack {
+    @apply space-y-5 sm:space-y-6;
+  }
+}

@@ -5,6 +5,13 @@ import { Component, Input } from '@angular/core';
   selector: 'app-product-reviews-summary',
   standalone: true,
   imports: [CommonModule],
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+  `],
   template: `
     <div class="mt-6 grid gap-6 lg:grid-cols-[170px_1fr]">
       <div class="rounded-[1.75rem] border border-[#f1e4d4] bg-[#fffaf0] px-5 py-6 text-center lg:text-left">

@@ -4,8 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
-import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
-import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   VendorCategoryRecord,
@@ -35,52 +33,56 @@ interface WizardStep {
     CommonModule,
     FormsModule,
     RouterModule,
-    AppButtonComponent,
-    AppCardComponent,
     VendorFormSectionComponent,
     VendorVariantEditorCardComponent,
     VendorVariantOptionRowComponent,
     PageHeaderComponent,
   ],
   template: `
-    <section class="space-y-6">
-      <app-card cardClass="p-6 sm:p-8">
-        <app-page-header eyebrow="Vendor Products" title="Add Product" titleClass="!text-[1.8rem] md:!text-[2.2rem]">
-          <app-button routerLink="/vendor/products" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">
-            Back to Products
-          </app-button>
-        </app-page-header>
-      </app-card>
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
+          <app-page-header eyebrow="Vendor Products" title="Add Product" titleClass="!text-[1.8rem] md:!text-[2.2rem]">
+            <a
+              routerLink="/vendor/products"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Back to Products
+            </a>
+          </app-page-header>
+        </div>
 
-      <div class="grid grid-cols-1 gap-3 lg:grid-cols-5">
-          <button
-            *ngFor="let step of steps; let i = index; trackBy: trackByStep"
-            type="button"
-            (click)="goToStep(i)"
-            class="min-w-0 rounded-[1.4rem] border px-4 py-4 text-left transition sm:min-h-[5.5rem]"
-            [ngClass]="i === currentStep ? 'border-amber-300 bg-white text-slate-900 shadow-sm' : i < currentStep ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-white/70 bg-white/70 text-slate-500'"
-          >
-            <div class="flex items-center gap-3 sm:block">
-              <span
-                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-xs font-black transition"
-                [ngClass]="i === currentStep ? 'border-amber-300 bg-amber-100 text-amber-800' : i < currentStep ? 'border-emerald-200 bg-emerald-100 text-emerald-700' : 'border-slate-200 bg-white text-slate-500'"
-              >
-                {{ i + 1 }}
-              </span>
-              <div class="min-w-0">
-                <p class="vendor-stat-label">Step {{ i + 1 }}</p>
-                <h2 class="mt-1 text-sm font-bold text-slate-900">{{ step.title }}</h2>
-              </div>
+        <div class="vendor-section-body">
+          <div class="grid grid-cols-1 gap-3 lg:grid-cols-5">
+            <button
+              *ngFor="let step of steps; let i = index; trackBy: trackByStep"
+              type="button"
+              (click)="goToStep(i)"
+              class="min-w-0 rounded-[1.4rem] border px-4 py-4 text-left transition sm:min-h-[5.5rem]"
+              [ngClass]="i === currentStep ? 'border-amber-300 bg-white text-slate-900 shadow-sm' : i < currentStep ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-white/70 bg-white/70 text-slate-500'"
+            >
+              <div class="flex items-center gap-3 sm:block">
+                <span
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-xs font-black transition"
+                  [ngClass]="i === currentStep ? 'border-amber-300 bg-amber-100 text-amber-800' : i < currentStep ? 'border-emerald-200 bg-emerald-100 text-emerald-700' : 'border-slate-200 bg-white text-slate-500'"
+                >
+                  {{ i + 1 }}
+                </span>
+                <div class="min-w-0">
+                  <p class="vendor-stat-label">Step {{ i + 1 }}</p>
+                  <h2 class="mt-1 text-sm font-bold text-slate-900">{{ step.title }}</h2>
+                </div>
               </div>
             </button>
-      </div>
-        
-      <app-card *ngIf="isLoadingCategories" cardClass="py-20 text-center">
+          </div>
+        </div>
+
+        <div *ngIf="isLoadingCategories" class="vendor-section-body text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading categories...</p>
-      </app-card>
+        </div>
 
-      <form *ngIf="!isLoadingCategories" class="space-y-6" (ngSubmit)="submitProduct()">
+        <form *ngIf="!isLoadingCategories" class="space-y-6" (ngSubmit)="submitProduct()">
           <div *ngIf="currentStep === 0" class="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 1" title="Basic info">
               <div class="grid gap-5 md:grid-cols-2">
@@ -154,7 +156,14 @@ interface WizardStep {
 
           <div *ngIf="currentStep === 2" class="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)]">
             <app-vendor-form-section eyebrow="Step 3" title="Variant options" [hasAction]="true" headerLayout="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <app-button section-action variant="secondary" type="button" (click)="addOption()" buttonClass="w-full !py-3 sm:w-auto">Add Option</app-button>
+              <button
+                section-action
+                type="button"
+                class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                (click)="addOption()"
+              >
+                Add Option
+              </button>
               <div class="space-y-4">
                 <app-vendor-variant-option-row *ngFor="let option of variantOptions; let i = index" [option]="option" [index]="i" (remove)="removeOption($event)" />
               </div>
@@ -179,8 +188,20 @@ interface WizardStep {
           <div *ngIf="currentStep === 3" class="space-y-6">
             <app-vendor-form-section eyebrow="Step 4" title="Variants" [hasAction]="true" headerLayout="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div section-action class="flex flex-wrap gap-3">
-                <app-button variant="secondary" type="button" (click)="generateVariants()" buttonClass="w-full !py-3 sm:w-auto">Auto Generate</app-button>
-                <app-button variant="secondary" type="button" (click)="addManualVariant()" buttonClass="w-full !py-3 sm:w-auto">Add Manual Variant</app-button>
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                  (click)="generateVariants()"
+                >
+                  Auto Generate
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                  (click)="addManualVariant()"
+                >
+                  Add Manual Variant
+                </button>
               </div>
               <div *ngIf="variants.length === 0" class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm font-medium text-slate-500">
                 Generate variants from the option step or add one manually.
@@ -228,19 +249,38 @@ interface WizardStep {
                 <div class="rounded-[1.5rem] border px-5 py-4 text-sm font-bold" [ngClass]="isReviewReady ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-amber-200 bg-amber-50 text-amber-700'">
                   {{ isReviewReady ? 'Everything required is ready. Create the product when you are ready.' : 'Some required information is still missing from earlier steps.' }}
                 </div>
-                <app-button type="submit" [disabled]="isSubmitting || !isReviewReady" buttonClass="w-full !px-8 !py-4">
+                <button
+                  type="submit"
+                  [disabled]="isSubmitting || !isReviewReady"
+                  class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
+                >
                   {{ isSubmitting ? 'Creating Product...' : 'Create Product' }}
-                </app-button>
+                </button>
               </div>
             </app-vendor-form-section>
           </div>
 
           <div class="mt-6 flex flex-col gap-3 rounded-[1.8rem] border border-slate-200 bg-white px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-            <app-button variant="secondary" type="button" (click)="previousStep()" [disabled]="currentStep === 0" buttonClass="w-full !px-6 !py-3 sm:w-auto">Previous</app-button>
+            <button
+              type="button"
+              (click)="previousStep()"
+              [disabled]="currentStep === 0"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Previous
+            </button>
             <p class="text-center text-xs font-black uppercase tracking-[0.18em] text-slate-400 sm:text-left">Step {{ currentStep + 1 }} of {{ steps.length }}</p>
-            <app-button *ngIf="currentStep < steps.length - 1" type="button" (click)="nextStep()" buttonClass="w-full !px-6 !py-3 sm:w-auto">Next</app-button>
+            <button
+              *ngIf="currentStep < steps.length - 1"
+              type="button"
+              (click)="nextStep()"
+              class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Next
+            </button>
           </div>
-      </form>
+        </form>
+      </div>
     </section>
   `,
 })

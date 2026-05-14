@@ -3,6 +3,10 @@
 @import "./app/styles/base/reset.css";
 @import "./app/styles/base/typography.css";
 @import "./app/styles/base/layout.css";
+@import "./app/styles/layouts/storefront-layout.css";
+@import "./app/styles/layouts/store-owner-layout.css";
+@import "./app/styles/layouts/auth-layout.css";
+@import "./app/styles/layouts/checkout-layout.css";
 @import "./app/styles/components/page.css";
 @import "./app/styles/components/form.css";
 @import "./app/styles/components/card.css";

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
-import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent as AppCardComponent } from '../../../shared/ui/card/card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
@@ -23,36 +22,59 @@ import {
 @Component({
   selector: 'app-vendor-edit-product-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, AppButtonComponent, AppCardComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, AppCardComponent, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <app-card cardClass="p-6 sm:p-8">
-        <app-page-header
-          eyebrow="Vendor Products"
-          title="Edit Product Details"
-          titleClass="!text-[1.8rem] md:!text-[2.2rem]"
-          description="This page is only for customer-facing product information. Inventory and variant operations live in their own dedicated workspaces."
-        >
-          <app-button routerLink="/vendor/products" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Back to Products</app-button>
-          <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Go to Restock</app-button>
-          <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Manage Variants</app-button>
-        </app-page-header>
-      </app-card>
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
+          <app-page-header
+            eyebrow="Vendor Products"
+            title="Edit Product Details"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
+            description="This page is only for customer-facing product information. Inventory and variant operations live in their own dedicated workspaces."
+          >
+            <a
+              routerLink="/vendor/products"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Back to Products
+            </a>
+            <a
+              *ngIf="product"
+              [routerLink]="['/vendor/products', product._id, 'restock']"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Go to Restock
+            </a>
+            <a
+              *ngIf="product"
+              [routerLink]="['/vendor/products', product._id, 'variants']"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Manage Variants
+            </a>
+          </app-page-header>
+        </div>
 
-      <app-card *ngIf="isLoading" cardClass="py-20 text-center">
+        <div *ngIf="isLoading" class="vendor-section-body text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading product details...</p>
-      </app-card>
+        </div>
 
-      <app-card *ngIf="!isLoading && !product" cardClass="py-16 text-center">
+        <div *ngIf="!isLoading && !product" class="vendor-section-body text-center">
           <h2 class="vendor-empty-title">Product not found</h2>
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
             We couldn't load that product. It may have been deleted or the link may be outdated.
           </p>
-          <app-button routerLink="/vendor/products" variant="primary" type="button" buttonClass="mt-6 w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</app-button>
-      </app-card>
+          <a
+            routerLink="/vendor/products"
+            class="mt-6 inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30]"
+          >
+            Return to Products
+          </a>
+        </div>
 
-      <form *ngIf="!isLoading && product" class="space-y-6" (ngSubmit)="saveProduct()">
+        <form *ngIf="!isLoading && product" class="space-y-6 vendor-section-body" (ngSubmit)="saveProduct()">
           <div class="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
             <app-card cardClass="p-5 sm:p-6 lg:p-7">
               <div class="border-b border-slate-100 pb-4">
@@ -90,8 +112,20 @@ import {
                 </label>
 
                 <div class="flex flex-col gap-3 sm:flex-row md:col-span-2">
-                  <app-button type="submit" [disabled]="isSubmitting" buttonClass="w-full !px-8 !py-4 sm:w-auto">{{ isSubmitting ? 'Saving Changes...' : 'Save Changes' }}</app-button>
-                  <app-button type="button" (click)="cancel()" variant="secondary" buttonClass="w-full !px-8 !py-4 sm:w-auto">Cancel</app-button>
+                  <button
+                    type="submit"
+                    class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
+                    [disabled]="isSubmitting"
+                  >
+                    {{ isSubmitting ? 'Saving Changes...' : 'Save Changes' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+                    (click)="cancel()"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             </app-card>
@@ -132,7 +166,8 @@ import {
               </app-card>
             </aside>
           </div>
-      </form>
+        </form>
+      </div>
     </section>
   `,
 })

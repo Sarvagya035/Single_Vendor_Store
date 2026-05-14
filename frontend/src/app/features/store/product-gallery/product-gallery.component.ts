@@ -5,6 +5,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'app-product-gallery',
   standalone: true,
   imports: [CommonModule],
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+  `],
   template: `
     <div class="space-y-3 md:space-y-4">
       <div class="relative overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.07)] lg:rounded-[2rem]">

@@ -1,0 +1,14 @@
+/* Store owner shell primitives for vendor/admin management pages. */
+@layer components {
+  .store-owner-layout {
+    @apply w-full min-w-0;
+  }
+
+  .store-owner-layout__container {
+    @apply mx-auto w-full min-w-0;
+  }
+
+  .store-owner-layout__section {
+    @apply w-full min-w-0;
+  }
+}

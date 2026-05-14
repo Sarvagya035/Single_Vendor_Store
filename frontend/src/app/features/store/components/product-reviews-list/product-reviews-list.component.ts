@@ -6,6 +6,13 @@ import { ProductReview } from '../../../../core/models/review.models';
   selector: 'app-product-reviews-list',
   standalone: true,
   imports: [CommonModule],
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+  `],
   template: `
     <div class="mt-8 space-y-6">
       <article

@@ -4,7 +4,6 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import { BadgeComponent as AppBadgeComponent } from '../../../shared/ui/badge/badge.component';
-import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
 import { VendorProductRecord, VendorProductVariant } from '../../../core/models/vendor.models';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
@@ -18,7 +17,7 @@ import {
 @Component({
   selector: 'app-vendor-view-product-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AppBadgeComponent, AppButtonComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AppBadgeComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -29,10 +28,33 @@ import {
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="Review this product exactly as a vendor record, with images, pricing, stock, and variants, without any customer purchase actions."
           >
-            <app-button routerLink="/vendor/products" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Back to Products</app-button>
-            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Edit</app-button>
-            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'restock']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Restock</app-button>
-            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" variant="primary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Manage Variants</app-button>
+            <a
+              routerLink="/vendor/products"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Back to Products
+            </a>
+            <a
+              *ngIf="product"
+              [routerLink]="['/vendor/products', product._id, 'edit']"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Edit
+            </a>
+            <a
+              *ngIf="product"
+              [routerLink]="['/vendor/products', product._id, 'restock']"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Restock
+            </a>
+            <a
+              *ngIf="product"
+              [routerLink]="['/vendor/products', product._id, 'variants']"
+              class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30]"
+            >
+              Manage Variants
+            </a>
           </app-page-header>
         </div>
 
@@ -46,7 +68,12 @@ import {
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-slate-500">
             We could not load this vendor product. It may have been removed or the link may be outdated.
           </p>
-          <app-button routerLink="/vendor/products" variant="primary" type="button" buttonClass="mt-6 w-full justify-center !px-6 !py-3 sm:w-auto">Return to Products</app-button>
+          <a
+            routerLink="/vendor/products"
+            class="mt-6 inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30]"
+          >
+            Return to Products
+          </a>
         </div>
 
         <div *ngIf="!isLoading && product" class="vendor-grid-2 vendor-section-body lg:grid-cols-[1.1fr_0.9fr]">
@@ -150,7 +177,7 @@ import {
           </p>
         </div>
 
-        <div *ngIf="product.variants?.length" class="space-y-4 pt-5 lg:space-y-6">
+        <div *ngIf="product.variants?.length; else noVariants" class="space-y-4 pt-5 lg:space-y-6">
           <div class="grid gap-4 lg:hidden">
             <article
               *ngFor="let variant of product.variants; trackBy: trackByVariant"

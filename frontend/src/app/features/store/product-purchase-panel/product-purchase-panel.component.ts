@@ -7,6 +7,13 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
   selector: 'app-product-purchase-panel',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+  `],
   template: `
     <div class="w-full min-w-0 max-w-full space-y-5 md:space-y-6">
       <div>
@@ -61,7 +68,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
               {{ variants.length }} options
             </span>
           </div>
-          <div class="flex max-w-full gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-hide">
+          <div class="flex max-w-full min-w-0 gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <button
               *ngFor="let variant of variants; let index = index; trackBy: trackByVariant"
               type="button"
@@ -141,7 +148,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             </button>
           </div>
 
-          <div class="flex w-full flex-col gap-3 md:flex-row">
+          <div class="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap">
             <button
               type="button"
               class="btn-secondary w-full min-w-0 justify-center py-3.5 md:flex-1 md:w-auto"

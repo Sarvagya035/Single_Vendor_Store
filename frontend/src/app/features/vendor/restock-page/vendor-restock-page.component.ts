@@ -5,7 +5,6 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
-import { ButtonComponent as AppButtonComponent } from '../../../shared/ui/button/button.component';
 import { VendorProductRecord, VendorProductVariant } from '../../../core/models/vendor.models';
 import { VendorFormSectionComponent } from '../form-section/vendor-form-section.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
@@ -18,7 +17,7 @@ import {
 @Component({
   selector: 'app-vendor-restock-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent, AppButtonComponent],
+  imports: [CommonModule, FormsModule, RouterModule, VendorFormSectionComponent, PageHeaderComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -29,18 +28,35 @@ import {
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
             description="This page is only for stock updates. Product details and variant editing stay separate so inventory work stays fast and focused."
           >
-            <app-button routerLink="/vendor/products" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Back to Products</app-button>
-            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'edit']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Edit Product</app-button>
-            <app-button *ngIf="product" [routerLink]="['/vendor/products', product._id, 'variants']" variant="secondary" type="button" buttonClass="w-full !px-6 !py-3 sm:w-auto">Manage Variants</app-button>
+            <a
+              routerLink="/vendor/products"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Back to Products
+            </a>
+            <a
+              *ngIf="product"
+              [routerLink]="['/vendor/products', product._id, 'edit']"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Edit Product
+            </a>
+            <a
+              *ngIf="product"
+              [routerLink]="['/vendor/products', product._id, 'variants']"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+            >
+              Manage Variants
+            </a>
           </app-page-header>
         </div>
 
-        <div *ngIf="isLoading" class="px-6 py-20 text-center">
+        <div *ngIf="isLoading" class="vendor-section-body text-center">
           <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
           <p class="mt-4 text-sm font-medium text-slate-500">Loading inventory details...</p>
         </div>
 
-        <div *ngIf="!isLoading && product" class="border-t border-slate-200 vendor-section-body lg:py-6">
+        <div *ngIf="!isLoading && product" class="vendor-section-body lg:py-6">
           <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
             <app-vendor-form-section eyebrow="Inventory Summary" title="Current product">
               <div class="space-y-5">
@@ -96,9 +112,14 @@ import {
                       </div>
                     </div>
 
-                    <app-button type="button" (click)="restockVariant(variant)" [disabled]="!variant._id || busyVariantId === variant._id" buttonClass="w-full !px-4 !py-2.5 text-xs">
+                    <button
+                      type="button"
+                      class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
+                      (click)="restockVariant(variant)"
+                      [disabled]="!variant._id || busyVariantId === variant._id"
+                    >
                       {{ busyVariantId === variant._id ? 'Updating...' : 'Update Stock' }}
-                    </app-button>
+                    </button>
                   </div>
                 </article>
               </div>

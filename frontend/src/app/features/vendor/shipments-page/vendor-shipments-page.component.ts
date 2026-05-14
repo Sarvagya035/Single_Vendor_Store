@@ -9,7 +9,6 @@ import {
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
-import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
 import { StatCardComponent } from '../../../shared/ui/stat-card/stat-card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
@@ -50,7 +49,7 @@ interface ShipmentCardView {
 @Component({
   selector: 'app-vendor-shipments-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, ButtonComponent, BadgeComponent, StatCardComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, BadgeComponent, StatCardComponent],
   template: `
     <section class="vendor-content">
       <div class="vendor-section">
@@ -60,14 +59,14 @@ interface ShipmentCardView {
             title="Shipment management"
             titleClass="!text-[1.8rem] md:!text-[2.2rem]"
           >
-            <app-button
-              variant="secondary"
-              buttonClass="w-full !py-3 sm:w-auto"
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-[#7c5646] shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
               [disabled]="isLoading"
               (click)="loadShipments()"
             >
               {{ isLoading ? 'Refreshing...' : 'Refresh Shipments' }}
-            </app-button>
+            </button>
           </app-page-header>
         </div>
 
@@ -156,7 +155,7 @@ interface ShipmentCardView {
                 </div>
               </div>
 
-              <div class="flex shrink-0 flex-col items-start gap-3 lg:items-end">
+              <div class="flex shrink-0 flex-col items-end gap-3">
                 <app-badge [badgeClass]="statusClass(shipment.shipmentStatus) + ' px-3 py-1.5 text-sm font-black'" tone="neutral">
                   <span class="h-2.5 w-2.5 rounded-full" [ngClass]="statusDotClass(shipment.shipmentStatus)"></span>
                   {{ shipment.shipmentStatus || 'Created' }}
@@ -164,7 +163,7 @@ interface ShipmentCardView {
 
                 <button
                   type="button"
-                  class="w-full rounded-full bg-[#f5ede5] px-5 py-3 text-sm font-black text-[#7c5646] transition hover:bg-[#efe1d5]"
+                  class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
                   (click)="toggleShipment(shipment.orderId)"
                 >
                   {{ isExpanded(shipment.orderId) ? 'Hide Timeline & Edit' : 'View Timeline & Edit' }}
@@ -294,13 +293,12 @@ interface ShipmentCardView {
                       >
                         {{ savingOrderId === shipment.orderId ? 'Saving...' : 'Save Shipment' }}
                       </button>
-                      <app-button
+                      <a
                         [routerLink]="['/vendor/orders', shipment.orderId, 'tracking']"
-                        variant="secondary"
-                        buttonClass="rounded-2xl px-4 py-2.5 text-xs font-black"
+                        class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
                       >
                         Open Track Page
-                      </app-button>
+                      </a>
                     </div>
                   </div>
                 </section>
