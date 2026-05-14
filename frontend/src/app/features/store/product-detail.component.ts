@@ -140,15 +140,14 @@ import { findSimilarProducts as buildSimilarProducts } from './utils/product-det
                   titleClass="!mt-2 !text-2xl !font-extrabold"
                 >
                   <div class="flex shrink-0 items-center justify-end">
-                    <app-button
+                    <button
                       type="button"
-                      variant="primary"
                       [attr.aria-expanded]="showReviewForm"
-                      buttonClass="inline-flex items-center justify-center min-w-[150px] shrink-0 whitespace-nowrap !rounded-full !bg-[#f08a00] !px-5 !py-3 !text-sm !font-extrabold !shadow-[0_14px_30px_rgba(240,138,0,0.22)] hover:!bg-[#e07d00]"
+                      class="inline-flex min-w-[170px] shrink-0 items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30]"
                       (click)="toggleReviewForm()"
                     >
                       {{ showReviewForm ? 'Hide Review Form' : 'Write a Review' }}
-                    </app-button>
+                    </button>
                   </div>
                 </app-page-header>
               </div>

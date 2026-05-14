@@ -61,21 +61,23 @@ import {
         </div>
 
         <app-card variant="default" cardClass="border-t border-slate-200 !rounded-none !border-x-0 !border-b-0 !bg-transparent !shadow-none vendor-section-body lg:py-6">
-          <div class="space-y-4">
-            <app-input
-              type="search"
-              [(value)]="searchQuery"
-              (valueChange)="onSearchChange()"
-              placeholder="Search by name, brand, SKU, or category..."
-              inputClass="!pl-12"
-              [leadingIcon]="true"
-            >
-              <svg appInputLeading class="h-5 w-5 text-[#8a5f44]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
-              </svg>
-            </app-input>
+          <div class="space-y-5">
+            <div class="w-full">
+              <app-input
+                type="search"
+                [(value)]="searchQuery"
+                (valueChange)="onSearchChange()"
+                placeholder="Search by name, brand, SKU, or category..."
+                inputClass="!pl-12"
+                [leadingIcon]="true"
+              >
+                <svg appInputLeading class="h-5 w-5 text-[#8a5f44]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                </svg>
+              </app-input>
+            </div>
 
-            <div class="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-center">
+            <div class="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
               <label class="block w-full">
                 <select
                   [(ngModel)]="selectedCategory"
@@ -103,7 +105,7 @@ import {
 
               <button
                 type="button"
-                class="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3.5 text-sm font-extrabold text-[#7c5646] shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60 lg:justify-self-end"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3.5 text-sm font-extrabold text-[#7c5646] shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto lg:justify-self-end"
                 [disabled]="isLoading"
                 (click)="loadVendorProducts(currentPage)"
               >

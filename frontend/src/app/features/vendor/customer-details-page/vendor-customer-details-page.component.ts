@@ -34,8 +34,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
       </div>
 
       <div *ngIf="!isLoading && customer" class="border-t border-slate-200 vendor-section-body lg:py-6">
+        <div class="space-y-6">
         <div class="vendor-grid-2 lg:grid-cols-[0.9fr_1.1fr]">
-          <section class="vendor-card-compact">
+          <section class="vendor-card-compact w-full min-w-0">
             <div class="flex items-center gap-3">
               <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 text-xl font-black text-slate-500 sm:h-20 sm:w-20 sm:text-2xl">
                 <img *ngIf="customer.avatar; else initialsBlock" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
@@ -77,7 +78,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             </dl>
           </section>
 
-          <section class="vendor-card-compact">
+          <section class="vendor-card-compact w-full min-w-0">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
               <div>
                 <p class="vendor-stat-label">Activity</p>
@@ -103,7 +104,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </section>
         </div>
 
-        <section *ngIf="loadingProduct || selectedProduct" class="vendor-card-compact">
+        <section *ngIf="loadingProduct || selectedProduct" class="vendor-card-compact w-full min-w-0">
           <div class="flex flex-col gap-2.5 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Product Preview</p>
@@ -171,7 +172,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </section>
 
-        <section class="vendor-card-compact">
+        <section class="vendor-card-compact w-full min-w-0">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Order History</p>
@@ -195,7 +196,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </p>
         </section>
 
-        <section class="vendor-card-compact">
+        <section class="vendor-card-compact w-full min-w-0">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Buying Pattern</p>
@@ -260,7 +261,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
           </div>
         </section>
 
-        <section class="vendor-card-compact">
+        <section class="vendor-card-compact w-full min-w-0">
           <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="vendor-stat-label">Wishlist</p>
@@ -314,6 +315,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
             </article>
           </div>
         </section>
+      </div>
       </div>
       </div>
 
