@@ -246,18 +246,37 @@ interface ProductMessage {
                     class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                   />
                   <div class="md:col-span-2 lg:col-span-5">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      (change)="onNewVariantImageSelected($event, product._id)"
-                      class="block w-full rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-600"
-                    />
-                    <p class="mt-2 text-xs font-semibold text-slate-500">
-                      {{
-                        variantCreateForms[product._id].imageFile?.name ||
-                          'Variant image is required for this backend endpoint.'
-                      }}
-                    </p>
+                    <div class="grid gap-1.5">
+                      <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                        Variant Images
+                      </span>
+                      <label class="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-600 transition hover:border-amber-300 hover:text-slate-800">
+                        <span class="truncate">
+                          {{
+                            (variantCreateForms[product._id].imageFiles?.length || 0)
+                              ? ((variantCreateForms[product._id].imageFiles?.length || 0) + ' image' + ((variantCreateForms[product._id].imageFiles?.length || 0) > 1 ? 's' : '') + ' selected')
+                              : 'Upload images'
+                          }}
+                        </span>
+                        <span class="ml-3 shrink-0 text-xs font-black uppercase tracking-[0.18em] text-slate-400">Browse</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          (change)="onNewVariantImageSelected($event, product._id)"
+                          class="sr-only"
+                        />
+                      </label>
+                      <div *ngIf="(variantCreateForms[product._id].imagePreviews?.length || 0)" class="flex flex-wrap gap-2">
+                        <div *ngFor="let preview of (variantCreateForms[product._id].imagePreviews || []); let imageIndex = index" class="relative h-20 w-20 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                          <img [src]="preview" alt="Variant preview" class="h-full w-full object-cover" />
+                          <button type="button" class="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[10px] font-black text-rose-600 shadow-sm" (click)="removeNewVariantImage(product._id, imageIndex)">×</button>
+                        </div>
+                      </div>
+                      <p class="text-xs font-semibold text-slate-500">
+                        Upload up to 5 images. The first image is used as the fallback thumbnail.
+                      </p>
+                    </div>
                   </div>
                   <div class="md:col-span-2 lg:col-span-5">
                     <button
@@ -589,7 +608,25 @@ export class VendorProductsPanelComponent implements OnInit, OnChanges {
   onNewVariantImageSelected(event: Event, productId: string) {
     const input = event.target as HTMLInputElement;
     this.ensureVariantCreateForm(productId);
-    this.variantCreateForms[productId].imageFile = input.files?.[0] || null;
+    const files = Array.from(input.files || []).slice(0, 5);
+    this.variantCreateForms[productId].imageFiles = files;
+    this.variantCreateForms[productId].imagePreviews = files.map((file) => URL.createObjectURL(file));
+    this.variantCreateForms[productId].imageFile = files[0] || null;
+    input.value = '';
+  }
+
+  removeNewVariantImage(productId: string, imageIndex: number) {
+    this.ensureVariantCreateForm(productId);
+    const form = this.variantCreateForms[productId];
+    const currentFiles = form.imageFiles || [];
+    const currentPreviews = form.imagePreviews || [];
+    if (imageIndex < 0 || imageIndex >= currentFiles.length) {
+      return;
+    }
+
+    form.imageFiles = currentFiles.filter((_, index) => index !== imageIndex);
+    form.imagePreviews = currentPreviews.filter((_, index) => index !== imageIndex);
+    form.imageFile = form.imageFiles[0] || null;
   }
 
   addVariant(product: VendorProductRecord) {
@@ -610,11 +647,11 @@ export class VendorProductsPanelComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (!form.imageFile) {
+    if (!(form.imageFiles?.length || 0)) {
       this.setMessage(
         product._id,
         'error',
-        'Variant image is required by the backend add-variant endpoint.',
+        'At least one variant image is required by the backend add-variant endpoint.',
       );
       return;
     }
@@ -624,7 +661,7 @@ export class VendorProductsPanelComponent implements OnInit, OnChanges {
     data.append('productPrice', String(form.productPrice));
     data.append('discountPercentage', String(form.discountPercentage || 0));
     data.append('productStock', String(form.productStock));
-    data.append('variantImage', form.imageFile);
+    (form.imageFiles || []).forEach((file) => data.append('variantImages', file));
 
     this.setBusy(`add-variant-${product._id}`, true);
     this.vendorService.addVariant(product._id, data).subscribe({
@@ -908,6 +945,8 @@ export class VendorProductsPanelComponent implements OnInit, OnChanges {
       discountPercentage: 0,
       productStock: null,
       imageFile: null,
+      imageFiles: [],
+      imagePreviews: [],
     };
   }
 

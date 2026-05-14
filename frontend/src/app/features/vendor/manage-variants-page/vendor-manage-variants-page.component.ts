@@ -79,14 +79,36 @@ import {
 
             <app-vendor-form-section eyebrow="Add Variant" title="Create a new variant">
               <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.75fr))_auto]">
-                <input [(ngModel)]="newVariant.attributesText" name="new-attributes" placeholder="Weight:500g, Type:Roasted" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                <input type="number" [(ngModel)]="newVariant.productPrice" name="new-price" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                <input type="number" [(ngModel)]="newVariant.discountPercentage" name="new-discount" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                <input type="number" [(ngModel)]="newVariant.productStock" name="new-stock" min="0" placeholder="Stock" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                <label class="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
-                  {{ newVariant.imageFile?.name || 'Upload image' }}
-                  <input type="file" accept="image/*" class="hidden" (change)="onNewVariantImageSelected($event)" />
+                <label class="grid gap-1.5">
+                  <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Variant Option / Color / Weight / Size</span>
+                  <input [(ngModel)]="newVariant.attributesText" name="new-attributes" placeholder="Weight:500g, Type:Roasted" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
                 </label>
+                <label class="grid gap-1.5">
+                  <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Price</span>
+                  <input type="number" [(ngModel)]="newVariant.productPrice" name="new-price" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                </label>
+                <label class="grid gap-1.5">
+                  <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Offer / Discount</span>
+                  <input type="number" [(ngModel)]="newVariant.discountPercentage" name="new-discount" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                </label>
+                <label class="grid gap-1.5">
+                  <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Stock</span>
+                  <input type="number" [(ngModel)]="newVariant.productStock" name="new-stock" min="0" placeholder="Stock" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
+                </label>
+                <div class="grid gap-1.5 lg:col-span-5">
+                  <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Variant Images</span>
+                  <label class="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600 transition hover:border-amber-300 hover:text-slate-800">
+                    <span class="truncate">{{ (newVariant.imageFiles?.length || 0) ? ((newVariant.imageFiles?.length || 0) + ' image' + ((newVariant.imageFiles?.length || 0) > 1 ? 's' : '') + ' selected') : 'Upload images' }}</span>
+                    <span class="ml-3 shrink-0 text-xs font-black uppercase tracking-[0.18em] text-slate-400">Browse</span>
+                    <input type="file" accept="image/*" multiple class="sr-only" (change)="onNewVariantImagesSelected($event)" />
+                  </label>
+                  <div *ngIf="(newVariant.imagePreviews?.length || 0)" class="flex flex-wrap gap-2">
+                    <div *ngFor="let preview of (newVariant.imagePreviews || []); let imageIndex = index" class="relative h-20 w-20 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                      <img [src]="preview" alt="New variant preview" class="h-full w-full object-cover" />
+                      <button type="button" class="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[10px] font-black text-rose-600 shadow-sm" (click)="removeNewVariantImage(imageIndex)">×</button>
+                    </div>
+                  </div>
+                </div>
               </div>
               <button
                 type="button"
@@ -189,14 +211,21 @@ import {
                       </label>
                     </div>
 
-                    <label class="grid gap-1.5">
-                      <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Replacement Image</span>
-                      <span class="text-[11px] font-medium leading-5 text-slate-500">Upload only if you want to replace the current variant image.</span>
-                      <div class="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-600">
-                        <span class="truncate">{{ variantForms[variant._id || ''].imageFile?.name || 'Upload replacement image' }}</span>
-                        <input type="file" accept="image/*" class="hidden" (change)="onVariantImageSelected($event, variant)" />
+                    <div class="grid gap-1.5">
+                      <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Variant Images</span>
+                      <span class="text-[11px] font-medium leading-5 text-slate-500">Upload up to 5 images. Saving replaces the current set.</span>
+                      <label class="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-600 transition hover:border-amber-300 hover:text-slate-800">
+                        <span class="truncate">{{ ((variantForms[variant._id || '']?.imageFiles?.length || 0)) ? ((variantForms[variant._id || '']?.imageFiles?.length || 0) + ' image' + ((variantForms[variant._id || '']?.imageFiles?.length || 0) > 1 ? 's' : '') + ' selected') : 'Upload images' }}</span>
+                        <span class="ml-3 shrink-0 text-xs font-black uppercase tracking-[0.18em] text-slate-400">Browse</span>
+                        <input type="file" accept="image/*" multiple class="sr-only" (change)="onVariantImageSelected($event, variant)" />
+                      </label>
+                      <div *ngIf="(variantForms[variant._id || '']?.imagePreviews?.length || 0)" class="flex flex-wrap gap-2">
+                        <div *ngFor="let preview of (variantForms[variant._id || '']?.imagePreviews || []); let imageIndex = index" class="relative h-20 w-20 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                          <img [src]="preview" alt="Variant preview" class="h-full w-full object-cover" />
+                          <button type="button" class="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[10px] font-black text-rose-600 shadow-sm" (click)="removeVariantImage(variant, imageIndex)">×</button>
+                        </div>
                       </div>
-                    </label>
+                    </div>
 
                     <div class="grid gap-1.5 rounded-[1.3rem] border border-slate-200 bg-white p-3 text-sm font-medium text-slate-600">
                       <p><span class="font-black text-slate-900">Final Price:</span> {{ finalPriceLabel(variant) }}</p>
@@ -245,6 +274,8 @@ export class VendorManageVariantsPageComponent implements OnInit {
     discountPercentage: 0,
     productStock: null,
     imageFile: null,
+    imageFiles: [],
+    imagePreviews: [],
   };
 
   constructor(
@@ -275,16 +306,58 @@ export class VendorManageVariantsPageComponent implements OnInit {
     return formatVendorCurrency(finalPrice);
   }
 
-  onNewVariantImageSelected(event: Event): void {
+  onNewVariantImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.newVariant.imageFile = input.files?.[0] || null;
+    const files = Array.from(input.files || []).slice(0, 5);
+    this.newVariant.imageFiles = files;
+    this.newVariant.imagePreviews = files.map((file) => URL.createObjectURL(file));
+    this.newVariant.imageFile = files[0] || null;
+    input.value = '';
   }
 
   onVariantImageSelected(event: Event, variant: VendorProductVariant): void {
     const input = event.target as HTMLInputElement;
     if (variant._id) {
-      this.variantForms[variant._id].imageFile = input.files?.[0] || null;
+      const files = Array.from(input.files || []).slice(0, 5);
+      const form = this.variantForms[variant._id];
+      if (!form) {
+        return;
+      }
+
+      form.imageFiles = files;
+      form.imagePreviews = files.map((file) => URL.createObjectURL(file));
+      form.imageFile = files[0] || null;
+      input.value = '';
     }
+  }
+
+  removeNewVariantImage(imageIndex: number): void {
+    const currentFiles = this.newVariant.imageFiles ?? [];
+    const currentPreviews = this.newVariant.imagePreviews ?? [];
+    if (imageIndex < 0 || imageIndex >= currentFiles.length) {
+      return;
+    }
+
+    this.newVariant.imageFiles = currentFiles.filter((_, index) => index !== imageIndex);
+    this.newVariant.imagePreviews = currentPreviews.filter((_, index) => index !== imageIndex);
+    this.newVariant.imageFile = this.newVariant.imageFiles[0] || null;
+  }
+
+  removeVariantImage(variant: VendorProductVariant, imageIndex: number): void {
+    if (!variant._id) {
+      return;
+    }
+
+    const form = this.variantForms[variant._id];
+    const currentFiles = form?.imageFiles ?? [];
+    const currentPreviews = form?.imagePreviews ?? [];
+    if (!form || imageIndex < 0 || imageIndex >= currentFiles.length) {
+      return;
+    }
+
+    form.imageFiles = currentFiles.filter((_, index) => index !== imageIndex);
+    form.imagePreviews = currentPreviews.filter((_, index) => index !== imageIndex);
+    form.imageFile = form.imageFiles[0] || null;
   }
 
   addVariant(): void {
@@ -294,8 +367,8 @@ export class VendorManageVariantsPageComponent implements OnInit {
       this.errorService.showToast('New variants need attributes, price, and stock.', 'error');
       return;
     }
-    if (!this.newVariant.imageFile) {
-      this.errorService.showToast('A variant image is required to create a new variant.', 'error');
+    if (!(this.newVariant.imageFiles?.length || 0)) {
+      this.errorService.showToast('At least one variant image is required to create a new variant.', 'error');
       return;
     }
 
@@ -304,7 +377,7 @@ export class VendorManageVariantsPageComponent implements OnInit {
     data.append('productPrice', String(this.newVariant.productPrice));
     data.append('discountPercentage', String(this.newVariant.discountPercentage || 0));
     data.append('productStock', String(this.newVariant.productStock));
-    data.append('variantImage', this.newVariant.imageFile);
+    (this.newVariant.imageFiles || []).forEach((file) => data.append('variantImages', file));
 
     this.isAddingVariant = true;
     this.vendorService.addVariant(this.product._id, data).subscribe({
@@ -315,7 +388,15 @@ export class VendorManageVariantsPageComponent implements OnInit {
           return;
         }
         this.errorService.showToast('Variant added successfully.', 'success');
-        this.newVariant = { attributesText: '', productPrice: null, discountPercentage: 0, productStock: null, imageFile: null };
+        this.newVariant = {
+          attributesText: '',
+          productPrice: null,
+          discountPercentage: 0,
+          productStock: null,
+          imageFile: null,
+          imageFiles: [],
+          imagePreviews: [],
+        };
         this.loadProduct();
       },
       error: (err) => {
@@ -340,9 +421,7 @@ export class VendorManageVariantsPageComponent implements OnInit {
     data.append('discountPercentage', String(form.discountPercentage || 0));
     data.append('productStock', String(form.productStock));
     data.append('sku', form.sku.trim());
-    if (form.imageFile) {
-      data.append('variantImage', form.imageFile);
-    }
+    (form.imageFiles || []).forEach((file) => data.append('variantImages', file));
 
     this.busySaveId = variant._id;
     this.vendorService.updateVariant(this.product._id, variant._id, data).subscribe({
@@ -430,6 +509,12 @@ export class VendorManageVariantsPageComponent implements OnInit {
       productStock: variant.productStock ?? 0,
       sku: variant.sku || '',
       imageFile: null,
+      imageFiles: [],
+      imagePreviews: Array.isArray(variant.variantImages) && variant.variantImages.length
+        ? [...variant.variantImages]
+        : variant.variantImage
+          ? [variant.variantImage]
+          : [],
     };
   }
 }

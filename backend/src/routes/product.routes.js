@@ -26,23 +26,14 @@ const router = Router();
 router.route("/add-product").post(
     verifyJWT, 
     authorizeRoles("vendor"),
-    upload.fields([
-        { 
-            name: "mainImages", 
-            maxCount: 5  
-        },
-        { 
-            name: "variantImages", 
-            maxCount: 10 
-        }
-    ]),
+    upload.any(),
     createProduct
 );
 
 router.route("/add-variant/:productId").post(
     verifyJWT,
     authorizeRoles("vendor"),
-    upload.single("variantImage"),
+    upload.any(),
     addVariant
 )
 
@@ -97,7 +88,7 @@ router.route("/update-variant-discount/:productId/:variantId").patch(
 router.route("/update-variant/:productId/:variantId").patch(
     verifyJWT,
     authorizeRoles("vendor"),
-    upload.single("variantImage"),
+    upload.any(),
     updateVariant
 )
 

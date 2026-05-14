@@ -10,12 +10,13 @@ import { uploadOnCloudinary, deleteCloudinaryImage } from "../utils/cloudinaryUp
 import { syncLowStockNotificationsForProduct } from "../utils/vendorNotifications.js";
 
 const cleanupTempFiles = async (files) => {
-    const fileGroups = files || {};
-    const allFiles = [
-        ...(fileGroups.mainImages || []),
-        ...(fileGroups.variantImages || []),
-        ...(fileGroups.image || []),
-    ];
+    const allFiles = Array.isArray(files)
+        ? files
+        : [
+            ...(files?.mainImages || []),
+            ...(files?.variantImages || []),
+            ...(files?.image || []),
+        ];
 
     for (const file of allFiles) {
         if (file?.path && fs.existsSync(file.path)) {
@@ -26,6 +27,56 @@ const cleanupTempFiles = async (files) => {
             }
         }
     }
+};
+
+const normalizeUploadedFiles = (files) => {
+    if (!files) {
+        return [];
+    }
+
+    return Array.isArray(files)
+        ? files.filter(Boolean)
+        : Object.values(files).flat().filter(Boolean);
+};
+
+const groupVariantImageFiles = (files) => {
+    const indexed = new Map();
+    const legacy = [];
+
+    for (const file of normalizeUploadedFiles(files)) {
+        const fieldName = String(file?.fieldname || "").trim();
+        const indexedMatch = fieldName.match(/^variantImages_(\d+)$/);
+
+        if (indexedMatch) {
+            const index = Number(indexedMatch[1]);
+            const bucket = indexed.get(index) || [];
+            bucket.push(file);
+            indexed.set(index, bucket);
+            continue;
+        }
+
+        if (fieldName === "variantImages" || fieldName === "variantImage") {
+            legacy.push(file);
+        }
+    }
+
+    return { indexed, legacy };
+};
+
+const uploadFilesToCloudinary = async (files, uploadedCloudinaryAssets) => {
+    const uploadedItems = [];
+
+    for (const file of files || []) {
+        const uploaded = await uploadOnCloudinary(file.path);
+        if (!uploaded?.url) {
+            throw new ApiError(400, "Error uploading image");
+        }
+
+        uploadedCloudinaryAssets.push(uploaded);
+        uploadedItems.push(uploaded);
+    }
+
+    return uploadedItems;
 };
 
 const parseJsonField = (value, fieldName) => {
@@ -97,45 +148,52 @@ const createProduct = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Variant options are required");
         }
 
-        const mainImageFiles = req.files?.mainImages || [];
+        const allFiles = normalizeUploadedFiles(req.files);
+        const mainImageFiles = allFiles.filter((file) => String(file?.fieldname || "").trim() === "mainImages");
         if (!mainImageFiles.length) {
             throw new ApiError(400, "At least one main product image is required");
         }
-
-        const mainImageUrls = [];
-        for (const file of mainImageFiles) {
-            const uploaded = await uploadOnCloudinary(file.path);
-            if (!uploaded?.url) {
-                throw new ApiError(400, "Error uploading main product image");
-            }
-
-            uploadedCloudinaryAssets.push(uploaded);
-            mainImageUrls.push(uploaded.url);
+        if (mainImageFiles.length > 5) {
+            throw new ApiError(400, "A maximum of 5 main product images is allowed");
         }
 
-        const variantImageFiles = req.files?.variantImages || [];
-        const uploadedVariantImages = [];
+        const mainImageUrls = (await uploadFilesToCloudinary(mainImageFiles, uploadedCloudinaryAssets)).map((item) => item.url);
 
-        for (const file of variantImageFiles) {
-            const uploaded = await uploadOnCloudinary(file.path);
-            if (!uploaded?.url) {
-                throw new ApiError(400, "Error uploading variant image");
+        const { indexed: indexedVariantImages, legacy: legacyVariantImageFiles } = groupVariantImageFiles(allFiles);
+        for (const [index, files] of indexedVariantImages.entries()) {
+            if (files.length > 5) {
+                throw new ApiError(400, `A maximum of 5 images is allowed for variant ${index + 1}`);
             }
+        }
+        const uploadedLegacyVariantImages = await uploadFilesToCloudinary(legacyVariantImageFiles, uploadedCloudinaryAssets);
+        const uploadedVariantImagesByIndex = new Map();
 
-            uploadedCloudinaryAssets.push(uploaded);
-            uploadedVariantImages.push({
-                url: uploaded.url,
-                public_id: uploaded.public_id,
-                originalName: file.originalname
-            });
+        for (const [index, files] of indexedVariantImages.entries()) {
+            const uploadedItems = await uploadFilesToCloudinary(files, uploadedCloudinaryAssets);
+            uploadedVariantImagesByIndex.set(index, uploadedItems.map((item) => item.url));
         }
 
-        const finalVariants = parsedVariants.map((variant) => {
+        const finalVariants = parsedVariants.map((variant, index) => {
             const normalizedVariant = { ...variant };
+            const variantImageUrls = uploadedVariantImagesByIndex.get(index) || [];
 
-            if (normalizedVariant.imageRef !== undefined && uploadedVariantImages[normalizedVariant.imageRef]) {
-                normalizedVariant.variantImage = uploadedVariantImages[normalizedVariant.imageRef].url;
+            if (variantImageUrls.length === 0 && normalizedVariant.imageRef !== undefined) {
+                const legacyUploaded = uploadedLegacyVariantImages[normalizedVariant.imageRef];
+                if (legacyUploaded?.url) {
+                    variantImageUrls.push(legacyUploaded.url);
+                }
             }
+
+            const normalizedVariantImages = Array.isArray(normalizedVariant.variantImages)
+                ? normalizedVariant.variantImages.map((image) => String(image || "").trim()).filter(Boolean)
+                : [];
+            const mergedVariantImages = [...new Set([
+                ...normalizedVariantImages,
+                ...variantImageUrls
+            ])];
+
+            normalizedVariant.variantImages = mergedVariantImages;
+            normalizedVariant.variantImage = mergedVariantImages[0] || normalizedVariant.variantImage || "";
 
             if (!normalizedVariant.sku) {
                 const randomID = Math.floor(1000 + Math.random() * 9000);
@@ -551,12 +609,13 @@ const addVariant = asyncHandler(async (req, res) => {
     const autoGeneratedSku = `${brandCode}-${nameCode}-${attrValue}-${randomCode}`;
 
     // 3. Handle Image
-    const variantImageLocalPath = req.file?.path;
-    if (!variantImageLocalPath) throw new ApiError(400, "Variant image is required");
+    const variantImageFiles = normalizeUploadedFiles(req.files).filter((file) => String(file?.fieldname || "").trim() === "variantImages" || String(file?.fieldname || "").trim() === "variantImage");
+    if (!variantImageFiles.length) throw new ApiError(400, "Variant image is required");
+    if (variantImageFiles.length > 5) throw new ApiError(400, "A maximum of 5 images is allowed per variant");
 
-    const uploadedImage = await uploadOnCloudinary(variantImageLocalPath);
-
-    if(!uploadedImage.url) throw new ApiError(400, "Error uploading image")
+    const uploadedImages = await uploadFilesToCloudinary(variantImageFiles, []);
+    const uploadedImageUrls = uploadedImages.map((item) => item.url).filter(Boolean);
+    if (!uploadedImageUrls.length) throw new ApiError(400, "Error uploading image");
 
     // 4. Push Variant
     product.variants.push({
@@ -565,7 +624,8 @@ const addVariant = asyncHandler(async (req, res) => {
         discountPercentage: Number(discountPercentage || 0),
         productStock: Number(productStock),
         sku: autoGeneratedSku, // Here is our generated SKU
-        variantImage: uploadedImage.url
+        variantImage: uploadedImageUrls[0],
+        variantImages: uploadedImageUrls
     });
 
     await product.save();
@@ -663,11 +723,16 @@ const updateVariant = asyncHandler(async (req, res) => {
         variant.sku = normalizedSku;
     }
 
-    const variantImageLocalPath = req.file?.path;
-    if (variantImageLocalPath) {
-        const uploadedImage = await uploadOnCloudinary(variantImageLocalPath);
-        if (!uploadedImage?.url) throw new ApiError(400, "Error uploading image");
-        variant.variantImage = uploadedImage.url;
+    const variantImageFiles = normalizeUploadedFiles(req.files).filter((file) => String(file?.fieldname || "").trim() === "variantImages" || String(file?.fieldname || "").trim() === "variantImage");
+    if (variantImageFiles.length) {
+        if (variantImageFiles.length > 5) {
+            throw new ApiError(400, "A maximum of 5 images is allowed per variant");
+        }
+        const uploadedImages = await uploadFilesToCloudinary(variantImageFiles, []);
+        const uploadedImageUrls = uploadedImages.map((item) => item.url).filter(Boolean);
+        if (!uploadedImageUrls.length) throw new ApiError(400, "Error uploading image");
+        variant.variantImages = uploadedImageUrls;
+        variant.variantImage = uploadedImageUrls[0];
     }
 
     await product.save();

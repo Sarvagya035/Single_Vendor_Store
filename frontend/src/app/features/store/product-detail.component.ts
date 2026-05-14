@@ -398,6 +398,7 @@ export class ProductDetailComponent implements OnInit {
 
   productImage(product: CustomerCatalogProduct): string {
     return (
+      product.displayVariant?.variantImages?.[0] ||
       product.displayVariant?.variantImage ||
       product.mainImages?.[0] ||
       'https://via.placeholder.com/640x480?text=Product'

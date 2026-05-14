@@ -298,7 +298,7 @@ export class ProductCardComponent implements OnChanges {
   }
 
   variantImage(variant: CustomerCatalogVariant): string {
-    return variant?.variantImage || this.product?.mainImages?.[0] || 'https://via.placeholder.com/160x160?text=Variant';
+    return variant?.variantImages?.[0] || variant?.variantImage || this.product?.mainImages?.[0] || 'https://via.placeholder.com/160x160?text=Variant';
   }
 
   variantDisplayLabel(variant: CustomerCatalogVariant | null | undefined, fallbackIndex = 0): string {

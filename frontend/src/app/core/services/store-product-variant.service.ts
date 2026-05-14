@@ -54,8 +54,10 @@ export class StoreProductVariantService {
 
   getProductImage(product: CustomerCatalogProduct | null | undefined, variant?: CustomerCatalogVariant | null): string {
     return (
+      variant?.variantImages?.[0] ||
       variant?.variantImage ||
       product?.displayVariant?.variantImage ||
+      product?.displayVariant?.variantImages?.[0] ||
       product?.mainImages?.[0] ||
       'https://via.placeholder.com/640x480?text=Product'
     );

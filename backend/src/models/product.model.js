@@ -65,6 +65,7 @@ const productSchema = new Schema({
             isAvailable: { type: Boolean, default: true },
             
             sku: { type: String, sparse: true }, 
+            variantImages: [{ type: String }],
             variantImage: { type: String } 
         }
     ],

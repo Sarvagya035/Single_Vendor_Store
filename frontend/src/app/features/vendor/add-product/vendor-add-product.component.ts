@@ -217,6 +217,7 @@ interface WizardStep {
                   [index]="i"
                   (remove)="removeVariant($event)"
                   (imageSelected)="onVariantImageSelected($event.event, $event.index)"
+                  (removeImage)="removeVariantImage($event.index, $event.imageIndex)"
                 />
               </div>
             </app-vendor-form-section>
@@ -410,7 +411,29 @@ export class VendorAddProductComponent implements OnInit {
 
   onVariantImageSelected(event: Event, index: number): void {
     const input = event.target as HTMLInputElement;
-    this.variants[index].imageFile = input.files?.[0] || null;
+    const selectedFiles = Array.from(input.files || []);
+    this.appendVariantImages(index, selectedFiles);
+    input.value = '';
+  }
+
+  removeVariantImage(variantIndex: number, imageIndex: number): void {
+    const variant = this.variants[variantIndex];
+    if (!variant) {
+      return;
+    }
+
+    const imageFiles = [...(variant.imageFiles || [])];
+    const imagePreviews = [...(variant.imagePreviews || [])];
+    if (imageIndex < 0 || imageIndex >= imageFiles.length) {
+      return;
+    }
+
+    imagePreviews.splice(imageIndex, 1);
+    imageFiles.splice(imageIndex, 1);
+
+    variant.imageFiles = imageFiles;
+    variant.imagePreviews = imagePreviews;
+    variant.imageFile = imageFiles[0] || null;
   }
 
   variantLabel(variant: VendorProductVariantForm): string {
@@ -441,8 +464,8 @@ export class VendorAddProductComponent implements OnInit {
       formData.append('variantOptions', JSON.stringify(this.buildVariantOptionsPayload()));
       formData.append('variants', JSON.stringify(this.buildVariantsPayload()));
       this.mainImageFiles.forEach((file) => formData.append('mainImages', file));
-      this.variants.forEach((variant) => {
-        if (variant.imageFile) formData.append('variantImages', variant.imageFile);
+      this.variants.forEach((variant, index) => {
+        (variant.imageFiles || []).forEach((file) => formData.append(`variantImages_${index}`, file));
       });
 
       this.isSubmitting = true;
@@ -504,6 +527,11 @@ export class VendorAddProductComponent implements OnInit {
         this.errorService.showToast('Each variant needs attributes, price, and stock.', 'error');
         return false;
       }
+
+      if (!Array.isArray(variant.imageFiles) || variant.imageFiles.length === 0) {
+        this.errorService.showToast('Each variant needs at least one image.', 'error');
+        return false;
+      }
     }
     return true;
   }
@@ -539,7 +567,16 @@ export class VendorAddProductComponent implements OnInit {
   }
 
   private createVariant(attributesText: string): VendorProductVariantForm {
-    return { attributesText, productPrice: null, discountPercentage: 0, productStock: null, sku: '', imageFile: null };
+    return {
+      attributesText,
+      productPrice: null,
+      discountPercentage: 0,
+      productStock: null,
+      sku: '',
+      imageFile: null,
+      imageFiles: [],
+      imagePreviews: [],
+    };
   }
 
   private buildVariantOptionsPayload() {
@@ -564,14 +601,40 @@ export class VendorAddProductComponent implements OnInit {
         discountPercentage: variant.discountPercentage || 0,
         productStock: variant.productStock,
         sku: variant.sku.trim() || undefined,
-        imageRef: variant.imageFile ? this.variantImageIndexFor(variant) : undefined,
       };
     });
     if (!variants.length) throw new Error('At least one variant is required.');
     return variants;
   }
 
-  private variantImageIndexFor(targetVariant: VendorProductVariantForm): number {
-    return this.variants.filter((variant) => variant.imageFile).findIndex((variant) => variant === targetVariant);
+  private appendVariantImages(index: number, files: File[]): void {
+    const variant = this.variants[index];
+    if (!variant || !files.length) {
+      return;
+    }
+
+    const currentFiles = [...(variant.imageFiles || [])];
+    const currentPreviews = [...(variant.imagePreviews || [])];
+    const availableSlots = Math.max(0, 5 - currentFiles.length);
+
+    if (availableSlots === 0) {
+      this.errorService.showToast(`Variant ${index + 1} already has 5 images. Remove one to add another.`, 'error');
+      return;
+    }
+
+    const acceptedFiles = files.slice(0, availableSlots);
+    if (acceptedFiles.length < files.length) {
+      this.errorService.showToast(`Only the first available images were added for variant ${index + 1}.`, 'error');
+    }
+
+    const nextFiles = [...currentFiles, ...acceptedFiles];
+    const nextPreviews = [
+      ...currentPreviews,
+      ...acceptedFiles.map((file) => URL.createObjectURL(file)),
+    ];
+
+    variant.imageFiles = nextFiles;
+    variant.imagePreviews = nextPreviews;
+    variant.imageFile = nextFiles[0] || null;
   }
 }

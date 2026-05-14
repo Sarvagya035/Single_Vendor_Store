@@ -8,7 +8,7 @@ export function buildGalleryImages(product?: CustomerCatalogProduct | null): str
   const images = [
     ...collectImageCandidates(product, ['mainImages', 'images', 'image', 'imageUrl', 'thumbnail']),
     ...((product?.variants || []).flatMap((variant) =>
-      collectImageCandidates(variant, ['variantImage', 'images', 'image', 'imageUrl', 'thumbnail'])
+      collectImageCandidates(variant, ['variantImages', 'variantImage', 'images', 'image', 'imageUrl', 'thumbnail'])
     ))
   ];
 
@@ -33,6 +33,7 @@ export function buildActiveImage(
 
 export function resolveVariantImage(variant?: CustomerCatalogVariant | null): string {
   return (
+    firstImageFromArrayField(variant, 'variantImages') ||
     firstImageFromRecord(variant, ['variantImage', 'image', 'imageUrl', 'thumbnail']) ||
     firstImageFromArrayField(variant, 'images') ||
     ''

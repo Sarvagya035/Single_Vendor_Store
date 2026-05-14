@@ -326,6 +326,14 @@ export class VendorViewProductPageComponent implements OnInit {
     }
 
     for (const variant of this.product?.variants || []) {
+      if (Array.isArray(variant.variantImages)) {
+        for (const image of variant.variantImages) {
+          if (image) {
+            imageSet.add(image);
+          }
+        }
+      }
+
       if (variant.variantImage) {
         imageSet.add(variant.variantImage);
       }
@@ -368,7 +376,13 @@ export class VendorViewProductPageComponent implements OnInit {
   }
 
   get variantImageCount(): number {
-    return (this.product?.variants || []).filter((variant) => !!variant.variantImage).length;
+    return (this.product?.variants || []).reduce((count, variant) => {
+      if (Array.isArray(variant.variantImages) && variant.variantImages.length > 0) {
+        return count + variant.variantImages.filter(Boolean).length;
+      }
+
+      return count + (variant.variantImage ? 1 : 0);
+    }, 0);
   }
 
   selectImage(image: string): void {

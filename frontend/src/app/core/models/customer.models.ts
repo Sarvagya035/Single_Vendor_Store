@@ -55,6 +55,7 @@ export interface CustomerCatalogVariant {
   productStock?: number;
   isAvailable?: boolean;
   sku?: string;
+  variantImages?: string[];
   variantImage?: string;
 }
 

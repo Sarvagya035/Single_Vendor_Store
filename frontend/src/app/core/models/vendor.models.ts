@@ -66,6 +66,7 @@ export interface VendorProductVariant {
   productStock?: number;
   isAvailable?: boolean;
   sku?: string;
+  variantImages?: string[];
   variantImage?: string;
 }
 
@@ -120,6 +121,8 @@ export interface VendorProductVariantForm {
   productStock: number | null;
   sku: string;
   imageFile: File | null;
+  imageFiles?: File[];
+  imagePreviews?: string[];
 }
 
 export interface VendorProductEditForm {
@@ -136,6 +139,8 @@ export interface VendorVariantCreateForm {
   discountPercentage: number | null;
   productStock: number | null;
   imageFile: File | null;
+  imageFiles?: File[];
+  imagePreviews?: string[];
 }
 
 export interface VendorVariantUpdateForm {
@@ -145,6 +150,8 @@ export interface VendorVariantUpdateForm {
   productStock: number | null;
   sku: string;
   imageFile: File | null;
+  imageFiles?: File[];
+  imagePreviews?: string[];
 }
 
 export interface VendorAnalyticsSummary {
