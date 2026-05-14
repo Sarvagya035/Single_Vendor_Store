@@ -14,12 +14,12 @@ import { ErrorService } from '../../core/services/error.service';
       <div class="pointer-events-none absolute right-0 top-20 h-80 w-80 rounded-full bg-[#d4a017]/15 blur-[130px]"></div>
 
       <section class="storefront-section py-10 lg:py-16">
-        <div class="storefront-page-normal storefront-page-stack">
-            <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
+        <div class="storefront-container storefront-page-stack">
+            <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12">
               <div class="storefront-page-stack">
                 <div class="storefront-page-header">
                   <p class="app-page-eyebrow text-[#8b5e3c]">CONTACT US</p>
-                  <h1 class="max-w-xl text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+                  <h1 class="max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
                     We’re here for questions, bulk orders, and store visits.
                   </h1>
                   <p class="max-w-2xl text-[15px] font-medium leading-8 text-slate-600">
@@ -104,7 +104,7 @@ import { ErrorService } from '../../core/services/error.service';
               </div>
 
               <div class="relative z-10">
-                <div class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm flex flex-col gap-4 sm:p-6 lg:p-7">
+                <div class="flex flex-col gap-4 rounded-[2rem] border border-[#eadcc9] bg-white p-4 shadow-[0_24px_60px_rgba(47,27,20,0.08)] sm:p-5 lg:p-6">
                   <div class="space-y-3">
                     <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Send a message</p>
                     <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Tell us what you need</h2>
@@ -204,7 +204,7 @@ import { ErrorService } from '../../core/services/error.service';
       </section>
 
       <section class="storefront-section pb-10 lg:pb-14">
-        <div class="storefront-page-normal storefront-page-stack">
+        <div class="storefront-container storefront-page-stack">
             <div class="storefront-page-header max-w-2xl">
               <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Why contact us?</p>
               <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -236,7 +236,7 @@ import { ErrorService } from '../../core/services/error.service';
       </section>
 
       <section class="storefront-section pb-12 lg:pb-16">
-        <div class="storefront-page-normal storefront-page-stack">
+        <div class="storefront-container storefront-page-stack">
             <div class="flex flex-col gap-5 rounded-[2rem] border border-[#eadcc9] bg-[linear-gradient(135deg,#fffaf4_0%,#fef3e2_100%)] p-6 shadow-[0_20px_60px_rgba(47,27,20,0.06)] sm:p-8 lg:flex-row lg:items-center lg:justify-between lg:p-10">
               <div class="max-w-2xl">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">Need help choosing?</p>

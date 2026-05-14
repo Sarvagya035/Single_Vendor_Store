@@ -51,10 +51,10 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
         </div>
 
         <div class="vendor-grid-4 vendor-section-body">
-          <app-stat-card label="Total" [value]="summary.totalInquiries.toString()" cardClass="border-l-4 border-l-amber-500 !border-amber-100 !bg-[#fff7ed]/80" />
-          <app-stat-card label="New" [value]="summary.newCount.toString()" cardClass="border-l-4 border-l-sky-500 !border-amber-100 !bg-[#fff7ed]/80" />
-          <app-stat-card label="Reviewed" [value]="summary.reviewedCount.toString()" cardClass="border-l-4 border-l-emerald-500 !border-amber-100 !bg-[#fff7ed]/80" />
-          <app-stat-card label="Contacted" [value]="summary.contactedCount.toString()" cardClass="border-l-4 border-l-indigo-500 !border-amber-100 !bg-[#fff7ed]/80" />
+          <app-stat-card label="Total" [value]="summary.totalInquiries.toString()" cardClass="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5" />
+          <app-stat-card label="New" [value]="summary.newCount.toString()" cardClass="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5" />
+          <app-stat-card label="Reviewed" [value]="summary.reviewedCount.toString()" cardClass="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5" />
+          <app-stat-card label="Contacted" [value]="summary.contactedCount.toString()" cardClass="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5" />
         </div>
 
         <div *ngIf="isLoading" class="border-t border-slate-200 vendor-section-body py-10">
@@ -69,7 +69,7 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
         />
 
         <div *ngIf="!isLoading && inquiries.length" class="border-t border-slate-200 vendor-section-body lg:py-6">
-          <div class="hidden overflow-x-auto lg:block">
+          <div class="vendor-table-wrap hidden lg:block">
           <table class="min-w-full border-separate border-spacing-0">
             <thead class="bg-[#fffaf5]">
               <tr class="text-left text-sm font-semibold text-slate-500">
@@ -144,7 +144,7 @@ const statusOptions: BulkInquiryStatus[] = ['new', 'reviewed', 'contacted', 'clo
           </table>
           </div>
 
-          <div class="mt-6 flex flex-col gap-4 lg:hidden">
+          <div class="mt-6 grid gap-4 lg:hidden">
             <article *ngFor="let inquiry of inquiries; trackBy: trackByInquiry" class="vendor-mobile-card w-full min-w-0">
               <div class="flex items-start justify-between gap-4">
                 <div class="min-w-0">

@@ -32,7 +32,7 @@
   }
 
   .vendor-page-header {
-    @apply border-b border-[#eee2d4] pb-5 sm:pb-6 lg:pb-7;
+    @apply border-b border-[#eee2d4] pb-4 sm:pb-5 lg:pb-6;
   }
 
   .vendor-page-actions {
@@ -40,7 +40,7 @@
   }
 
   .vendor-section-body {
-    @apply py-6 sm:py-7 lg:py-8;
+    @apply py-5 sm:py-6 lg:py-7;
   }
 
   .vendor-section {
