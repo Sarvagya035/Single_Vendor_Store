@@ -89,6 +89,19 @@ export class VendorService {
     return this.http.patch(`${this.productUrl}/update-product/${productId}`, data, { withCredentials: true });
   }
 
+  updateProductImages(productId: string, keepMainImages: string[], files: File[]): Observable<any> {
+    const formData = new FormData();
+    formData.append('keepMainImages', JSON.stringify(keepMainImages || []));
+
+    (files || []).forEach((file) => {
+      formData.append('mainImages', file);
+    });
+
+    return this.http.patch(`${this.productUrl}/update-product-images/${productId}`, formData, {
+      withCredentials: true
+    });
+  }
+
   deleteProduct(productId: string): Observable<any> {
     return this.http.delete(`${this.productUrl}/delete-product/${productId}`, { withCredentials: true });
   }

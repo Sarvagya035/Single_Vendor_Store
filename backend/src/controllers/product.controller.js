@@ -40,6 +40,22 @@ const parseJsonField = (value, fieldName) => {
     }
 };
 
+const parseImageUrlList = (value, fieldName) => {
+    if (value === undefined || value === null || value === "") {
+        return [];
+    }
+
+    const parsedValue = typeof value === "string" ? parseJsonField(value, fieldName) : value;
+
+    if (!Array.isArray(parsedValue)) {
+        throw new ApiError(400, `${fieldName} must be a JSON array`);
+    }
+
+    return parsedValue
+        .map((item) => String(item || "").trim())
+        .filter((item) => !!item);
+};
+
 const deleteUploadedCloudinaryAssets = async (uploadedAssets = []) => {
     await Promise.allSettled(
         uploadedAssets
@@ -315,6 +331,73 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, updatedProduct, "Product details updated successfully")
     );
+});
+
+const updateProductImages = asyncHandler(async (req, res) => {
+    const { productId } = req.params;
+    const uploadedCloudinaryAssets = [];
+
+    try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            throw new ApiError(404, "Product not found");
+        }
+
+        const roles = Array.isArray(req.user?.role) ? req.user.role : [req.user?.role];
+        const isAdmin = roles.some((role) => String(role).toLowerCase() === "admin");
+
+        if (!isAdmin) {
+            const vendor = await Vendor.findOne({ user: req.user._id });
+            if (!vendor || product.vendor.toString() !== vendor._id.toString()) {
+                throw new ApiError(403, "Unauthorized: You don't own this product");
+            }
+        }
+
+        const keepMainImages = parseImageUrlList(req.body?.keepMainImages, "keepMainImages");
+        const existingMainImages = Array.isArray(product.mainImages) ? product.mainImages : [];
+        const preservedMainImages = [...new Set(
+            keepMainImages.filter((imageUrl) => existingMainImages.includes(imageUrl))
+        )];
+
+        const mainImageFiles = req.files?.mainImages || [];
+        if (mainImageFiles.length === 0 && preservedMainImages.length === 0) {
+            throw new ApiError(400, "At least one main product image is required");
+        }
+
+        const maxMainImages = 5;
+        if (preservedMainImages.length + mainImageFiles.length > maxMainImages) {
+            throw new ApiError(400, `A maximum of ${maxMainImages} main product images is allowed`);
+        }
+
+        const uploadedMainImageUrls = [];
+        for (const file of mainImageFiles) {
+            const uploaded = await uploadOnCloudinary(file.path);
+            if (!uploaded?.url) {
+                throw new ApiError(400, "Error uploading main product image");
+            }
+
+            uploadedCloudinaryAssets.push(uploaded);
+            uploadedMainImageUrls.push(uploaded.url);
+        }
+
+        const nextMainImages = [...new Set([...preservedMainImages, ...uploadedMainImageUrls])];
+
+        if (nextMainImages.length === 0) {
+            throw new ApiError(400, "At least one main product image is required");
+        }
+
+        product.mainImages = nextMainImages;
+        const updatedProduct = await product.save({ validateBeforeSave: false });
+
+        return res.status(200).json(
+            new ApiResponse(200, updatedProduct, "Product images updated successfully")
+        );
+    } catch (error) {
+        await deleteUploadedCloudinaryAssets(uploadedCloudinaryAssets);
+        throw error;
+    } finally {
+        await cleanupTempFiles(req.files);
+    }
 });
 
 const searchProductsDeep = asyncHandler(async (req, res) => {
@@ -918,6 +1001,7 @@ export {
     getVendorProducts, 
     deleteProduct, 
     updateProductDetails,
+    updateProductImages,
     searchProductsDeep,
     restockVariant,
     addVariant,

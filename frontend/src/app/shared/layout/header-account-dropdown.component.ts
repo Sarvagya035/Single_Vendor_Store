@@ -123,8 +123,8 @@ export class HeaderAccountDropdownComponent {
   desktopTriggerClasses(): string {
     const themeClasses: Record<HeaderDropdownTheme, string> = {
       customer: 'group inline-flex items-center gap-3 rounded-full border border-[#eadcc9] bg-white/95 px-3 py-2 text-left shadow-[0_16px_40px_rgba(47,27,20,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_20px_44px_rgba(47,27,20,0.12)]',
-      vendor: 'group inline-flex items-center gap-3 rounded-full border border-[#e7dac9] bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_16px_40px_rgba(111,78,55,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_20px_44px_rgba(111,78,55,0.18)]',
-      admin: 'group inline-flex items-center gap-3 rounded-full border border-[#e7dac9] bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_16px_40px_rgba(111,78,55,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_20px_44px_rgba(111,78,55,0.18)]'
+      vendor: 'group inline-flex items-center gap-3 rounded-full border border-[#e7dac9] bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_10px_24px_rgba(111,78,55,0.1)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_14px_30px_rgba(111,78,55,0.14)]',
+      admin: 'group inline-flex items-center gap-3 rounded-full border border-[#e7dac9] bg-white/95 px-2.5 py-2 pr-4 text-left shadow-[0_10px_24px_rgba(111,78,55,0.1)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#d4a017] hover:shadow-[0_14px_30px_rgba(111,78,55,0.14)]'
     };
     return themeClasses[this.theme];
   }
@@ -197,8 +197,8 @@ export class HeaderAccountDropdownComponent {
     if (!this.desktop) {
       const mobileTone: Record<HeaderDropdownTheme, string> = {
         customer: 'rounded-[1.5rem] border border-[#eadcc9] bg-white p-3 shadow-[0_24px_60px_rgba(47,27,20,0.16)]',
-        vendor: 'rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur',
-        admin: 'rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur'
+        vendor: 'rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_18px_42px_rgba(15,23,42,0.14)] backdrop-blur',
+        admin: 'rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_18px_42px_rgba(15,23,42,0.14)] backdrop-blur'
       };
 
       return `fixed left-3 right-3 top-[72px] z-[230] max-h-[calc(100vh-5rem)] overflow-y-auto ${mobileTone[this.theme]}`;
@@ -206,8 +206,8 @@ export class HeaderAccountDropdownComponent {
 
     const desktopTone: Record<HeaderDropdownTheme, string> = {
       customer: 'absolute right-0 top-[calc(100%+12px)] w-[min(92vw,320px)] origin-top-right rounded-[1.5rem] border border-[#eadcc9] bg-white p-3 shadow-[0_24px_60px_rgba(47,27,20,0.16)] transition-all duration-200',
-      vendor: 'absolute right-0 top-[calc(100%+12px)] w-[min(92vw,320px)] origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200',
-      admin: 'absolute right-0 top-[calc(100%+12px)] w-[min(92vw,320px)] origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur transition-all duration-200'
+      vendor: 'absolute right-0 top-[calc(100%+12px)] w-[min(92vw,320px)] origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_18px_42px_rgba(15,23,42,0.14)] backdrop-blur transition-all duration-200',
+      admin: 'absolute right-0 top-[calc(100%+12px)] w-[min(92vw,320px)] origin-top-right rounded-[1.5rem] border border-[#e7dac9] bg-white/95 p-3 shadow-[0_18px_42px_rgba(15,23,42,0.14)] backdrop-blur transition-all duration-200'
     };
 
     return desktopTone[this.theme];

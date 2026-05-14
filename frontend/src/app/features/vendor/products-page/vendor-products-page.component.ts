@@ -7,7 +7,6 @@ import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
 import { VendorCategoryRecord, VendorProductRecord } from '../../../core/models/vendor.models';
 import { CardComponent } from '../../../shared/ui/card/card.component';
-import { BadgeComponent } from '../../../shared/ui/badge/badge.component';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
@@ -29,7 +28,6 @@ import {
     RouterModule,
     PageHeaderComponent,
     ButtonComponent,
-    BadgeComponent,
     CardComponent,
     InputComponent,
     EmptyStateComponent,
@@ -190,12 +188,40 @@ import {
                 </td>
 
                 <td class="border-t border-slate-200 vendor-table-cell">
-                  <app-badge
-                    [tone]="product.isActive ? 'success' : 'neutral'"
-                    badgeClass="text-xs font-black"
-                  >
-                    {{ product.isActive ? 'Active' : 'Inactive' }}
-                  </app-badge>
+                  <div class="flex justify-center">
+                    <button
+                      type="button"
+                      role="switch"
+                      [attr.aria-checked]="product.isActive"
+                      class="inline-flex items-center gap-3 transition disabled:cursor-not-allowed disabled:opacity-60"
+                      [disabled]="updatingStatusProductId === product._id"
+                      [attr.aria-busy]="updatingStatusProductId === product._id"
+                      (click)="toggleProductStatus(product)"
+                    >
+                      <span
+                        class="relative inline-flex h-7 w-12 shrink-0 rounded-full transition"
+                        [ngClass]="product.isActive ? 'bg-green-700' : 'bg-slate-300'"
+                      >
+                        <span
+                          class="absolute top-1 h-5 w-5 rounded-full bg-white shadow transition"
+                          [ngClass]="product.isActive ? 'right-1' : 'left-1'"
+                        ></span>
+                      </span>
+                      <svg
+                        *ngIf="updatingStatusProductId === product._id"
+                        class="h-3.5 w-3.5 animate-spin"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M12 2a10 10 0 0 1 10 10h-3a7 7 0 1 0-7 7v3A10 10 0 0 1 12 2Z"></path>
+                      </svg>
+                      <span class="text-sm font-medium text-slate-800">
+                        {{ updatingStatusProductId === product._id ? 'Saving' : (product.isActive ? 'Active' : 'Inactive') }}
+                      </span>
+                    </button>
+                  </div>
                 </td>
 
                 <td class="border-t border-slate-200 vendor-table-cell text-right">
@@ -255,12 +281,20 @@ import {
                 <h3 class="truncate text-sm font-black text-slate-900 md:text-lg">{{ product.productName }}</h3>
                     <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-600">{{ product.brand || 'Generic' }}</p>
                   </div>
-                  <app-badge
-                    [tone]="product.isActive ? 'success' : 'neutral'"
-                    badgeClass="px-2 py-1 text-[10px] font-black"
+                  <button
+                    type="button"
+                    role="switch"
+                    [attr.aria-checked]="product.isActive"
+                    class="inline-flex items-center gap-3 disabled:cursor-not-allowed disabled:opacity-60"
+                    [disabled]="updatingStatusProductId === product._id"
+                    [attr.aria-busy]="updatingStatusProductId === product._id"
+                    (click)="toggleProductStatus(product)"
                   >
-                    {{ product.isActive ? 'Active' : 'Inactive' }}
-                  </app-badge>
+                    <span class="relative inline-flex h-7 w-12 shrink-0 rounded-full transition" [ngClass]="product.isActive ? 'bg-green-700' : 'bg-slate-300'">
+                      <span class="absolute top-1 h-5 w-5 rounded-full bg-white shadow transition" [ngClass]="product.isActive ? 'right-1' : 'left-1'"></span>
+                    </span>
+                    <span class="text-sm font-medium text-slate-800">{{ updatingStatusProductId === product._id ? 'Saving' : (product.isActive ? 'Active' : 'Inactive') }}</span>
+                  </button>
                 </div>
 
                 <div class="mt-3 grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600 sm:gap-3 sm:text-sm">
@@ -411,6 +445,7 @@ export class VendorProductsPageComponent implements OnInit {
   limit = 10;
   visiblePages: number[] = [];
   busyDeleteId = '';
+  updatingStatusProductId = '';
   openActionMenuId: string | null = null;
   pendingDeleteProduct: VendorProductRecord | null = null;
   categoriesTree: VendorCategoryRecord[] = [];
@@ -563,6 +598,37 @@ export class VendorProductsPageComponent implements OnInit {
       error: (err) => {
         this.busyDeleteId = '';
         this.errorService.showToast(err?.error?.message || 'Unable to delete product.', 'error');
+      },
+    });
+  }
+
+  toggleProductStatus(product: VendorProductRecord): void {
+    if (this.updatingStatusProductId === product._id) {
+      return;
+    }
+
+    const nextIsActive = !product.isActive;
+    this.updatingStatusProductId = product._id;
+
+    this.vendorService.updateProduct(product._id, { isActive: nextIsActive }).subscribe({
+      next: (res) => {
+        this.updatingStatusProductId = '';
+
+        if (!res?.success) {
+          this.errorService.showToast(res?.message || 'Unable to update product status.', 'error');
+          return;
+        }
+
+        this.errorService.showToast(
+          nextIsActive ? 'Product activated successfully.' : 'Product deactivated successfully.',
+          'success',
+        );
+        this.appRefreshService.notify('vendor');
+        this.loadVendorProducts(this.currentPage);
+      },
+      error: (err) => {
+        this.updatingStatusProductId = '';
+        this.errorService.showToast(err?.error?.message || 'Unable to update product status.', 'error');
       },
     });
   }

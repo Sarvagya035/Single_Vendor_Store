@@ -13,6 +13,7 @@ import {
     searchProductsDeep, 
     updateVariant,
     updateProductDetails, 
+    updateProductImages,
     updateVariantDiscount } from "../controllers/product.controller.js";
 
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -61,6 +62,18 @@ router.route("/update-product/:productId").patch(
     verifyJWT,
     authorizeRoles("vendor"), 
     updateProductDetails
+);
+
+router.route("/update-product-images/:productId").patch(
+    verifyJWT,
+    authorizeRoles("vendor"),
+    upload.fields([
+        {
+            name: "mainImages",
+            maxCount: 5
+        }
+    ]),
+    updateProductImages
 );
 
 router.route("/restock-variant/:productId/:variantId").patch(

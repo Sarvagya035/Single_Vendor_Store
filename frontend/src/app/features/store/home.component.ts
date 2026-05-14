@@ -232,11 +232,11 @@ import { BadgeComponent } from '../../shared/ui/badge/badge.component';
             </p>
           </div>
 
-          <div class="mt-8 overflow-hidden">
+          <div class="mt-8 overflow-hidden px-2 py-3 sm:px-3 sm:py-4">
             <div class="review-marquee-pause flex w-max gap-5 animate-review-marquee">
                 <article
                   *ngFor="let review of marqueeReviews; trackBy: trackByHomeReview"
-                  class="w-[min(320px,78vw)] flex-shrink-0 rounded-[1.6rem] border border-[#eadcc9] bg-[#fffaf5] p-5 shadow-[0_14px_34px_rgba(47,27,20,0.05)]"
+                  class="w-[min(320px,78vw)] flex-shrink-0 rounded-[1.6rem] border border-[#eadcc9] bg-white/95 p-5 shadow-[0_10px_24px_rgba(47,27,20,0.04)]"
                 >
                 <div class="flex items-start gap-4">
                   <img

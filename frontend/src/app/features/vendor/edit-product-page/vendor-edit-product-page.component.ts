@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ErrorService } from '../../../core/services/error.service';
@@ -101,6 +101,104 @@ import {
                   </select>
                 </label>
 
+                <div class="md:col-span-2 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="min-w-0">
+                      <p class="vendor-stat-label">Product Images</p>
+                      <h3 class="vendor-panel-title !text-lg">Main image manager</h3>
+                    </div>
+                    <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                      {{ totalMainImagesCount }}/5 images
+                    </p>
+                  </div>
+
+                  <div class="mt-4 flex flex-wrap gap-3">
+                    <label
+                      class="inline-flex cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-xs font-black uppercase tracking-[0.16em] text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                      [class.opacity-60]="remainingImageSlots === 0"
+                    >
+                      Add images
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        class="hidden"
+                        [disabled]="remainingImageSlots === 0 || imageUpdateLoading"
+                        (change)="onNewMainImagesSelected($event)"
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-xs font-black uppercase tracking-[0.16em] text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                      [disabled]="!canSaveImages || imageUpdateLoading"
+                      (click)="saveProductImages()"
+                    >
+                      {{ imageUpdateLoading ? 'Saving...' : 'Save Images' }}
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-xs font-black uppercase tracking-[0.16em] text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                      [disabled]="!hasImageDraftChanges || imageUpdateLoading"
+                      (click)="resetImageDraft()"
+                    >
+                      Reset
+                    </button>
+                  </div>
+
+                  <div class="mt-4 space-y-3">
+                    <div class="space-y-2">
+                      <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Current images</p>
+                      <div class="flex gap-3 overflow-x-auto pb-1">
+                        <article *ngFor="let image of retainedMainImages; let i = index; trackBy: trackByImageUrl" class="w-20 shrink-0 overflow-hidden rounded-[1.1rem] border border-slate-200 bg-white shadow-sm sm:w-24">
+                          <div class="relative aspect-square bg-slate-50">
+                            <img [src]="image" [alt]="product.productName + ' image ' + (i + 1)" class="h-full w-full object-cover" />
+                            <button
+                              type="button"
+                              class="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/95 text-[10px] font-black text-rose-600 shadow-sm"
+                              (click)="removeRetainedMainImage(image)"
+                              aria-label="Remove image"
+                            >
+                              ×
+                            </button>
+                          </div>
+                          <div class="px-2 py-1.5">
+                            <p class="truncate text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">#{{ i + 1 }}</p>
+                          </div>
+                        </article>
+                        <div *ngIf="retainedMainImages.length === 0" class="flex h-20 min-w-28 items-center justify-center rounded-[1.1rem] border border-dashed border-amber-200 bg-amber-50/60 px-3 text-center text-[11px] font-semibold leading-5 text-amber-800 sm:h-24">
+                          No retained images
+                        </div>
+                      </div>
+                    </div>
+
+                    <div *ngIf="newMainImagePreviews.length > 0" class="space-y-2">
+                      <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">New uploads</p>
+                      <div class="flex gap-3 overflow-x-auto pb-1">
+                        <article *ngFor="let preview of newMainImagePreviews; let i = index; trackBy: trackByPreviewUrl" class="w-20 shrink-0 overflow-hidden rounded-[1.1rem] border border-slate-200 bg-white shadow-sm sm:w-24">
+                          <div class="relative aspect-square bg-slate-50">
+                            <img [src]="preview" [alt]="'New image ' + (i + 1)" class="h-full w-full object-cover" />
+                            <button
+                              type="button"
+                              class="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/95 text-[10px] font-black text-rose-600 shadow-sm"
+                              (click)="removeNewMainImage(i)"
+                              aria-label="Remove new image"
+                            >
+                              ×
+                            </button>
+                          </div>
+                          <div class="px-2 py-1.5">
+                            <p class="truncate text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">New {{ i + 1 }}</p>
+                          </div>
+                        </article>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p class="mt-3 text-xs font-medium leading-6 text-slate-500">
+                    {{ remainingImageSlots === 0 ? 'Image limit reached. Remove one to add another.' : 'Keep existing images, remove any you do not want, and add up to ' + remainingImageSlots + ' more.' }}
+                  </p>
+                </div>
+
                 <label class="space-y-2 md:col-span-2">
                   <span class="ml-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Description</span>
                   <textarea rows="7" name="productDescription" [(ngModel)]="form.productDescription" class="block w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-4 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100"></textarea>
@@ -171,14 +269,20 @@ import {
     </section>
   `,
 })
-export class VendorEditProductPageComponent implements OnInit {
+export class VendorEditProductPageComponent implements OnInit, OnDestroy {
   productId = '';
   product: VendorProductRecord | null = null;
   isLoading = true;
   isSubmitting = false;
+  imageUpdateLoading = false;
+  imageUpdateMessage = '';
+  imageUpdateError = '';
   categoriesTree: VendorCategoryRecord[] = [];
   flatCategories: FlatCategoryOption[] = [];
   totalStock = 0;
+  retainedMainImages: string[] = [];
+  newMainImageFiles: File[] = [];
+  newMainImagePreviews: string[] = [];
 
   form: VendorProductEditForm = {
     productName: '',
@@ -208,7 +312,7 @@ export class VendorEditProductPageComponent implements OnInit {
   }
 
   get primaryImageUrl(): string | undefined {
-    return primaryProductImage(this.product);
+    return this.retainedMainImages[0] || this.newMainImagePreviews[0] || primaryProductImage(this.product);
   }
 
   get categoryPreview(): string {
@@ -217,6 +321,29 @@ export class VendorEditProductPageComponent implements OnInit {
 
   optionLabel(option: FlatCategoryOption): string {
     return categoryOptionLabel(option);
+  }
+
+  get totalMainImagesCount(): number {
+    return this.retainedMainImages.length + this.newMainImageFiles.length;
+  }
+
+  get remainingImageSlots(): number {
+    return Math.max(0, 5 - this.totalMainImagesCount);
+  }
+
+  get hasImageDraftChanges(): boolean {
+    const originalImages = this.product?.mainImages || [];
+    if (this.newMainImageFiles.length > 0) {
+      return true;
+    }
+    if (originalImages.length !== this.retainedMainImages.length) {
+      return true;
+    }
+    return originalImages.some((image, index) => this.retainedMainImages[index] !== image);
+  }
+
+  get canSaveImages(): boolean {
+    return this.totalMainImagesCount > 0 && this.totalMainImagesCount <= 5 && this.hasImageDraftChanges;
   }
 
   saveProduct(): void {
@@ -257,8 +384,51 @@ export class VendorEditProductPageComponent implements OnInit {
     this.router.navigate(['/vendor/products']);
   }
 
+  saveProductImages(): void {
+    if (!this.product || !this.canSaveImages) {
+      if (this.totalMainImagesCount === 0) {
+        this.imageUpdateError = 'At least one main image is required.';
+      }
+      return;
+    }
+
+    this.imageUpdateLoading = true;
+    this.imageUpdateError = '';
+    this.imageUpdateMessage = '';
+
+    this.vendorService.updateProductImages(this.product._id, this.retainedMainImages, this.newMainImageFiles).subscribe({
+      next: (res) => {
+        this.imageUpdateLoading = false;
+        if (!res?.success) {
+          this.imageUpdateError = res?.message || 'Unable to update product images.';
+          return;
+        }
+
+        const updatedProduct = res?.data || this.product;
+        this.product = updatedProduct;
+        this.totalStock = totalProductStock(this.product);
+        this.retainedMainImages = Array.isArray(updatedProduct?.mainImages) ? [...updatedProduct.mainImages] : [...this.retainedMainImages];
+        this.clearNewImageDrafts();
+        this.imageUpdateMessage = 'Product images updated successfully.';
+        this.errorService.showToast('Product images updated successfully.', 'success');
+      },
+      error: (err) => {
+        this.imageUpdateLoading = false;
+        this.imageUpdateError = err?.error?.message || 'Unable to update product images.';
+      },
+    });
+  }
+
   trackByCategory(_: number, option: FlatCategoryOption): string {
     return option._id;
+  }
+
+  trackByImageUrl(_: number, imageUrl: string): string {
+    return imageUrl;
+  }
+
+  trackByPreviewUrl(_: number, previewUrl: string): string {
+    return previewUrl;
   }
 
   private loadProduct(): void {
@@ -271,6 +441,8 @@ export class VendorEditProductPageComponent implements OnInit {
           return;
         }
         this.totalStock = totalProductStock(this.product);
+        this.retainedMainImages = [...(this.product.mainImages || [])];
+        this.clearNewImageDrafts();
         this.form = {
           productName: this.product.productName || '',
           productDescription: this.product.productDescription || '',
@@ -285,6 +457,68 @@ export class VendorEditProductPageComponent implements OnInit {
         this.errorService.showToast('Unable to load product details.', 'error');
       },
     });
+  }
+
+  onNewMainImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const selectedFiles = Array.from(input.files || []);
+
+    if (!selectedFiles.length) {
+      return;
+    }
+
+    const availableSlots = this.remainingImageSlots;
+    if (availableSlots <= 0) {
+      this.errorService.showToast('You can keep at most 5 main images.', 'error');
+      input.value = '';
+      return;
+    }
+
+    const acceptedFiles = selectedFiles.slice(0, availableSlots);
+    if (acceptedFiles.length < selectedFiles.length) {
+      this.errorService.showToast('Only the first available images were added to stay within the 5 image limit.', 'error');
+    }
+
+    this.newMainImageFiles = [...this.newMainImageFiles, ...acceptedFiles];
+    this.newMainImagePreviews = [...this.newMainImagePreviews, ...acceptedFiles.map((file) => URL.createObjectURL(file))];
+    this.imageUpdateError = '';
+    this.imageUpdateMessage = '';
+    input.value = '';
+  }
+
+  removeRetainedMainImage(imageUrl: string): void {
+    this.retainedMainImages = this.retainedMainImages.filter((image) => image !== imageUrl);
+    this.imageUpdateError = '';
+    this.imageUpdateMessage = '';
+  }
+
+  removeNewMainImage(index: number): void {
+    const preview = this.newMainImagePreviews[index];
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
+
+    this.newMainImageFiles = this.newMainImageFiles.filter((_, i) => i !== index);
+    this.newMainImagePreviews = this.newMainImagePreviews.filter((_, i) => i !== index);
+    this.imageUpdateError = '';
+    this.imageUpdateMessage = '';
+  }
+
+  resetImageDraft(): void {
+    this.retainedMainImages = [...(this.product?.mainImages || [])];
+    this.clearNewImageDrafts();
+    this.imageUpdateError = '';
+    this.imageUpdateMessage = '';
+  }
+
+  private clearNewImageDrafts(): void {
+    this.newMainImagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
+    this.newMainImageFiles = [];
+    this.newMainImagePreviews = [];
+  }
+
+  ngOnDestroy(): void {
+    this.clearNewImageDrafts();
   }
 
   private loadCategories(): void {

@@ -66,7 +66,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               </ng-container>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
               <ng-container *ngIf="showStoreCounts()">
                 <a
                   routerLink="/cart"
@@ -89,7 +89,7 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
                 <a
                   *ngIf="isVendor() || isAdmin()"
                   routerLink="/vendor/notifications"
-                  class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                  class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_6px_14px_rgba(47,27,20,0.08)] transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 hover:shadow-[0_10px_22px_rgba(47,27,20,0.1)]"
                   aria-label="Open vendor notifications"
                   title="Notifications"
                 >

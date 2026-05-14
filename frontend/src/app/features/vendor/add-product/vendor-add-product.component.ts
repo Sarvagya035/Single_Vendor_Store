@@ -125,10 +125,14 @@ interface WizardStep {
               <div class="space-y-5">
                 <label class="flex cursor-pointer flex-col items-center rounded-[1.8rem] border-2 border-dashed border-slate-300 bg-slate-50/80 px-6 py-10 text-center">
                   <span class="text-lg font-black text-slate-900">Drag files here or choose images</span>
-                  <span class="mt-2 text-sm font-medium text-slate-500">The first image becomes the main catalog preview.</span>
+                  <span class="mt-2 text-sm font-medium text-slate-500">The first image becomes the main catalog preview. {{ mainImageFiles.length }}/5 selected.</span>
                   <span class="btn-primary mt-5 inline-flex w-full justify-center !px-6 !py-3 sm:w-auto">Choose Images</span>
                   <input type="file" accept="image/*" multiple class="hidden" (change)="onMainImagesSelected($event)" />
                 </label>
+
+                <p *ngIf="imageSelectionMessage" class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700">
+                  {{ imageSelectionMessage }}
+                </p>
 
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <article *ngFor="let preview of imagePreviews; let i = index; trackBy: trackByPreview" class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white">
@@ -302,6 +306,7 @@ export class VendorAddProductComponent implements OnInit {
   form = { productName: '', productDescription: '', brand: '', category: '' };
   mainImageFiles: File[] = [];
   imagePreviews: Array<{ file: File; url: string }> = [];
+  imageSelectionMessage = '';
   variantOptions: VendorProductOptionForm[] = [{ name: '', valuesText: '' }];
   variants: VendorProductVariantForm[] = [];
 
@@ -363,7 +368,9 @@ export class VendorAddProductComponent implements OnInit {
 
   onMainImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.setMainImages(Array.from(input.files || []));
+    const selectedFiles = Array.from(input.files || []);
+    this.appendMainImages(selectedFiles);
+    input.value = '';
   }
 
   removeMainImage(index: number): void {
@@ -371,6 +378,7 @@ export class VendorAddProductComponent implements OnInit {
     if (removed) URL.revokeObjectURL(removed.url);
     this.mainImageFiles = this.mainImageFiles.filter((_, i) => i !== index);
     this.imagePreviews = this.imagePreviews.filter((_, i) => i !== index);
+    this.imageSelectionMessage = '';
   }
 
   addOption(): void {
@@ -504,6 +512,30 @@ export class VendorAddProductComponent implements OnInit {
     this.imagePreviews.forEach((item) => URL.revokeObjectURL(item.url));
     this.mainImageFiles = files.slice(0, 5);
     this.imagePreviews = this.mainImageFiles.map((file) => ({ file, url: URL.createObjectURL(file) }));
+  }
+
+  private appendMainImages(files: File[]): void {
+    if (!files.length) {
+      return;
+    }
+
+    const availableSlots = Math.max(0, 5 - this.mainImageFiles.length);
+    if (availableSlots === 0) {
+      this.imageSelectionMessage = 'You already selected 5 images. Remove one to add another.';
+      this.errorService.showToast('You can select up to 5 main images.', 'error');
+      return;
+    }
+
+    const acceptedFiles = files.slice(0, availableSlots);
+    if (acceptedFiles.length < files.length) {
+      this.imageSelectionMessage = 'Only the first available images were added to stay within the 5 image limit.';
+      this.errorService.showToast('Only the first available images were added to stay within the 5 image limit.', 'error');
+    } else {
+      this.imageSelectionMessage = '';
+    }
+
+    this.mainImageFiles = [...this.mainImageFiles, ...acceptedFiles];
+    this.imagePreviews = [...this.imagePreviews, ...acceptedFiles.map((file) => ({ file, url: URL.createObjectURL(file) }))];
   }
 
   private createVariant(attributesText: string): VendorProductVariantForm {

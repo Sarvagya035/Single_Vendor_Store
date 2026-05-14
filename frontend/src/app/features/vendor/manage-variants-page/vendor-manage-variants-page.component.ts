@@ -101,8 +101,8 @@ import {
             <app-vendor-form-section eyebrow="Variant Cards" title="Edit existing variants">
               <app-empty-state *ngIf="!(product.variants?.length)" title="No variants yet" description="Add the first variant to start managing combinations and inventory here." cardClass="border-dashed" />
 
-              <div class="grid grid-cols-1 gap-4 lg:grid-cols-2" *ngIf="product.variants?.length">
-                <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="rounded-[1.45rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4">
+              <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start" *ngIf="product.variants?.length">
+                <article *ngFor="let variant of product.variants; trackBy: trackByVariant" class="vendor-card-compact h-full flex flex-col gap-4 !p-4 sm:!p-5">
                   <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div class="flex min-w-0 items-center gap-3">
                       <div class="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100 sm:h-16 sm:w-16">
@@ -123,32 +123,88 @@ import {
                       {{ busyDeleteId === variant._id ? 'Deleting...' : 'Delete' }}
                     </button>
                   </div>
-  
-                  <div class="mt-4 grid gap-3">
-                    <input [(ngModel)]="variantForms[variant._id || ''].attributesText" [name]="'attributes-' + (variant._id || '')" placeholder="Attributes" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
 
-                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
-                      <input type="number" [(ngModel)]="variantForms[variant._id || ''].productPrice" [name]="'price-' + (variant._id || '')" min="0" placeholder="Price" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                      <input type="number" [(ngModel)]="variantForms[variant._id || ''].discountPercentage" [name]="'discount-' + (variant._id || '')" min="0" max="100" placeholder="Discount %" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
-                      <input type="number" [(ngModel)]="variantForms[variant._id || ''].productStock" [name]="'stock-' + (variant._id || '')" min="0" placeholder="Stock" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                      <input type="text" [(ngModel)]="variantForms[variant._id || ''].sku" [name]="'sku-' + (variant._id || '')" placeholder="SKU" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold uppercase text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100" />
-                    </div>
-
-                    <label class="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-600">
-                      <span class="truncate">{{ variantForms[variant._id || ''].imageFile?.name || 'Upload replacement image' }}</span>
-                      <input type="file" accept="image/*" class="hidden" (change)="onVariantImageSelected($event, variant)" />
+                  <div class="grid gap-3">
+                    <label class="grid gap-1.5">
+                      <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Variant Option / Color / Weight / Size</span>
+                      <input
+                        [(ngModel)]="variantForms[variant._id || ''].attributesText"
+                        [name]="'attributes-' + (variant._id || '')"
+                        placeholder="Weight:500g, Type:Roasted"
+                        class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+                      />
                     </label>
 
-                    <div class="grid gap-2 rounded-[1.3rem] border border-slate-200 bg-white p-3 text-sm font-medium text-slate-600">
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <label class="grid gap-1.5">
+                        <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Price</span>
+                        <input
+                          type="number"
+                          [(ngModel)]="variantForms[variant._id || ''].productPrice"
+                          [name]="'price-' + (variant._id || '')"
+                          min="0"
+                          placeholder="Price"
+                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+                        />
+                      </label>
+
+                      <label class="grid gap-1.5">
+                        <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Stock</span>
+                        <input
+                          type="number"
+                          [(ngModel)]="variantForms[variant._id || ''].productStock"
+                          [name]="'stock-' + (variant._id || '')"
+                          min="0"
+                          placeholder="Stock"
+                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+                        />
+                      </label>
+                    </div>
+
+                    <p class="text-[11px] font-medium leading-5 text-slate-500">Final Price updates based on price and discount.</p>
+
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <label class="grid gap-1.5">
+                        <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Offer / Discount</span>
+                        <input
+                          type="number"
+                          [(ngModel)]="variantForms[variant._id || ''].discountPercentage"
+                          [name]="'discount-' + (variant._id || '')"
+                          min="0"
+                          max="100"
+                          placeholder="Discount %"
+                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+                        />
+                      </label>
+
+                      <label class="grid gap-1.5">
+                        <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">SKU</span>
+                        <input
+                          type="text"
+                          [(ngModel)]="variantForms[variant._id || ''].sku"
+                          [name]="'sku-' + (variant._id || '')"
+                          placeholder="SKU"
+                          class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold uppercase text-slate-900 shadow-inner outline-none focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+                        />
+                      </label>
+                    </div>
+
+                    <label class="grid gap-1.5">
+                      <span class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">Replacement Image</span>
+                      <span class="text-[11px] font-medium leading-5 text-slate-500">Upload only if you want to replace the current variant image.</span>
+                      <div class="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-600">
+                        <span class="truncate">{{ variantForms[variant._id || ''].imageFile?.name || 'Upload replacement image' }}</span>
+                        <input type="file" accept="image/*" class="hidden" (change)="onVariantImageSelected($event, variant)" />
+                      </div>
+                    </label>
+
+                    <div class="grid gap-1.5 rounded-[1.3rem] border border-slate-200 bg-white p-3 text-sm font-medium text-slate-600">
                       <p><span class="font-black text-slate-900">Final Price:</span> {{ finalPriceLabel(variant) }}</p>
                       <p><span class="font-black text-slate-900">Current SKU:</span> {{ variant.sku || 'Pending' }}</p>
                     </div>
                   </div>
 
-                  <div class="mt-4 grid grid-cols-2 gap-2">
+                  <div class="mt-auto grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       class="inline-flex items-center justify-center rounded-full bg-[#8B5E3C] px-5 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-[#754c30] disabled:cursor-not-allowed disabled:opacity-60"
