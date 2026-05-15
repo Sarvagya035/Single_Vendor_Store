@@ -1,70 +1,142 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { OrderRecord } from '../../core/models/order.models';
 import { OrderService } from '../../core/services/order.service';
+import { SocketService } from '../../core/services/socket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
-      <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-amber-700">Order History</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900">My orders</h1>
-            <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
-              Track order status, review delivery details, and open any order for a full breakdown.
-            </p>
+    <section class="storefront-section">
+      <div class="store-page store-page-stack">
+          <div class="store-page-header">
+          <div class="max-w-2xl">
+            <p class="app-page-eyebrow text-amber-700">Order History</p>
+            <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">My Orders</h1>
           </div>
 
-          <div class="flex gap-3">
-            <a routerLink="/cart" class="btn-secondary !px-5 !py-3">Go To Cart</a>
-            <a routerLink="/" class="btn-primary !px-5 !py-3">Continue Shopping</a>
+          <div class="flex flex-wrap gap-2">
+            <a routerLink="/cart" class="btn-secondary w-full justify-center sm:w-auto">Go To Cart</a>
+            <a routerLink="/" class="btn-primary w-full justify-center sm:w-auto">Continue Shopping</a>
           </div>
-        </div>
+          </div>
 
-        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+        <div *ngIf="successMessage" class="rounded-[1.5rem] border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
           {{ successMessage }}
         </div>
 
-        <div *ngIf="isLoading" class="mt-10 text-sm font-semibold text-slate-500">Loading your orders...</div>
+        <div class="app-card app-panel-body">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p class="text-xs font-medium uppercase tracking-[0.28em] text-slate-400">Search Orders</p>
+            </div>
 
-        <div *ngIf="!isLoading && orders.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center">
-          <h2 class="text-2xl font-black text-slate-900">No orders yet</h2>
-          <p class="mt-3 text-sm font-medium text-slate-500">Your completed checkouts will appear here.</p>
-          <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Start Shopping</a>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="rounded-full border border-[#e7dac9] bg-[#fff7ed] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-[#6f4e37]">
+                {{ filteredOrders.length }} visible
+              </span>
+              <span class="rounded-full border border-[#e7dac9] bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600">
+                {{ orders.length }} total
+              </span>
+              <button
+                *ngIf="searchTerm"
+                type="button"
+                class="btn-secondary"
+                (click)="clearSearch()"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-5 flex items-center gap-3 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] px-4 py-3 shadow-inner focus-within:border-amber-300 focus-within:ring-4 focus-within:ring-amber-100">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-slate-400">
+              <path fill="currentColor" d="M10 4a6 6 0 104.472 10.007l4.26 4.261 1.414-1.414-4.26-4.26A6 6 0 0010 4Zm0 2a4 4 0 110 8 4 4 0 010-8Z" />
+            </svg>
+            <input
+              id="order-search"
+              [(ngModel)]="searchTerm"
+              name="orderSearch"
+              type="search"
+              placeholder="Search by order ID, status, item name, city, or pincode"
+              class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
+            />
+          </div>
         </div>
 
-        <div *ngIf="orders.length" class="mt-8 grid gap-5">
+        <div *ngIf="isLoading" class="text-sm font-semibold text-slate-500">Loading your orders...</div>
+
+        <div *ngIf="!isLoading && orders.length === 0">
+        <div class="app-empty-state">
+          <h2 class="text-2xl font-medium text-slate-900">No orders yet</h2>
+          <p class="mt-3 text-sm font-medium text-slate-500">Your completed checkouts will appear here.</p>
+          <a routerLink="/" class="btn-primary mt-6 inline-flex">Start Shopping</a>
+        </div>
+        </div>
+
+        <div *ngIf="!isLoading && orders.length > 0 && filteredOrders.length === 0">
+        <div class="app-empty-state">
+          <h2 class="text-2xl font-medium text-slate-900">No matching orders</h2>
+          <p class="mt-3 text-sm font-medium text-slate-500">
+            Try a different order number, item name, city, or status.
+          </p>
+          <button type="button" class="btn-primary mt-6 inline-flex" (click)="clearSearch()">Clear search</button>
+        </div>
+        </div>
+
+        <div *ngIf="filteredOrders.length" class="store-page-grid">
           <article
-            *ngFor="let order of orders; trackBy: trackByOrder"
-            class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]"
+            *ngFor="let order of filteredOrders; trackBy: trackByOrder"
+            class="app-card app-panel-body transition hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(111,78,55,0.09)]"
           >
-            <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-              <div class="min-w-0">
+            <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+              <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-3">
-                  <p class="text-lg font-black text-slate-900">Order #{{ shortOrderId(order._id) }}</p>
-                  <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em]" [ngClass]="statusClass(order.orderStatus)">
+              <p class="break-all text-lg font-medium text-slate-900 sm:break-normal sm:text-xl">Order #{{ shortOrderId(order._id) }}</p>
+              <span class="rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em]" [ngClass]="statusClass(order.orderStatus)">
                     {{ order.orderStatus || 'Processing' }}
                   </span>
                 </div>
-                <p class="mt-2 text-sm font-medium text-slate-500">
-                  Placed on {{ formatDate(order.createdAt) }} • {{ itemCount(order) }} items
-                </p>
-                <p class="mt-3 text-sm font-semibold text-slate-700">{{ orderItemPreview(order) }}</p>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                  <div class="rounded-[1.4rem] border border-slate-200 bg-slate-50/70 p-4">
+                    <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">Placed on</p>
+                    <p class="mt-2 text-sm font-medium text-slate-900">{{ formatDate(order.createdAt) }}</p>
+                  </div>
+                  <div class="rounded-[1.4rem] border border-slate-200 bg-slate-50/70 p-4">
+                    <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">Items</p>
+                    <p class="mt-2 text-sm font-medium text-slate-900">{{ itemCount(order) }} item{{ itemCount(order) === 1 ? '' : 's' }}</p>
+                  </div>
+                  <div class="rounded-[1.4rem] border border-slate-200 bg-slate-50/70 p-4">
+                    <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">Delivery</p>
+                    <p class="mt-2 text-sm font-medium text-slate-900">{{ order.shippingAddress?.city || 'Shipping address' }}</p>
+                  </div>
+                </div>
+
+                <div class="mt-4 rounded-[1.4rem] border border-[#f1e4d4] bg-[#fffaf5] px-4 py-4">
+                  <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">Items in this order</p>
+                  <p class="mt-2 text-sm font-semibold leading-7 text-slate-700">{{ orderItemPreview(order) }}</p>
+                </div>
               </div>
 
-              <div class="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-end">
-                <p class="text-2xl font-black text-slate-900">{{ formatCurrency(displayOrderTotal(order)) }}</p>
-                <div class="flex gap-3">
-                  <a [routerLink]="['/orders', order._id]" class="btn-secondary !px-5 !py-3">View Details</a>
+              <div class="flex flex-col gap-4 xl:min-w-[240px] xl:items-end">
+                <div class="text-right">
+                  <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">Total</p>
+                  <p class="mt-2 text-3xl font-medium tracking-tight text-slate-900">{{ formatCurrency(displayOrderTotal(order)) }}</p>
+                </div>
+
+                <div class="flex flex-col gap-3 sm:flex-row xl:justify-end">
+                  <a [routerLink]="['/track-order', order._id]" class="btn-primary w-full justify-center sm:w-auto">Track</a>
+                  <a [routerLink]="['/orders', order._id]" class="btn-secondary w-full justify-center sm:w-auto">View Details</a>
                   <button
                     *ngIf="canCancel(order)"
                     type="button"
-                    class="rounded-2xl border border-rose-100 bg-rose-50 px-5 py-3 text-sm font-black text-rose-600 transition hover:bg-rose-100"
+                    class="btn-secondary w-full justify-center text-rose-600 hover:text-rose-700 sm:w-auto"
                     (click)="cancelOrder(order)"
                   >
                     Cancel Order
@@ -74,19 +146,41 @@ import { OrderService } from '../../core/services/order.service';
             </div>
           </article>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   `
 })
 export class OrdersComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   orders: OrderRecord[] = [];
   isLoading = false;
   successMessage = '';
+  searchTerm = '';
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private socketService: SocketService
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
+
+    this.socketService.events$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.name === 'order:new' || event.name === 'order:status-updated') {
+          this.loadOrders();
+        }
+      });
+  }
+
+  get filteredOrders(): OrderRecord[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) {
+      return this.orders;
+    }
+
+    return this.orders.filter((order) => this.matchesSearch(order, term));
   }
 
   loadOrders(): void {
@@ -184,6 +278,36 @@ export class OrdersComponent implements OnInit {
 
   trackByOrder(index: number, order: OrderRecord): string {
     return order._id || String(index);
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+  }
+
+  private matchesSearch(order: OrderRecord, term: string): boolean {
+    const haystacks = [
+      order._id,
+      this.shortOrderId(order._id),
+      order.orderStatus,
+      order.createdAt,
+      order.updatedAt,
+      order.paidAt,
+      order.deliveredAt,
+      order.shippingAddress?.address,
+      order.shippingAddress?.city,
+      order.shippingAddress?.pincode,
+      order.shippingAddress?.phone,
+      ...(order.orderItems || []).flatMap((item) => [
+        item.name,
+        item.sku,
+        item.vendor,
+        item.product,
+        item.variantId,
+        item.orderItemStatus
+      ])
+    ];
+
+    return haystacks.some((value) => String(value || '').toLowerCase().includes(term));
   }
 }
 

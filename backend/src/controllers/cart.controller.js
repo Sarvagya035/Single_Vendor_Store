@@ -1,24 +1,51 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {Product} from "../models/product.model.js"
+import { Product } from "../models/product.model.js";
 import { Cart } from "../models/cart.model.js";
+import { buildSkippedItem, isValidObjectId, normalizeGuestCartItems } from "../utils/guestMerge.utils.js";
+
+async function ensureCart(userId) {
+    try {
+        return await Cart.findOneAndUpdate(
+            { user: userId },
+            { $setOnInsert: { user: userId, cartItems: [], totalCartPrice: 0 } },
+            { returnDocument: 'after', upsert: true, runValidators: true }
+        );
+    } catch (error) {
+        if (error?.code === 11000) {
+            const cart = await Cart.findOne({ user: userId });
+            if (cart) {
+                return cart;
+            }
+        }
+
+        throw error;
+    }
+}
 
 const addToCart = asyncHandler(async (req, res) => {
     const { productId, variantId, quantity } = req.body;
     const userId = req.user._id;
+    const normalizedQuantity = Math.max(1, Number(quantity) || 1);
 
     // 1. Fetch Latest Product Data
     const product = await Product.findById(productId);
     if (!product) throw new ApiError(404, "Product not found");
+    if (product.isActive === false) {
+        throw new ApiError(400, "Product is unavailable");
+    }
 
     // 2. Find Specific Variant
     const variant = product.variants.id(variantId);
     if (!variant) throw new ApiError(404, "Variant not found");
+    if (variant.isAvailable === false || Number(variant.productStock || 0) <= 0) {
+        throw new ApiError(400, "Product is out of stock");
+    }
 
     // 3. Check Stock
-    if (variant.productStock < quantity) {
-        throw new ApiError(400, "Not enough stock available");
+    if (variant.productStock < normalizedQuantity) {
+        throw new ApiError(400, "Product is out of stock");
     }
 
     // 4. Find User's Cart
@@ -26,38 +53,38 @@ const addToCart = asyncHandler(async (req, res) => {
 
     if (!cart) {
         // Create new cart if doesn't exist
-        cart = await Cart.create({
-            user: userId,
-            cartItems: [{
-                product: productId,
-                variantId,
-                quantity,
-                priceAtAddition: variant.finalPrice // Snapshot for history
-            }]
-        });
-    } else {
-        // Check if same variant already in cart
-        const itemIndex = cart.cartItems.findIndex(
-            item => item.variantId.toString() === variantId.toString()
-        );
-
-        if (itemIndex > -1) {
-            const nextQuantity = cart.cartItems[itemIndex].quantity + Number(quantity);
-            if (variant.productStock < nextQuantity) {
-                throw new ApiError(400, `Only ${variant.productStock} units available in stock`);
-            }
-            // Update quantity
-            cart.cartItems[itemIndex].quantity = nextQuantity;
-        } else {
-            // Add new item
-            cart.cartItems.push({
-                product: productId,
-                variantId,
-                quantity,
-                priceAtAddition: variant.finalPrice
+            cart = await Cart.create({
+                user: userId,
+                cartItems: [{
+                    product: productId,
+                    variantId,
+                    quantity: normalizedQuantity,
+                    priceAtAddition: variant.finalPrice // Snapshot for history
+                }]
             });
+        } else {
+            // Check if same variant already in cart
+            const itemIndex = cart.cartItems.findIndex(
+                item => item.variantId.toString() === variantId.toString()
+            );
+
+            if (itemIndex > -1) {
+                const nextQuantity = cart.cartItems[itemIndex].quantity + normalizedQuantity;
+                if (variant.productStock < nextQuantity) {
+                    throw new ApiError(400, "Product is out of stock");
+                }
+                // Update quantity
+                cart.cartItems[itemIndex].quantity = nextQuantity;
+            } else {
+                // Add new item
+                cart.cartItems.push({
+                    product: productId,
+                    variantId,
+                    quantity: normalizedQuantity,
+                    priceAtAddition: variant.finalPrice
+                });
+            }
         }
-    }
 
     await cart.save();
     return res.status(200).json(new ApiResponse(200, cart, "Item added to cart"));
@@ -200,10 +227,97 @@ const clearCart = asyncHandler(async (req, res) => {
     );
 });
 
+const mergeGuestCart = asyncHandler(async (req, res) => {
+    const { items } = req.body || {};
+    const userId = req.user?._id;
+
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    if (!Array.isArray(items)) {
+        throw new ApiError(400, "items must be an array");
+    }
+
+    const guestItems = normalizeGuestCartItems(items);
+    const skippedItems = [];
+
+    if (guestItems.length === 0) {
+        const emptyCart = await ensureCart(userId);
+        return res.status(200).json(
+            Object.assign(
+                new ApiResponse(200, emptyCart, "Guest cart merged successfully"),
+                { skippedItems: [] }
+            )
+        );
+    }
+
+    const cart = await ensureCart(userId);
+
+    for (const guestItem of guestItems) {
+        const { productId, variantId, quantity } = guestItem;
+
+        if (!isValidObjectId(productId) || !isValidObjectId(variantId)) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Invalid product or variant id"));
+            continue;
+        }
+
+        const product = await Product.findById(productId);
+        if (!product || product.isActive === false) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Product unavailable"));
+            continue;
+        }
+
+        const variant = product.variants.id(variantId);
+        if (!variant || variant.isAvailable === false || Number(variant.productStock || 0) <= 0) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Variant unavailable"));
+            continue;
+        }
+
+        const currentItemIndex = cart.cartItems.findIndex(
+            (item) =>
+                item.product?.toString() === productId &&
+                item.variantId?.toString() === variantId
+        );
+
+        const existingQuantity = currentItemIndex > -1 ? Number(cart.cartItems[currentItemIndex].quantity || 0) : 0;
+        const nextQuantity = existingQuantity + Number(quantity || 0);
+
+        if (nextQuantity > Number(variant.productStock || 0)) {
+            skippedItems.push(buildSkippedItem(productId, variantId, "Insufficient stock"));
+            continue;
+        }
+
+        if (currentItemIndex > -1) {
+            cart.cartItems[currentItemIndex].quantity = nextQuantity;
+            cart.cartItems[currentItemIndex].priceAtAddition = variant.finalPrice ?? variant.productPrice ?? 0;
+            continue;
+        }
+
+        cart.cartItems.push({
+            product: productId,
+            variantId,
+            quantity,
+            priceAtAddition: variant.finalPrice ?? variant.productPrice ?? 0
+        });
+    }
+
+    await cart.save();
+    await cart.populate("cartItems.product");
+
+    return res.status(200).json(
+        Object.assign(
+            new ApiResponse(200, cart, "Guest cart merged successfully"),
+            { skippedItems }
+        )
+    );
+});
+
 export {
     addToCart,
     getCart,
     updateCartQuantity,
     removeFromCart,
-    clearCart
+    clearCart,
+    mergeGuestCart
 }

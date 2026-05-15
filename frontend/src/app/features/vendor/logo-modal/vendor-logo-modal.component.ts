@@ -7,14 +7,14 @@ import { VendorProfile } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="open" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">
-      <div class="glass-card w-full max-w-xl p-8 shadow-2xl">
-        <div class="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
+    <div *ngIf="open" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/45 px-3 py-3 sm:px-4 sm:py-4">
+      <div class="glass-card my-auto w-full max-w-xl max-h-[calc(100dvh-1.5rem)] overflow-y-auto p-5 shadow-2xl sm:p-8">
+        <div class="flex flex-col gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p class="text-xs font-black uppercase tracking-[0.28em] text-slate-400">Edit Store Logo</p>
-            <h3 class="mt-2 text-2xl font-black tracking-tight text-slate-900">Upload a New Brand Image</h3>
+            <p class="vendor-stat-label">Edit Store Logo</p>
+            <h3 class="vendor-panel-title">Upload a New Brand Image</h3>
           </div>
-          <button type="button" (click)="close.emit()" class="btn-secondary !px-4 !py-2 text-xs">
+          <button type="button" (click)="close.emit()" class="btn-secondary w-full !px-4 !py-2 text-xs sm:w-auto">
             Close
           </button>
         </div>
@@ -26,7 +26,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
               <span *ngIf="!logoPreview && !vendor?.vendorLogo">{{ vendor?.shopName?.charAt(0) }}</span>
             </div>
             <input id="vendor-logo-input" type="file" accept="image/*" class="hidden" (change)="selectLogo.emit($event)">
-            <label for="vendor-logo-input" class="btn-secondary cursor-pointer !w-full !py-4">
+            <label for="vendor-logo-input" class="btn-secondary cursor-pointer w-full !py-4">
               {{ selectedLogoName ? 'Replace Selected Logo' : 'Choose New Logo' }}
             </label>
             <p class="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
@@ -38,7 +38,7 @@ import { VendorProfile } from '../../../core/models/vendor.models';
             type="button"
             (click)="submit.emit()"
             [disabled]="!selectedLogoName || isUploading"
-            class="btn-primary !w-full !py-4"
+            class="btn-primary w-full !py-4"
           >
             {{ isUploading ? 'Uploading Logo...' : 'Update Store Logo' }}
           </button>

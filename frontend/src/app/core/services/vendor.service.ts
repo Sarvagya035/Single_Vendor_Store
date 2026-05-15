@@ -2,11 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CustomerUser } from '../models/customer.models';
+import { CustomerUser, CustomerWishlist } from '../models/customer.models';
+import { OrderRecord } from '../models/order.models';
 import {
+  AdminShipmentUpdatePayload,
   OrderReportRequest,
   VendorAnalyticsPayload,
   VendorCustomersResponse,
+  VendorNotificationRecord,
+  VendorNotificationsPayload,
   VendorSoldOrderRecord
 } from '../models/vendor.models';
 
@@ -16,8 +20,10 @@ import {
 export class VendorService {
   private apiUrl = `${environment.apiUrl}/vendor`;
   private adminUrl = `${environment.apiUrl}/admin`;
-  private productUrl = `${environment.apiUrl}/product`;
+  private productUrl = `${environment.apiUrl}/products`;
   private categoryUrl = `${environment.apiUrl}/category`;
+  private orderUrl = `${environment.apiUrl}/orders`;
+  private wishlistUrl = `${environment.apiUrl}/wishlist`;
 
   constructor(private http: HttpClient) { }
 
@@ -47,8 +53,28 @@ export class VendorService {
     return this.http.patch(`${this.adminUrl}/update-logo`, formData, { withCredentials: true });
   }
 
-  getMyProducts(page = 1, limit = 100): Observable<any> {
-    return this.http.get(`${this.productUrl}/my-products?page=${page}&limit=${limit}`, { withCredentials: true });
+  getMyProducts(
+    page = 1,
+    limit = 100,
+    filters?: { q?: string; category?: string; status?: 'all' | 'active' | 'inactive' }
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+
+    if (filters?.q?.trim()) {
+      params = params.set('q', filters.q.trim());
+    }
+
+    if (filters?.category && filters.category !== 'all') {
+      params = params.set('category', filters.category);
+    }
+
+    if (filters?.status && filters.status !== 'all') {
+      params = params.set('status', filters.status);
+    }
+
+    return this.http.get(`${this.productUrl}/my-products`, { withCredentials: true, params });
   }
 
   getProductById(productId: string): Observable<any> {
@@ -85,6 +111,12 @@ export class VendorService {
       { discountPercentage },
       { withCredentials: true }
     );
+  }
+
+  updateVariant(productId: string, variantId: string, data: FormData): Observable<any> {
+    return this.http.patch(`${this.productUrl}/update-variant/${productId}/${variantId}`, data, {
+      withCredentials: true
+    });
   }
 
   deleteVariant(productId: string, variantId: string): Observable<any> {
@@ -159,6 +191,18 @@ export class VendorService {
     );
   }
 
+  getCustomerOrderHistory(customerId: string): Observable<OrderRecord[]> {
+    return this.http
+      .get<any>(`${this.orderUrl}/vendor/customer/${customerId}`, { withCredentials: true })
+      .pipe(map((response) => (Array.isArray(response?.data) ? response.data : [])));
+  }
+
+  getCustomerWishlist(customerId: string): Observable<CustomerWishlist> {
+    return this.http
+      .get<any>(`${this.wishlistUrl}/vendor/customer/${customerId}`, { withCredentials: true })
+      .pipe(map((response) => this.normalizeWishlist(response?.data)));
+  }
+
   getVendorAnalytics(): Observable<VendorAnalyticsPayload> {
     return this.http
       .get<any>(`${this.adminUrl}/analytics`, { withCredentials: true })
@@ -185,6 +229,62 @@ export class VendorService {
     return this.http
       .get<any>(`${this.adminUrl}/sold-items`, { withCredentials: true })
       .pipe(map((response) => (Array.isArray(response?.data) ? response.data : [])));
+  }
+
+  getVendorNotifications(): Observable<VendorNotificationsPayload> {
+    return this.http
+      .get<any>(`${this.adminUrl}/notifications`, { withCredentials: true })
+      .pipe(
+        map((response) => ({
+          notifications: Array.isArray(response?.data?.notifications) ? response.data.notifications : [],
+          summary: {
+            totalNotifications: Number(response?.data?.summary?.totalNotifications || 0),
+            unreadNotifications: Number(response?.data?.summary?.unreadNotifications || 0),
+            activeLowStockAlerts: Number(response?.data?.summary?.activeLowStockAlerts || 0),
+            resolvedLowStockAlerts: Number(response?.data?.summary?.resolvedLowStockAlerts || 0)
+          }
+        }))
+      );
+  }
+
+  getBulkInquiriesSummary(): Observable<{ totalInquiries: number; newCount: number }> {
+    return this.http
+      .get<any>(`${this.adminUrl}/bulk-inquiries`, { withCredentials: true })
+      .pipe(
+        map((response) => ({
+          totalInquiries: Number(response?.data?.summary?.totalInquiries || 0),
+          newCount: Number(response?.data?.summary?.newCount || 0)
+        }))
+      );
+  }
+
+  markVendorNotificationRead(notificationId: string): Observable<VendorNotificationRecord> {
+    return this.http
+      .patch<any>(`${this.adminUrl}/notifications/${notificationId}/read`, {}, { withCredentials: true })
+      .pipe(map((response) => response?.data as VendorNotificationRecord));
+  }
+
+  markAllVendorNotificationsRead(): Observable<any> {
+    return this.http.patch(`${this.adminUrl}/notifications/read-all`, {}, { withCredentials: true });
+  }
+
+  getAdminShipments(): Observable<any> {
+    return this.http
+      .get<any>(`${this.adminUrl}/shipments`, { withCredentials: true })
+      .pipe(
+        map((response) => ({
+          shipments: Array.isArray(response?.data?.shipments) ? response.data.shipments : [],
+          summary: {
+            totalShipments: Number(response?.data?.summary?.totalShipments || 0),
+            deliveredShipments: Number(response?.data?.summary?.deliveredShipments || 0),
+            openShipments: Number(response?.data?.summary?.openShipments || 0)
+          }
+        }))
+      );
+  }
+
+  updateAdminShipment(orderId: string, payload: AdminShipmentUpdatePayload): Observable<any> {
+    return this.http.patch(`${this.adminUrl}/shipments/${orderId}`, payload, { withCredentials: true });
   }
 
   downloadOrdersReport(request: OrderReportRequest): Observable<HttpResponse<Blob>> {
@@ -223,6 +323,16 @@ export class VendorService {
     const hasRestrictedRole = roles.some((role) => role === 'vendor' || role === 'admin');
 
     return hasCustomer && !hasRestrictedRole;
+  }
+
+  private normalizeWishlist(payload: any): CustomerWishlist {
+    return {
+      _id: payload?._id,
+      owner: payload?.owner,
+      products: Array.isArray(payload?.products) ? payload.products : [],
+      createdAt: payload?.createdAt,
+      updatedAt: payload?.updatedAt
+    };
   }
 
   private toTimestamp(value?: string): number {

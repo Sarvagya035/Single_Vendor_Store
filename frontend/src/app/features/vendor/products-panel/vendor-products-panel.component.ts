@@ -30,32 +30,32 @@ interface ProductMessage {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, VendorProductCardComponent, VendorProductQuickActionsComponent],
   template: `
-    <section class="space-y-6">
+    <section class="w-full min-w-0 space-y-6">
       <div class="glass-card overflow-hidden">
-        <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
+        <div class="border-b border-slate-200 vendor-section-body lg:py-6">
           <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
                 Product Management
               </h2>
             </div>
-            <a routerLink="/vendor/products/add" class="btn-primary !px-6 !py-3">+ Add Product</a>
+            <a routerLink="/vendor/products/add" class="btn-primary w-full !px-6 !py-3 sm:w-auto">+ Add Product</a>
           </div>
         </div>
 
-        <div class="space-y-5 px-6 py-6 lg:px-8">
-          <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div class="space-y-5 vendor-section-body">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <input
               type="text"
               [(ngModel)]="searchQuery"
               placeholder="Search by product name, brand, or category"
-              class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 xl:max-w-md"
+              class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 lg:max-w-md"
             />
             <div class="flex flex-wrap gap-2">
               <button
                 type="button"
                 (click)="selectedCategory = 'all'"
-                class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition"
+                class="w-full rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition sm:w-auto"
                 [ngClass]="
                   selectedCategory === 'all'
                     ? 'border border-amber-300 bg-amber-50 text-slate-900 ring-2 ring-amber-200'
@@ -68,7 +68,7 @@ interface ProductMessage {
                 *ngFor="let category of categories"
                 type="button"
                 (click)="selectedCategory = category"
-                class="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition"
+                class="w-full rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition sm:w-auto"
                 [ngClass]="
                   selectedCategory === category
                     ? 'border border-amber-300 bg-amber-50 text-slate-900 ring-2 ring-amber-200'
@@ -105,6 +105,7 @@ interface ProductMessage {
               [createdLabel]="formatDate(product.createdAt)"
               [variantCount]="product.variants?.length || 0"
               [stockLabel]="'' + totalStock(product)"
+              [lowStock]="isLowStock(product)"
               [priceLabel]="formatCurrency(product.basePrice)"
               [statusBusy]="isBusy('status-' + product._id)"
               [deleteBusy]="isBusy('delete-product-' + product._id)"
@@ -123,7 +124,7 @@ interface ProductMessage {
           >
             <div
               (click)="$event.stopPropagation()"
-              class="w-full max-w-5xl rounded-[2rem] border border-slate-200 bg-slate-50 p-5 shadow-2xl sm:p-6 max-h-[calc(100vh-5rem)] overflow-y-auto"
+              class="w-full max-w-5xl rounded-[2rem] border border-slate-200 bg-slate-50 p-4 shadow-2xl sm:p-5 max-h-[calc(100vh-5rem)] overflow-y-auto"
             >
               <div class="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div>
@@ -158,8 +159,8 @@ interface ProductMessage {
                 {{ messageFor(product._id)?.text }}
               </div>
 
-              <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-                <section class="rounded-[1.5rem] border border-slate-200 bg-white p-5">
+              <div class="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <section class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                   <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
                     <div>
                       <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
@@ -205,19 +206,19 @@ interface ProductMessage {
                 />
               </div>
 
-              <section class="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-5">
+              <section class="mt-5 rounded-[1.5rem] border border-slate-200 bg-white p-4">
                 <div class="border-b border-slate-100 pb-4">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
                     Variant Tools
                   </p>
                   <h3 class="mt-2 text-xl font-black text-slate-900">Add variant</h3>
                 </div>
-                <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+                <div class="mt-4 grid gap-3 lg:grid-cols-5">
                   <input
                     [(ngModel)]="variantCreateForms[product._id].attributesText"
                     [name]="'new-attributes-' + product._id"
                     placeholder="Color:Black, Size:XL"
-                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 md:col-span-2 xl:col-span-2"
+                    class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100 md:col-span-2 lg:col-span-2"
                   />
                   <input
                     type="number"
@@ -244,7 +245,7 @@ interface ProductMessage {
                     placeholder="Stock"
                     class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
                   />
-                  <div class="md:col-span-2 xl:col-span-5">
+                  <div class="md:col-span-2 lg:col-span-5">
                     <input
                       type="file"
                       accept="image/*"
@@ -258,12 +259,12 @@ interface ProductMessage {
                       }}
                     </p>
                   </div>
-                  <div class="md:col-span-2 xl:col-span-5">
+                  <div class="md:col-span-2 lg:col-span-5">
                     <button
                       type="button"
                       (click)="addVariant(product)"
                       [disabled]="isBusy('add-variant-' + product._id)"
-                      class="btn-primary !px-6 !py-3"
+                      class="btn-primary w-full !px-6 !py-3 sm:w-auto"
                     >
                       {{
                         isBusy('add-variant-' + product._id) ? 'Adding Variant...' : 'Add Variant'
@@ -273,22 +274,22 @@ interface ProductMessage {
                 </div>
               </section>
 
-              <section class="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-5">
+              <section class="mt-5 rounded-[1.5rem] border border-slate-200 bg-white p-4">
                 <div class="border-b border-slate-100 pb-4">
                   <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
                     Existing Variants
                   </p>
                   <h3 class="mt-2 text-xl font-black text-slate-900">Inventory and pricing</h3>
                 </div>
-                <div class="mt-5 space-y-4" *ngIf="product.variants?.length; else noVariants">
+                <div class="mt-4 space-y-3" *ngIf="product.variants?.length; else noVariants">
                   <article
                     *ngFor="let variant of product.variants; trackBy: trackByVariantId"
-                    class="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5"
+                    class="rounded-[1.35rem] border border-slate-200 bg-slate-50/70 p-3 sm:p-4"
                   >
-                    <div class="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.8fr))]">
-                      <div class="space-y-3">
-                        <div class="flex items-center gap-4">
-                          <div class="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100">
+                    <div class="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.8fr))]">
+                      <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                          <div class="h-12 w-12 overflow-hidden rounded-2xl bg-slate-100 sm:h-14 sm:w-14">
                             <img
                               *ngIf="variant.variantImage"
                               [src]="variant.variantImage"
@@ -310,14 +311,14 @@ interface ProductMessage {
                             </p>
                           </div>
                         </div>
-                        <p class="text-sm font-medium text-slate-600">
+                        <p class="line-clamp-2 text-xs font-medium text-slate-600 sm:text-sm">
                           {{ attributeSummary(variant) }}
                         </p>
-                        <p class="text-sm font-semibold text-slate-700">
+                        <p class="text-xs font-semibold text-slate-700 sm:text-sm">
                           Base: {{ formatCurrency(variant.productPrice) }} | Final:
                           {{ formatCurrency(variant.finalPrice) }}
                         </p>
-                        <p class="text-sm font-semibold text-slate-700">
+                        <p class="text-xs font-semibold text-slate-700 sm:text-sm">
                           Current stock: {{ variant.productStock || 0 }}
                         </p>
                       </div>
@@ -337,7 +338,7 @@ interface ProductMessage {
                           type="button"
                           (click)="restockVariant(product, variant)"
                           [disabled]="!variant._id || isBusy('restock-' + (variant._id || ''))"
-                          class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-100"
+                          class="w-full rounded-2xl border border-slate-200 px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] text-slate-700 transition hover:bg-slate-100"
                         >
                           {{ isBusy('restock-' + (variant._id || '')) ? 'Updating...' : 'Restock' }}
                         </button>
@@ -359,7 +360,7 @@ interface ProductMessage {
                           type="button"
                           (click)="updateDiscount(product, variant)"
                           [disabled]="!variant._id || isBusy('discount-' + (variant._id || ''))"
-                          class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-100"
+                          class="w-full rounded-2xl border border-slate-200 px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] text-slate-700 transition hover:bg-slate-100"
                         >
                           {{
                             isBusy('discount-' + (variant._id || ''))
@@ -377,7 +378,7 @@ interface ProductMessage {
                           type="button"
                           (click)="deleteVariant(product, variant)"
                           [disabled]="!variant._id || isBusy('delete-variant-' + (variant._id || ''))"
-                          class="w-full rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-100"
+                          class="w-full rounded-2xl border border-rose-100 bg-rose-50 px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] text-rose-700 transition hover:bg-rose-100"
                         >
                           {{
                             isBusy('delete-variant-' + (variant._id || ''))
@@ -776,6 +777,11 @@ export class VendorProductsPanelComponent implements OnInit, OnChanges {
       (total, variant) => total + (variant.productStock || 0),
       0,
     );
+  }
+
+  isLowStock(product: VendorProductRecord): boolean {
+    const stock = this.totalStock(product);
+    return stock > 0 && stock <= 5;
   }
 
   attributeSummary(variant: VendorProductVariant): string {

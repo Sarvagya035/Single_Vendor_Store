@@ -7,9 +7,11 @@ import {
     getAllProducts, 
     getLandingPageProducts, 
     getProductById, 
+    getProductsByIds,
     getVendorProducts, 
     restockVariant, 
     searchProductsDeep, 
+    updateVariant,
     updateProductDetails, 
     updateVariantDiscount } from "../controllers/product.controller.js";
 
@@ -79,11 +81,19 @@ router.route("/update-variant-discount/:productId/:variantId").patch(
     updateVariantDiscount
 )
 
+router.route("/update-variant/:productId/:variantId").patch(
+    verifyJWT,
+    authorizeRoles("vendor"),
+    upload.single("variantImage"),
+    updateVariant
+)
+
 router.route("/search").get(searchProductsDeep)
 router.route("/get-landing-page-products").get(getLandingPageProducts)
 
 router.route("/public/get-product-by-id/:productId").get(getProductById)
 router.route("/get-product-by-id/:productId").get(getProductById)
+router.route("/bulk").post(getProductsByIds)
 router.route("/get-all-products").get(getAllProducts)
 
 export default router;

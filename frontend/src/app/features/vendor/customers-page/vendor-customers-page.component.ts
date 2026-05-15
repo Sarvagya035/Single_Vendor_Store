@@ -1,116 +1,271 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CustomerUser } from '../../../core/models/customer.models';
+import { OrderRecord } from '../../../core/models/order.models';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
+
+interface VendorCustomerRow {
+  user: CustomerUser;
+  orderCount: number;
+  totalSpent: number;
+  status: 'Active' | 'Inactive';
+  joinedAt: string;
+  avatarClass: string;
+}
 
 @Component({
   selector: 'app-vendor-customers-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="app-surface overflow-hidden">
-        <div class="border-b border-[#f1e4d4] px-6 py-6 lg:px-8">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Customer Directory</p>
-              <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Registered Customers</h1>
-              <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
-                Browse the customer list and click any card to open the full customer profile.
-              </p>
-            </div>
-
-            <div class="flex flex-wrap gap-3">
-              <label class="relative">
-                <span class="sr-only">Search customers</span>
-                <input
-                  type="search"
-                  [(ngModel)]="searchTerm"
-                  (ngModelChange)="applyFilters()"
-                  placeholder="Search by name, email, or phone"
-                  class="w-full min-w-[260px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-                />
-              </label>
-              <button type="button" (click)="reloadCustomers()" class="btn-secondary !px-6 !py-3">
-                {{ isLoading ? 'Loading...' : 'Refresh Customers' }}
-              </button>
-            </div>
-          </div>
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
+          <app-page-header
+            eyebrow="Customer Directory"
+            title="Registered Customers"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
+          >
+            <button
+              type="button"
+              (click)="reloadCustomers()"
+              class="btn-secondary w-full !px-5 !py-2.5 sm:w-auto"
+            >
+              {{ isLoading ? 'Refreshing...' : 'Refresh Customers' }}
+            </button>
+          </app-page-header>
         </div>
 
-        <div class="grid gap-4 px-6 py-6 md:grid-cols-3 lg:px-8">
-          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Total Customers</p>
-            <p class="mt-3 text-3xl font-black text-slate-900">{{ customers.length }}</p>
+        <div class="vendor-grid-3 vendor-section-body">
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
+            <p class="vendor-stat-label !text-amber-700">Total Customers</p>
+            <p class="vendor-stat-value">{{ customerRows.length }}</p>
           </article>
-          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Visible Now</p>
-            <p class="mt-3 text-3xl font-black text-slate-900">{{ filteredCustomers.length }}</p>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
+            <p class="vendor-stat-label !text-amber-700">Active Buyers</p>
+            <p class="vendor-stat-value">{{ activeCustomerCount }}</p>
           </article>
-          <article class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed]/80 p-5 shadow-sm">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600">Latest Signup</p>
+          <article class="vendor-stat-card !border-amber-100 !bg-[#fff7ed]/80 p-3 sm:p-4 lg:p-5">
+            <p class="vendor-stat-label !text-amber-600">Latest Signup</p>
             <p class="mt-3 text-sm font-black text-slate-900">{{ newestCustomerLabel }}</p>
           </article>
         </div>
-      </div>
 
-      <section class="app-surface overflow-hidden">
-        <div *ngIf="isLoading" class="px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
+        <div class="border-t border-slate-200 vendor-section-body lg:py-6">
+          <div class="relative">
+            <svg
+              class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a5f44]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+            </svg>
+            <input
+              type="search"
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="applyFilters()"
+              placeholder="Search customers by name, email..."
+              class="block w-full rounded-2xl border border-[#eadcc9] bg-white px-12 py-3.5 text-sm font-medium text-slate-900 shadow-[0_10px_30px_rgba(47,27,20,0.04)] outline-none transition placeholder:text-slate-400 focus:border-[#d4a017] focus:ring-4 focus:ring-amber-100"
+            />
+          </div>
+        </div>
+
+        <div *ngIf="isLoading" class="vendor-section-body py-10 text-sm font-semibold text-slate-500">
           Loading customer accounts...
         </div>
 
-        <div *ngIf="!isLoading && filteredCustomers.length === 0" class="px-6 py-12 text-center lg:px-8">
-          <h2 class="text-2xl font-black text-slate-900">No customers found</h2>
+        <div *ngIf="!isLoading && filteredCustomers.length === 0" class="vendor-section-body py-12 text-center">
+          <h2 class="vendor-empty-title">No customers found</h2>
           <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
             Try a different search term or wait for new customer signups.
           </p>
         </div>
 
-        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="divide-y divide-slate-100">
-          <button
-            type="button"
-            *ngFor="let customer of filteredCustomers; trackBy: trackByUserId"
-            (click)="openCustomer(customer)"
-            class="flex w-full flex-col gap-4 px-6 py-5 text-left transition hover:bg-[#fff7ed]/60 lg:px-8"
-          >
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div class="flex min-w-0 items-center gap-4">
-                <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 text-lg font-black text-slate-500">
-                  <img *ngIf="customer.avatar; else initialsBlock" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
-                  <ng-template #initialsBlock>{{ initials(customer) }}</ng-template>
-                </div>
+        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="vendor-table-wrap hidden lg:block">
+          <table class="min-w-full border-separate border-spacing-0">
+            <thead class="bg-[#fffaf5]">
+              <tr class="text-left text-sm font-semibold text-slate-500">
+                <th class="vendor-table-head-cell font-semibold">Customer</th>
+                <th class="vendor-table-head-cell font-semibold">Email</th>
+                <th class="vendor-table-head-cell font-semibold">Orders</th>
+                <th class="vendor-table-head-cell font-semibold">Total Spent</th>
+                <th class="vendor-table-head-cell font-semibold">Status</th>
+                <th class="vendor-table-head-cell font-semibold">Joined</th>
+                <th class="vendor-table-head-cell font-semibold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let customer of filteredCustomers; trackBy: trackByCustomer"
+                class="border-t border-slate-200 bg-white transition hover:bg-[#fffaf4]"
+              >
+                <td class="border-t border-slate-200 vendor-table-cell">
+                  <div class="flex items-center gap-4">
+                    <div
+                      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-black uppercase text-white"
+                      [ngClass]="customer.avatarClass"
+                    >
+                      {{ initials(customer.user) }}
+                    </div>
+                    <div class="min-w-0">
+                      <p class="truncate text-base font-black text-slate-900">
+                        {{ customer.user.fullName || customer.user.username || customer.user.email || 'Customer' }}
+                      </p>
+                    </div>
+                  </div>
+                </td>
 
-                <div class="min-w-0">
-                  <p class="truncate text-base font-black text-slate-900">{{ customer.username || customer.fullName || customer.email }}</p>
-                  <p class="truncate text-sm font-medium text-slate-500">{{ customer.email || 'No email provided' }}</p>
-                </div>
-              </div>
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-medium text-[#9c5f39]">
+                  {{ customer.user.email || 'No email provided' }}
+                </td>
 
-              <div class="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.18em]">
-                <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ formatRole(customer.role) }}</span>
-                <span *ngIf="customer.createdAt" class="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
-                  Joined {{ formatDate(customer.createdAt) }}
-                </span>
-              </div>
-            </div>
+                <td class="border-t border-slate-200 vendor-table-cell">
+                  <div class="inline-flex items-center gap-2 text-sm font-black text-slate-900">
+                    <svg
+                      class="h-4 w-4 text-[#8a5f44]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M7 3h10l2 4v13H5V7l2-4Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M9 3v4h6V3" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M9 12h6" />
+                    </svg>
+                    {{ customer.orderCount }}
+                  </div>
+                </td>
 
-            <div class="grid gap-3 text-sm font-medium text-slate-500 md:grid-cols-2">
-              <p><span class="font-black text-slate-900">Phone:</span> {{ customer.phone || 'Not provided' }}</p>
-              <p><span class="font-black text-slate-900">User ID:</span> {{ shortId(customer._id) }}</p>
-            </div>
-          </button>
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-black text-slate-900">
+                  {{ formatCurrency(customer.totalSpent) }}
+                </td>
+
+                <td class="border-t border-slate-200 vendor-table-cell">
+                  <span
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-black"
+                    [ngClass]="customer.status === 'Active'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-[#f2ebe7] text-[#8c6c5d]'"
+                  >
+                    {{ customer.status }}
+                  </span>
+                </td>
+
+                <td class="border-t border-slate-200 vendor-table-cell text-sm font-medium text-[#9c5f39]">
+                  {{ customer.joinedAt }}
+                </td>
+
+                <td class="border-t border-slate-200 vendor-table-cell text-right">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-2 rounded-full bg-[#7c5646] px-4 py-2.5 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d]"
+                    title="Open customer details"
+                    (click)="openCustomerDetails(customer); $event.stopPropagation()"
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0c-1.8 4.5-6 8-12 8S1.8 16.5 0 12c1.8-4.5 6-8 12-8s10.2 3.5 12 8Z" />
+                      <circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle>
+                    </svg>
+                    View Profile
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </section>
+
+        <div *ngIf="!isLoading && filteredCustomers.length > 0" class="grid gap-3 pb-4 sm:gap-4 lg:hidden">
+          <article
+            *ngFor="let customer of filteredCustomers; trackBy: trackByCustomer"
+            class="vendor-mobile-card w-full"
+          >
+            <div class="flex items-start gap-3">
+              <div
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-black uppercase text-white sm:h-10 sm:w-10 sm:text-sm"
+                [ngClass]="customer.avatarClass"
+              >
+                {{ initials(customer.user) }}
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <div class="vendor-meta-row">
+                  <p class="min-w-0 flex-1 truncate text-sm font-black leading-5 text-slate-900 sm:text-base">
+                    {{ customer.user.fullName || customer.user.username || customer.user.email || 'Customer' }}
+                  </p>
+
+                  <span
+                    class="inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-black leading-none sm:px-3 sm:py-1 sm:text-xs"
+                    [ngClass]="customer.status === 'Active'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-[#f2ebe7] text-[#8c6c5d]'"
+                  >
+                    {{ customer.status }}
+                  </span>
+                </div>
+
+                <p class="mt-0.5 truncate text-xs font-medium leading-5 text-[#9c5f39] sm:text-sm">
+                  {{ customer.user.email || 'No email provided' }}
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              <div class="vendor-stat-tile-compact flex flex-col justify-center">
+                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Orders</p>
+                <p class="mt-0.5 text-sm font-black leading-none text-slate-900 sm:text-base">{{ customer.orderCount }}</p>
+              </div>
+              <div class="vendor-stat-tile-compact flex flex-col justify-center">
+                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Total Spent</p>
+                <p class="mt-0.5 text-sm font-black leading-none text-slate-900 sm:text-base">{{ formatCurrency(customer.totalSpent) }}</p>
+              </div>
+            </div>
+
+            <div class="vendor-meta-row mt-2 rounded-[1rem] border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs font-black text-slate-700">
+              <span class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Joined</span>
+              <span class="truncate text-sm font-black text-slate-900">{{ customer.joinedAt }}</span>
+            </div>
+
+            <div class="mt-2">
+              <button
+                type="button"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#7c5646] px-4 py-2 text-sm font-black text-white shadow-[0_10px_24px_rgba(124,86,70,0.18)] transition hover:bg-[#6e4b3d] sm:w-auto sm:px-4 sm:py-2.5"
+                title="Open customer details"
+                (click)="openCustomerDetails(customer); $event.stopPropagation()"
+              >
+                <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0c-1.8 4.5-6 8-12 8S1.8 16.5 0 12c1.8-4.5 6-8 12-8s10.2 3.5 12 8Z" />
+                  <circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle>
+                </svg>
+                View Profile
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
     </section>
   `
 })
 export class VendorCustomersPageComponent implements OnInit {
-  customers: CustomerUser[] = [];
-  filteredCustomers: CustomerUser[] = [];
+  customerRows: VendorCustomerRow[] = [];
+  filteredCustomers: VendorCustomerRow[] = [];
   searchTerm = '';
   isLoading = true;
+
+  private readonly avatarPalette = [
+    'bg-emerald-500',
+    'bg-[#7c5646]',
+    'bg-[#2f8df4]',
+    'bg-[#ffb74d]',
+    'bg-[#8b5e3c]',
+    'bg-[#4e7c64]'
+  ];
 
   constructor(
     private vendorService: VendorService,
@@ -121,52 +276,55 @@ export class VendorCustomersPageComponent implements OnInit {
     this.reloadCustomers();
   }
 
+  get activeCustomerCount(): number {
+    return this.customerRows.filter((row) => row.status === 'Active').length;
+  }
+
   get newestCustomerLabel(): string {
-    if (!this.customers.length) {
+    if (!this.customerRows.length) {
       return 'No customer accounts yet';
     }
 
-    const latest = this.customers[0];
-    return latest?.username || latest?.fullName || latest?.email || 'Latest customer';
+    const latest = [...this.customerRows].sort((a, b) => this.toTimestamp(b.user.createdAt) - this.toTimestamp(a.user.createdAt))[0];
+    return latest.user.fullName || latest.user.username || latest.user.email || 'Latest customer';
   }
 
   reloadCustomers(): void {
     this.isLoading = true;
 
-    this.vendorService.getRegisteredCustomers()
-      .subscribe({
-        next: (users) => {
-          this.isLoading = false;
-          this.customers = users;
-          this.applyFilters();
-        },
-        error: () => {
-          this.isLoading = false;
-        }
-      });
+    this.vendorService.getRegisteredCustomers().subscribe({
+      next: (users) => {
+        this.buildRows(users);
+      },
+      error: () => {
+        this.customerRows = [];
+        this.filteredCustomers = [];
+        this.isLoading = false;
+      }
+    });
   }
 
   applyFilters(): void {
     const term = this.searchTerm.trim().toLowerCase();
     this.filteredCustomers = !term
-      ? [...this.customers]
-      : this.customers.filter((user) =>
-          [user.username, user.fullName, user.email, user.phone]
+      ? [...this.customerRows]
+      : this.customerRows.filter((row) =>
+          [row.user.username, row.user.fullName, row.user.email, row.user.phone, row.status, String(row.orderCount)]
             .filter(Boolean)
             .some((value) => String(value).toLowerCase().includes(term))
         );
   }
 
-  openCustomer(customer: CustomerUser): void {
-    if (!customer._id) {
+  openCustomerDetails(customer: VendorCustomerRow): void {
+    if (!customer.user._id) {
       return;
     }
 
-    this.router.navigate(['/vendor/customers', customer._id]);
+    this.router.navigate(['/vendor/customers', customer.user._id]);
   }
 
   initials(user: CustomerUser): string {
-    const label = String(user.username || user.fullName || user.email || 'Customer').trim();
+    const label = String(user.fullName || user.username || user.email || 'Customer').trim();
     return label
       .split(/\s+/)
       .filter(Boolean)
@@ -176,36 +334,89 @@ export class VendorCustomersPageComponent implements OnInit {
       .toUpperCase() || 'C';
   }
 
-  formatRole(role?: string | string[]): string {
-    if (Array.isArray(role)) {
-      return role.join(', ') || 'customer';
-    }
-
-    return String(role || 'customer');
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount || 0);
   }
 
-  formatDate(value?: string): string {
-    if (!value) {
-      return 'Unknown';
+  trackByCustomer(_: number, row: VendorCustomerRow): string {
+    return row.user._id || row.user.email || row.user.username || 'customer';
+  }
+
+  private buildRows(users: CustomerUser[]): void {
+    if (!users.length) {
+      this.customerRows = [];
+      this.filteredCustomers = [];
+      this.isLoading = false;
+      return;
     }
 
-    return new Date(value).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    const orderRequests = users.map((user) =>
+      user._id
+        ? this.vendorService.getCustomerOrderHistory(user._id).pipe(catchError(() => of([])))
+        : of([])
+    );
+
+    forkJoin(orderRequests).subscribe({
+      next: (orderResults) => {
+        this.customerRows = users.map((user, index) => {
+          const orders = Array.isArray(orderResults[index]) ? orderResults[index] : [];
+          return this.toCustomerRow(user, orders, index);
+        });
+        this.applyFilters();
+        this.isLoading = false;
+      },
+      error: () => {
+        this.customerRows = users.map((user, index) => this.toCustomerRow(user, [], index));
+        this.applyFilters();
+        this.isLoading = false;
+      }
     });
   }
 
-  shortId(id?: string): string {
-    if (!id) {
-      return '--------';
+  private toCustomerRow(user: CustomerUser, orders: OrderRecord[], index: number): VendorCustomerRow {
+    const orderCount = orders.length;
+    const totalSpent = orders.reduce((sum, order) => sum + this.orderTotal(order), 0);
+    const joinedAt = user.createdAt ? this.formatJoinedDate(user.createdAt) : 'Unknown';
+
+    return {
+      user,
+      orderCount,
+      totalSpent,
+      status: orderCount > 0 ? 'Active' : 'Inactive',
+      joinedAt,
+      avatarClass: this.avatarPalette[index % this.avatarPalette.length]
+    };
+  }
+
+  private orderTotal(order: OrderRecord): number {
+    if (Number.isFinite(Number(order.totalAmount))) {
+      return Number(order.totalAmount || 0);
     }
 
-    return id.length > 10 ? `${id.slice(0, 6)}…${id.slice(-4)}` : id;
+    return (order.orderItems || []).reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0);
   }
 
-  trackByUserId(_: number, user: CustomerUser): string {
-    return user._id || user.email || `${user.username || 'customer'}`;
+  private toTimestamp(value?: string): number {
+    const parsed = value ? new Date(value).getTime() : 0;
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  private formatJoinedDate(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return 'Unknown';
+    }
+
+    return new Intl.DateTimeFormat('en-CA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(date);
   }
 }
-

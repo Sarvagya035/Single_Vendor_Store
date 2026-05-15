@@ -13,12 +13,12 @@ import { ToastType } from '../../../core/models/vendor.models';
   standalone: true,
   imports: [CommonModule, VendorCategoriesPanelComponent, PageHeaderComponent, ToastBannerComponent],
   template: `
-    <section class="space-y-6">
-      <div class="app-surface p-6 sm:p-8">
+    <section class="vendor-content">
+      <div class="vendor-page-header">
         <app-page-header
-          eyebrow="Vendor Category Management"
+          eyebrow="VENDOR CATEGORY MANAGEMENT"
           title="Manage your store categories"
-          description="Add, edit, and remove categories that help organize your vendor catalog."
+          titleClass="!text-[1.8rem] md:!text-[2.2rem]"
         />
       </div>
 

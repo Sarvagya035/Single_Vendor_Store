@@ -6,10 +6,16 @@ import {
     getOrderDetails,
     cancelOrder,
     getVendorOrders,
+    getCustomerOrdersForVendor,
     updateOrderStatus,
-    getAllOrders
+    getAllOrders,
+    deleteOrderByAdmin
 
 } from "../controllers/order.controller.js";
+import {
+    getShipmentDetails,
+    syncShipmentStatus
+} from "../controllers/shipment.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {authorizeRoles} from "../middlewares/authorization.middleware.js"
 
@@ -26,10 +32,14 @@ router.route("/verify-payment").post(verifyPayment);
 router.route("/my-orders").get(getMyOrders);
 router.route("/order/:orderId").get(getOrderDetails);
 router.route("/cancel/:orderId").put(cancelOrder);
+router.route("/shipment/:orderId").get(getShipmentDetails);
+router.route("/shipment/:orderId/sync").post(authorizeRoles("admin"), syncShipmentStatus);
 
 router.route("/vendor-orders").get(authorizeRoles("vendor"), getVendorOrders);
-router.route("/vendor-update-status/:orderId").put(authorizeRoles("vendor"), updateOrderStatus);
+router.route("/vendor/customer/:customerId").get(authorizeRoles("vendor", "admin"), getCustomerOrdersForVendor);
+router.route("/vendor-update-status/:orderId").put(authorizeRoles("vendor", "admin"), updateOrderStatus);
 
-router.route("/admin/all-orders").get(authorizeRoles("vendor"), getAllOrders);
+router.route("/admin/all-orders").get(authorizeRoles("vendor", "admin"), getAllOrders);
+router.route("/admin/orders/:orderId").delete(authorizeRoles("vendor", "admin"), deleteOrderByAdmin);
 
 export default router;  

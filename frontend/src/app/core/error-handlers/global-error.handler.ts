@@ -1,4 +1,5 @@
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { ErrorService } from '../services/error.service';
 
 @Injectable()
@@ -9,10 +10,8 @@ export class GlobalErrorHandler implements ErrorHandler {
     const errorService = this.injector.get(ErrorService);
     errorService.showToast(errorService.extractErrorMessage(error), 'error');
 
-    if (error instanceof Error) {
+    if (!environment.production) {
       console.error(error);
-    } else {
-      console.error('Unhandled application error', error);
     }
   }
 }

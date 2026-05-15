@@ -1,57 +1,71 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { CartActionService } from '../../core/services/cart-action.service';
+import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
+import { ErrorService } from '../../core/services/error.service';
+import { GuestDataService } from '../../core/services/guest-data.service';
+import { StoreProductVariantService } from '../../core/services/store-product-variant.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
+import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
+import { ProductCardComponent, ProductCardVariantActionEvent } from './components/product-card/product-card.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent],
   template: `
     <div class="min-h-[calc(100vh-72px)] bg-slate-50">
-      <div class="w-full">
-        <div
-          class="relative min-h-[calc(80vh-50px)]"
-          style="background-size: cover; background-position: center; background-repeat: no-repeat;"
-        >
-          <div
-            class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out"
-            [style.background-image]="'url(' + currentHeroSlide().image + ')'"
-            [class.opacity-0]="heroIsTransitioning"
-            [class.opacity-100]="!heroIsTransitioning"
-          ></div>
-
-          <div
-            *ngIf="transitionHeroSlide"
-            class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-500 ease-in-out"
-            [class.opacity-100]="heroIsTransitioning"
-            [style.background-image]="'url(' + transitionHeroSlide.image + ')'"
-          ></div>
-
+      <section class="w-full -mt-2 sm:mt-0 bg-[#fff3e8]">
+        <div class="relative min-h-[520px] overflow-hidden bg-[#fff3e8] sm:min-h-[calc(80vh-50px)]">
           <div class="absolute inset-0">
-            <div class="mx-auto flex h-full w-full max-w-7xl items-end px-4 pb-8 sm:px-6 lg:px-8 lg:pb-10">
-              <div class="flex flex-wrap items-center gap-3">
+            <div
+              *ngFor="let slide of heroSlides; let index = index; trackBy: trackByHeroSlide"
+              [ngClass]="heroSlideTransitionClasses(index)"
+              class="absolute inset-0 overflow-hidden"
+              aria-hidden="true"
+            >
+              <picture class="block h-full w-full bg-[#fff3e8]">
+                <source [attr.media]="'(max-width: 767px)'" [attr.srcset]="slide.mobileImage" />
+                <img
+                  [src]="slide.image"
+                  [alt]="slide.title"
+                  loading="eager"
+                  decoding="async"
+                  class="h-full w-full object-cover"
+                />
+              </picture>
+            </div>
+          </div>
+
+          <div class="absolute inset-0 z-20">
+            <div class="mx-auto flex h-full w-full max-w-[1480px] items-end px-0 pb-6 sm:px-6 lg:px-8 lg:pb-10">
+              <div class="flex w-full flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-start sm:gap-3">
+                <div class="flex w-full items-center justify-center gap-2 sm:w-auto sm:justify-start sm:gap-3">
                 <a
                   routerLink="/products"
-                  class="inline-flex items-center justify-center rounded-full bg-[#3f2418] px-6 py-3 text-sm font-semibold tracking-[0.04em] text-white shadow-[0_14px_30px_rgba(63,36,24,0.25)] transition hover:-translate-y-0.5 hover:bg-[#2f1b14]"
+                  class="inline-flex h-10 w-[46%] max-w-[150px] items-center justify-center whitespace-nowrap rounded-full bg-[#3f2418] px-3 text-xs font-semibold tracking-[0.04em] text-white shadow-[0_14px_30px_rgba(63,36,24,0.25)] transition hover:-translate-y-0.5 hover:bg-[#2f1b14] sm:h-auto sm:w-auto sm:max-w-none sm:px-6 sm:py-3 sm:text-sm"
                 >
                   Shop Now
                 </a>
                 <a
                   href="#categories"
-                  class="inline-flex items-center justify-center rounded-full border border-[#3f2418] bg-white/90 px-6 py-3 text-sm font-semibold tracking-[0.04em] text-[#3f2418] shadow-[0_12px_28px_rgba(63,36,24,0.12)] transition hover:-translate-y-0.5 hover:bg-white"
+                  (click)="scrollToCategories($event)"
+                  class="inline-flex h-10 w-[46%] max-w-[150px] items-center justify-center whitespace-nowrap rounded-full border border-[#3f2418] bg-white/90 px-3 text-xs font-semibold tracking-[0.04em] text-[#3f2418] shadow-[0_12px_28px_rgba(63,36,24,0.12)] transition hover:-translate-y-0.5 hover:bg-white sm:h-auto sm:w-auto sm:max-w-none sm:px-6 sm:py-3 sm:text-sm"
                 >
                   View Categories
                 </a>
+                </div>
 
-                <div class="ml-2 flex items-center gap-2 rounded-full bg-black/10 px-3 py-2 backdrop-blur-sm">
+                <div class="mt-1 flex items-center justify-center gap-2 rounded-full bg-black/10 px-3 py-2 backdrop-blur-sm sm:mt-0 sm:ml-2">
                   <button
                     *ngFor="let slide of heroSlides; let index = index; trackBy: trackByHeroSlide"
                     type="button"
-                    class="h-2.5 rounded-full transition-all duration-300"
+                    class="h-2.5 rounded-full transition-[width,background-color,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     [class.w-10]="index === heroSlideIndex"
                     [class.w-2.5]="index !== heroSlideIndex"
                     [class.bg-white]="index === heroSlideIndex"
@@ -64,10 +78,12 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <section class="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-        <div class="grid gap-3 rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-4 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:grid-cols-2 lg:grid-cols-4">
+      <!--
+      <section class="storefront-section w-full bg-slate-50 pt-8">
+        <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-3 rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-4 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:grid-cols-2 lg:grid-cols-4">
           <div *ngFor="let highlight of trustHighlights; trackBy: trackByHighlight" class="flex items-center gap-3 rounded-[1.35rem] bg-[#fff9f2] px-4 py-3">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#6f4e37,#8b5e3c)] text-white shadow-[0_12px_24px_rgba(111,78,55,0.18)]">
               <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -79,94 +95,130 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
               <p class="text-xs font-medium text-slate-500">{{ highlight.description }}</p>
             </div>
           </div>
+          </div>
         </div>
       </section>
+      -->
 
-      <section id="categories" class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 scroll-mt-6">
-        <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-          <div class="px-4 pb-6 pt-8 sm:px-6 lg:px-8">
-            <div>
-              <div class="mb-4 text-center">
-                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Categories</p>
-                <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Shop by category</h3>
-              </div>
+      <section id="categories" class="storefront-section w-full bg-[#fff3e8] py-16 sm:py-20 scroll-mt-24 sm:scroll-mt-28">
+        <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+          <div class="mb-4 text-center">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Categories</p>
+            <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">SHOP BY CATEGORY</h3>
+          </div>
 
-              <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                <a
-                  *ngFor="let category of catalogCategories; trackBy: trackByCategoryId"
-                  [routerLink]="['/products']"
-                  [queryParams]="{ category: category.slug || category.name }"
-                  class="group overflow-hidden rounded-[1.35rem] border bg-white text-left shadow-sm transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(47,27,20,0.08)]"
-                  [style.border-color]="categoryAccent(category).border"
-                >
-                  <div class="h-1 w-full" [style.background-color]="categoryAccent(category).accent"></div>
-                  <div class="aspect-[4/3] overflow-hidden" [style.background]="categoryAccent(category).background">
-                    <img
-                      [src]="categoryImage(category)"
-                      [alt]="category.name"
-                      class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <div class="space-y-1 p-4">
-                    <h4 class="truncate text-lg font-semibold text-slate-900">{{ category.name }}</h4>
-                    <p class="text-sm font-medium text-slate-500">{{ categoryCount(category) }} item{{ categoryCount(category) === 1 ? '' : 's' }}</p>
-                  </div>
-                </a>
-              </div>
+          <div class="relative mt-2">
+            <button
+              type="button"
+              class="absolute left-2 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_12px_28px_rgba(15,23,42,0.10)] transition duration-200 hover:-translate-y-1/2 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-white disabled:text-slate-300 sm:left-3 sm:h-11 sm:w-11"
+              [class.opacity-0]="!categoryCanScrollPrev"
+              [class.pointer-events-none]="!categoryCanScrollPrev"
+              [attr.aria-hidden]="!categoryCanScrollPrev"
+              [disabled]="!categoryCanScrollPrev"
+              aria-label="Previous categories"
+              (click)="scrollCategories('prev')"
+            >
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
+
+            <div
+              #categoryCarousel
+              class="category-carousel-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-8 pb-4 pt-1 sm:gap-5 sm:px-10 lg:gap-6"
+              (scroll)="updateCategoryCarouselState()"
+            >
+              <a
+                *ngFor="let category of catalogCategories; trackBy: trackByCategoryId"
+                [routerLink]="['/products']"
+                [queryParams]="{ category: category.slug || category.name }"
+                class="group relative w-[min(220px,42vw)] shrink-0 snap-start overflow-hidden rounded-[10px] border bg-white text-left shadow-sm transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(47,27,20,0.08)] sm:w-[min(240px,30vw)] lg:w-[220px] xl:w-[240px]"
+                [style.border-color]="categoryAccent(category).border"
+              >
+                <div class="absolute right-3 top-3 z-10 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold leading-none text-orange-700 ring-1 ring-orange-200">
+                  {{ categoryCount(category) }} item{{ categoryCount(category) === 1 ? '' : 's' }}
+                </div>
+                <div class="h-1 w-full" [style.background-color]="categoryAccent(category).accent"></div>
+                <div class="aspect-[4/3] overflow-hidden" [style.background]="categoryAccent(category).background">
+                  <img
+                    [src]="categoryImage(category)"
+                    [alt]="category.name"
+                    loading="lazy"
+                    decoding="async"
+                    class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <div class="space-y-1 p-2 md:p-3">
+                  <h4 class="truncate text-sm font-semibold leading-5 text-slate-900 sm:text-base lg:text-base">{{ category.name }}</h4>
+                  <p class="min-h-[2.5rem] text-sm leading-5 text-slate-500 line-clamp-2 overflow-hidden">
+                    {{ category.description || 'Browse products from this category.' }}
+                  </p>
+                </div>
+              </a>
             </div>
 
-            <div class="mt-8">
-              <div class="mb-4 text-center">
-                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Products</p>
-                <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
-              </div>
-
-              <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                <a
-                  *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
-                  [routerLink]="['/products', product._id]"
-                  class="group rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
-                >
-                  <div class="aspect-square overflow-hidden rounded-[1.25rem] border border-slate-200 bg-slate-100">
-                    <img
-                      [src]="productImage(product)"
-                      [alt]="product.productName"
-                      class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                    />
-                  </div>
-
-                  <div class="mt-4 space-y-3">
-                    <div class="flex items-start justify-between gap-3">
-                      <div class="min-w-0">
-                        <p class="truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{{ product.brand || 'Premium Pack' }}</p>
-                        <h4 class="mt-1 line-clamp-2 text-lg font-semibold text-slate-900">{{ product.productName }}</h4>
-                      </div>
-                      <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-amber-200">
-                        {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
-                      </span>
-                    </div>
-
-                    <p class="text-sm font-semibold text-slate-500">{{ product.categoryDetails?.name || 'Dry fruits & nuts' }}</p>
-                  </div>
-                </a>
-              </div>
-
-              <div class="mt-6 text-center">
-                <a
-                  routerLink="/products"
-                  class="btn-primary inline-flex items-center justify-center !px-6 !py-3 text-sm tracking-[0.04em]"
-                >
-                  All Products
-                </a>
-              </div>
-
-            </div>
+            <button
+              type="button"
+              class="absolute right-2 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_12px_28px_rgba(15,23,42,0.10)] transition duration-200 hover:-translate-y-1/2 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-white disabled:text-slate-300 sm:right-3 sm:h-11 sm:w-11"
+              [class.opacity-0]="!categoryCanScrollNext"
+              [class.pointer-events-none]="!categoryCanScrollNext"
+              [attr.aria-hidden]="!categoryCanScrollNext"
+              [disabled]="!categoryCanScrollNext"
+              aria-label="Next categories"
+              (click)="scrollCategories('next')"
+            >
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 6l6 6-6 6"></path>
+              </svg>
+            </button>
           </div>
         </div>
       </section>
 
-      <section id="about" class="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8 scroll-mt-6">
-        <div class="rounded-[2rem] border border-[#eadcc9] bg-white px-4 py-8 shadow-[0_20px_60px_rgba(47,27,20,0.08)] sm:px-6 lg:px-8">
+      <section class="storefront-section w-full bg-white py-16 sm:py-20 scroll-mt-6">
+        <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+          <div class="mb-4 text-center">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Products</p>
+            <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Best selling dry fruits</h3>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6 xl:grid-cols-5">
+            <app-product-card
+              *ngFor="let product of featuredProducts(); trackBy: trackByProductId"
+              [product]="product"
+              [isWishlisted]="isWishlisted(product)"
+              [wishlistBusy]="wishlistBusyId === product._id"
+              [variantCount]="(product.variants || []).length"
+              [isOutOfStock]="isProductOutOfStock(product)"
+              (productClick)="openProduct($event)"
+              (wishlistToggle)="toggleWishlist($event)"
+              (addToCart)="handleProductCardAddToCart($event)"
+              (buyNow)="handleProductCardBuyNow($event)"
+            />
+          </div>
+
+          <div class="mt-6 text-center">
+            <a
+              routerLink="/products"
+              class="btn-primary inline-flex items-center justify-center !px-6 !py-3 text-sm tracking-[0.04em]"
+            >
+              All Products
+            </a>
+          </div>
+
+          <app-variant-modal
+            [open]="variantModalOpen"
+            [product]="selectedVariantProduct"
+            [isAdding]="variantModalLoading"
+            (close)="closeVariantModal()"
+            (addToCart)="handleVariantModalAddToCart($event)"
+          />
+        </div>
+      </section>
+
+      <section id="about" class="storefront-section w-full bg-[#fff3e8] py-16 sm:py-20 scroll-mt-6">
+        <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+          <div class="group">
           <div class="text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Customer reviews</p>
             <h3 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">What our customers say</h3>
@@ -176,15 +228,17 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
           </div>
 
           <div class="mt-8 overflow-hidden">
-            <div class="flex w-max gap-5 animate-review-marquee hover:[animation-play-state:paused]">
-              <article
-                *ngFor="let review of marqueeReviews; trackBy: trackByHomeReview"
-                class="w-[320px] flex-shrink-0 rounded-[1.6rem] border border-[#eadcc9] bg-[#fffaf5] p-5 shadow-[0_14px_34px_rgba(47,27,20,0.05)]"
-              >
+            <div class="review-marquee-pause flex w-max gap-5 animate-review-marquee">
+                <article
+                  *ngFor="let review of marqueeReviews; trackBy: trackByHomeReview"
+                  class="w-[min(320px,78vw)] flex-shrink-0 rounded-[1.6rem] border border-[#eadcc9] bg-[#fffaf5] p-5 shadow-[0_14px_34px_rgba(47,27,20,0.05)]"
+                >
                 <div class="flex items-start gap-4">
                   <img
                     [src]="review.image"
                     [alt]="review.name"
+                    loading="lazy"
+                    decoding="async"
                     class="h-14 w-14 rounded-full border-2 border-[#eadcc9] object-cover shadow-sm"
                   />
 
@@ -211,73 +265,129 @@ import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategor
               </article>
             </div>
           </div>
+          </div>
         </div>
       </section>
 
-      <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-        <div class="overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_20px_60px_rgba(47,27,20,0.08)]">
-          <img
-            src="/assets/banner%20-2%20.png"
-            alt="Dry fruits banner"
-            class="h-auto w-full object-cover"
-          />
+      <div class="w-full bg-white">
+      <section class="storefront-section w-full bg-white py-16 sm:py-20">
+        <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-12 lg:items-center">
+            <div class="max-w-2xl">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">Bulk Buy Dry Fruits</p>
+              <h3 class="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl lg:text-4xl">
+                Bulk Dry Fruits at Wholesale Prices
+              </h3>
+              <p class="mt-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#a16207] sm:text-base">
+                For Retailers, Wholesalers &amp; Corporate Gifting
+              </p>
+              <p class="mt-4 max-w-xl text-sm font-medium leading-8 text-slate-500 sm:text-[15px]">
+                Source premium quality dry fruits directly from us at competitive wholesale prices. Whether you're running a retail store, managing bulk orders, or planning corporate gifting — we ensure freshness, consistency, and timely delivery across India.
+              </p>
+
+              <div class="mt-6 flex flex-wrap gap-3">
+                <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Best Wholesale Rates</span>
+                <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Custom Packaging Options</span>
+                <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Pan India Fast Delivery</span>
+                <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Quality Assured Products</span>
+              </div>
+            </div>
+
+            <div class="flex h-full flex-col justify-center lg:items-end">
+              <div class="w-full rounded-[20px] border border-amber-100 bg-white/80 p-5 shadow-sm sm:p-6">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">Start Your Bulk Inquiry</p>
+                <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                  Tell us your requirement and our team will provide you with the best pricing, packaging solutions, and delivery options tailored to your business needs.
+                </p>
+                <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <a
+                    routerLink="/bulk-order"
+                    class="inline-flex items-center justify-center rounded-full bg-[#6f4e37] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(111,78,55,0.18)] transition hover:bg-[#5f4230] hover:translate-y-[-1px]"
+                  >
+                    Place Bulk Order
+                  </a>
+                  <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                    Quick response within business hours
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-        <div class="grid gap-6 overflow-hidden rounded-[2rem] border border-[#eadcc9] bg-white shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_0.95fr]">
-          <div class="flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-10">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b5e3c]">About Us</p>
-            <h3 class="mt-2 text-2xl font-bold tracking-tight text-slate-900">About Divya Dryfruit House</h3>
+      <section class="storefront-section w-full bg-[#fff3e8] py-16 sm:py-20">
+        <div class="mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-12 lg:items-center">
+          <div class="flex flex-col justify-center">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">About Us</p>
+            <h3 class="mt-2 max-w-xl text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl lg:text-4xl">
+              Your Trusted Partner for Premium Dry Fruits
+            </h3>
             <p class="mt-4 max-w-2xl text-sm font-medium leading-8 text-slate-500">
-              We believe better wellness starts with what you bring home. Our focus is on premium dry fruits, spices, herbs, and fresh bakery items, all selected with care for quality, freshness, and family-friendly everyday use.
+              At Divya Dryfruit House, we are committed to delivering the finest quality dry fruits, spices, and daily essentials. Every product is carefully sourced and quality-checked to ensure freshness, taste, and nutrition.
             </p>
             <p class="mt-3 max-w-2xl text-sm font-medium leading-8 text-slate-500">
-              From almonds, cashews, and walnuts to traditional herbs and wholesome bakery treats, we aim to make one trusted place for taste, health, and convenience.
+              From almonds, cashews, and pistachios to herbs and bakery essentials — we bring everything under one roof to make your buying experience simple, reliable, and efficient.
             </p>
 
             <div class="mt-6 flex flex-wrap gap-3">
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Fresh selection</span>
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Wide variety</span>
-              <span class="rounded-full bg-[#fff7ed] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4e37]">Customer focused</span>
+              <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Fresh &amp; Handpicked Selection</span>
+              <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Wide Product Range</span>
+              <span class="rounded-[999px] border border-[#f2ddc2] bg-[#fffaf3] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6f4e37] shadow-[0_8px_20px_rgba(47,27,20,0.04)]">Customer First Approach</span>
             </div>
           </div>
 
-          <div class="grid gap-4 bg-[#fffaf5] px-6 py-8 sm:grid-cols-2 sm:px-8 lg:px-10">
-            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)]">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Quality first</p>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div class="rounded-[20px] border border-amber-100 bg-white/80 p-5 shadow-sm transition duration-200 hover:shadow-md">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">Quality first</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-                Carefully chosen products that support a healthy lifestyle and reliable everyday shopping.
+                We prioritize quality at every step — from sourcing to packaging — ensuring you always receive fresh and premium products.
               </p>
             </div>
-            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)]">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">One roof</p>
+            <div class="rounded-[20px] border border-amber-100 bg-white/80 p-5 shadow-sm transition duration-200 hover:shadow-md">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">One Roof Solution</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-                Dry fruits, spices, herbs, and bakery essentials brought together for simple, convenient buying.
+                All your dry fruits, spices, herbs, and essentials in one place — making bulk purchasing easy and hassle-free.
               </p>
             </div>
-            <div class="rounded-[1.5rem] border border-[#eadcc9] bg-white p-5 shadow-[0_12px_30px_rgba(47,27,20,0.05)] sm:col-span-2">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Trusted by customers</p>
+            <div class="rounded-[20px] border border-amber-100 bg-white/80 p-5 shadow-sm transition duration-200 hover:shadow-md sm:col-span-2">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8a4f2a]">Trusted by customers</p>
               <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-                Friendly service, fair pricing, and a focus on freshness help us build trust with every order.
+                We focus on fair pricing, consistent quality, and dependable service to build long-term trust with every client.
               </p>
             </div>
           </div>
+          </div>
         </div>
       </section>
+      </div>
     </div>
   `
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  @ViewChild('categoryCarousel') categoryCarousel?: ElementRef<HTMLDivElement>;
+
   user: any = null;
   searchQuery = '';
   heroSlideIndex = 0;
   heroIsTransitioning = false;
-  transitionHeroSlide: { eyebrow: string; title: string; subtitle: string; image: string } | null = null;
+  heroTransitionFromIndex = -1;
+  heroTransitionToIndex = -1;
   private heroSlideTimer?: ReturnType<typeof setInterval>;
+  private heroTransitionTimer?: ReturnType<typeof setTimeout>;
   loadingProducts = false;
+  fadeMode = true;
   loadingCategories = false;
   products: CustomerCatalogProduct[] = [];
+  featuredProductLimit = 4;
+  wishlistedProductIds = new Set<string>();
+  wishlistBusyId = '';
+  categoryCanScrollPrev = false;
+  categoryCanScrollNext = false;
+  variantModalOpen = false;
+  variantModalLoading = false;
+  selectedVariantProduct: CustomerCatalogProduct | null = null;
   landingCategories: CustomerLandingCategoryGroup[] = [];
   catalogCategories: CustomerLandingCategory[] = [];
   readonly heroSlides = [
@@ -285,19 +395,22 @@ export class HomeComponent implements OnInit, OnDestroy {
       eyebrow: 'Premium dry fruits',
       title: 'Fresh dry fruits for everyday health.',
       subtitle: 'Explore almonds, cashews, pistachios, raisins, dates, seeds, and healthy snack mixes curated for your family.',
-      image: '/assets/banner-1.webp'
+      image: '/assets/BEST.png',
+      mobileImage: '/assets/mobile-banner-1.jpg.jpeg'
     },
     {
-      eyebrow: 'Gift ready packs',
-      title: 'Beautifully packed for gifting and sharing.',
-      subtitle: 'Choose elegant collections that are ready for festivals, celebrations, and thoughtful gifting.',
-      image: '/assets/banner-3.webp'
+      eyebrow: 'New arrival',
+      title: 'Explore our fresh banner showcase.',
+      subtitle: 'A new banner highlight added to the landing page carousel.',
+      image: '/assets/banner-test.png',
+      mobileImage: '/assets/mobile-banner-2.jpg.jpeg'
     },
     {
-      eyebrow: 'Healthy snacking',
-      title: 'Premium nuts and mixes for daily wellness.',
-      subtitle: 'Discover clean, tasty, and wholesome dry fruit packs made for everyday enjoyment.',
-      image: '/assets/banner-4.webp'
+      eyebrow: 'Featured banner',
+      title: 'Discover our new seasonal banner.',
+      subtitle: 'Meet the latest hero image now rotating through the landing page slider.',
+      image: '/assets/new-one.png',
+      mobileImage: '/assets/mobile-banner-3.jpg.jpeg'
     }
   ];
   readonly homeReviews = [
@@ -370,13 +483,24 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
+    private cartActionService: CartActionService,
+    private cartService: CartService,
     private catalogService: CatalogService,
+    private errorService: ErrorService,
+    private guestDataService: GuestDataService,
+    private variantService: StoreProductVariantService,
+    private wishlistService: WishlistService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.user = user;
+      if (this.isCustomer()) {
+        this.loadWishlistState();
+      } else {
+        this.loadGuestWishlistState();
+      }
     });
 
     this.authService.ensureCurrentUser().subscribe({
@@ -384,9 +508,15 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: () => this.authService.clearCurrentUser()
     });
 
+    this.preloadHeroSlides();
+    this.updateFeaturedProductLimit();
     this.loadLandingProducts();
     this.loadLandingCategories();
     this.startHeroCarousel();
+  }
+
+  ngAfterViewInit(): void {
+    this.updateCategoryCarouselState();
   }
 
   ngOnDestroy(): void {
@@ -394,6 +524,37 @@ export class HomeComponent implements OnInit, OnDestroy {
       clearInterval(this.heroSlideTimer);
       this.heroSlideTimer = undefined;
     }
+
+    if (this.heroTransitionTimer) {
+      clearTimeout(this.heroTransitionTimer);
+      this.heroTransitionTimer = undefined;
+    }
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.updateCategoryCarouselState();
+    this.updateFeaturedProductLimit();
+  }
+
+  isAdmin(): boolean {
+    if (!this.user?.role) return false;
+    if (Array.isArray(this.user.role)) {
+      return this.user.role.some((role: string) => role.toLowerCase() === 'admin');
+    }
+    return String(this.user.role).toLowerCase() === 'admin';
+  }
+
+  isVendor(): boolean {
+    if (!this.user?.role) return false;
+    if (Array.isArray(this.user.role)) {
+      return this.user.role.some((role: string) => role.toLowerCase() === 'vendor');
+    }
+    return String(this.user.role).toLowerCase() === 'vendor';
+  }
+
+  isCustomer(): boolean {
+    return !!this.user && !this.isAdmin() && !this.isVendor();
   }
 
   loadLandingProducts(): void {
@@ -427,10 +588,12 @@ export class HomeComponent implements OnInit, OnDestroy {
           if (levelDiff !== 0) return levelDiff;
           return String(a.name || '').localeCompare(String(b.name || ''));
         });
+        this.scheduleCategoryCarouselStateUpdate();
       },
       error: () => {
         this.loadingCategories = false;
         this.catalogCategories = [];
+        this.scheduleCategoryCarouselStateUpdate();
       }
     });
   }
@@ -447,6 +610,39 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   currentHeroSlide(): { eyebrow: string; title: string; subtitle: string; image: string } {
     return this.heroSlides[this.heroSlideIndex] || this.heroSlides[0];
+  }
+
+  heroSlideTransitionClasses(index: number): string {
+    const base = 'absolute inset-0 bg-cover bg-center bg-no-repeat';
+    const inactive = `${base} opacity-0 z-0 pointer-events-none transition-opacity duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]`;
+
+    if (this.heroIsTransitioning) {
+      if (index === this.heroTransitionToIndex) {
+        return `${base} opacity-100 z-10 pointer-events-auto transition-opacity duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]`;
+      }
+
+      if (index === this.heroTransitionFromIndex) {
+        return `${base} opacity-0 z-0 pointer-events-none transition-opacity duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]`;
+      }
+    }
+
+    if (index === this.heroSlideIndex) {
+      return `${base} opacity-100 z-10 pointer-events-auto transition-opacity duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]`;
+    }
+
+    return inactive;
+  }
+
+  isHeroSlideVisible(index: number): boolean {
+    if (!this.heroSlides.length) {
+      return false;
+    }
+
+    if (this.heroIsTransitioning) {
+      return index === this.heroTransitionFromIndex || index === this.heroTransitionToIndex;
+    }
+
+    return index === this.heroSlideIndex;
   }
 
   setHeroSlide(index: number): void {
@@ -470,7 +666,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.heroSlideTimer = setInterval(() => {
       this.setHeroSlide(this.heroSlideIndex + 1);
-    }, 4200);
+    }, 5200);
   }
 
   private transitionToSlide(nextIndex: number): void {
@@ -479,22 +675,228 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.transitionHeroSlide = nextSlide;
+    if (this.heroTransitionTimer) {
+      clearTimeout(this.heroTransitionTimer);
+      this.heroTransitionTimer = undefined;
+    }
+
+    this.heroTransitionFromIndex = this.heroSlideIndex;
+    this.heroTransitionToIndex = nextIndex;
     this.heroIsTransitioning = true;
 
-    window.setTimeout(() => {
+    this.heroTransitionTimer = window.setTimeout(() => {
       this.heroSlideIndex = nextIndex;
       this.heroIsTransitioning = false;
-      this.transitionHeroSlide = null;
-    }, 520);
+      this.heroTransitionFromIndex = -1;
+      this.heroTransitionToIndex = -1;
+      this.heroTransitionTimer = undefined;
+    }, 1000);
+  }
+
+  private preloadHeroSlides(): void {
+    this.heroSlides.forEach((slide) => {
+      if (!slide?.image) {
+        return;
+      }
+
+      const img = new Image();
+      img.src = slide.image;
+
+      if (slide.mobileImage) {
+        const mobileImg = new Image();
+        mobileImg.src = slide.mobileImage;
+      }
+    });
   }
 
   featuredProducts(): CustomerCatalogProduct[] {
-    return this.products.slice(0, 12);
+    return this.products.slice(0, this.featuredProductLimit);
+  }
+
+  private updateFeaturedProductLimit(): void {
+    const width = window.innerWidth;
+
+    if (width >= 1280) {
+      this.featuredProductLimit = 10;
+      return;
+    }
+
+    if (width >= 1024) {
+      this.featuredProductLimit = 8;
+      return;
+    }
+
+    if (width >= 768) {
+      this.featuredProductLimit = 6;
+      return;
+    }
+
+    this.featuredProductLimit = 4;
+  }
+
+  openProduct(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    this.router.navigate(['/products', product._id]);
+  }
+
+  handleProductCardAddToCart(event: ProductCardVariantActionEvent): void {
+    const productId = String(event?.product?._id || '').trim();
+    const variantId = String(event?.variant?._id || '').trim();
+
+    if (!productId || !variantId) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    this.cartActionService.addToCart(productId, variantId, 1).subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
+  }
+
+  handleProductCardBuyNow(event: ProductCardVariantActionEvent): void {
+    const productId = String(event?.product?._id || '').trim();
+    const variantId = String(event?.variant?._id || '').trim();
+
+    if (!productId || !variantId) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    this.cartService.addToCart(productId, variantId, 1).subscribe({
+      next: () => {
+        this.router.navigate(['/checkout']);
+      },
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
+      }
+    });
+  }
+
+  onProductCardAction(product: CustomerCatalogProduct): void {
+    if (!product?._id || this.isProductOutOfStock(product)) {
+      return;
+    }
+
+    if (this.hasSingleVariant(product)) {
+      this.addSingleVariantToCart(product);
+      return;
+    }
+
+    this.openVariantModal(product);
+  }
+
+  openVariantModal(product: CustomerCatalogProduct): void {
+    if (!product?._id || this.isProductOutOfStock(product)) {
+      return;
+    }
+
+    this.selectedVariantProduct = product;
+    this.variantModalOpen = true;
+  }
+
+  closeVariantModal(): void {
+    this.variantModalOpen = false;
+    this.selectedVariantProduct = null;
+    this.variantModalLoading = false;
+  }
+
+  handleVariantModalAddToCart(event: VariantModalAddToCartEvent): void {
+    this.variantModalLoading = true;
+    this.cartActionService.addToCart(event.productId, event.variantId, event.quantity).subscribe({
+      next: (result) => {
+        this.variantModalLoading = false;
+
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          this.closeVariantModal();
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.variantModalLoading = false;
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
   }
 
   categoryImage(category: CustomerLandingCategory): string {
     return category.image || 'https://via.placeholder.com/160x160?text=Category';
+  }
+
+  scrollCategories(direction: 'prev' | 'next'): void {
+    const carousel = this.categoryCarousel?.nativeElement;
+    if (!carousel) {
+      return;
+    }
+
+    const distance = Math.max(240, Math.round(carousel.clientWidth * 0.82));
+    carousel.scrollBy({
+      left: direction === 'next' ? distance : -distance,
+      behavior: 'smooth'
+    });
+
+    window.setTimeout(() => this.updateCategoryCarouselState(), 300);
+  }
+
+  scrollToCategories(event?: Event): void {
+    event?.preventDefault();
+
+    const element = document.getElementById('categories');
+    if (!element) {
+      return;
+    }
+
+    const headerOffset = 110;
+    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+
+    window.scrollTo({
+      top: Math.max(0, elementPosition - headerOffset),
+      behavior: 'smooth'
+    });
+  }
+
+  updateCategoryCarouselState(): void {
+    const carousel = this.categoryCarousel?.nativeElement;
+    if (!carousel) {
+      this.categoryCanScrollPrev = false;
+      this.categoryCanScrollNext = false;
+      return;
+    }
+
+    const maxScrollLeft = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
+    this.categoryCanScrollPrev = carousel.scrollLeft > 2;
+    this.categoryCanScrollNext = carousel.scrollLeft < maxScrollLeft - 2;
+  }
+
+  private scheduleCategoryCarouselStateUpdate(): void {
+    window.requestAnimationFrame(() => this.updateCategoryCarouselState());
   }
 
   categoryAccent(category: CustomerLandingCategory): { accent: string; border: string; background: string } {
@@ -522,8 +924,84 @@ export class HomeComponent implements OnInit, OnDestroy {
     }).format(amount || 0);
   }
 
+  isWishlisted(product: CustomerCatalogProduct): boolean {
+    return !!product?._id && this.wishlistedProductIds.has(product._id);
+  }
+
+  toggleWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.toggleGuestWishlist(product);
+      return;
+    }
+
+    if (this.wishlistBusyId === product._id) {
+      return;
+    }
+
+    this.wishlistBusyId = product._id;
+    this.wishlistService.toggleWishlist(product._id).subscribe({
+      next: (wishlist) => {
+        this.wishlistBusyId = '';
+        this.syncWishlistSet(wishlist?.products || []);
+        this.errorService.showToast(
+          this.isWishlisted(product) ? 'Saved to wishlist.' : 'Removed from wishlist.',
+          'success'
+        );
+      },
+      error: (error) => {
+        this.wishlistBusyId = '';
+        this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
+      }
+    });
+  }
+
   productImage(product: CustomerCatalogProduct): string {
-    return product.displayVariant?.variantImage || product.mainImages?.[0] || 'https://via.placeholder.com/640x480?text=Product';
+    return this.variantService.getProductImage(product, product.displayVariant || null);
+  }
+
+  isProductOutOfStock(product: CustomerCatalogProduct): boolean {
+    return this.variantService.isProductOutOfStock(product);
+  }
+
+  hasSingleVariant(product: CustomerCatalogProduct): boolean {
+    return this.variantService.hasSingleVariant(product);
+  }
+
+  productCardActionLabel(product: CustomerCatalogProduct): string {
+    if (this.isProductOutOfStock(product)) {
+      return 'Unavailable';
+    }
+
+    return this.hasSingleVariant(product) ? 'Add To Cart' : 'Select Options';
+  }
+
+  private addSingleVariantToCart(product: CustomerCatalogProduct): void {
+    const variant = this.variantService.getDefaultVariant(product);
+    if (!product?._id || !variant?._id) {
+      return;
+    }
+
+    this.variantModalLoading = true;
+    this.cartActionService.addToCart(product._id, variant._id, 1).subscribe({
+      next: (result) => {
+        this.variantModalLoading = false;
+
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.variantModalLoading = false;
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
   }
 
   trackByCategoryId(_: number, category: CustomerLandingCategory): string {
@@ -556,6 +1034,47 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private normalizeCategoryKey(value: string): string {
     return String(value || '').trim().toLowerCase();
+  }
+
+  private loadWishlistState(): void {
+    this.wishlistService.getWishlist().subscribe({
+      next: (wishlist) => {
+        this.syncWishlistSet(wishlist?.products || []);
+      },
+      error: () => {
+        this.wishlistedProductIds = new Set<string>();
+      }
+    });
+  }
+
+  private loadGuestWishlistState(): void {
+    this.syncWishlistSet(this.guestDataService.getGuestWishlist());
+  }
+
+  private syncWishlistSet(products: Array<{ _id?: string; productId?: string }>): void {
+    this.wishlistedProductIds = new Set(
+      (products || [])
+        .map((item) => item?._id || item?.productId)
+        .filter((id): id is string => !!id)
+    );
+  }
+
+  private toggleGuestWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    const isCurrentlyWishlisted = this.wishlistedProductIds.has(product._id);
+
+    if (isCurrentlyWishlisted) {
+      this.guestDataService.removeFromGuestWishlist(product._id);
+      this.errorService.showToast('Removed from guest wishlist.', 'success');
+    } else {
+      this.guestDataService.addToGuestWishlist(product);
+      this.errorService.showToast('Saved to guest wishlist.', 'success');
+    }
+
+    this.loadGuestWishlistState();
   }
 
   private flattenLandingProducts(groups: CustomerLandingCategoryGroup[]): CustomerCatalogProduct[] {

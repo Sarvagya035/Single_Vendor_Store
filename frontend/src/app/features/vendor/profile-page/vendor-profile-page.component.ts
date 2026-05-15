@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { AppRefreshService } from '../../../core/services/app-refresh.service';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
@@ -9,6 +10,7 @@ import { VendorEmptyStateComponent } from '../empty-state/vendor-empty-state.com
 import { VendorLogoModalComponent } from '../logo-modal/vendor-logo-modal.component';
 import { VendorProfileCardComponent } from '../profile-card/vendor-profile-card.component';
 import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../../core/models/vendor.models';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-vendor-profile-page',
@@ -19,61 +21,76 @@ import { VendorBankDetailsForm, VendorDetailsForm, VendorProfile } from '../../.
     VendorProfileCardComponent,
     VendorDetailsModalComponent,
     VendorLogoModalComponent,
-    VendorEmptyStateComponent
+    VendorEmptyStateComponent,
+    PageHeaderComponent
   ],
   template: `
-    <div *ngIf="isLoading" class="flex flex-col items-center gap-4 py-20">
-      <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
-      <p class="font-medium text-slate-500">Loading store data...</p>
-    </div>
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
+          <app-page-header eyebrow="Store Profile" title="Vendor profile" titleClass="!text-[1.8rem] md:!text-[2.2rem]" />
+        </div>
 
-    <div *ngIf="!isLoading && vendor" class="space-y-10">
-      <app-vendor-profile-card
-        [vendor]="vendor"
-        [logoPreview]="logoPreview"
-        [isEditDetailsOpen]="isEditDetailsOpen"
-        [isEditBankOpen]="isEditBankOpen"
-        [isEditLogoOpen]="isEditLogoOpen"
-        (editDetails)="toggleDetailsEditor()"
-        (editBank)="toggleBankEditor()"
-        (editLogo)="toggleLogoEditor()"
-      />
-    </div>
+        <div *ngIf="isLoading" class="vendor-section-body flex flex-col items-center gap-4 py-20">
+          <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-amber-700"></div>
+          <p class="font-medium text-slate-500">Loading store data...</p>
+        </div>
 
-    <app-vendor-empty-state *ngIf="!isLoading && !vendor" />
+        <div *ngIf="!isLoading && vendor" class="border-t border-slate-200 vendor-section-body">
+          <app-vendor-profile-card
+            [vendor]="vendor"
+            [logoPreview]="logoPreview"
+            [totalProducts]="totalProducts"
+            [totalRevenue]="totalRevenue"
+            [isMetricsLoading]="isMetricsLoading"
+            [isEditDetailsOpen]="isEditDetailsOpen"
+            [isEditBankOpen]="isEditBankOpen"
+            [isEditLogoOpen]="isEditLogoOpen"
+            (editDetails)="toggleDetailsEditor()"
+            (editBank)="toggleBankEditor()"
+            (editLogo)="toggleLogoEditor()"
+          />
+        </div>
 
-    <app-vendor-details-modal
-      [open]="isEditDetailsOpen"
-      [form]="form"
-      [isSaving]="isSavingDetails"
-      (formChange)="updateForm($event)"
-      (close)="toggleDetailsEditor()"
-      (submit)="onUpdateDetails()"
-    />
+        <app-vendor-empty-state *ngIf="!isLoading && !vendor" />
 
-    <app-vendor-bank-modal
-      [open]="isEditBankOpen"
-      [form]="bankForm"
-      [isSaving]="isSavingBank"
-      (formChange)="updateBankForm($event)"
-      (close)="toggleBankEditor()"
-      (submit)="onUpdateBankDetails()"
-    />
+        <app-vendor-details-modal
+          [open]="isEditDetailsOpen"
+          [form]="form"
+          [isSaving]="isSavingDetails"
+          (formChange)="updateForm($event)"
+          (close)="toggleDetailsEditor()"
+          (submit)="onUpdateDetails()"
+        />
 
-    <app-vendor-logo-modal
-      [open]="isEditLogoOpen"
-      [vendor]="vendor"
-      [logoPreview]="logoPreview"
-      [selectedLogoName]="selectedLogo?.name || ''"
-      [isUploading]="isUploadingLogo"
-      (close)="toggleLogoEditor()"
-      (selectLogo)="onLogoSelected($event)"
-      (submit)="onUpdateLogo()"
-    />
+        <app-vendor-bank-modal
+          [open]="isEditBankOpen"
+          [form]="bankForm"
+          [isSaving]="isSavingBank"
+          (formChange)="updateBankForm($event)"
+          (close)="toggleBankEditor()"
+          (submit)="onUpdateBankDetails()"
+        />
+
+        <app-vendor-logo-modal
+          [open]="isEditLogoOpen"
+          [vendor]="vendor"
+          [logoPreview]="logoPreview"
+          [selectedLogoName]="selectedLogo?.name || ''"
+          [isUploading]="isUploadingLogo"
+          (close)="toggleLogoEditor()"
+          (selectLogo)="onLogoSelected($event)"
+          (submit)="onUpdateLogo()"
+        />
+      </div>
+    </section>
   `
 })
 export class VendorProfilePageComponent implements OnInit {
   vendor: VendorProfile | null = null;
+  totalProducts = 0;
+  totalRevenue = 0;
+  isMetricsLoading = true;
   form: VendorDetailsForm = {
     vendorAddress: '',
     vendorDescription: ''
@@ -108,26 +125,40 @@ export class VendorProfilePageComponent implements OnInit {
 
   loadVendorProfile() {
     this.isLoading = true;
-    this.vendorService.getProfile().subscribe({
-      next: (res) => {
+    this.isMetricsLoading = true;
+
+    forkJoin({
+      profile: this.vendorService.getProfile(),
+      products: this.vendorService.getMyProducts(1, 100),
+      analytics: this.vendorService.getVendorAnalytics()
+    }).subscribe({
+      next: ({ profile, products, analytics }) => {
         this.isLoading = false;
-        if (res?.success) {
-          this.vendor = res.data;
+        this.isMetricsLoading = false;
+
+        if (profile?.success) {
+          this.vendor = profile.data;
           this.form = {
-            vendorAddress: res.data.vendorAddress || '',
-            vendorDescription: res.data.vendorDescription || ''
+            vendorAddress: profile.data.vendorAddress || '',
+            vendorDescription: profile.data.vendorDescription || ''
           };
           this.bankForm = {
-            accountHolderName: res.data.bankDetails?.accountHolderName || '',
-            accountNumber: res.data.bankDetails?.accountNumber || '',
-            ifscCode: res.data.bankDetails?.ifscCode || '',
-            bankName: res.data.bankDetails?.bankName || '',
-            upiId: res.data.bankDetails?.upiId || ''
+            accountHolderName: profile.data.bankDetails?.accountHolderName || '',
+            accountNumber: profile.data.bankDetails?.accountNumber || '',
+            ifscCode: profile.data.bankDetails?.ifscCode || '',
+            bankName: profile.data.bankDetails?.bankName || '',
+            upiId: profile.data.bankDetails?.upiId || ''
           };
         }
+
+        this.totalProducts = Number(products?.data?.totalDocs || products?.data?.docs?.length || 0);
+        this.totalRevenue = Number(analytics?.summary?.totalRevenue || 0);
       },
       error: () => {
         this.isLoading = false;
+        this.isMetricsLoading = false;
+        this.totalProducts = 0;
+        this.totalRevenue = 0;
       }
     });
   }
@@ -256,14 +287,8 @@ export class VendorProfilePageComponent implements OnInit {
   }
 
   private refreshAppState(): void {
-    this.vendorService.getProfile().subscribe({
-      next: (res) => {
-        if (res?.success) {
-          this.vendor = res.data;
-          this.appRefreshService.notify('vendor');
-        }
-      }
-    });
+    this.loadVendorProfile();
+    this.appRefreshService.notify('vendor');
   }
 }
 

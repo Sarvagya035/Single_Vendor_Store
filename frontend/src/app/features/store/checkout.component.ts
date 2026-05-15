@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -9,7 +9,7 @@ import { ErrorService } from '../../core/services/error.service';
 import { OrderService } from '../../core/services/order.service';
 import { CustomerAddress, CustomerCart } from '../../core/models/customer.models';
 import { OrderCheckoutPayload } from '../../core/models/order.models';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.production';
 
 const EMPTY_CART: CustomerCart = {
   cartItems: [],
@@ -22,151 +22,224 @@ const EMPTY_CART: CustomerCart = {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
-      <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-amber-700">Checkout</p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">Review and place your order</h1>
-            <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
-              Confirm your delivery address, review your cart total, and complete payment securely.
-            </p>
+    <section class="storefront-section">
+      <div class="store-page-wide store-page-stack">
+          <div class="store-page-header">
+            <div class="max-w-2xl">
+              <p class="app-page-eyebrow text-amber-700">Checkout</p>
+              <h1 class="app-page-title !mt-2 !text-[1.9rem] sm:!text-[2.2rem]">Review and place your order</h1>
+              <p class="app-page-description">
+                Confirm your address, review the cart, and complete payment in one flow.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <a routerLink="/cart" class="btn-secondary w-full justify-center sm:w-auto">Back to Cart</a>
+              <a routerLink="/addresses" class="btn-secondary w-full justify-center sm:w-auto">Manage Addresses</a>
+            </div>
           </div>
 
-          <div class="flex gap-3">
-            <a routerLink="/cart" class="btn-secondary !px-5 !py-3">Back To Cart</a>
-            <a routerLink="/addresses" class="btn-secondary !px-5 !py-3">Manage Addresses</a>
-          </div>
-        </div>
-
-        <div *ngIf="successMessage" class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
-          {{ successMessage }}
-        </div>
-
-        <div *ngIf="isLoading" class="mt-10 text-sm font-semibold text-slate-500">Loading checkout details...</div>
-
-        <div *ngIf="!isLoading && cart.cartItems.length === 0" class="mt-10 rounded-[2rem] border border-dashed border-[#e7dac9] bg-white px-8 py-16 text-center shadow-[0_18px_50px_rgba(47,27,20,0.05)]">
-          <h2 class="text-2xl font-black text-slate-900">Your cart is empty</h2>
-          <p class="mt-3 text-sm font-medium text-slate-500">Add products to your cart before checking out.</p>
-          <a routerLink="/" class="btn-primary mt-6 inline-flex !px-6 !py-3">Browse Products</a>
-        </div>
-
-        <div *ngIf="!isLoading && cart.cartItems.length" class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <section class="space-y-6">
-            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(47,27,20,0.06)]">
-              <div class="flex items-center justify-between gap-4 border-b border-[#f1e4d4] pb-4">
+          <div class="rounded-[1.5rem] border border-[#ead8c2] bg-white/90 p-4 shadow-sm">
+            <div class="store-page-grid md:grid-cols-3">
+              <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">1</span>
                 <div>
-                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Delivery Address</p>
-                  <h2 class="mt-2 text-2xl font-black text-slate-900">Choose where this order should arrive</h2>
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Step 1</p>
+                  <p class="text-sm font-semibold text-slate-900">Select address</p>
                 </div>
-                <a routerLink="/addresses" class="text-sm font-black text-amber-700">Edit addresses</a>
               </div>
-
-              <div *ngIf="addresses.length === 0" class="mt-5 rounded-2xl border border-dashed border-[#e7dac9] bg-[#fff7ed] px-5 py-6 text-sm font-semibold text-slate-500">
-                No saved addresses found. Add a delivery address before placing this order.
+              <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">2</span>
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Step 2</p>
+                  <p class="text-sm font-semibold text-slate-900">Review items</p>
+                </div>
               </div>
-
-              <div *ngIf="addresses.length" class="mt-5 grid gap-4">
-                <label
-                  *ngFor="let address of addresses; trackBy: trackByAddress"
-                  class="flex cursor-pointer gap-4 rounded-[1.5rem] border p-5 transition"
-                  [ngClass]="selectedAddressId === address._id ? 'border-[#d4a017] bg-[#fff7ed]' : 'border-[#e7dac9] bg-white hover:border-[#d4a017]'"
-                >
-                  <input
-                    type="radio"
-                    name="shippingAddress"
-                    class="mt-1 h-4 w-4 border-slate-300 text-amber-700"
-                    [value]="address._id"
-                    [(ngModel)]="selectedAddressId"
-                  />
-
-                  <div class="min-w-0">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <p class="text-base font-black text-slate-900">{{ address.fullname }}</p>
-                      <span *ngIf="address.isDefault" class="rounded-full bg-[#f5e6d3] px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#6f4e37]">
-                        Default
-                      </span>
-                    </div>
-                    <p class="mt-2 text-sm font-medium leading-6 text-slate-500">
-                      {{ formatAddress(address) }}
-                    </p>
-                    <p class="mt-1 text-sm font-semibold text-slate-700">{{ address.phone }}</p>
-                  </div>
-                </label>
+              <div class="flex items-center gap-3 rounded-[1.1rem] bg-[#fffaf5] px-3 py-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#6f4e37] text-xs font-black text-white">3</span>
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Step 3</p>
+                  <p class="text-sm font-semibold text-slate-900">Pay securely</p>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(47,27,20,0.06)]">
-              <div class="border-b border-[#f1e4d4] pb-4">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Order Items</p>
-                <h2 class="mt-2 text-2xl font-black text-slate-900">Cart snapshot</h2>
+        <div *ngIf="successMessage" class="rounded-[1.5rem] border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm font-medium text-amber-800">
+            {{ successMessage }}
+          </div>
+
+          <div *ngIf="isLoading" class="text-sm font-medium text-slate-500">Loading checkout details...</div>
+
+          <div *ngIf="!isLoading && cart.cartItems.length === 0">
+            <div class="app-empty-state">
+              <h2 class="text-2xl font-medium text-slate-900">Your cart is empty</h2>
+              <p class="mt-3 text-sm font-medium text-slate-500">Add products to your cart before checking out.</p>
+              <a routerLink="/products" class="btn-primary mt-6 inline-flex">Browse Products</a>
+            </div>
+          </div>
+
+          <div *ngIf="!isLoading && cart.cartItems.length" class="lg:hidden">
+            <div class="app-card app-panel-body">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Checkout total</p>
+                  <p class="mt-1 text-base font-semibold text-slate-900">{{ cartItemCount() }} item{{ cartItemCount() === 1 ? '' : 's' }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Payable now</p>
+                  <p class="mt-1 text-2xl font-black tracking-tight text-slate-900">{{ formatCurrency(grandTotal()) }}</p>
+                </div>
               </div>
 
-              <div class="mt-5 space-y-4">
-                <article
-                  *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
-                  class="flex gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-[#fff7ed]/70 p-4"
-                >
-                  <img [src]="cartItemImage(item)" [alt]="item.product?.productName || 'Cart item'" class="h-20 w-20 rounded-2xl object-cover" />
+              <div class="mt-4 grid gap-2 rounded-[1.3rem] bg-[#fffaf5] px-4 py-3 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="font-medium text-slate-500">Items total</span>
+                  <span class="font-semibold text-slate-900">{{ formatCurrency(itemsSubtotal()) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="font-medium text-slate-500">Shipping</span>
+                  <span class="font-semibold text-slate-900">{{ shippingAmount() === 0 ? 'Free' : formatCurrency(shippingAmount()) }}</span>
+                </div>
+              </div>
 
-                  <div class="min-w-0 flex-1">
-                    <div class="flex items-start justify-between gap-4">
-                      <div>
-                        <p class="text-base font-black text-slate-900">{{ item.product?.productName || 'Product' }}</p>
-                        <p class="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{{ variantLabel(item) }}</p>
+              <button
+                type="button"
+                class="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60"
+                [disabled]="isSubmitting || !selectedAddressId || addresses.length === 0"
+                (click)="placeOrder()"
+              >
+                {{ isSubmitting ? 'Processing Payment...' : 'Pay With Razorpay' }}
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="!isLoading && cart.cartItems.length" class="store-page-grid lg:grid-cols-[minmax(0,1.7fr)_360px]">
+            <div class="space-y-5">
+              <section class="app-card app-panel-body">
+                <div class="flex flex-col gap-3 border-b border-[#f1e4d4] pb-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Delivery Address</p>
+                    <h2 class="mt-2 text-2xl font-medium tracking-tight text-slate-900">Choose where this order should arrive</h2>
+                  </div>
+                  <a routerLink="/addresses" class="text-sm font-medium text-amber-700">Edit addresses</a>
+                </div>
+
+                <div *ngIf="addresses.length === 0" class="mt-5 rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fffaf5] px-5 py-6 text-sm font-medium text-slate-500">
+                  No saved addresses found. Add a delivery address before placing this order.
+                </div>
+
+                <div *ngIf="addresses.length" class="mt-5 grid gap-4">
+                  <label
+                    *ngFor="let address of addresses; trackBy: trackByAddress"
+                    class="flex cursor-pointer flex-col gap-4 rounded-[1.5rem] border p-5 transition sm:flex-row"
+                    [ngClass]="selectedAddressId === address._id ? 'border-[#d4a017] bg-[#fffaf5] shadow-[0_10px_25px_rgba(111,78,55,0.06)]' : 'border-[#e7dac9] bg-white hover:border-[#d4a017]'"
+                  >
+                    <input
+                      type="radio"
+                      name="shippingAddress"
+                      class="mt-1 h-4 w-4 border-slate-300 text-amber-700"
+                      [value]="address._id"
+                      [(ngModel)]="selectedAddressId"
+                    />
+
+                    <div class="min-w-0">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <p class="text-base font-medium text-slate-900">{{ address.fullname }}</p>
+                        <span *ngIf="address.isDefault" class="rounded-full bg-[#f5e6d3] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-[#6f4e37]">
+                          Default
+                        </span>
                       </div>
-                      <p class="text-sm font-black text-slate-900">x{{ item.quantity || 0 }}</p>
+                      <p class="mt-2 text-sm font-medium leading-6 text-slate-500">
+                        {{ formatAddress(address) }}
+                      </p>
+                      <p class="mt-1 text-sm font-medium text-slate-700">{{ address.phone }}</p>
                     </div>
+                  </label>
+                </div>
+              </section>
 
-                    <div class="mt-3 flex items-center justify-between text-sm">
-                      <span class="font-medium text-slate-500">Line total</span>
-                      <span class="font-black text-slate-900">{{ formatCurrency((item.priceAtAddition || 0) * (item.quantity || 0)) }}</span>
+              <section class="app-card app-panel-body">
+                <div class="border-b border-[#f1e4d4] pb-4">
+                  <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Order Items</p>
+                  <h2 class="mt-2 text-2xl font-medium tracking-tight text-slate-900">Cart snapshot</h2>
+                </div>
+
+                <div class="mt-5 space-y-4">
+                  <article
+                    *ngFor="let item of cart.cartItems; trackBy: trackByCartVariant"
+                    class="flex flex-col gap-4 rounded-[1.5rem] border border-[#e7dac9] bg-[#fffaf5] p-4 sm:flex-row"
+                  >
+                    <img
+                      [src]="cartItemImage(item)"
+                      [alt]="item.product?.productName || 'Cart item'"
+                      loading="lazy"
+                      decoding="async"
+                      class="h-20 w-full rounded-2xl object-cover sm:w-20"
+                    />
+
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-start justify-between gap-4">
+                        <div>
+                          <p class="text-base font-medium text-slate-900">{{ item.product?.productName || 'Product' }}</p>
+                          <p class="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">{{ variantLabel(item) }}</p>
+                        </div>
+                        <p class="text-sm font-medium text-slate-900">x{{ item.quantity || 0 }}</p>
+                      </div>
+
+                      <div class="mt-3 flex items-center justify-between text-sm">
+                        <span class="font-medium text-slate-500">Line total</span>
+                        <span class="font-medium text-slate-900">{{ formatCurrency((item.priceAtAddition || 0) * (item.quantity || 0)) }}</span>
+                      </div>
                     </div>
+                  </article>
+                </div>
+              </section>
+            </div>
+
+            <aside class="hidden space-y-5 lg:block lg:sticky lg:top-6 lg:self-start">
+              <div class="app-card app-panel-body">
+                <p class="text-xs font-medium uppercase tracking-[0.24em] text-amber-700">Payment Summary</p>
+                <h2 class="mt-2 text-2xl font-medium tracking-tight text-slate-900">Secure checkout</h2>
+
+                <div class="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-[#fffaf5] p-4 text-sm text-slate-700">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-slate-500">Items total</span>
+                    <span class="font-medium text-slate-900">{{ formatCurrency(itemsSubtotal()) }}</span>
                   </div>
-                </article>
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-slate-500">Shipping</span>
+                    <span class="font-medium text-slate-900">{{ shippingAmount() === 0 ? 'Free' : formatCurrency(shippingAmount()) }}</span>
+                  </div>
+                  <div class="flex items-center justify-between border-t border-slate-200 pt-3">
+                    <span class="font-medium text-slate-500">Total payable</span>
+                    <span class="text-2xl font-medium tracking-tight text-slate-900">{{ formatCurrency(grandTotal()) }}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-primary mt-5 w-full disabled:cursor-not-allowed disabled:opacity-60"
+                  [disabled]="isSubmitting || !selectedAddressId || addresses.length === 0"
+                  (click)="placeOrder()"
+                >
+                  {{ isSubmitting ? 'Processing Payment...' : 'Pay With Razorpay' }}
+                </button>
+
+                <p class="mt-4 text-xs font-medium leading-6 text-slate-500">
+                  Orders are created with online payment and will appear in your order history right after successful verification.
+                </p>
               </div>
-            </div>
-          </section>
-
-          <aside class="h-fit rounded-[2rem] border border-[#e7dac9] bg-[#2f1b14] p-6 text-white shadow-[0_18px_50px_rgba(47,27,20,0.16)]">
-            <p class="text-xs font-black uppercase tracking-[0.22em] text-[#f5e6d3]">Payment Summary</p>
-            <h2 class="mt-3 text-2xl font-black">Secure checkout</h2>
-
-            <div class="mt-6 space-y-3 text-sm font-medium text-[#f5e6d3]">
-              <div class="flex items-center justify-between">
-                <span>Items total</span>
-                <span>{{ formatCurrency(itemsSubtotal()) }}</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span>Shipping</span>
-                <span>{{ shippingAmount() === 0 ? 'Free' : formatCurrency(shippingAmount()) }}</span>
-              </div>
-            </div>
-
-            <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-              <span class="text-sm font-bold text-[#f5e6d3]">Total payable</span>
-              <span class="text-2xl font-black">{{ formatCurrency(grandTotal()) }}</span>
-            </div>
-
-            <button
-              type="button"
-              class="mt-6 w-full rounded-2xl bg-white px-4 py-3 text-sm font-black text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-              [disabled]="isSubmitting || !selectedAddressId || addresses.length === 0"
-              (click)="placeOrder()"
-            >
-              {{ isSubmitting ? 'Processing Payment...' : 'Pay With Razorpay' }}
-            </button>
-
-            <p class="mt-4 text-xs font-medium leading-6 text-slate-400">
-              Orders are created with online payment and will appear in your order history right after successful verification.
-            </p>
-          </aside>
-        </div>
-      </section>
-    </div>
+            </aside>
+          </div>
+      </div>
+    </section>
   `
 })
-export class CheckoutComponent implements OnInit {
+export class CheckoutComponent implements OnInit, OnDestroy {
+  private readonly pendingPaymentKey = 'checkoutPendingPayment';
+  private readonly pendingPaymentTimeoutMs = 2 * 60 * 1000;
+  private pendingPaymentTimer: ReturnType<typeof setTimeout> | null = null;
   cart: CustomerCart = EMPTY_CART;
   addresses: CustomerAddress[] = [];
   selectedAddressId = '';
@@ -183,7 +256,24 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.restorePendingPaymentState();
     this.loadCheckoutData();
+  }
+
+  ngOnDestroy(): void {
+    this.clearPendingPaymentTimer();
+  }
+
+  @HostListener('window:focus')
+  onWindowFocus(): void {
+    this.recoverStalePaymentState();
+  }
+
+  @HostListener('document:visibilitychange')
+  onVisibilityChange(): void {
+    if (document.visibilityState === 'visible') {
+      this.recoverStalePaymentState();
+    }
   }
 
   loadCheckoutData(): void {
@@ -200,8 +290,12 @@ export class CheckoutComponent implements OnInit {
         const defaultAddress = this.addresses.find((address) => address.isDefault);
         this.selectedAddressId = defaultAddress?._id || this.addresses[0]?._id || '';
       },
-      error: () => {
+      error: (error) => {
         this.isLoading = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to load checkout details right now.',
+          'error'
+        );
       }
     });
   }
@@ -223,6 +317,7 @@ export class CheckoutComponent implements OnInit {
 
     this.isSubmitting = true;
     this.successMessage = '';
+    this.setPendingPaymentState();
 
     this.orderService.checkout(payload).subscribe({
       next: (response) => {
@@ -231,12 +326,13 @@ export class CheckoutComponent implements OnInit {
 
         if (!orderId || !razorOrder?.id) {
           this.isSubmitting = false;
+          this.clearPendingPaymentState();
           this.errorService.showToast('Unable to initialize payment for this order.', 'error');
           return;
         }
 
         const razorpay = new RazorpayCheckout({
-          key: environment.razorpayKeyId,
+          key: environment.razorpayKey,
           amount: razorOrder.amount,
           currency: razorOrder.currency,
           name: 'E-Commerce',
@@ -257,15 +353,19 @@ export class CheckoutComponent implements OnInit {
           },
           modal: {
             ondismiss: () => {
-              this.isSubmitting = false;
+              this.clearPendingPaymentState();
             }
           }
         });
 
         razorpay.open();
       },
-      error: () => {
-        this.isSubmitting = false;
+      error: (error) => {
+        this.clearPendingPaymentState();
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
       }
     });
   }
@@ -280,15 +380,93 @@ export class CheckoutComponent implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.isSubmitting = false;
+          this.clearPendingPaymentState();
           this.successMessage = 'Payment verified successfully. Redirecting to your orders...';
           this.cartService.resetCart();
           this.router.navigate(['/orders']);
         },
-        error: () => {
-          this.isSubmitting = false;
+        error: (error) => {
+          this.clearPendingPaymentState();
+          this.errorService.showToast(
+            this.errorService.extractErrorMessage(error) || 'Payment verification failed. Please try again.',
+            'error'
+          );
         }
       });
+  }
+
+  private setPendingPaymentState(): void {
+    this.clearPendingPaymentTimer();
+    sessionStorage.setItem(
+      this.pendingPaymentKey,
+      JSON.stringify({
+        createdAt: Date.now()
+      })
+    );
+    this.pendingPaymentTimer = window.setTimeout(() => {
+      this.recoverStalePaymentState(true);
+    }, this.pendingPaymentTimeoutMs);
+  }
+
+  private clearPendingPaymentState(): void {
+    this.clearPendingPaymentTimer();
+    sessionStorage.removeItem(this.pendingPaymentKey);
+    this.isSubmitting = false;
+  }
+
+  private clearPendingPaymentTimer(): void {
+    if (this.pendingPaymentTimer !== null) {
+      window.clearTimeout(this.pendingPaymentTimer);
+      this.pendingPaymentTimer = null;
+    }
+  }
+
+  private restorePendingPaymentState(): void {
+    const raw = sessionStorage.getItem(this.pendingPaymentKey);
+
+    if (!raw) {
+      this.isSubmitting = false;
+      return;
+    }
+
+    const pendingAt = this.extractPendingTimestamp(raw);
+    const expired = !pendingAt || Date.now() - pendingAt >= this.pendingPaymentTimeoutMs;
+
+    if (expired) {
+      this.clearPendingPaymentState();
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.clearPendingPaymentTimer();
+    this.pendingPaymentTimer = window.setTimeout(() => {
+      this.recoverStalePaymentState(true);
+    }, this.pendingPaymentTimeoutMs - (Date.now() - pendingAt));
+  }
+
+  private recoverStalePaymentState(force = false): void {
+    const raw = sessionStorage.getItem(this.pendingPaymentKey);
+
+    if (!raw) {
+      this.isSubmitting = false;
+      return;
+    }
+
+    const pendingAt = this.extractPendingTimestamp(raw);
+    const expired = !pendingAt || Date.now() - pendingAt >= this.pendingPaymentTimeoutMs;
+
+    if (force || expired) {
+      this.clearPendingPaymentState();
+    }
+  }
+
+  private extractPendingTimestamp(raw: string): number | null {
+    try {
+      const parsed = JSON.parse(raw);
+      return typeof parsed?.createdAt === 'number' ? parsed.createdAt : null;
+    } catch {
+      return null;
+    }
   }
 
   buildCheckoutPayload(address?: CustomerAddress): OrderCheckoutPayload | null {
@@ -334,6 +512,13 @@ export class CheckoutComponent implements OnInit {
   itemsSubtotal(): number {
     return (this.cart.cartItems || []).reduce(
       (total, item) => total + Number(item.priceAtAddition || 0) * Number(item.quantity || 0),
+      0
+    );
+  }
+
+  cartItemCount(): number {
+    return (this.cart.cartItems || []).reduce(
+      (total, item) => total + Number(item.quantity || 0),
       0
     );
   }

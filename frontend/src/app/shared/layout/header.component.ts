@@ -1,25 +1,34 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, DestroyRef, HostListener, Input, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { forkJoin, fromEvent } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { AppRefreshService } from '../../core/services/app-refresh.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
+import { GuestDataService } from '../../core/services/guest-data.service';
+import { OrderService } from '../../core/services/order.service';
+import { WishlistService } from '../../core/services/wishlist.service';
+import { VendorService } from '../../core/services/vendor.service';
+import { VendorSidebarComponent } from '../../features/vendor/sidebar/vendor-sidebar.component';
+import { VendorMobileNavService } from '../../features/vendor/vendor-mobile-nav.service';
+import { VendorDashboardView } from '../../core/models/vendor.models';
 import { HeaderAccountDropdownComponent, HeaderDropdownItem } from './header-account-dropdown.component';
 import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent],
+  imports: [CommonModule, RouterModule, HeaderAccountDropdownComponent, HeaderMobileMenuComponent, VendorSidebarComponent],
   template: `
-    <div class="sticky top-0 z-50">
-      <div *ngIf="showAnnouncementBar()" class="overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] text-white">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div class="flex h-11 items-center overflow-hidden">
-            <div class="flex w-max items-center gap-4 whitespace-nowrap animate-announcement-marquee hover:[animation-play-state:paused]">
+    <div class="sticky top-0 z-50 relative">
+      <div *ngIf="showAnnouncementBar()" class="announcement-bar overflow-hidden border-b border-[#7a4a2a] bg-[#5b3520] px-0 py-2 text-white" tabindex="0" aria-label="Top announcements">
+        <div class="header-shell">
+          <div class="flex items-center overflow-hidden">
+            <div class="announcement-track flex w-max items-center gap-4 whitespace-nowrap animate-announcement-marquee">
               <ng-container *ngFor="let message of announcementTicker; let last = last">
-                <span class="text-[11px] font-extrabold uppercase tracking-[0.18em] sm:text-xs">
+                <span class="text-[10px] font-semibold uppercase tracking-[0.18em] sm:text-[11px]">
                   {{ message }}
                 </span>
                 <span *ngIf="!last" class="text-[#d7b48d]">|</span>
@@ -30,78 +39,139 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
       </div>
 
       <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-lg">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div class="flex h-20 items-center justify-between">
-          <a [routerLink]="logoRoute()" class="group flex flex-shrink-0 items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
+        <div class="mx-auto flex w-full max-w-[1480px] items-center justify-between px-4 sm:px-6 lg:px-8 h-16 md:h-20">
+          <a [routerLink]="logoRoute()" class="group flex min-w-0 flex-shrink-0 cursor-pointer items-center gap-2 transition-opacity hover:opacity-80">
             <img
               src="/assets/divya%20logo.webp"
               alt="Divya logo"
-              class="h-17 w-auto object-contain transition-transform group-hover:scale-110"
+              class="h-12 w-auto object-contain transition-transform group-hover:scale-110 sm:h-14 lg:h-16"
             />
           </a>
 
-          <div class="hidden items-center space-x-6 md:flex">
-            <ng-container *ngIf="showPublicNavLinks()">
-              <a routerLink="/" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Home</a>
-              <a routerLink="/products" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Products</a>
-              <a routerLink="/products" [queryParams]="{ category: 'combos' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Combos</a>
-              <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
-              <a routerLink="/about-us" class="nav-link" routerLinkActive="text-amber-700 after:w-full">About Us</a>
-              <a routerLink="/contact" class="nav-link" routerLinkActive="text-amber-700 after:w-full">Contact Us</a>
-            </ng-container>
+          <div class="hidden flex-1 items-center justify-end gap-5 xl:flex">
+            <div class="flex items-center gap-4 xl:gap-5">
+              <ng-container *ngIf="showPublicNavLinks()">
+                <a *ngIf="!isCustomer()" routerLink="/" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">Home</a>
+                <a routerLink="/products" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">Products</a>
+                <a
+                  routerLink="/products"
+                  [queryParams]="{ category: 'combos' }"
+                  class="nav-link cursor-pointer rounded-none bg-transparent px-0 font-semibold text-[#6f4e37] shadow-none hover:bg-transparent hover:text-amber-700"
+                >
+                  Combos
+                </a>
+                <a routerLink="/products" [queryParams]="{ category: 'gifting' }" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">Gifting Collection</a>
+                <a routerLink="/about-us" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">About Us</a>
+                <a routerLink="/contact" class="nav-link cursor-pointer" routerLinkActive="text-amber-700 after:w-full">Contact Us</a>
+              </ng-container>
+            </div>
 
-            <ng-container *ngIf="user && !isCustomer()">
-              <app-header-account-dropdown
-                theme="vendor"
-                subtitle="Store account"
-                [open]="isVendorDropdownOpen"
-                [avatarUrl]="avatarUrl()"
-                [initials]="userInitials()"
-                [displayName]="displayName()"
-                [email]="user?.email || ''"
-                [items]="vendorMenuItems"
-                (toggle)="toggleVendorDropdown($event)"
-                (itemSelected)="handleVendorItem($event)"
-              />
-            </ng-container>
+            <div class="flex items-center gap-2">
+              <ng-container *ngIf="showStoreCounts()">
+                <a
+                  routerLink="/cart"
+                  class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
+                >
+                  Cart
+                  <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
+                </a>
 
-            <ng-container *ngIf="isCustomer()">
-              <a
-                routerLink="/cart"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
-              >
-                Cart
-                <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
-              </a>
+                <a
+                  routerLink="/wishlist"
+                  class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 sm:px-4"
+                >
+                  Wishlist
+                  <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #c2410c, #f59e0b);">{{ wishlistCount }}</span>
+                </a>
+              </ng-container>
 
-              <app-header-account-dropdown
-                theme="customer"
-                subtitle="Account"
-                [open]="isDropdownOpen"
-                [avatarUrl]="avatarUrl()"
-                [initials]="userInitials()"
-                [displayName]="customerDisplayName()"
-                [email]="user?.email || ''"
-                [items]="customerMenuItems"
-                (toggle)="toggleDropdown($event)"
-                (itemSelected)="handleCustomerItem($event)"
-              />
-            </ng-container>
+              <ng-container *ngIf="user && !isCustomer()">
+                <a
+                  *ngIf="isVendor() || isAdmin()"
+                  routerLink="/vendor/notifications"
+                  class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                  aria-label="Open vendor notifications"
+                  title="Notifications"
+                >
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.157V11a6 6 0 10-12 0v3.157c0 .538-.214 1.055-.595 1.438L4 17h5m6 0a3 3 0 11-6 0m6 0H9"
+                    />
+                  </svg>
+                  <span
+                    *ngIf="vendorNotificationCount > 0"
+                    class="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
+                  >
+                    {{ vendorNotificationCount }}
+                  </span>
+                </a>
 
-            <ng-container *ngIf="!user">
-              <a routerLink="/login" class="nav-link">Login</a>
-              <a routerLink="/register" class="btn-primary !px-5 !py-2 text-sm">Register</a>
-            </ng-container>
+                <app-header-account-dropdown
+                  theme="vendor"
+                  subtitle="Store account"
+                  [open]="isVendorDropdownOpen"
+                  [avatarUrl]="avatarUrl()"
+                  [initials]="userInitials()"
+                  [displayName]="displayName()"
+                  [email]="user?.email || ''"
+                  [items]="vendorMenuItems"
+                  (toggle)="toggleVendorDropdown($event)"
+                  (itemSelected)="handleVendorItem($event)"
+                />
+              </ng-container>
+
+              <ng-container *ngIf="isCustomer()">
+                <app-header-account-dropdown
+                  theme="customer"
+                  subtitle="Account"
+                  [open]="isDropdownOpen"
+                  [avatarUrl]="avatarUrl()"
+                  [initials]="userInitials()"
+                  [displayName]="customerDisplayName()"
+                  [email]="user?.email || ''"
+                  [items]="customerMenuItems"
+                  (toggle)="toggleDropdown($event)"
+                  (itemSelected)="handleCustomerItem($event)"
+                />
+              </ng-container>
+
+              <ng-container *ngIf="!user">
+                <a routerLink="/login" class="nav-link cursor-pointer">Login</a>
+                <a routerLink="/register" class="btn-primary !px-5 !py-2 text-sm">Register</a>
+              </ng-container>
+            </div>
           </div>
 
-          <div class="flex items-center gap-3 md:hidden">
+          <div class="flex min-w-0 items-center gap-2 sm:gap-3 xl:hidden">
             <a
-              *ngIf="isCustomer()"
+              *ngIf="showStoreCounts()"
               routerLink="/cart"
-              class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-black text-slate-700"
+              class="header-icon cursor-pointer"
             >
-              Cart
-              <span class="rounded-full px-2 py-0.5 text-xs text-white" style="background: linear-gradient(135deg, #6f4e37, #8b5e3c);">{{ cartCount }}</span>
+              <span class="sr-only">Cart</span>
+              <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-2 6h13m-5-6v6m-4-6v6" />
+              </svg>
+              <span class="absolute -right-1 -top-1 inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-[#6f4e37] px-1 text-[10px] font-semibold leading-none text-white shadow-sm ring-2 ring-white sm:min-w-[20px] sm:h-[20px] sm:text-[11px]">
+                {{ badgeCount(cartCount) }}
+              </span>
+            </a>
+
+            <a
+              *ngIf="showStoreCounts()"
+              routerLink="/wishlist"
+              class="header-icon cursor-pointer"
+            >
+              <span class="sr-only">Wishlist</span>
+              <svg class="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.8 4.6c-2-1.9-5.1-1.8-7.1.2L12 6.5l-1.7-1.7c-2-2-5.1-2.1-7.1-.2-2.2 2.1-2.2 5.5 0 7.6L12 21l8.8-8.8c2.2-2.1 2.2-5.5 0-7.6Z" />
+              </svg>
+              <span class="absolute -right-1 -top-1 inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-[#c2410c] px-1 text-[10px] font-semibold leading-none text-white shadow-sm ring-2 ring-white sm:min-w-[20px] sm:h-[20px] sm:text-[11px]">
+                {{ badgeCount(wishlistCount) }}
+              </span>
             </a>
 
             <app-header-account-dropdown
@@ -117,6 +187,29 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
               (toggle)="toggleDropdown($event)"
               (itemSelected)="handleCustomerItem($event)"
             />
+
+            <a
+              *ngIf="user && (isVendor() || isAdmin())"
+              routerLink="/vendor/notifications"
+              class="header-icon relative cursor-pointer text-slate-700 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+              aria-label="Open vendor notifications"
+              title="Notifications"
+            >
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.157V11a6 6 0 10-12 0v3.157c0 .538-.214 1.055-.595 1.438L4 17h5m6 0a3 3 0 11-6 0m6 0H9"
+                />
+              </svg>
+              <span
+                *ngIf="vendorNotificationCount > 0"
+                class="absolute -right-1 -top-1 inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-semibold leading-none text-white shadow-sm ring-2 ring-white sm:min-w-[20px] sm:h-[20px] sm:text-[11px]"
+              >
+                {{ vendorNotificationCount }}
+              </span>
+            </a>
 
             <app-header-account-dropdown
               *ngIf="user && isVendor()"
@@ -134,9 +227,9 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
 
             <button
               type="button"
-              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2.5 text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
-              (click)="toggleMenu()"
-              aria-label="Toggle menu"
+              class="header-icon relative cursor-pointer text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              (click)="onMobileMenuButtonClick()"
+              [attr.aria-label]="mobileMenuButtonLabel()"
               data-mobile-menu-trigger
             >
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,20 +243,69 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
             </button>
           </div>
         </div>
-        </div>
       </nav>
 
-      <app-header-mobile-menu
-        [open]="isMenuOpen"
-        [loggedIn]="!!user"
-        [isAdmin]="isAdmin()"
-        [isVendor]="isVendor() || isAdmin()"
-        [showPublicNavLinks]="showPublicNavLinks()"
-        (close)="closeMobileMenu()"
-        (logout)="onMobileLogout()"
-      />
+      @defer (on idle) {
+        <app-header-mobile-menu
+          [open]="isMenuOpen"
+          [loggedIn]="!!user"
+          [isAdmin]="isAdmin()"
+          [isVendor]="isVendor() || isAdmin()"
+          [showPublicNavLinks]="showPublicNavLinks()"
+          (close)="closeMobileMenu()"
+          (logout)="onMobileLogout()"
+        />
+      } @placeholder {
+        <ng-container></ng-container>
+      }
+
+      @if (shouldRenderVendorMobileNav()) {
+        <div class="fixed inset-0 z-50 lg:hidden">
+          <button
+            type="button"
+            class="absolute inset-0 bg-slate-950/40"
+            aria-label="Close vendor navigation"
+            (click)="closeVendorMobileNav()"
+          ></button>
+
+          <aside class="absolute right-0 top-0 h-full w-[min(88vw,22rem)] overflow-y-auto border-l border-[#ead8c2] bg-[#fbf4e8] p-4 shadow-2xl">
+            <div class="mb-5 flex items-center justify-between border-b border-[#eee2d4] pb-4">
+              <div>
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                  Vendor Navigation
+                </p>
+                <h2 class="text-lg font-black text-slate-900">
+                  Menu
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                class="rounded-full border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700"
+                (click)="closeVendorMobileNav()"
+              >
+                Close
+              </button>
+            </div>
+
+            <app-vendor-sidebar
+              class="block"
+              [activeView]="vendorMobileNavView()"
+              [productCount]="productCount"
+              [categoryCount]="categoryCount"
+              [customerCount]="customerCount"
+              [orderCount]="orderCount"
+              [shipmentCount]="shipmentCount"
+              [bulkInquiryCount]="bulkInquiryCount"
+              [showShipments]="true"
+              [showBulkInquiries]="isVendor() || isAdmin()"
+              (closeMobile)="closeVendorMobileNav()"
+            />
+          </aside>
+        </div>
+      }
       <div *ngIf="isNavigating" class="pointer-events-none border-b border-[#e7dac9] bg-white/75 px-4 py-3 backdrop-blur">
-        <div class="mx-auto max-w-7xl">
+        <div class="header-shell px-0">
           <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div class="route-progress h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #6f4e37 0%, #d4a017 100%);"></div>
           </div>
@@ -173,16 +315,26 @@ import { HeaderMobileMenuComponent } from './header-mobile-menu.component';
   `
 })
 export class HeaderComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   user: any = null;
   @Input() isNavigating = false;
   isMenuOpen = false;
+  productCount = 0;
+  categoryCount = 0;
+  customerCount = 0;
+  orderCount = 0;
+  shipmentCount = 0;
+  bulkInquiryCount = 0;
   cartCount = 0;
+  wishlistCount = 0;
+  vendorNotificationCount = 0;
   isDropdownOpen = false;
   isVendorDropdownOpen = false;
 
   readonly customerMenuItems: HeaderDropdownItem[] = [
     { label: 'Profile', route: '/profile' },
     { label: 'My Orders', route: '/orders' },
+    { label: 'My Wishlist', route: '/wishlist' },
     { label: 'My Addresses', route: '/addresses' },
     { label: 'Logout', action: 'logout', tone: 'danger' }
   ];
@@ -206,8 +358,13 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private cartService: CartService,
+    private orderService: OrderService,
+    private wishlistService: WishlistService,
+    private guestDataService: GuestDataService,
+    private vendorService: VendorService,
     private router: Router,
-    private appRefreshService: AppRefreshService
+    private appRefreshService: AppRefreshService,
+    private vendorMobileNav: VendorMobileNavService
   ) {}
 
   private readonly apiOrigin = (() => {
@@ -223,31 +380,66 @@ export class HeaderComponent implements OnInit {
       this.user = user;
 
       if (this.isCustomer()) {
-        this.cartService.getCart().subscribe({
-          error: () => this.cartService.resetCart()
-        });
+        this.refreshCustomerCounts();
+      } else if (this.isVendor() || this.isAdmin()) {
+        this.loadVendorNotificationCount();
+        this.loadVendorMenuSummary();
+        this.cartCount = 0;
+        this.wishlistCount = 0;
       } else {
-        this.cartService.resetCart();
+        this.syncGuestCounts();
+        this.vendorNotificationCount = 0;
         this.closeAllMenus();
       }
     });
 
     this.cartService.cart$.subscribe((cart) => {
-      this.cartCount = (cart.cartItems || []).reduce(
-        (total, item) => total + Number(item.quantity || 0),
-        0
-      );
+      if (this.isCustomer()) {
+        this.cartCount = (cart.cartItems || []).reduce(
+          (total, item) => total + Number(item.quantity || 0),
+          0
+        );
+      }
     });
 
-    this.authService.ensureCurrentUser().subscribe({
-      error: () => this.authService.clearCurrentUser()
+    this.wishlistService.wishlist$.subscribe((wishlist) => {
+      if (this.isCustomer()) {
+        this.wishlistCount = Array.isArray(wishlist?.products) ? wishlist.products.length : 0;
+      }
     });
+
+    if (this.authService.hasStoredSession()) {
+      this.authService.ensureCurrentUser().subscribe({
+        error: () => this.authService.clearCurrentUser()
+      });
+    }
+
+    fromEvent(window, 'guestCartUpdated')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (!this.isCustomer()) {
+          this.cartCount = this.guestDataService.getGuestCartCount();
+        }
+      });
+
+    fromEvent(window, 'guestWishlistUpdated')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (!this.isCustomer()) {
+          this.wishlistCount = this.guestDataService.getGuestWishlistCount();
+        }
+      });
 
     this.appRefreshService.refresh$.subscribe((scope) => {
-      if (scope === 'global' || scope === 'auth') {
+      if ((scope === 'global' || scope === 'auth') && this.authService.hasStoredSession()) {
         this.authService.refreshCurrentUser().subscribe({
           error: () => this.authService.clearCurrentUser()
         });
+      }
+
+      if (scope === 'global' || scope === 'vendor') {
+        this.loadVendorNotificationCount();
+        this.loadVendorMenuSummary();
       }
     });
   }
@@ -278,13 +470,45 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleMenu() {
+    if (this.shouldUseVendorMobileNav()) {
+      this.closeDropdown();
+      this.closeVendorDropdown();
+      this.isMenuOpen = false;
+      this.vendorMobileNav.toggle();
+      return;
+    }
+
     this.closeDropdown();
     this.closeVendorDropdown();
     this.isMenuOpen = !this.isMenuOpen;
   }
 
+  onMobileMenuButtonClick(): void {
+    this.toggleMenu();
+  }
+
+  mobileMenuButtonLabel(): string {
+    return this.shouldUseVendorMobileNav() ? 'Open vendor navigation' : 'Toggle menu';
+  }
+
   closeMobileMenu(): void {
     this.isMenuOpen = false;
+  }
+
+  get isVendorMobileNavOpen(): boolean {
+    return this.vendorMobileNav.isOpen();
+  }
+
+  closeVendorMobileNav(): void {
+    this.vendorMobileNav.close();
+  }
+
+  private shouldUseVendorMobileNav(): boolean {
+    return this.isVendor() || this.isAdmin() || this.isVendorRoute();
+  }
+
+  shouldRenderVendorMobileNav(): boolean {
+    return this.isVendorMobileNavOpen && !this.isVendorRoute();
   }
 
   toggleDropdown(event?: Event): void {
@@ -312,6 +536,7 @@ export class HeaderComponent implements OnInit {
     this.isMenuOpen = false;
     this.closeDropdown();
     this.closeVendorDropdown();
+    this.vendorMobileNav.close();
   }
 
   hasAvatar(): boolean {
@@ -385,6 +610,15 @@ export class HeaderComponent implements OnInit {
     return this.showPublicNavLinks();
   }
 
+  showStoreCounts(): boolean {
+    return this.isCustomer() || !this.user;
+  }
+
+  badgeCount(count: number): string {
+    const normalized = Math.max(0, Math.floor(Number(count) || 0));
+    return normalized > 99 ? '99+' : String(normalized);
+  }
+
   logoRoute(): string {
     if (!this.user) {
       return '/';
@@ -399,13 +633,16 @@ export class HeaderComponent implements OnInit {
       next: () => {
         this.user = null;
         this.cartService.resetCart();
+        this.wishlistService.resetWishlist();
         this.authService.clearCurrentUser();
+        this.syncGuestCounts();
         this.router.navigate(['/']);
       },
       error: (err) => {
         this.cartService.resetCart();
+        this.wishlistService.resetWishlist();
         this.authService.clearCurrentUser();
-        console.error('Logout failed', err);
+        this.syncGuestCounts();
       }
     });
   }
@@ -427,6 +664,144 @@ export class HeaderComponent implements OnInit {
     if (item.action === 'logout') {
       this.onLogout();
     }
+  }
+
+  private loadVendorNotificationCount(): void {
+    if (!this.user || (!this.isVendor() && !this.isAdmin())) {
+      this.vendorNotificationCount = 0;
+      return;
+    }
+
+    this.vendorService.getVendorNotifications().subscribe({
+      next: (response) => {
+        this.vendorNotificationCount = Number(response?.summary?.unreadNotifications || 0);
+      },
+      error: () => {
+        this.vendorNotificationCount = 0;
+      }
+    });
+  }
+
+  private loadVendorMenuSummary(): void {
+    if (!this.user || (!this.isVendor() && !this.isAdmin())) {
+      this.productCount = 0;
+      this.categoryCount = 0;
+      this.customerCount = 0;
+      this.orderCount = 0;
+      this.shipmentCount = 0;
+      this.bulkInquiryCount = 0;
+      return;
+    }
+
+    forkJoin({
+      products: this.vendorService.getMyProducts(),
+      orders: this.orderService.getVendorOrders(),
+      categories: this.vendorService.getCategoryTree(),
+      users: this.vendorService.getAllUsers(1, 1000),
+      shipments: this.vendorService.getAdminShipments(),
+      bulkInquiries: this.vendorService.getBulkInquiriesSummary()
+    }).subscribe({
+      next: ({ products, orders, categories, users, shipments, bulkInquiries }) => {
+        this.productCount = products?.data?.docs?.length || 0;
+        this.orderCount = orders.length || 0;
+        this.categoryCount = this.countCategories(categories?.data || []);
+        this.customerCount = this.countCustomers(users?.users || []);
+        this.shipmentCount = shipments?.summary?.totalShipments || 0;
+        this.bulkInquiryCount = bulkInquiries?.newCount || 0;
+      },
+      error: () => {
+        this.productCount = 0;
+        this.categoryCount = 0;
+        this.customerCount = 0;
+        this.orderCount = 0;
+        this.shipmentCount = 0;
+        this.bulkInquiryCount = 0;
+      }
+    });
+  }
+
+  private isVendorRoute(): boolean {
+    return this.router.url.includes('/vendor');
+  }
+
+  vendorMobileNavView(): VendorDashboardView {
+    if (this.router.url.includes('/vendor/dashboard')) {
+      return 'dashboard';
+    }
+
+    if (this.router.url.includes('/profile')) {
+      return 'profile';
+    }
+
+    if (this.router.url.includes('/vendor/best-selling-products')) {
+      return 'best-selling-products';
+    }
+
+    if (this.router.url.includes('/vendor/orders')) {
+      return 'orders';
+    }
+
+    if (this.router.url.includes('/vendor/notifications')) {
+      return 'notifications';
+    }
+
+    if (this.router.url.includes('/vendor/bulk-inquiries')) {
+      return 'bulk-inquiries';
+    }
+
+    if (this.router.url.includes('/vendor/shipments')) {
+      return 'shipments';
+    }
+
+    if (this.router.url.includes('/vendor/categories')) {
+      return 'categories';
+    }
+
+    if (this.router.url.includes('/vendor/customers')) {
+      return 'customers';
+    }
+
+    return 'products';
+  }
+
+  private countCategories(categories: Array<{ children?: Array<any> }>): number {
+    return categories.reduce((total, category) => {
+      return total + 1 + this.countCategories(category.children || []);
+    }, 0);
+  }
+
+  private countCustomers(users: Array<{ role?: unknown }>): number {
+    return users.filter((user) => {
+      const roles = Array.isArray(user.role)
+        ? user.role.map((role) => String(role).toLowerCase())
+        : user.role
+          ? [String(user.role).toLowerCase()]
+          : [];
+
+      if (roles.length === 0) {
+        return false;
+      }
+
+      const hasCustomer = roles.includes('customer');
+      const hasRestrictedRole = roles.some((role) => role === 'vendor' || role === 'admin');
+
+      return hasCustomer && !hasRestrictedRole;
+    }).length;
+  }
+
+  private refreshCustomerCounts(): void {
+    this.cartService.getCart().subscribe({
+      error: () => this.cartService.resetCart()
+    });
+
+    this.wishlistService.getWishlist().subscribe({
+      error: () => this.wishlistService.resetWishlist()
+    });
+  }
+
+  private syncGuestCounts(): void {
+    this.cartCount = this.guestDataService.getGuestCartCount();
+    this.wishlistCount = this.guestDataService.getGuestWishlistCount();
   }
 
 }

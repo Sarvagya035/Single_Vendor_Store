@@ -9,48 +9,31 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="app-surface overflow-hidden">
-      <div class="flex flex-col gap-4 border-b border-[#f1e4d4] bg-[#fff7ed]/50 px-8 py-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 class="text-lg text-xs font-black uppercase tracking-widest text-slate-900">Saved Addresses</h3>
-          <p class="mt-2 text-sm font-medium text-slate-500">
-            Manage delivery addresses and choose your default destination.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          class="btn-primary !py-3 !px-5"
-          (click)="startCreate()"
-        >
-          {{ showForm && !editingAddressId ? 'Adding Address' : 'Add Address' }}
-        </button>
-      </div>
-
-      <div class="space-y-4 p-8">
+    <div class="overflow-hidden">
+      <div class="store-page-stack">
         <div
           *ngIf="successMessage"
-          class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800"
+          class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
         >
           {{ successMessage }}
         </div>
 
-        <div *ngIf="showForm" class="rounded-[1.75rem] border border-[#f1e4d4] bg-white p-6 shadow-[0_18px_40px_rgba(111,78,55,0.06)]">
+        <div *ngIf="showForm" class="app-card app-panel-body">
           <div class="flex items-center justify-between gap-4">
             <div>
-              <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+              <p class="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">
                 {{ editingAddressId ? 'Edit Address' : 'New Address' }}
               </p>
-              <h4 class="mt-1 text-xl font-black text-slate-900">
+              <h4 class="mt-1 text-xl font-medium text-slate-900">
                 {{ editingAddressId ? 'Update this address' : 'Add a delivery address' }}
               </h4>
             </div>
-            <button type="button" class="text-sm font-black text-slate-500" (click)="cancelForm()">Cancel</button>
+            <button type="button" class="text-sm font-medium text-slate-500" (click)="cancelForm()">Cancel</button>
           </div>
 
           <form class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2" (ngSubmit)="saveAddress()">
             <label class="space-y-2 sm:col-span-2">
-              <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Full Name</span>
+              <span class="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">Full Name</span>
               <input
                 name="fullname"
                 [(ngModel)]="form.fullname"
@@ -58,7 +41,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!fullnameError"
                 [class.focus:border-red-400]="!!fullnameError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
               <p *ngIf="fullnameError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ fullnameError }}
@@ -66,7 +49,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
             </label>
 
             <label class="space-y-2">
-              <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Phone</span>
+              <span class="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">Phone</span>
               <input
                 name="phone"
                 type="tel"
@@ -78,7 +61,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!phoneError"
                 [class.focus:border-red-400]="!!phoneError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
               <p *ngIf="phoneError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ phoneError }}
@@ -86,7 +69,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
             </label>
 
             <label class="space-y-2">
-              <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Postal Code</span>
+              <span class="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">Postal Code</span>
               <input
                 name="postalCode"
                 inputmode="numeric"
@@ -97,7 +80,7 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 required
                 [class.border-red-300]="!!postalCodeError"
                 [class.focus:border-red-400]="!!postalCodeError"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
               <p *ngIf="postalCodeError" class="ml-1 text-xs font-semibold text-red-500">
                 {{ postalCodeError }}
@@ -105,59 +88,59 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
             </label>
 
             <label class="space-y-2 sm:col-span-2">
-              <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Address Line 1</span>
+              <span class="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">Address Line 1</span>
               <input
                 name="addressLine1"
                 [(ngModel)]="form.addressLine1"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
             <label class="space-y-2 sm:col-span-2">
-              <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Address Line 2</span>
+              <span class="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">Address Line 2</span>
               <input
                 name="addressLine2"
                 [(ngModel)]="form.addressLine2"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
             <label class="space-y-2">
-              <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">City</span>
+              <span class="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">City</span>
               <input
                 name="city"
                 [(ngModel)]="form.city"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
             <label class="space-y-2">
-              <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">State</span>
+              <span class="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">State</span>
               <input
                 name="state"
                 [(ngModel)]="form.state"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
             <label class="space-y-2 sm:col-span-2">
-              <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Country</span>
+              <span class="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-400">Country</span>
               <input
                 name="country"
                 [(ngModel)]="form.country"
                 required
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-amber-300 focus:bg-white"
+                class="app-field"
               />
             </label>
 
-            <div class="sm:col-span-2 flex flex-wrap gap-3 pt-2">
-              <button type="submit" class="btn-primary !px-6 !py-3" [disabled]="isSaving">
+            <div class="sm:col-span-2 flex flex-wrap gap-2 pt-2">
+              <button type="submit" class="btn-primary w-full sm:w-auto" [disabled]="isSaving">
                 {{ isSaving ? 'Saving...' : editingAddressId ? 'Update Address' : 'Save Address' }}
               </button>
-              <button type="button" class="btn-secondary !px-6 !py-3" (click)="cancelForm()">Cancel</button>
+              <button type="button" class="btn-secondary w-full sm:w-auto" (click)="cancelForm()">Cancel</button>
             </div>
           </form>
         </div>
@@ -166,25 +149,25 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
           Loading addresses...
         </div>
 
-        <div *ngIf="!loading && addresses.length === 0" class="rounded-[1.75rem] border border-dashed border-[#e7dac9] bg-white/70 px-6 py-12 text-center">
-          <p class="text-lg font-black text-slate-900">No saved addresses yet</p>
+        <div *ngIf="!loading && addresses.length === 0" class="app-empty-state">
+          <p class="text-lg font-medium text-slate-900">No saved addresses yet</p>
           <p class="mt-2 text-sm font-medium text-slate-500">
             Add your first delivery address to get started.
           </p>
         </div>
 
-        <div *ngIf="addresses.length" class="grid gap-4">
+        <div *ngIf="addresses.length" class="store-page-grid">
           <article
             *ngFor="let address of addresses; trackBy: trackByAddress"
-            class="rounded-[1.75rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_40px_rgba(111,78,55,0.06)]"
+            class="app-card app-panel-body"
           >
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="space-y-3">
                 <div class="flex flex-wrap items-center gap-3">
-                  <h4 class="text-lg font-black text-slate-900">{{ address.fullname }}</h4>
+                  <h4 class="text-lg font-medium text-slate-900">{{ address.fullname }}</h4>
                   <span
                     *ngIf="address.isDefault"
-                    class="rounded-full bg-[#fff7ed] px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
+                    class="rounded-full bg-[#fff7ed] px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-amber-800"
                   >
                     Default
                   </span>
@@ -199,10 +182,10 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 </div>
               </div>
 
-              <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-2 sm:justify-end">
                 <button
                   type="button"
-                  class="btn-secondary !px-4 !py-2"
+                  class="btn-secondary w-full sm:w-auto"
                   (click)="startEdit(address)"
                 >
                   Edit
@@ -210,14 +193,14 @@ import { CustomerAddress, CustomerAddressForm } from '../../../core/models/custo
                 <button
                   *ngIf="!address.isDefault"
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-amber-100 bg-[#fff7ed]/60 text-amber-800"
+                  class="btn-secondary w-full text-amber-800 sm:w-auto"
                   (click)="setDefault(address)"
                 >
                   Make Default
                 </button>
                 <button
                   type="button"
-                  class="btn-secondary !px-4 !py-2 border-rose-100 bg-rose-50/60 text-rose-600"
+                  class="btn-secondary w-full text-rose-600 sm:w-auto"
                   (click)="deleteAddress(address)"
                 >
                   Delete

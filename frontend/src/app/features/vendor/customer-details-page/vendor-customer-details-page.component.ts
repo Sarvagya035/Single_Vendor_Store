@@ -1,107 +1,324 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CustomerUser } from '../../../core/models/customer.models';
+import { catchError, forkJoin, of } from 'rxjs';
+import { CustomerUser, CustomerWishlist, CustomerWishlistProduct } from '../../../core/models/customer.models';
+import { OrderRecord } from '../../../core/models/order.models';
+import { VendorProductRecord } from '../../../core/models/vendor.models';
 import { ErrorService } from '../../../core/services/error.service';
 import { VendorService } from '../../../core/services/vendor.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'app-vendor-customer-details-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   template: `
-    <section class="space-y-6">
-      <div class="glass-card overflow-hidden">
-        <div class="border-b border-slate-200 px-6 py-6 lg:px-8">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Customer Details</p>
-              <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Customer Profile</h1>
-              <p class="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-500">
-                View a customer’s account information and contact details.
-              </p>
-            </div>
-
-            <button type="button" (click)="goBack()" class="btn-secondary !px-6 !py-3">
+    <section class="vendor-content">
+      <div class="vendor-section">
+        <div class="vendor-page-header">
+          <app-page-header
+            eyebrow="Customer Details"
+            title="Customer Profile"
+            titleClass="!text-[1.8rem] md:!text-[2.2rem]"
+            description="View account details, order history, and wishlist items in one place."
+          >
+            <button type="button" (click)="goBack()" class="btn-secondary w-full !px-6 !py-3 sm:w-auto">
               Back to Customers
             </button>
-          </div>
+          </app-page-header>
         </div>
-      </div>
 
-      <div *ngIf="isLoading" class="glass-card px-6 py-10 text-sm font-semibold text-slate-500 lg:px-8">
+      <div *ngIf="isLoading" class="vendor-section-body py-8 text-sm font-semibold text-slate-500">
         Loading customer details...
       </div>
 
-      <div *ngIf="!isLoading && customer" class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <section class="glass-card p-6 lg:p-8">
-          <div class="flex items-center gap-4">
-            <div class="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl bg-slate-100 text-2xl font-black text-slate-500">
-              <img *ngIf="customer.avatar; else initialsBlock" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
-              <ng-template #initialsBlock>{{ initials(customer) }}</ng-template>
+      <div *ngIf="!isLoading && customer" class="vendor-content border-t border-slate-200 vendor-section-body lg:py-6">
+        <div class="vendor-grid-2 lg:grid-cols-[0.9fr_1.1fr]">
+          <section class="vendor-card-compact">
+            <div class="flex items-center gap-3">
+              <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 text-xl font-black text-slate-500 sm:h-20 sm:w-20 sm:text-2xl">
+                <img *ngIf="customer.avatar; else initialsBlock" [src]="customer.avatar" alt="" class="h-full w-full object-cover" />
+                <ng-template #initialsBlock>{{ initials(customer) }}</ng-template>
+              </div>
+
+              <div class="min-w-0">
+                <p class="vendor-stat-label">Selected Customer</p>
+                <h2 class="vendor-panel-title mt-2 truncate">
+                  {{ customer.username || customer.fullName || customer.email }}
+                </h2>
+                <p class="mt-2 truncate text-sm font-medium text-slate-500">
+                  {{ customer.email || 'No email provided' }}
+                </p>
+              </div>
             </div>
 
-            <div class="min-w-0">
-              <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Selected Customer</p>
-              <h2 class="mt-2 truncate text-3xl font-black tracking-tight text-slate-900">
-                {{ customer.username || customer.fullName || customer.email }}
-              </h2>
-              <p class="mt-2 truncate text-sm font-medium text-slate-500">
-                {{ customer.email || 'No email provided' }}
-              </p>
+            <dl class="mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:gap-3">
+              <div class="rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
+                <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Email</dt>
+                <dd class="mt-1.5 line-clamp-2 break-words text-xs font-bold text-slate-900 sm:text-sm">{{ customer.email || 'Not provided' }}</dd>
+              </div>
+              <div class="rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
+                <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Phone</dt>
+                <dd class="mt-1.5 break-words text-xs font-bold text-slate-900 sm:text-sm">{{ customer.phone || 'Not provided' }}</dd>
+              </div>
+              <div class="rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
+                <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Role</dt>
+                <dd class="mt-1.5 text-xs font-bold text-slate-900 sm:text-sm">{{ formatRole(customer.role) }}</dd>
+              </div>
+              <div class="rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
+                <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Joined</dt>
+                <dd class="mt-1.5 text-xs font-bold text-slate-900 sm:text-sm">{{ customer.createdAt ? formatDate(customer.createdAt) : 'Unknown' }}</dd>
+              </div>
+              <div class="col-span-2 rounded-[1.15rem] border border-slate-200 bg-slate-50/70 p-3">
+                <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Customer ID</dt>
+                <dd class="mt-1.5 break-all text-xs font-bold text-slate-900 sm:text-sm">{{ customer._id || 'Unknown' }}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="vendor-card-compact">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
+              <div>
+                <p class="vendor-stat-label">Activity</p>
+                <h2 class="vendor-panel-title mt-2">Customer overview</h2>
+              </div>
+
+              <div class="flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.18em]">
+                <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ customerOrders.length }} orders</span>
+                <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-amber-800">{{ customerWishlistItems.length }} wishlist item{{ customerWishlistItems.length === 1 ? '' : 's' }}</span>
+              </div>
             </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-2 sm:gap-3">
+              <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
+                <p class="vendor-stat-label !text-amber-700">Latest Order</p>
+                <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ latestOrderLabel() }}</p>
+              </article>
+              <article class="vendor-stat-card !border-amber-100 !bg-amber-50/70">
+                <p class="vendor-stat-label !text-amber-700">Wishlist Status</p>
+                <p class="mt-2 text-sm font-black text-slate-900 sm:text-lg">{{ customerWishlistItems.length ? 'Has saved items' : 'No saved items' }}</p>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <section *ngIf="loadingProduct || selectedProduct" class="vendor-card-compact">
+          <div class="flex flex-col gap-2.5 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="vendor-stat-label">Product Preview</p>
+              <h2 class="vendor-panel-title mt-2">Open product here</h2>
+            </div>
+            <button
+              *ngIf="selectedProduct"
+              type="button"
+              class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-700 transition hover:bg-slate-50"
+              (click)="closeProductPreview()"
+            >
+              Close preview
+            </button>
           </div>
 
-          <dl class="mt-8 space-y-4">
-            <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-              <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Email</dt>
-              <dd class="mt-2 break-words text-sm font-bold text-slate-900">{{ customer.email || 'Not provided' }}</dd>
+          <div *ngIf="loadingProduct" class="py-8 text-sm font-semibold text-slate-500">
+            Loading product preview...
+          </div>
+
+          <div *ngIf="selectedProduct" class="mt-4 grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <div class="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-slate-50">
+              <img
+                [src]="selectedProduct.mainImages?.[0] || 'https://via.placeholder.com/720x720?text=Product'"
+                [alt]="selectedProduct.productName || 'Product preview'"
+                class="h-full w-full object-cover"
+              />
             </div>
-            <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-              <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Phone</dt>
-              <dd class="mt-2 break-words text-sm font-bold text-slate-900">{{ customer.phone || 'Not provided' }}</dd>
+
+            <div class="space-y-4">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
+                  {{ selectedProduct.brand || 'Product' }}
+                </p>
+                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-slate-900">
+                  {{ formatCurrency(selectedProduct.basePrice || 0) }}
+                </span>
+                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]" [ngClass]="selectedProduct.isActive === false ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700'">
+                  {{ selectedProduct.isActive === false ? 'Inactive' : 'Active' }}
+                </span>
+              </div>
+
+              <h3 class="text-2xl font-black text-slate-900">
+                {{ selectedProduct.productName || 'Product' }}
+              </h3>
+
+              <p class="max-w-3xl text-sm font-medium leading-6 text-slate-500 line-clamp-2">
+                {{ selectedProduct.productDescription || 'No product description available.' }}
+              </p>
+
+              <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                <article class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Category</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ selectedProduct.categoryDetails?.name || 'General Category' }}</p>
+                </article>
+                <article class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Variants</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ (selectedProduct.variants || []).length }} variant{{ (selectedProduct.variants || []).length === 1 ? '' : 's' }}</p>
+                </article>
+                <article class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Stock</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ totalStock(selectedProduct) }} units</p>
+                </article>
+              </div>
             </div>
-            <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-              <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Role</dt>
-              <dd class="mt-2 text-sm font-bold text-slate-900">{{ formatRole(customer.role) }}</dd>
-            </div>
-            <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-              <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Joined</dt>
-              <dd class="mt-2 text-sm font-bold text-slate-900">{{ customer.createdAt ? formatDate(customer.createdAt) : 'Unknown' }}</dd>
-            </div>
-            <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-              <dt class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Customer ID</dt>
-              <dd class="mt-2 break-all text-sm font-bold text-slate-900">{{ customer._id || 'Unknown' }}</dd>
-            </div>
-          </dl>
+          </div>
         </section>
 
-        <section class="glass-card p-6 lg:p-8">
-          <div class="flex min-h-[420px] flex-col justify-between">
+        <section class="vendor-card-compact">
+          <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Account Summary</p>
-              <h2 class="mt-3 text-2xl font-black tracking-tight text-slate-900">Details at a glance</h2>
-              <p class="mt-3 max-w-xl text-sm font-medium leading-7 text-slate-500">
-                This page keeps the list separate so you can quickly open one customer at a time.
-              </p>
+              <p class="vendor-stat-label">Order History</p>
+              <h2 class="vendor-panel-title mt-2">Customer orders</h2>
             </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="rounded-full bg-[#fff7ed] px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-amber-800">
+                {{ customerOrders.length }} order{{ customerOrders.length === 1 ? '' : 's' }}
+              </span>
+              <button
+                type="button"
+                class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-amber-800 transition hover:bg-amber-100"
+                (click)="viewCustomerOrderHistory()"
+              >
+                View Order History
+              </button>
+            </div>
+          </div>
+          <p class="mt-3 text-sm font-medium leading-6 text-slate-500">
+            Open the full order history page to review every purchase, payment state, and item detail for this customer.
+          </p>
+        </section>
 
-            <div class="grid gap-4 sm:grid-cols-2">
-              <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Display Name</p>
-                <p class="mt-3 text-lg font-black text-slate-900">{{ customer.username || customer.fullName || 'Customer' }}</p>
-              </article>
-              <article class="rounded-[1.5rem] border border-amber-100 bg-amber-50/70 p-5">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-700">Reference</p>
-                <p class="mt-3 text-lg font-black text-slate-900">{{ shortId(customer._id) }}</p>
-              </article>
+        <section class="vendor-card-compact">
+          <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="vendor-stat-label">Buying Pattern</p>
+              <h2 class="vendor-panel-title mt-2">Frequently bought</h2>
             </div>
+            <p class="text-sm font-medium text-slate-500">
+              Based on {{ customerOrders.length }} order{{ customerOrders.length === 1 ? '' : 's' }}
+            </p>
+          </div>
+
+          <div *ngIf="!loadingOrders && frequentItems().length === 0" class="py-8 text-center">
+            <h3 class="vendor-empty-title">No purchase pattern yet</h3>
+            <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-slate-500">
+              Once this customer places a few more orders, the most frequently bought products will appear here.
+            </p>
+          </div>
+
+          <div *ngIf="!loadingOrders && frequentItems().length > 0" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <article
+              *ngFor="let item of frequentItems(); trackBy: trackByFrequentItem"
+              class="rounded-[1.45rem] border border-slate-200 bg-white p-3 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)] sm:p-4"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                    {{ item.brand || 'Most purchased' }}
+                  </p>
+                  <h3 class="mt-1 line-clamp-2 text-base font-black text-slate-900 sm:text-lg">
+                    {{ item.name }}
+                  </h3>
+                </div>
+
+                <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black text-slate-900">
+                  {{ item.totalQuantity }} bought
+                </span>
+              </div>
+
+              <div class="mt-3 grid grid-cols-2 gap-2 sm:gap-3">
+                <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Orders</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ item.orderCount }} order{{ item.orderCount === 1 ? '' : 's' }}</p>
+                </div>
+                <div class="rounded-[1.1rem] border border-slate-200 bg-slate-50/70 p-3">
+                  <p class="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Last Seen</p>
+                  <p class="mt-1 text-xs font-black text-slate-900 sm:text-sm">{{ formatDate(item.lastPurchasedAt) }}</p>
+                </div>
+              </div>
+
+              <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+                <span class="rounded-full bg-[#fff7ed] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-800">
+                  Product history
+                </span>
+                <button
+                  type="button"
+                  class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-800 transition hover:bg-amber-100"
+                  (click)="openProductById(item.productId)"
+                >
+                  View product
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="vendor-card-compact">
+          <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="vendor-stat-label">Wishlist</p>
+              <h2 class="vendor-panel-title mt-2">Saved products</h2>
+            </div>
+            <p class="text-sm font-medium text-slate-500">{{ customerWishlistItems.length }} item{{ customerWishlistItems.length === 1 ? '' : 's' }} saved</p>
+          </div>
+
+          <div *ngIf="loadingWishlist" class="py-6 text-sm font-semibold text-slate-500">Loading customer wishlist...</div>
+
+          <div *ngIf="!loadingWishlist && customerWishlistItems.length === 0" class="py-8 text-center">
+            <h3 class="vendor-empty-title">Wishlist is empty</h3>
+            <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-slate-500">
+              This customer has not saved any products yet.
+            </p>
+          </div>
+
+          <div *ngIf="!loadingWishlist && customerWishlistItems.length > 0" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <article
+              *ngFor="let item of customerWishlistItems; trackBy: trackByWishlistItem"
+              class="rounded-[1.45rem] border border-slate-200 bg-white p-3 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:border-[#e7dac9] hover:shadow-[0_24px_60px_rgba(111,78,55,0.08)] sm:p-4"
+            >
+              <div class="flex items-center gap-3">
+                <div class="h-16 w-16 shrink-0 overflow-hidden rounded-[1.1rem] bg-slate-100 sm:h-20 sm:w-20">
+                  <img [src]="productImage(item)" [alt]="item.productName || 'Wishlist item'" class="h-full w-full object-cover" />
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{{ item.brand || 'Product' }}</p>
+                  <h3 class="mt-1 line-clamp-2 text-sm font-black text-slate-900 sm:text-base">{{ item.productName || 'Wishlist item' }}</h3>
+                  <p class="mt-1 line-clamp-1 text-xs font-semibold text-slate-500 sm:text-sm">{{ item.categoryDetails?.name || 'General Category' }}</p>
+                </div>
+              </div>
+
+              <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+                <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black text-slate-900">{{ formatCurrency(item.basePrice || 0) }}</span>
+                <span
+                  class="rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em]"
+                  [ngClass]="item.isActive === false ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700'"
+                >
+                  {{ item.isActive === false ? 'Inactive' : 'Active' }}
+                </span>
+                <button
+                  type="button"
+                  class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-800 transition hover:bg-amber-100"
+                  (click)="openProductById(item._id)"
+                >
+                  View product
+                </button>
+              </div>
+            </article>
           </div>
         </section>
       </div>
+      </div>
 
-      <div *ngIf="!isLoading && !customer" class="glass-card px-6 py-12 text-center lg:px-8">
-        <h2 class="text-2xl font-black text-slate-900">Customer not found</h2>
+      <div *ngIf="!isLoading && !customer" class="vendor-section-body py-12 text-center">
+        <h2 class="vendor-empty-title">Customer not found</h2>
         <p class="mx-auto mt-3 max-w-md text-sm font-medium leading-7 text-slate-500">
           The customer you selected may have been removed or the link is invalid.
         </p>
@@ -111,7 +328,14 @@ import { VendorService } from '../../../core/services/vendor.service';
 })
 export class VendorCustomerDetailsPageComponent implements OnInit {
   customer: CustomerUser | null = null;
+  customerOrders: OrderRecord[] = [];
+  customerWishlist: CustomerWishlist | null = null;
+  customerWishlistItems: CustomerWishlistProduct[] = [];
   isLoading = true;
+  loadingOrders = false;
+  loadingWishlist = false;
+  loadingProduct = false;
+  selectedProduct: VendorProductRecord | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -132,7 +356,12 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
     this.vendorService.getRegisteredCustomers().subscribe({
       next: (users) => {
         this.customer = users.find((user) => user._id === userId) || null;
-        this.isLoading = false;
+        if (!this.customer) {
+          this.isLoading = false;
+          return;
+        }
+
+        this.loadCustomerData(userId);
       },
       error: () => {
         this.isLoading = false;
@@ -140,8 +369,88 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
     });
   }
 
+  loadCustomerData(customerId: string): void {
+    this.loadingOrders = true;
+    this.loadingWishlist = true;
+
+    forkJoin({
+      orders: this.vendorService.getCustomerOrderHistory(customerId).pipe(
+        catchError((error) => {
+          this.errorService.showToast(
+            this.errorService.extractErrorMessage(error) || 'Unable to load customer order history right now.',
+            'error'
+          );
+          return of([]);
+        })
+      ),
+      wishlist: this.vendorService.getCustomerWishlist(customerId).pipe(
+        catchError((error) => {
+          this.errorService.showToast(
+            this.errorService.extractErrorMessage(error) || 'Unable to load customer wishlist right now.',
+            'error'
+          );
+          return of({ products: [] } as CustomerWishlist);
+        })
+      )
+    }).subscribe({
+      next: ({ orders, wishlist }) => {
+        this.customerOrders = orders || [];
+        this.customerWishlist = wishlist || null;
+        this.customerWishlistItems = Array.isArray(wishlist?.products) ? wishlist.products : [];
+        this.loadingOrders = false;
+        this.loadingWishlist = false;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.loadingOrders = false;
+        this.loadingWishlist = false;
+        this.isLoading = false;
+      }
+    });
+  }
+
   goBack(): void {
     this.router.navigate(['/vendor/customers']);
+  }
+
+  openProduct(item: CustomerWishlistProduct): void {
+    if (!item?._id) {
+      return;
+    }
+
+    this.openProductById(item._id);
+  }
+
+  openProductById(productId?: string): void {
+    if (!productId) {
+      return;
+    }
+
+    this.loadingProduct = true;
+    this.vendorService.getProductById(productId).subscribe({
+      next: (response) => {
+        this.selectedProduct = this.normalizeProduct(response?.data);
+        this.loadingProduct = false;
+      },
+      error: () => {
+        this.loadingProduct = false;
+        this.selectedProduct = null;
+        this.errorService.showToast('Unable to load product preview.', 'error');
+      }
+    });
+  }
+
+  closeProductPreview(): void {
+    this.selectedProduct = null;
+    this.loadingProduct = false;
+  }
+
+  viewCustomerOrderHistory(): void {
+    if (!this.customer?._id) {
+      return;
+    }
+
+    this.router.navigate(['/vendor/customers', this.customer._id, 'orders']);
   }
 
   initials(user: CustomerUser): string {
@@ -182,5 +491,165 @@ export class VendorCustomerDetailsPageComponent implements OnInit {
 
     return id.length > 10 ? `${id.slice(0, 6)}…${id.slice(-4)}` : id;
   }
+
+  shortOrderId(orderId?: string): string {
+    if (!orderId) {
+      return '--------';
+    }
+
+    return orderId.length > 10 ? `${orderId.slice(-8).toUpperCase()}` : orderId.toUpperCase();
+  }
+
+  latestOrderLabel(): string {
+    if (!this.customerOrders.length) {
+      return 'No orders yet';
+    }
+
+    return this.formatDate(this.customerOrders[0]?.createdAt);
+  }
+
+  frequentItems(): FrequentItemSummary[] {
+    const summaryMap = new Map<string, FrequentItemSummary>();
+
+    this.customerOrders.forEach((order) => {
+      (order.orderItems || []).forEach((item) => {
+        const key = String(item.product || item.name || '').trim();
+        if (!key) {
+          return;
+        }
+
+        const existing = summaryMap.get(key);
+        const quantity = Number(item.quantity || 0);
+        const currentTimestamp = this.toTimestamp(order.createdAt);
+
+        if (!existing) {
+          summaryMap.set(key, {
+            productId: item.product || '',
+            name: item.name || 'Order item',
+            brand: item.sku || '',
+            totalQuantity: quantity,
+            orderCount: 1,
+            lastPurchasedAt: order.createdAt || '',
+            lastTimestamp: currentTimestamp
+          });
+          return;
+        }
+
+        existing.totalQuantity += quantity;
+        existing.orderCount += 1;
+
+        if (currentTimestamp >= existing.lastTimestamp) {
+          existing.lastPurchasedAt = order.createdAt || existing.lastPurchasedAt;
+          existing.lastTimestamp = currentTimestamp;
+        }
+      });
+    });
+
+    return Array.from(summaryMap.values())
+      .sort((a, b) => {
+        if (b.totalQuantity !== a.totalQuantity) {
+          return b.totalQuantity - a.totalQuantity;
+        }
+
+        return b.lastTimestamp - a.lastTimestamp;
+      })
+      .slice(0, 6);
+  }
+
+  productImage(item: CustomerWishlistProduct): string {
+    return item.mainImages?.[0] || 'https://via.placeholder.com/640x640?text=Wishlist';
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount || 0);
+  }
+
+  orderStatusClass(status?: string): string {
+    switch (String(status || 'Processing')) {
+      case 'Delivered':
+        return 'bg-emerald-100 text-emerald-700';
+      case 'Shipped':
+        return 'bg-amber-100 text-amber-800';
+      case 'Cancelled':
+        return 'bg-rose-100 text-rose-700';
+      default:
+        return 'bg-slate-100 text-slate-700';
+    }
+  }
+
+  trackByOrder(_: number, order: OrderRecord): string {
+    return order._id || '';
+  }
+
+  trackByOrderItem(_: number, item: any): string {
+    return item._id || item.name || '';
+  }
+
+  trackByWishlistItem(_: number, item: CustomerWishlistProduct): string {
+    return item._id || item.productName || '';
+  }
+
+  trackByFrequentItem(_: number, item: FrequentItemSummary): string {
+    return item.productId || item.name;
+  }
+
+  totalStock(product: VendorProductRecord | null): number {
+    if (!product?.variants?.length) {
+      return 0;
+    }
+
+    return product.variants.reduce((sum, variant) => sum + Number(variant.productStock || 0), 0);
+  }
+
+  private normalizeProduct(payload: any): VendorProductRecord | null {
+    if (!payload || typeof payload !== 'object') {
+      return null;
+    }
+
+    return {
+      _id: payload._id,
+      productName: payload.productName,
+      productDescription: payload.productDescription,
+      brand: payload.brand,
+      category: payload.category,
+      basePrice: Number(payload.basePrice || 0),
+      mainImages: Array.isArray(payload.mainImages) ? payload.mainImages : [],
+      variantOptions: Array.isArray(payload.variantOptions) ? payload.variantOptions : [],
+      variants: Array.isArray(payload.variants)
+        ? payload.variants.map((variant: any) => ({
+            _id: variant?._id,
+            attributes: variant?.attributes || {},
+            productPrice: Number(variant?.productPrice || 0),
+            discountPercentage: Number(variant?.discountPercentage || 0),
+            finalPrice: Number(variant?.finalPrice || 0),
+            productStock: Number(variant?.productStock || 0),
+            isAvailable: Boolean(variant?.isAvailable),
+            sku: variant?.sku,
+            variantImage: variant?.variantImage
+          }))
+        : [],
+      isActive: payload.isActive,
+      categoryDetails: payload.categoryDetails,
+      createdAt: payload.createdAt
+    };
+  }
+
+  private toTimestamp(value?: string): number {
+    const parsed = value ? new Date(value).getTime() : 0;
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
 }
 
+interface FrequentItemSummary {
+  productId: string;
+  name: string;
+  brand: string;
+  totalQuantity: number;
+  orderCount: number;
+  lastPurchasedAt: string;
+  lastTimestamp: number;
+}

@@ -11,8 +11,7 @@ export const routes: Routes = [
   {
     path: 'cart',
     loadComponent: () =>
-      import('./features/store/cart.component').then((m) => m.CartComponent),
-    canActivate: [AuthGuard]
+      import('./features/store/cart.component').then((m) => m.CartComponent)
   },
   {
     path: 'addresses',
@@ -33,9 +32,20 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'wishlist',
+    loadComponent: () =>
+      import('./features/store/wishlist.component').then((m) => m.WishlistComponent)
+  },
+  {
     path: 'orders/:orderId',
     loadComponent: () =>
       import('./features/store/order-detail.component').then((m) => m.OrderDetailComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'track-order/:orderId',
+    loadComponent: () =>
+      import('./features/store/track-order.component').then((m) => m.TrackOrderComponent),
     canActivate: [AuthGuard]
   },
   {
@@ -57,6 +67,11 @@ export const routes: Routes = [
     path: 'contact',
     loadComponent: () =>
       import('./features/store/contact.component').then((m) => m.ContactComponent)
+  },
+  {
+    path: 'bulk-order',
+    loadComponent: () =>
+      import('./features/store/bulk-order.component').then((m) => m.BulkOrderComponent)
   },
   {
     path: 'login',
@@ -118,7 +133,28 @@ export const routes: Routes = [
       {
         path: 'products/add',
         loadComponent: () =>
-          import('./features/vendor/add-product/vendor-add-product.component').then((m) => m.VendorAddProductComponent)
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/add-product/vendor-add-product.component').then((m) => m.VendorAddProductComponent)
+          }
+        ]
+      },
+      {
+        path: 'products/:productId/view',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/view-product-page/vendor-view-product-page.component').then(
+                (m) => m.VendorViewProductPageComponent
+              )
+          }
+        ]
       },
       {
         path: 'products/:productId/edit',
@@ -130,6 +166,34 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./features/vendor/edit-product-page/vendor-edit-product-page.component').then(
                 (m) => m.VendorEditProductPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'products/:productId/restock',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/restock-page/vendor-restock-page.component').then(
+                (m) => m.VendorRestockPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'products/:productId/variants',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/manage-variants-page/vendor-manage-variants-page.component').then(
+                (m) => m.VendorManageVariantsPageComponent
               )
           }
         ]
@@ -155,6 +219,20 @@ export const routes: Routes = [
             path: '',
             loadComponent: () =>
               import('./features/vendor/products-page/vendor-products-page.component').then((m) => m.VendorProductsPageComponent)
+          }
+        ]
+      },
+      {
+        path: 'best-selling-products',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/best-selling-products-page/vendor-best-selling-products-page.component').then(
+                (m) => m.VendorBestSellingProductsPageComponent
+              )
           }
         ]
       },
@@ -201,6 +279,27 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'customers/:userId/orders',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/customer-orders-page/vendor-customer-orders-page.component').then(
+                (m) => m.VendorCustomerOrdersPageComponent
+              )
+          },
+          {
+            path: ':orderId',
+            loadComponent: () =>
+              import('./features/vendor/customer-order-detail-page/vendor-customer-order-detail-page.component').then(
+                (m) => m.VendorCustomerOrderDetailPageComponent
+              )
+          }
+        ]
+      },
+      {
         path: 'orders',
         loadComponent: () =>
           import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
@@ -211,9 +310,62 @@ export const routes: Routes = [
               import('./features/vendor/orders-page/vendor-orders-page.component').then((m) => m.VendorOrdersPageComponent)
           },
           {
+            path: ':orderId/tracking',
+            loadComponent: () =>
+              import('./features/vendor/order-tracking-page/vendor-order-tracking-page.component').then(
+                (m) => m.VendorOrderTrackingPageComponent
+              )
+          },
+          {
             path: ':orderId',
             loadComponent: () =>
               import('./features/store/order-detail.component').then((m) => m.OrderDetailComponent)
+          }
+        ]
+      },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/notifications-page/vendor-notifications-page.component').then(
+                (m) => m.VendorNotificationsPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'bulk-inquiries',
+        canActivate: [AuthGuard, RoleGuard],
+        data: { roles: ['vendor', 'Vendor', 'admin', 'Admin'] },
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/admin/bulk-inquiries/admin-bulk-inquiries-page.component').then(
+                (m) => m.AdminBulkInquiriesPageComponent
+              )
+          }
+        ]
+      },
+      {
+        path: 'shipments',
+        canActivate: [AuthGuard, RoleGuard],
+        data: { roles: ['vendor', 'Vendor', 'admin', 'Admin'] },
+        loadComponent: () =>
+          import('./features/vendor/shell/vendor-shell.component').then((m) => m.VendorShellComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/vendor/shipments-page/vendor-shipments-page.component').then(
+                (m) => m.VendorShipmentsPageComponent
+              )
           }
         ]
       }

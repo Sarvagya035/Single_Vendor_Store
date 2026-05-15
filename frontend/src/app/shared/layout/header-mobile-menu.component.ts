@@ -7,77 +7,47 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div *ngIf="open" class="border-t border-[#eadcc9] bg-[#fffaf5] animate-in slide-in-from-top duration-200 md:hidden" data-mobile-menu-panel>
-      <div class="space-y-2 px-4 pt-2 pb-6">
-        <ng-container *ngIf="showPublicNavLinks">
-          <a routerLink="/" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Home</a>
-          <a routerLink="/products" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Products</a>
-          <a routerLink="/products" [queryParams]="{ category: 'combos' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Combos</a>
-          <a routerLink="/products" [queryParams]="{ category: 'gifting' }" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Gifting Collection</a>
-          <a routerLink="/about-us" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">About Us</a>
-          <a routerLink="/contact" (click)="close.emit()" class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white">Contact Us</a>
-        </ng-container>
-
-        <ng-container *ngIf="loggedIn; else guestLinks">
+    <div
+      *ngIf="open"
+      class="absolute inset-x-0 top-full z-[230] max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-[#eadcc9] bg-[#fffaf5] animate-in slide-in-from-top duration-200 md:max-h-[calc(100vh-5rem)] xl:hidden"
+      data-mobile-menu-panel
+    >
+      <div class="space-y-4 px-4 pt-2 pb-6">
+        <section *ngIf="showPublicNavLinks" class="space-y-2">
+          <p class="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Navigation</p>
+          <a *ngIf="!loggedIn" routerLink="/" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Home</a>
+          <a routerLink="/products" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Products</a>
           <a
-          routerLink="/profile"
-          (click)="close.emit()"
-          class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
-        >
-          Profile
-        </a>
-          <a
-            *ngIf="!isAdmin && !isVendor"
-            routerLink="/orders"
+            routerLink="/products"
+            [queryParams]="{ category: 'combos' }"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+            class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
           >
-            My Orders
+            Combos
           </a>
-          <a
-            *ngIf="isVendor"
-            routerLink="/vendor/dashboard"
-            (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-[#6f4e37] hover:bg-[#fff3e4]"
-          >
-            Vendor Dashboard
-          </a>
-          <a
-            *ngIf="isVendor"
-            routerLink="/vendor/orders"
-            (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
-          >
-            Orders
-          </a>
+          <a routerLink="/products" [queryParams]="{ category: 'gifting' }" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Gifting Collection</a>
+          <a routerLink="/about-us" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">About Us</a>
+          <a routerLink="/contact" (click)="close.emit()" class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white">Contact Us</a>
+        </section>
 
-          <div class="border-t border-[#eadcc9] pt-4">
-            <button
-              type="button"
-              (click)="logout.emit()"
-              class="w-full rounded-lg px-3 py-2 text-left text-base font-bold text-rose-600 hover:bg-rose-50"
-            >
-              Logout
-            </button>
-          </div>
-        </ng-container>
-
-        <ng-template #guestLinks>
+        <section *ngIf="!loggedIn" class="space-y-2 border-t border-[#eadcc9] pt-4">
+          <p class="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Account</p>
           <a
             routerLink="/login"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-medium text-slate-700 hover:bg-white"
+            class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
           >
             Login
           </a>
           <a
             routerLink="/register"
             (click)="close.emit()"
-            class="block rounded-lg px-3 py-2 text-base font-bold text-[#6f4e37] hover:bg-[#fff3e4]"
+            class="block cursor-pointer rounded-lg px-3 py-2 text-sm font-bold text-[#6f4e37] hover:bg-[#fff3e4]"
           >
             Register
           </a>
-        </ng-template>
+        </section>
+
       </div>
     </div>
   `

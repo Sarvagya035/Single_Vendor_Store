@@ -1,9 +1,21 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, shareReplay, tap, finalize } from 'rxjs';
+import { BehaviorSubject, Observable, of, shareReplay, tap, finalize, catchError, throwError, map } from 'rxjs';
 import { HttpContext } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiService } from './api.service';
+import { ApiResponse } from '../models/api-response.model';
+import { CustomerUser } from '../models/customer.models';
 import { SKIP_AUTH_ERROR_HANDLING } from '../interceptors/request-flags';
+
+type AuthResponsePayload = CustomerUser & {
+  user?: CustomerUser | null;
+};
+
+type AuthActionResponse = ApiResponse<AuthResponsePayload>;
+
+const isCustomerUser = (value: unknown): value is CustomerUser => {
+  return !!value && typeof value === 'object';
+};
 
 @Injectable({
   providedIn: 'root'
@@ -11,83 +23,151 @@ import { SKIP_AUTH_ERROR_HANDLING } from '../interceptors/request-flags';
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/users`;
   private readonly sessionStorageKey = 'auth-session-active';
-  private currentUserSubject = new BehaviorSubject<any>(null);
-  private currentUserRequest$: Observable<any> | null = null;
+  private readonly accessTokenStorageKey = 'auth-access-token';
+  private currentUserSubject = new BehaviorSubject<CustomerUser | null>(null);
+  private accessTokenSubject = new BehaviorSubject<string | null>(this.readStoredAccessToken());
+  private currentUserRequest$: Observable<AuthActionResponse> | null = null;
   public currentUser$ = this.currentUserSubject.asObservable();
+  public accessToken$ = this.accessTokenSubject.asObservable();
 
   constructor(private api: ApiService) { }
 
-  register(userData: any): Observable<any> {
-    return this.api.post(`${this.apiUrl}/register`, userData, { withCredentials: false });
+  get currentUserSnapshot(): CustomerUser | null {
+    return this.currentUserSubject.value;
   }
 
-  login(credentials: any): Observable<any> {
-    return this.api.post(`${this.apiUrl}/login`, credentials).pipe(
-      tap((res: any) => {
+  isLoggedIn(): boolean {
+    return !!this.currentUserSubject.value;
+  }
+
+  getAccessTokenSnapshot(): string | null {
+    return this.accessTokenSubject.value;
+  }
+
+  register(userData: Record<string, unknown>): Observable<AuthActionResponse> {
+    return this.api.post<AuthActionResponse>(`${this.apiUrl}/register`, userData, { withCredentials: false });
+  }
+
+  login(credentials: Record<string, unknown>): Observable<AuthActionResponse> {
+    return this.api.post<AuthActionResponse>(`${this.apiUrl}/login`, credentials).pipe(
+      tap((res) => {
         if (res.success) {
-          this.currentUserSubject.next(res.data?.user ?? null);
+          this.setAccessToken(this.extractAccessToken(res));
+          this.currentUserSubject.next(this.extractCurrentUser(res));
           this.setSessionActive(true);
         }
       })
     );
   }
 
-  requestPasswordReset(payload: { email: string }): Observable<any> {
-    return this.api.post(`${this.apiUrl}/forgot-password`, payload, { withCredentials: false });
+  requestPasswordReset(payload: { email: string }): Observable<AuthActionResponse> {
+    return this.api.post<AuthActionResponse>(`${this.apiUrl}/forgot-password`, payload, { withCredentials: false });
   }
 
-  resetPassword(payload: { token: string; newPassword: string }): Observable<any> {
-    return this.api.post(`${this.apiUrl}/reset-password`, payload, { withCredentials: false });
+  resetPassword(payload: { token: string; newPassword: string }): Observable<AuthActionResponse> {
+    return this.api.post<AuthActionResponse>(`${this.apiUrl}/reset-password`, payload, { withCredentials: false });
   }
 
-  logout(): Observable<any> {
-    return this.api.post(`${this.apiUrl}/logout`, {}).pipe(
-      tap((res: any) => {
+  logout(): Observable<AuthActionResponse> {
+    return this.api.post<AuthActionResponse>(`${this.apiUrl}/logout`, {}).pipe(
+      tap((res) => {
         if (res.success) {
-          this.currentUserSubject.next(null);
+          this.clearCurrentUser();
         }
       })
     );
   }
 
-  getCurrentUser(): Observable<any> {
-    return this.api.get(`${this.apiUrl}/current-user`, {
-      context: new HttpContext().set(SKIP_AUTH_ERROR_HANDLING, true)
-    }).pipe(
-      tap((res: any) => {
+  getCurrentUser(): Observable<AuthActionResponse> {
+    if (this.currentUserSubject.value) {
+      return of({
+        success: true,
+        message: 'Current user fetched successfully',
+        data: this.currentUserSubject.value
+      });
+    }
+
+    if (!this.hasStoredSession()) {
+      return of({
+        success: false,
+        message: 'No active session',
+        data: {} as AuthResponsePayload
+      });
+    }
+
+    if (!this.currentUserRequest$) {
+      let request$: Observable<AuthActionResponse>;
+
+      request$ = this.api.get<AuthActionResponse>(`${this.apiUrl}/current-user`, {
+        context: new HttpContext().set(SKIP_AUTH_ERROR_HANDLING, true)
+      }).pipe(
+      tap((res) => {
+        const currentUser = this.extractCurrentUser(res);
         if (res.success) {
-          this.currentUserSubject.next(res.data);
+          this.currentUserSubject.next(currentUser);
+          this.setAccessToken(this.extractAccessToken(res));
           this.setSessionActive(true);
         } else {
-          this.currentUserSubject.next(null);
+          this.clearCurrentUser();
         }
-      })
-    );
+        }),
+        catchError((error) => {
+          if (error?.status === 401) {
+            this.clearCurrentUser();
+            return of({
+              success: false,
+              message: 'Unauthorized',
+              data: {} as AuthResponsePayload
+            });
+          }
+
+          return throwError(() => error);
+        }),
+        finalize(() => {
+          if (this.currentUserRequest$ === request$) {
+            this.currentUserRequest$ = null;
+          }
+        }),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+
+      this.currentUserRequest$ = request$;
+    }
+
+    return this.currentUserRequest$;
   }
 
-  refreshCurrentUser(): Observable<any> {
-    return this.getCurrentUser();
+  refreshCurrentUser(): Observable<CustomerUser | null> {
+    return this.getCurrentUser().pipe(map((response) => this.extractCurrentUser(response)));
   }
 
-  refreshToken(): Observable<any> {
-    return this.api.post(
-      `${this.apiUrl}/refreshToken`,
+  refreshToken(): Observable<AuthActionResponse> {
+    return this.api.post<AuthActionResponse>(
+      `${this.apiUrl}/refresh-token`,
       {},
       {
         context: new HttpContext().set(SKIP_AUTH_ERROR_HANDLING, true)
       }
+    ).pipe(
+      tap((res) => {
+        if (res.success) {
+          this.setAccessToken(this.extractAccessToken(res));
+        }
+      })
     );
   }
 
   clearCurrentUser(): void {
     this.currentUserSubject.next(null);
+    this.setAccessToken(null);
     this.currentUserRequest$ = null;
     this.setSessionActive(false);
   }
 
   setCurrentUser(user: unknown): void {
-    this.currentUserSubject.next(user);
-    if (user) {
+    const currentUser = isCustomerUser(user) ? user : null;
+    this.currentUserSubject.next(currentUser);
+    if (currentUser) {
       this.setSessionActive(true);
     }
   }
@@ -96,7 +176,7 @@ export class AuthService {
     return this.readSessionFlag();
   }
 
-  ensureCurrentUser(): Observable<any> {
+  ensureCurrentUser(): Observable<CustomerUser | null> {
     const currentUser = this.currentUserSubject.value;
     if (currentUser) {
       return of(currentUser);
@@ -106,22 +186,51 @@ export class AuthService {
       return of(null);
     }
 
-    if (!this.currentUserRequest$) {
-      let request$: Observable<any>;
+    return this.getCurrentUser().pipe(map((response) => this.extractCurrentUser(response)));
+  }
 
-      request$ = this.getCurrentUser().pipe(
-        shareReplay({ bufferSize: 1, refCount: false }),
-        finalize(() => {
-          if (this.currentUserRequest$ === request$) {
-            this.currentUserRequest$ = null;
-          }
-        })
-      );
-
-      this.currentUserRequest$ = request$;
+  private extractCurrentUser(response: AuthActionResponse | null | undefined): CustomerUser | null {
+    if (!response?.success) {
+      return null;
     }
 
-    return this.currentUserRequest$;
+    const data = response?.data;
+    if (!data || typeof data !== 'object') {
+      return null;
+    }
+
+    if ('user' in data) {
+      const user = (data as AuthResponsePayload).user;
+      return user && typeof user === 'object' ? user : null;
+    }
+
+    return data as CustomerUser;
+  }
+
+  private extractAccessToken(response: AuthActionResponse | null | undefined): string | null {
+    if (!response?.success || !response.data || typeof response.data !== 'object') {
+      return null;
+    }
+
+    const data = response.data as Record<string, unknown>;
+    return typeof data['accessToken'] === 'string' && data['accessToken'].trim()
+      ? data['accessToken']
+      : null;
+  }
+
+  private setAccessToken(token: string | null): void {
+    this.accessTokenSubject.next(token);
+
+    if (typeof window === 'undefined' || typeof window.sessionStorage === 'undefined') {
+      return;
+    }
+
+    if (token) {
+      window.sessionStorage.setItem(this.accessTokenStorageKey, token);
+      return;
+    }
+
+    window.sessionStorage.removeItem(this.accessTokenStorageKey);
   }
 
   private setSessionActive(active: boolean): void {
@@ -143,5 +252,14 @@ export class AuthService {
     }
 
     return window.localStorage.getItem(this.sessionStorageKey) === 'true';
+  }
+
+  private readStoredAccessToken(): string | null {
+    if (typeof window === 'undefined' || typeof window.sessionStorage === 'undefined') {
+      return null;
+    }
+
+    const token = window.sessionStorage.getItem(this.accessTokenStorageKey);
+    return token && token.trim() ? token : null;
   }
 }

@@ -8,12 +8,23 @@ export interface VendorProfile {
   vendorAddress?: string;
   gstNumber?: string;
   verificationStatus?: string;
+  createdAt?: string;
   bankDetails?: VendorBankDetails;
 }
 
 export type ToastType = 'success' | 'error';
 
-export type VendorDashboardView = 'dashboard' | 'profile' | 'products' | 'orders' | 'categories' | 'customers';
+export type VendorDashboardView =
+  | 'dashboard'
+  | 'profile'
+  | 'products'
+  | 'orders'
+  | 'categories'
+  | 'customers'
+  | 'notifications'
+  | 'bulk-inquiries'
+  | 'shipments'
+  | 'best-selling-products';
 export type ReportRange = 'weekly' | 'monthly' | 'custom';
 export type ReportFormat = 'csv' | 'pdf';
 
@@ -127,6 +138,15 @@ export interface VendorVariantCreateForm {
   imageFile: File | null;
 }
 
+export interface VendorVariantUpdateForm {
+  attributesText: string;
+  productPrice: number | null;
+  discountPercentage: number | null;
+  productStock: number | null;
+  sku: string;
+  imageFile: File | null;
+}
+
 export interface VendorAnalyticsSummary {
   totalRevenue: number;
   totalItemsSold: number;
@@ -143,6 +163,50 @@ export interface VendorProductSaleRecord {
 export interface VendorAnalyticsPayload {
   summary: VendorAnalyticsSummary;
   productWiseSales: VendorProductSaleRecord[];
+}
+
+export type VendorNotificationType = 'low_stock' | 'bulk_inquiry';
+export type VendorNotificationPriority = 'low' | 'medium' | 'high';
+
+export interface VendorNotificationRecord {
+  _id?: string;
+  vendor?: string;
+  type: VendorNotificationType;
+  referenceType?: string;
+  referenceId?: string;
+  title: string;
+  message: string;
+  priority: VendorNotificationPriority;
+  productId?: string;
+  variantId?: string;
+  productName?: string;
+  variantLabel?: string;
+  currentStock?: number;
+  stockThreshold?: number;
+  actionLink?: string;
+  isRead: boolean;
+  readAt?: string;
+  isResolved: boolean;
+  resolvedAt?: string;
+  isLowStock?: boolean;
+  fullName?: string;
+  businessName?: string;
+  orderType?: string;
+  city?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface VendorNotificationSummary {
+  totalNotifications: number;
+  unreadNotifications: number;
+  activeLowStockAlerts: number;
+  resolvedLowStockAlerts: number;
+}
+
+export interface VendorNotificationsPayload {
+  notifications: VendorNotificationRecord[];
+  summary: VendorNotificationSummary;
 }
 
 export interface VendorSoldItemRecord {
@@ -167,4 +231,16 @@ export interface OrderReportRequest {
   format: ReportFormat;
   startDate?: string;
   endDate?: string;
+}
+
+export type AdminShipmentStatus = 'Created' | 'Picked Up' | 'In Transit' | 'Out for Delivery' | 'Delivered' | 'Exception';
+
+export interface AdminShipmentUpdatePayload {
+  courierName?: string;
+  trackingNumber?: string;
+  shipmentStatus?: AdminShipmentStatus | string;
+  estimatedDeliveryDate?: string;
+  description?: string;
+  location?: string;
+  isTestMode?: boolean;
 }

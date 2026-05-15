@@ -11,28 +11,26 @@ import { ErrorService } from '../../core/services/error.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-screen flex flex-col justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)]">
-      <div class="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-[#f5e6d3]/40 blur-[120px] animate-float"></div>
+    <div class="min-h-screen relative flex flex-col justify-center overflow-hidden bg-[linear-gradient(180deg,#fff9f2_0%,#f5e6d3_18%,#fff9f2_100%)] px-4 py-12 sm:px-6 lg:px-8">
+      <div class="absolute left-1/4 top-0 h-96 w-96 rounded-full bg-[#f5e6d3]/40 blur-[120px] animate-float"></div>
       <div class="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[#d4a017]/20 blur-[120px] animate-float" style="animation-delay: 2s"></div>
 
-      <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
-        <h2 class="text-4xl font-black text-slate-900 tracking-tight">Reset Password</h2>
-        <p class="text-slate-500 font-medium tracking-wide">Create a new password for your account</p>
+      <div class="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center space-y-2">
+        <h2 class="text-4xl font-semibold tracking-tight text-slate-900">Reset Password</h2>
+        <p class="font-medium tracking-wide text-slate-500">Create a new password for your account</p>
       </div>
 
-      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div class="app-surface p-10">
+      <div class="relative z-10 mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="app-surface app-panel-body p-10">
           <div *ngIf="!token" class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
             Reset link is missing or invalid. Please request a new one.
           </div>
 
           <form class="space-y-8" (ngSubmit)="onSubmit()" *ngIf="token">
             <div class="space-y-2">
-              <label for="newPassword" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">New Password</label>
+              <label for="newPassword" class="app-label">New Password</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
-                  🔑
-                </div>
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">🔑</div>
                 <input
                   id="newPassword"
                   name="newPassword"
@@ -41,12 +39,12 @@ import { ErrorService } from '../../core/services/error.service';
                   required
                   [(ngModel)]="newPassword"
                   placeholder="Enter a new password"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
+                  class="app-field pl-12 pr-16"
                 >
                 <button
                   type="button"
                   (click)="showPassword = !showPassword"
-                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                 >
                   {{ showPassword ? 'Hide' : 'Show' }}
                 </button>
@@ -54,11 +52,9 @@ import { ErrorService } from '../../core/services/error.service';
             </div>
 
             <div class="space-y-2">
-              <label for="confirmPassword" class="text-[10px] uppercase font-black text-slate-400 tracking-[0.15em] ml-1">Confirm Password</label>
+              <label for="confirmPassword" class="app-label">Confirm Password</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-4 text-amber-700">
-                  🔒
-                </div>
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-amber-700">🔒</div>
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -67,26 +63,26 @@ import { ErrorService } from '../../core/services/error.service';
                   required
                   [(ngModel)]="confirmPassword"
                   placeholder="Confirm your new password"
-                  class="block w-full rounded-xl border-none bg-[#fff7ed] py-4 pl-12 pr-16 font-bold text-slate-900 shadow-inner transition-all focus:ring-2 focus:ring-amber-600"
+                  class="app-field pl-12 pr-16"
                 >
                 <button
                   type="button"
                   (click)="showConfirmPassword = !showConfirmPassword"
-                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-900"
                 >
                   {{ showConfirmPassword ? 'Hide' : 'Show' }}
                 </button>
               </div>
             </div>
 
-            <button type="submit" [disabled]="isLoading" class="btn-primary !w-full !py-4 text-lg">
+            <button type="submit" [disabled]="isLoading" class="btn-primary h-10 w-full px-4 text-sm sm:h-11">
               {{ isLoading ? 'Resetting...' : 'Reset Password' }}
             </button>
           </form>
 
           <div class="mt-8 border-t border-[#f1e4d4] pt-6 text-center">
             <p class="text-sm font-medium text-slate-500">
-              <a routerLink="/login" class="text-amber-700 font-black hover:text-amber-800 transition-colors uppercase tracking-tighter">Back to Login</a>
+              <a routerLink="/login" class="text-amber-700 font-semibold hover:text-amber-800 transition-colors uppercase tracking-tighter">Back to Login</a>
             </p>
           </div>
         </div>

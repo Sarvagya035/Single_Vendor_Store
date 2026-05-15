@@ -13,13 +13,13 @@ import { HeaderComponent } from './shared/layout/header.component';
 import { FooterComponent } from './shared/layout/footer.component';
 import { GlobalToastComponent } from './shared/ui/global-toast.component';
 import { GlobalLoadingComponent } from './shared/ui/global-loading.component';
+import { SocketService } from './core/services/socket.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, HeaderComponent, FooterComponent, GlobalToastComponent, GlobalLoadingComponent],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  templateUrl: './app.html'
 })
 export class App {
   protected readonly title = signal('frontend');
@@ -27,6 +27,7 @@ export class App {
 
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly socketService = inject(SocketService);
 
   constructor() {
     this.router.events

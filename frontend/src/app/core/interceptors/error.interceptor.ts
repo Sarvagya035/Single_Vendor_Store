@@ -16,14 +16,23 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
+        const isCurrentUserRequest = request.url.includes('/users/current-user');
         const shouldSkipAuthErrorHandling =
           request.context.get(SKIP_AUTH_ERROR_HANDLING) ||
-          request.url.includes('/users/current-user') ||
-          request.url.includes('/users/refreshToken') ||
+          isCurrentUserRequest ||
+          request.url.includes('/users/refresh-token') ||
           request.url.includes('/users/changePassword');
 
         if (!shouldSkipAuthErrorHandling) {
-          this.errorService.handleHttpError(error);
+          const message = this.errorService.extractErrorMessage(error);
+          const friendlyMessage =
+            error.status === 401
+              ? 'Your session has expired. Please sign in again.'
+              : error.status === 403
+                ? 'You do not have permission to perform this action.'
+                : message;
+
+          this.errorService.showToast(friendlyMessage || 'Something went wrong. Please try again.', 'error');
         }
 
         if (error.status === 401 && !shouldSkipAuthErrorHandling) {

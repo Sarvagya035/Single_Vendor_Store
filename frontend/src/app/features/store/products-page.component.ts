@@ -1,247 +1,153 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { CatalogService } from '../../core/services/catalog.service';
+import { CartActionService } from '../../core/services/cart-action.service';
+import { CartService } from '../../core/services/cart.service';
+import { CatalogQueryParams, CatalogService } from '../../core/services/catalog.service';
+import { ErrorService } from '../../core/services/error.service';
+import { GuestDataService } from '../../core/services/guest-data.service';
 import { CustomerCatalogProduct, CustomerLandingCategory, CustomerLandingCategoryGroup } from '../../core/models/customer.models';
-
-interface LandingCategoryNode extends CustomerLandingCategory {
-  children: LandingCategoryNode[];
-}
+import { StoreProductVariantService } from '../../core/services/store-product-variant.service';
+import { WishlistService } from '../../core/services/wishlist.service';
+import { VariantModalAddToCartEvent, VariantModalComponent } from './variant-modal/variant-modal.component';
+import { ProductCardComponent, ProductCardVariantActionEvent } from './components/product-card/product-card.component';
+import { CatalogActiveFiltersComponent } from './components/catalog-active-filters/catalog-active-filters.component';
+import { CatalogSearchBarComponent } from './components/catalog-search-bar/catalog-search-bar.component';
+import { CatalogPaginationComponent } from './components/catalog-pagination/catalog-pagination.component';
+import { CatalogFilterFormComponent } from './components/catalog-filter-form/catalog-filter-form.component';
+import {
+  LandingCategoryNode,
+  buildCategoryTree,
+  buildVisibleCategoryList,
+  buildCatalogMessage,
+  buildPageSubtitle,
+  collectCategoryKeys,
+  findCategoryNodeBySlug,
+  countProductsForNode,
+  getCategoryProductCount
+} from './utils/catalog.helpers';
 
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, VariantModalComponent, ProductCardComponent, CatalogActiveFiltersComponent, CatalogSearchBarComponent, CatalogPaginationComponent, CatalogFilterFormComponent],
   template: `
-    <div class="relative min-h-[calc(100vh-72px)] w-full overflow-hidden bg-slate-50">
+    <div class="relative min-h-[calc(100vh-72px)] w-full bg-[#fffaf3]">
       <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -top-24 left-8 h-72 w-72 rounded-full bg-amber-300/25 blur-3xl"></div>
-        <div class="absolute top-32 right-0 h-96 w-96 rounded-full bg-amber-200/25 blur-3xl"></div>
+        <div class="absolute -top-24 left-8 h-72 w-72 rounded-full bg-amber-300/20 blur-3xl"></div>
+        <div class="absolute top-32 right-0 h-96 w-96 rounded-full bg-amber-200/20 blur-3xl"></div>
       </div>
 
-      <section class="relative h-full w-full px-3 py-3 sm:px-4 lg:px-6 lg:py-6">
-        <div class="h-full min-h-[calc(100vh-88px)] overflow-hidden rounded-[2rem] border border-white/70 bg-white/90 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur">
-
-          <div class="grid min-h-[calc(100vh-150px)] gap-0 lg:grid-cols-[320px_1fr]">
-            <aside class="border-b border-slate-200 bg-slate-50/80 px-4 py-5 lg:sticky lg:top-6 lg:h-[calc(100vh-120px)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:bg-slate-50/90">
-              <div class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Filters</p>
-                    <h3 class="mt-1 text-base font-black text-slate-900">Refine results</h3>
-                  </div>
-                  <button
-                    type="button"
-                    class="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 hover:bg-white"
-                    (click)="resetFilters()"
-                  >
-                    Reset
-                  </button>
-                </div>
-
-                <div class="mt-4 space-y-4">
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Category</span>
-                    <select
-                      [(ngModel)]="selectedCategorySlug"
-                      name="selectedCategorySlug"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option value="all">All categories</option>
-                      <option *ngFor="let category of sidebarCategories; trackBy: trackByCategoryId" [value]="category.slug || category.name">
-                        {{ categoryLabel(category) }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <p class="text-[11px] font-semibold leading-5 text-slate-500">
-                    Parent categories include all of their child category products.
-                  </p>
-
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Brand</span>
-                    <select
-                      [(ngModel)]="selectedBrand"
-                      name="selectedBrand"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option value="all">All brands</option>
-                      <option *ngFor="let brand of brandOptions(); trackBy: trackByValue" [value]="brand">
-                        {{ brand }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Sort by</span>
-                    <select
-                      [(ngModel)]="sortBy"
-                      name="sidebarSortBy"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <div class="grid grid-cols-2 gap-3">
-                    <label class="block">
-                      <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Min price</span>
-                      <input
-                      [(ngModel)]="minPrice"
-                      name="minPrice"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      type="number"
-                        min="0"
-                        placeholder="0"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      />
-                    </label>
-
-                    <label class="block">
-                      <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Max price</span>
-                      <input
-                      [(ngModel)]="maxPrice"
-                      name="maxPrice"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      type="number"
-                        min="0"
-                        placeholder="Any"
-                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      />
-                    </label>
-                  </div>
-
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Availability</span>
-                    <select
-                      [(ngModel)]="availabilityFilter"
-                      name="availabilityFilter"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option *ngFor="let option of availabilityOptions; trackBy: trackByFilterOption" [value]="option.value">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <label class="block">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Minimum rating</span>
-                    <select
-                      [(ngModel)]="ratingFilter"
-                      name="ratingFilter"
-                      (ngModelChange)="onCatalogFilterChange()"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    >
-                      <option *ngFor="let option of ratingOptions; trackBy: trackByFilterOption" [value]="option.value">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                  </label>
-                </div>
-              </div>
-            </aside>
-
-            <main class="bg-white px-4 py-5 sm:px-6 lg:px-6">
-              <div class="mb-5 flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
+      <section class="relative w-full pb-5">
+        <div class="grid w-full grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+          <aside class="hidden h-full min-w-0 self-start -ml-px bg-[#fffaf3] p-0 lg:sticky lg:top-[124px] lg:block lg:border-r lg:border-slate-200">
+            <div class="px-6 py-6">
+              <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <div>
-                  <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Dry fruit catalog</p>
-                  <h1 class="mt-1 text-3xl font-black tracking-tight text-slate-900">Shop all products</h1>
-                  <p class="mt-2 text-sm font-medium text-slate-500">
-                    {{ pageSubtitle() }}
-                  </p>
+                  <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-600">Filters</p>
+                  <h3 class="mt-1 text-sm font-semibold text-slate-900">Refine results</h3>
                 </div>
+                <button
+                  type="button"
+                  class="text-xs font-semibold uppercase tracking-wide text-[#8a4f2a] transition hover:text-[#6d3c20]"
+                  (click)="resetFilters()"
+                >
+                  Clear all
+                </button>
+              </div>
 
-                <form class="relative w-full md:max-w-xl" (ngSubmit)="searchProducts()">
-                  <div class="flex items-center gap-3 rounded-[1.1rem] border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm transition focus-within:border-amber-500 focus-within:bg-white">
-                    <span class="text-slate-400">
-                      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="7"></circle>
-                        <path d="m20 20-3.5-3.5"></path>
-                      </svg>
-                    </span>
-                    <input
-                      name="searchQuery"
-                      [(ngModel)]="searchQuery"
-                      (ngModelChange)="onSearchQueryChange($event)"
-                      type="text"
-                      placeholder="Search dry fruits, nuts and healthy packs"
-                      class="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400"
-                    />
+              <div class="pt-4">
+                <app-catalog-filter-form
+                  [resetToken]="filterResetToken"
+                  [selectedCategoryIds]="selectedCategoryIds"
+                  [selectedBrandIds]="selectedBrandIds"
+                  [sortBy]="sortBy"
+                  [minPrice]="minPrice"
+                  [maxPrice]="maxPrice"
+                  [ratingFilter]="ratingFilter"
+                  [sidebarCategories]="sidebarCategories"
+                  [brandOptions]="brandOptions()"
+                  [sortOptions]="sortOptions"
+                  [ratingOptions]="ratingOptions"
+                  [loadingFilters]="loadingCategories"
+                  (selectedCategoryIdsChange)="onSelectedCategoryIdsChange($event)"
+                  (selectedBrandIdsChange)="onSelectedBrandIdsChange($event)"
+                  (sortByChange)="sortBy = $event"
+                  (minPriceChange)="minPrice = $event"
+                  (maxPriceChange)="maxPrice = $event"
+                  (ratingFilterChange)="ratingFilter = $event"
+                  (clearAll)="resetFilters()"
+                  (filterChange)="onCatalogFilterChange()"
+                />
+              </div>
+            </div>
+          </aside>
+
+          <main class="min-w-0 p-3 sm:p-4 lg:p-5">
+            <div class="space-y-3">
+              <section class="mb-4 border-b border-slate-200 pb-5">
+                <div class="flex flex-col gap-3">
+                  <div class="space-y-2">
+                    <p class="text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">Dry fruit catalog</p>
+                    <h1 class="text-[28px] font-bold leading-tight tracking-tight text-slate-950 sm:text-[34px] lg:text-[40px]">
+                      <span class="text-[#7a4f35]">Purity</span> You Can Taste,
+                      <span class="text-[#7a4f35]">Quality</span> You Can Trust
+                    </h1>
+                    <p class="max-w-3xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
+                      Discover the perfect blend of taste and nutrition in every pack.
+                    </p>
                   </div>
 
-                </form>
-              </div>
+                  <div class="space-y-3">
+                    <app-catalog-search-bar
+                      [searchQuery]="searchQuery"
+                      placeholder="Search dry fruits, nuts and healthy packs"
+                      (searchChange)="onSearchQueryChange($event)"
+                      (searchSubmit)="searchProducts()"
+                    />
 
-              <div class="mb-5 flex flex-wrap items-center gap-3 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-3">
-                <label class="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
-                  <span class="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Sort</span>
-                  <select
-                    [(ngModel)]="sortBy"
-                    name="sortBy"
-                    (ngModelChange)="onCatalogFilterChange()"
-                    class="border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none"
-                  >
-                    <option *ngFor="let option of sortOptions; trackBy: trackBySortOption" [value]="option.value">
-                      {{ option.label }}
-                    </option>
-                  </select>
-                </label>
+                    <div class="grid gap-3 lg:hidden">
+                      <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
+                        <button
+                          type="button"
+                          class="btn-primary justify-between !px-4 !py-3 text-sm"
+                          (click)="openFilters()"
+                        >
+                          <span>Filters</span>
+                          <span class="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-black tracking-[0.14em]">
+                            {{ activeFilterCount() }}
+                          </span>
+                        </button>
+                      </div>
 
-                <div class="flex flex-wrap items-center gap-2">
-                  <span
-                    *ngIf="selectedBrand !== 'all'"
-                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-                  >
-                    Brand: {{ selectedBrand }}
-                  </span>
-                  <span
-                    *ngIf="minPrice || maxPrice"
-                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-                  >
-                    Price:
-                    {{ minPrice || '0' }} - {{ maxPrice || 'Any' }}
-                  </span>
-                  <span
-                    *ngIf="availabilityFilter !== 'all'"
-                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-                  >
-                    {{ availabilityFilter === 'in-stock' ? 'In stock only' : 'Out of stock only' }}
-                  </span>
-                  <span
-                    *ngIf="ratingFilter !== 'all'"
-                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800"
-                  >
-                    {{ ratingFilter }}+ rating
-                  </span>
+                      <app-catalog-active-filters
+                        [hasActiveFilters]="hasActiveFilters()"
+                        [selectedCategoryCount]="selectedCategoryIds.length"
+                        [selectedBrandCount]="selectedBrandIds.length"
+                        [minPrice]="minPrice"
+                        [maxPrice]="maxPrice"
+                        [ratingFilter]="ratingFilter"
+                        (clearAll)="resetFilters()"
+                        (removeFilter)="handleActiveFilterRemoval($event)"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </section>
 
-              <div
-                *ngIf="catalogMessage"
-                class="mb-4 rounded-[1.1rem] border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-slate-900"
-              >
-                {{ catalogMessage }}
-              </div>
-
-              <div *ngIf="loadingProducts" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <section *ngIf="loadingProducts" class="grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
                 <div *ngFor="let _ of skeletonCards" class="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm">
                   <div class="aspect-square rounded-[1.2rem] bg-slate-200"></div>
                   <div class="mt-4 h-4 w-3/4 rounded-full bg-slate-200"></div>
                   <div class="mt-3 h-4 w-1/2 rounded-full bg-slate-200"></div>
                   <div class="mt-3 h-10 rounded-[1rem] bg-slate-200"></div>
                 </div>
-              </div>
+              </section>
 
               <ng-container *ngIf="!loadingProducts">
-                <div *ngIf="displayProducts().length === 0" class="rounded-[1.6rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
+                <div *ngIf="products.length === 0" class="rounded-[1.6rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
                   <h2 class="text-2xl font-black text-slate-900">No products found</h2>
                   <p class="mt-3 text-sm font-medium text-slate-500">
                     Try another dry fruit type, adjust filters, or search for a different pack.
@@ -255,148 +161,119 @@ interface LandingCategoryNode extends CustomerLandingCategory {
                   </button>
                 </div>
 
-                <div *ngIf="displayProducts().length > 0" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  <a
+                <section *ngIf="products.length > 0" class="grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-4">
+                  <app-product-card
                     *ngFor="let product of paginatedProducts(); trackBy: trackByProductId"
-                    [routerLink]="['/products', product._id]"
-                    class="group rounded-[1.8rem] border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
-                  >
-                    <div class="aspect-square overflow-hidden rounded-[1.3rem] border border-slate-200 bg-slate-100">
-                      <img
-                        [src]="productImage(product)"
-                        [alt]="product.productName"
-                        class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                      />
-                    </div>
+                    [product]="product"
+                    [isWishlisted]="isWishlisted(product)"
+                    [wishlistBusy]="wishlistBusyId === product._id"
+                    [variantCount]="(product.variants || []).length"
+                    [isOutOfStock]="isProductOutOfStock(product)"
+                    (productClick)="openProduct($event)"
+                    (wishlistToggle)="toggleWishlist($event)"
+                    (addToCart)="handleProductCardAddToCart($event)"
+                    (buyNow)="handleProductCardBuyNow($event)"
+                  />
+                </section>
 
-                    <div class="mt-4 space-y-3">
-                      <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                          <p class="truncate text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-                            {{ product.brand || 'Dry fruit pack' }}
-                          </p>
-                          <h2 class="mt-1 line-clamp-2 text-lg font-black text-slate-900">
-                            {{ product.productName }}
-                          </h2>
-                        </div>
-                        <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-slate-900 shadow-sm ring-1 ring-amber-200">
-                          {{ formatCurrency(product.displayVariant?.finalPrice || product.basePrice || 0) }}
-                        </span>
-                      </div>
-
-                      <p class="text-sm font-semibold text-slate-500">
-                        {{ product.categoryDetails?.name || 'General Category' }}
-                      </p>
-
-                      <div class="flex items-center gap-2">
-                        <span *ngIf="productOriginalPrice(product)" class="text-sm font-bold text-slate-400 line-through">
-                          {{ productOriginalPrice(product) }}
-                        </span>
-                        <span class="text-base font-black text-slate-900">
-                          {{ productDiscountedPrice(product) }}
-                        </span>
-                      </div>
-
-                      <div class="flex items-center justify-between pt-1 text-sm font-black">
-                        <span class="text-slate-500">
-                          {{ (product.variants || []).length }} variant{{ (product.variants || []).length === 1 ? '' : 's' }}
-                        </span>
-                        <span class="text-amber-800 transition group-hover:translate-x-1 group-hover:text-amber-900">
-                          View Product
-                        </span>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-
-                <div *ngIf="displayProducts().length > pageSize" class="mt-6 flex flex-col gap-4 rounded-[1.3rem] border border-slate-200 bg-slate-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p class="text-sm font-semibold text-slate-500">
-                    Showing {{ paginationStartIndex() }}-{{ paginationEndIndex() }} of {{ displayProducts().length }} products
-                  </p>
-
-                  <div class="flex items-center gap-2 sm:gap-3">
-                    <button
-                      type="button"
-                      class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                      [disabled]="currentPage === 1"
-                      (click)="changePage(currentPage - 1)"
-                    >
-                      Prev
-                    </button>
-
-                    <ng-container *ngIf="visiblePages().length <= 5; else compactPager">
-                      <button
-                        *ngFor="let page of visiblePages(); trackBy: trackByPage"
-                        type="button"
-                        class="min-w-9 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition sm:min-w-10 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.bg-amber-700]="page === currentPage"
-                        [class.text-white]="page === currentPage"
-                        [class.bg-white]="page !== currentPage"
-                        [class.text-slate-600]="page !== currentPage"
-                        [class.border]="page !== currentPage"
-                        [class.border-slate-200]="page !== currentPage"
-                        (click)="changePage(page)"
-                      >
-                        {{ page }}
-                      </button>
-                    </ng-container>
-
-                    <ng-template #compactPager>
-                      <button
-                        type="button"
-                        class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.border-amber-300]="currentPage > 2"
-                        [class.bg-amber-50]="currentPage > 2"
-                        [class.text-amber-800]="currentPage > 2"
-                        [disabled]="currentPage <= 2"
-                        (click)="changePage(currentPage - 2)"
-                      >
-                        ...
-                      </button>
-
-                      <button
-                        *ngFor="let page of visiblePages(); trackBy: trackByPage"
-                        type="button"
-                        class="min-w-9 rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition sm:min-w-10 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.bg-amber-700]="page === currentPage"
-                        [class.text-white]="page === currentPage"
-                        [class.bg-white]="page !== currentPage"
-                        [class.text-slate-600]="page !== currentPage"
-                        [class.border]="page !== currentPage"
-                        [class.border-slate-200]="page !== currentPage"
-                        (click)="changePage(page)"
-                      >
-                        {{ page }}
-                      </button>
-
-                      <button
-                        type="button"
-                        class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                        [class.border-amber-300]="currentPage < totalPages - 1"
-                        [class.bg-amber-50]="currentPage < totalPages - 1"
-                        [class.text-amber-800]="currentPage < totalPages - 1"
-                        [disabled]="currentPage >= totalPages - 1"
-                        (click)="changePage(currentPage + 2)"
-                      >
-                        ...
-                      </button>
-                    </ng-template>
-
-                    <button
-                      type="button"
-                      class="rounded-full border border-slate-200 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4 sm:text-xs sm:tracking-[0.16em]"
-                      [disabled]="currentPage === totalPages"
-                      (click)="changePage(currentPage + 1)"
-                    >
-                      Next
-                    </button>
-                  </div>
+                <div class="pt-2">
+                  <app-catalog-pagination
+                    [showPagination]="catalogTotalItems > pageSize"
+                    [currentPage]="currentPage"
+                    [totalPages]="totalPages"
+                    [visiblePages]="visiblePages()"
+                    [totalProductCount]="totalProductCount()"
+                    [startIndex]="paginationStartIndex()"
+                    [endIndex]="paginationEndIndex()"
+                    (pageChange)="changePage($event)"
+                  />
                 </div>
               </ng-container>
-            </main>
-          </div>
+            </div>
+          </main>
         </div>
       </section>
+
+      <div *ngIf="isMobileFiltersOpen" class="fixed inset-0 z-[100] lg:hidden" aria-modal="true" role="dialog">
+        <button
+          type="button"
+          class="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]"
+          aria-label="Close filters"
+          (click)="closeFilters()"
+        ></button>
+
+        <aside class="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[2rem] bg-white p-4 shadow-2xl">
+          <div class="sticky top-0 z-10 mb-4 flex items-center justify-between border-b border-slate-200 bg-white pb-3">
+            <div>
+              <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Filters</p>
+              <h2 class="text-lg font-black text-slate-900">Refine results</h2>
+            </div>
+
+            <button
+              type="button"
+              class="rounded-full border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              (click)="closeFilters()"
+            >
+              Close
+            </button>
+          </div>
+
+          <div class="rounded-[1.6rem] border border-slate-200 bg-[#fffaf3] p-4 shadow-sm">
+            <div class="space-y-4">
+              <app-catalog-filter-form
+                [resetToken]="filterResetToken"
+                [selectedCategoryIds]="selectedCategoryIds"
+                [selectedBrandIds]="selectedBrandIds"
+                [sortBy]="sortBy"
+                [minPrice]="minPrice"
+                [maxPrice]="maxPrice"
+                [ratingFilter]="ratingFilter"
+                [sidebarCategories]="sidebarCategories"
+                [brandOptions]="brandOptions()"
+                [sortOptions]="sortOptions"
+                [ratingOptions]="ratingOptions"
+                [loadingFilters]="loadingCategories"
+                (selectedCategoryIdsChange)="onSelectedCategoryIdsChange($event)"
+                (selectedBrandIdsChange)="onSelectedBrandIdsChange($event)"
+                (sortByChange)="sortBy = $event"
+                (minPriceChange)="minPrice = $event"
+                (maxPriceChange)="maxPrice = $event"
+                (ratingFilterChange)="ratingFilter = $event"
+                (clearAll)="resetFilters()"
+                (filterChange)="onCatalogFilterChange()"
+              />
+
+              <p class="text-[11px] font-semibold leading-5 text-slate-500">
+                Parent categories include all of their child category products.
+              </p>
+            </div>
+
+            <div class="mt-5 flex items-center gap-3">
+              <button
+                type="button"
+                class="btn-secondary flex-1 !px-4 !py-3 text-sm"
+                (click)="resetFilters()"
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                class="btn-primary flex-1 !px-4 !py-3 text-sm"
+                (click)="closeFilters()"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <app-variant-modal
+        [open]="variantModalOpen"
+        [product]="selectedVariantProduct"
+        [isAdding]="variantModalLoading"
+        (close)="closeVariantModal()"
+        (addToCart)="handleVariantModalAddToCart($event)"
+      />
     </div>
   `
 })
@@ -405,6 +282,11 @@ export class ProductsPageComponent implements OnInit {
   searchQuery = '';
   loadingProducts = false;
   products: CustomerCatalogProduct[] = [];
+  wishlistedProductIds = new Set<string>();
+  wishlistBusyId = '';
+  variantModalOpen = false;
+  variantModalLoading = false;
+  selectedVariantProduct: CustomerCatalogProduct | null = null;
   landingCategories: CustomerLandingCategoryGroup[] = [];
   catalogCategories: CustomerLandingCategory[] = [];
   sidebarCategories: CustomerLandingCategory[] = [];
@@ -412,17 +294,22 @@ export class ProductsPageComponent implements OnInit {
   visibleCatalogCategories: LandingCategoryNode[] = [];
   expandedCategoryIds = new Set<string>();
   selectedCategorySlug = 'all';
+  selectedCategoryIds: string[] = [];
   viewMode: 'landing' | 'search' = 'landing';
   catalogMessage = '';
   loadingCategories = false;
   currentPage = 1;
-  pageSize = 12;
+  pageSize = 28;
+  catalogTotalItems = 0;
+  catalogTotalPages = 1;
   sortBy = 'relevance';
   selectedBrand = 'all';
-  availabilityFilter = 'all';
+  selectedBrandIds: string[] = [];
   ratingFilter = 'all';
   minPrice = '';
   maxPrice = '';
+  isMobileFiltersOpen = false;
+  filterResetToken = 0;
   readonly sortOptions = [
     { value: 'relevance', label: 'Relevance' },
     { value: 'newest', label: 'Newest First' },
@@ -430,11 +317,6 @@ export class ProductsPageComponent implements OnInit {
     { value: 'price-desc', label: 'Price: High to Low' },
     { value: 'rating-desc', label: 'Customer Rating' },
     { value: 'popular', label: 'Popularity' }
-  ];
-  readonly availabilityOptions = [
-    { value: 'all', label: 'All items' },
-    { value: 'in-stock', label: 'In stock only' },
-    { value: 'out-of-stock', label: 'Out of stock only' }
   ];
   readonly ratingOptions = [
     { value: 'all', label: 'Any rating' },
@@ -446,13 +328,25 @@ export class ProductsPageComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private cartActionService: CartActionService,
+    private cartService: CartService,
     private catalogService: CatalogService,
-    private route: ActivatedRoute
+    private errorService: ErrorService,
+    private guestDataService: GuestDataService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private variantService: StoreProductVariantService,
+    private wishlistService: WishlistService
   ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.user = user;
+      if (this.isCustomer()) {
+        this.loadWishlistState();
+      } else {
+        this.loadGuestWishlistState();
+      }
     });
 
     this.authService.ensureCurrentUser().subscribe({
@@ -466,7 +360,10 @@ export class ProductsPageComponent implements OnInit {
 
     this.route.queryParamMap.subscribe((params) => {
       this.searchQuery = params.get('q') || '';
-      this.selectedCategorySlug = params.get('category') || 'all';
+      this.selectedCategoryIds = this.parseFilterValues(params.get('category'));
+      this.selectedCategorySlug = this.selectedCategoryIds[0] || 'all';
+      this.selectedBrandIds = this.parseFilterValues(params.get('brand'));
+      this.selectedBrand = this.selectedBrandIds[0] || 'all';
       this.currentPage = 1;
 
       if (this.searchQuery.trim()) {
@@ -500,35 +397,146 @@ export class ProductsPageComponent implements OnInit {
     return !!this.user && !this.isAdmin() && !this.isVendor();
   }
 
-  searchProducts(): void {
-    const query = this.searchQuery.trim();
-    this.catalogMessage = '';
+  openMobileFilters(): void {
+    this.openFilters();
+  }
 
-    if (!query) {
-      this.viewMode = 'landing';
-      this.loadLandingProducts();
+  openFilters(): void {
+    this.isMobileFiltersOpen = true;
+  }
+
+  closeMobileFilters(): void {
+    this.closeFilters();
+  }
+
+  closeFilters(): void {
+    this.isMobileFiltersOpen = false;
+  }
+
+  toggleFilters(): void {
+    this.isMobileFiltersOpen = !this.isMobileFiltersOpen;
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape(): void {
+    this.closeMobileFilters();
+  }
+
+  activeFilterCount(): number {
+    return [
+      this.selectedCategoryIds.length > 0,
+      this.selectedBrandIds.length > 0,
+      this.sortBy !== 'relevance',
+      this.ratingFilter !== 'all',
+      this.minPrice !== '',
+      this.maxPrice !== ''
+    ].filter(Boolean).length;
+  }
+
+  openProduct(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
       return;
     }
 
-    this.loadingProducts = true;
-    this.viewMode = 'search';
-    this.currentPage = 1;
-    this.products = [];
-    this.catalogService.searchProducts(query, 1, 1000).subscribe({
-      next: (response) => {
-        this.loadingProducts = false;
-        const rawProducts = Array.isArray(response?.data) ? response.data : response?.data?.docs || [];
-        this.products = rawProducts.map((product: CustomerCatalogProduct) => this.attachCatalogContext(product));
-        this.currentPage = 1;
-        this.catalogMessage = this.displayProducts().length
-          ? `${this.displayProducts().length} product${this.displayProducts().length === 1 ? '' : 's'} found for "${query}".`
-          : `No products matched "${query}".`;
+    this.router.navigate(['/products', product._id]);
+  }
+
+  onProductCardAction(product: CustomerCatalogProduct): void {
+    if (!product?._id || this.isProductOutOfStock(product)) {
+      return;
+    }
+
+    if (this.hasSingleVariant(product)) {
+      this.addSingleVariantToCart(product);
+      return;
+    }
+
+    this.openVariantModal(product);
+  }
+
+  openVariantModal(product: CustomerCatalogProduct): void {
+    if (!product?._id || this.isProductOutOfStock(product)) {
+      return;
+    }
+
+    this.selectedVariantProduct = product;
+    this.variantModalOpen = true;
+  }
+
+  closeVariantModal(): void {
+    this.variantModalOpen = false;
+    this.selectedVariantProduct = null;
+    this.variantModalLoading = false;
+  }
+
+  handleVariantModalAddToCart(event: VariantModalAddToCartEvent): void {
+    this.variantModalLoading = true;
+    this.cartActionService.addToCart(event.productId, event.variantId, event.quantity).subscribe({
+      next: (result) => {
+        this.variantModalLoading = false;
+
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          this.closeVariantModal();
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
       },
-      error: (error) => {
-        this.loadingProducts = false;
-        this.products = [];
+      error: () => {
+        this.variantModalLoading = false;
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
       }
     });
+  }
+
+  private refreshCatalogListing(): void {
+    this.loadingProducts = true;
+    this.catalogMessage = '';
+
+    const query = this.searchQuery.trim();
+    const params: CatalogQueryParams = {
+      q: query || undefined,
+      category: this.selectedCategoryIds.length ? this.selectedCategoryIds.join(',') : undefined,
+      brand: this.selectedBrandIds.length ? this.selectedBrandIds.join(',') : undefined,
+      rating: this.ratingFilter,
+      minPrice: this.minPrice,
+      maxPrice: this.maxPrice,
+      sortBy: this.sortBy
+    };
+
+    this.catalogService.getCatalogProducts(this.currentPage, this.pageSize, params).subscribe({
+      next: (response) => {
+        this.loadingProducts = false;
+        const payload = (response?.data ?? {}) as
+          | CustomerCatalogProduct[]
+          | {
+              docs?: CustomerCatalogProduct[];
+              totalDocs?: number;
+              totalPages?: number;
+              page?: number;
+            };
+        const rawProducts = Array.isArray(payload) ? payload : Array.isArray(payload.docs) ? payload.docs : [];
+        this.products = rawProducts.map((product: CustomerCatalogProduct) => this.attachCatalogContext(product));
+        this.catalogTotalItems = Array.isArray(payload) ? this.products.length : Number(payload.totalDocs || this.products.length || 0);
+        this.catalogTotalPages = Array.isArray(payload) ? Math.max(1, Math.ceil(this.products.length / this.pageSize)) : Math.max(1, Number(payload.totalPages || 1));
+        this.currentPage = Array.isArray(payload) ? this.currentPage || 1 : Number(payload.page || this.currentPage || 1);
+        this.catalogMessage = this.buildCatalogMessage(query);
+      },
+      error: () => {
+        this.loadingProducts = false;
+        this.products = [];
+        this.catalogTotalItems = 0;
+        this.catalogTotalPages = 1;
+        this.catalogMessage = 'No products are available right now.';
+      }
+    });
+  }
+
+  searchProducts(): void {
+    this.currentPage = 1;
+    this.viewMode = this.searchQuery.trim() ? 'search' : 'landing';
+    this.refreshCatalogListing();
   }
 
   onSearchQueryChange(value: string): void {
@@ -538,41 +546,26 @@ export class ProductsPageComponent implements OnInit {
     const query = value.trim();
     if (!query) {
       this.viewMode = 'landing';
-      this.selectedCategorySlug = 'all';
-      this.catalogMessage = '';
       this.currentPage = 1;
-      this.loadLandingProducts();
+      this.refreshCatalogListing();
       return;
     }
   }
 
   loadLandingProducts(): void {
-    this.loadingProducts = true;
-    this.catalogMessage = '';
-    this.products = [];
-    this.landingCategories = [];
-    this.sidebarCategories = [];
-    this.currentPage = 1;
-
+    this.viewMode = 'landing';
     this.catalogService.getLandingPageProducts().subscribe({
       next: (response) => {
-        this.loadingProducts = false;
         this.landingCategories = Array.isArray(response?.data) ? response.data : [];
-        this.products = this.flattenLandingProducts(this.landingCategories);
-        this.viewMode = 'landing';
-        this.currentPage = 1;
-        if (!this.landingCategories.some((category) => this.normalizeCategoryKey(category.categorySlug || category.categoryName || '') === this.normalizeCategoryKey(this.selectedCategorySlug))) {
-          this.selectedCategorySlug = 'all';
-        }
         this.refreshSidebarCategories();
         this.refreshCatalogMessage();
       },
-      error: (error) => {
-        this.loadingProducts = false;
+      error: () => {
         this.landingCategories = [];
         this.sidebarCategories = [];
       }
     });
+    this.refreshCatalogListing();
   }
 
   loadLandingCategories(): void {
@@ -582,10 +575,9 @@ export class ProductsPageComponent implements OnInit {
       next: (response) => {
         this.loadingCategories = false;
         this.catalogCategories = Array.isArray(response?.data) ? response.data : [];
-        this.catalogCategoryTree = this.buildCategoryTree(this.catalogCategories);
+        this.catalogCategoryTree = buildCategoryTree(this.catalogCategories);
         this.expandedCategoryIds = new Set<string>();
-        this.visibleCatalogCategories = this.buildVisibleCategoryList();
-        this.products = this.products.map((product) => this.attachCatalogContext(product));
+        this.visibleCatalogCategories = buildVisibleCategoryList(this.catalogCategoryTree, this.expandedCategoryIds);
         this.catalogCategories = [...this.catalogCategories].sort((a, b) => {
           const levelDiff = Number(a.level || 0) - Number(b.level || 0);
           if (levelDiff !== 0) return levelDiff;
@@ -603,11 +595,103 @@ export class ProductsPageComponent implements OnInit {
   }
 
   productImage(product: CustomerCatalogProduct): string {
-    return (
-      product.displayVariant?.variantImage ||
-      product.mainImages?.[0] ||
-      'https://via.placeholder.com/640x480?text=Product'
-    );
+    return this.variantService.getProductImage(product, product.displayVariant || null);
+  }
+
+  isProductOutOfStock(product: CustomerCatalogProduct): boolean {
+    return this.variantService.isProductOutOfStock(product);
+  }
+
+  hasSingleVariant(product: CustomerCatalogProduct): boolean {
+    return this.variantService.hasSingleVariant(product);
+  }
+
+  productCardActionLabel(product: CustomerCatalogProduct): string {
+    if (this.isProductOutOfStock(product)) {
+      return 'Unavailable';
+    }
+
+    return this.hasSingleVariant(product) ? 'Add To Cart' : 'Select Options';
+  }
+
+  handleProductCardAddToCart(event: ProductCardVariantActionEvent): void {
+    const productId = String(event?.product?._id || '').trim();
+    const variantId = String(event?.variant?._id || '').trim();
+
+    if (!productId || !variantId) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    this.cartActionService.addToCart(productId, variantId, 1).subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
+  }
+
+  handleProductCardBuyNow(event: ProductCardVariantActionEvent): void {
+    const productId = String(event?.product?._id || '').trim();
+    const variantId = String(event?.variant?._id || '').trim();
+
+    if (!productId || !variantId) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    this.cartService.addToCart(productId, variantId, 1).subscribe({
+      next: () => {
+        this.router.navigate(['/checkout']);
+      },
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
+      }
+    });
+  }
+
+  private addSingleVariantToCart(product: CustomerCatalogProduct): void {
+    const variant = this.variantService.getDefaultVariant(product);
+    if (!product?._id || !variant?._id) {
+      return;
+    }
+
+    this.variantModalLoading = true;
+    this.cartActionService.addToCart(product._id, variant._id, 1).subscribe({
+      next: (result) => {
+        this.variantModalLoading = false;
+
+        if (result.success) {
+          this.errorService.showToast(result.message, 'success');
+          return;
+        }
+
+        this.errorService.showToast(result.message, 'error');
+      },
+      error: () => {
+        this.variantModalLoading = false;
+        this.errorService.showToast('Unable to add this item to the cart right now.', 'error');
+      }
+    });
   }
 
   formatCurrency(amount: number): string {
@@ -616,6 +700,41 @@ export class ProductsPageComponent implements OnInit {
       currency: 'INR',
       maximumFractionDigits: 0
     }).format(amount || 0);
+  }
+
+  isWishlisted(product: CustomerCatalogProduct): boolean {
+    return !!product?._id && this.wishlistedProductIds.has(product._id);
+  }
+
+  toggleWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.toggleGuestWishlist(product);
+      return;
+    }
+
+    if (this.wishlistBusyId === product._id) {
+      return;
+    }
+
+    this.wishlistBusyId = product._id;
+    this.wishlistService.toggleWishlist(product._id).subscribe({
+      next: (wishlist) => {
+        this.wishlistBusyId = '';
+        this.syncWishlistSet(wishlist?.products || []);
+        this.errorService.showToast(
+          this.wishlistedProductIds.has(product._id) ? 'Saved to wishlist.' : 'Removed from wishlist.',
+          'success'
+        );
+      },
+      error: (error) => {
+        this.wishlistBusyId = '';
+        this.errorService.showToast(this.errorService.extractErrorMessage(error), 'error');
+      }
+    });
   }
 
   productOriginalPrice(product: CustomerCatalogProduct): string {
@@ -634,7 +753,9 @@ export class ProductsPageComponent implements OnInit {
   }
 
   selectCategory(slug: string): void {
-    this.selectedCategorySlug = slug || 'all';
+    const normalized = this.normalizeCategoryKey(slug);
+    this.selectedCategoryIds = normalized ? [normalized] : [];
+    this.selectedCategorySlug = normalized || 'all';
     this.currentPage = 1;
     this.refreshCatalogMessage();
   }
@@ -659,17 +780,15 @@ export class ProductsPageComponent implements OnInit {
   }
 
   displayProducts(): CustomerCatalogProduct[] {
-    return this.applyCatalogFilters(this.products);
+    return this.products;
   }
 
   paginatedProducts(): CustomerCatalogProduct[] {
-    const allProducts = this.displayProducts();
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    return allProducts.slice(startIndex, startIndex + this.pageSize);
+    return this.products;
   }
 
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.displayProducts().length / this.pageSize));
+    return this.catalogTotalPages;
   }
 
   visiblePages(): number[] {
@@ -687,7 +806,7 @@ export class ProductsPageComponent implements OnInit {
   }
 
   paginationStartIndex(): number {
-    const total = this.displayProducts().length;
+    const total = this.catalogTotalItems;
     if (!total) {
       return 0;
     }
@@ -696,28 +815,27 @@ export class ProductsPageComponent implements OnInit {
   }
 
   paginationEndIndex(): number {
-    const total = this.displayProducts().length;
+    const total = this.catalogTotalItems;
     return Math.min(total, this.currentPage * this.pageSize);
   }
 
   changePage(page: number): void {
     const normalized = Math.min(Math.max(1, page), this.totalPages);
+    if (normalized === this.currentPage) {
+      return;
+    }
+
     this.currentPage = normalized;
+    this.refreshCatalogListing();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   totalProductCount(): number {
-    return this.products.length;
+    return this.catalogTotalItems || this.products.length;
   }
 
   categoryCount(category: CustomerLandingCategory): number {
-    const key = this.normalizeCategoryKey(category.slug || category.name);
-    const node = this.findCategoryNodeBySlug(key);
-
-    if (!node) {
-      return 0;
-    }
-
-    return this.countProductsForNode(node);
+    return getCategoryProductCount(category, this.catalogCategoryTree, (node) => this.productsForNode(node));
   }
 
   categoryImage(category: CustomerLandingCategory): string {
@@ -725,7 +843,8 @@ export class ProductsPageComponent implements OnInit {
   }
 
   isSelectedCategory(category: CustomerLandingCategory): boolean {
-    return this.normalizeCategoryKey(this.selectedCategorySlug) === this.normalizeCategoryKey(category.slug || category.name);
+    const value = this.normalizeCategoryKey(category.slug || category.name);
+    return this.selectedCategoryIds.map((item) => this.normalizeCategoryKey(item)).includes(value);
   }
 
   isExpanded(category: LandingCategoryNode): boolean {
@@ -733,27 +852,13 @@ export class ProductsPageComponent implements OnInit {
   }
 
   pageSubtitle(): string {
-    if (this.viewMode === 'search' && this.searchQuery.trim()) {
-      return this.hasActiveFilters()
-        ? `Showing search results for "${this.searchQuery.trim()}" with active filters.`
-        : `Showing search results for "${this.searchQuery.trim()}".`;
-    }
-
-    if (this.selectedCategorySlug === 'all') {
-      return this.hasActiveFilters()
-        ? 'Browse premium dry fruits with filters and sorting.'
-        : 'Browse premium dry fruits by type or search for a specific pack.';
-    }
-
-    const selectedCategory = this.catalogCategories.find(
-      (category) => this.normalizeCategoryKey(category.slug || category.name) === this.normalizeCategoryKey(this.selectedCategorySlug)
-    );
-
-    return selectedCategory?.name
-      ? this.hasActiveFilters()
-        ? `Browsing ${selectedCategory.name} with filters applied.`
-        : `Browsing ${selectedCategory.name}.`
-      : 'Browse premium dry fruits by type or search for a specific pack.';
+    return buildPageSubtitle({
+      viewMode: this.viewMode,
+      searchQuery: this.searchQuery,
+      selectedCategoryIds: this.selectedCategoryIds,
+      hasActiveFilters: this.hasActiveFilters(),
+      catalogCategories: this.catalogCategories
+    });
   }
 
   trackByCategoryId(_: number, category: CustomerLandingCategory): string {
@@ -776,53 +881,109 @@ export class ProductsPageComponent implements OnInit {
     return page;
   }
 
-  trackByValue(_: number, value: string): string {
-    return value;
-  }
-
   trackBySortOption(_: number, option: { value: string; label: string }): string {
     return option.value;
-  }
-
-  trackByFilterOption(_: number, option: { value: string; label: string }): string {
-    return option.value;
-  }
-
-  categoryLabel(category: CustomerLandingCategory): string {
-    const level = Number(category.level || 0);
-    const indent = level > 0 ? `${'  '.repeat(level)}- ` : '';
-    const typeLabel = level > 0 ? 'Child' : 'Parent';
-    return `${indent}${category.name} (${typeLabel})`;
   }
 
   private normalizeCategoryKey(value: string): string {
     return String(value || '').trim().toLowerCase();
   }
 
+  private normalizeFilterValues(values: string[]): string[] {
+    const seen = new Set<string>();
+    const normalizedValues: string[] = [];
+
+    (values || []).forEach((value) => {
+      const normalized = this.normalizeCategoryKey(value);
+      if (!normalized || seen.has(normalized)) {
+        return;
+      }
+
+      seen.add(normalized);
+      normalizedValues.push(normalized);
+    });
+
+    return normalizedValues;
+  }
+
+  private parseFilterValues(value: string | null): string[] {
+    if (!value) {
+      return [];
+    }
+
+    return this.normalizeFilterValues(
+      String(value)
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => Boolean(item) && item.toLowerCase() !== 'all')
+    );
+  }
+
   onCatalogFilterChange(): void {
     this.currentPage = 1;
-    this.refreshCatalogMessage();
+    this.refreshCatalogListing();
+  }
+
+  onSelectedCategoryIdsChange(values: string[]): void {
+    this.selectedCategoryIds = this.normalizeFilterValues(values);
+    this.selectedCategorySlug = this.selectedCategoryIds[0] || 'all';
+    this.currentPage = 1;
+  }
+
+  onSelectedBrandIdsChange(values: string[]): void {
+    this.selectedBrandIds = this.normalizeFilterValues(values);
+    this.selectedBrand = this.selectedBrandIds[0] || 'all';
+    this.currentPage = 1;
   }
 
   resetFilters(): void {
     this.searchQuery = '';
     this.sortBy = 'relevance';
     this.selectedCategorySlug = 'all';
+    this.selectedCategoryIds = [];
     this.selectedBrand = 'all';
-    this.availabilityFilter = 'all';
+    this.selectedBrandIds = [];
     this.ratingFilter = 'all';
     this.minPrice = '';
     this.maxPrice = '';
     this.currentPage = 1;
     this.viewMode = 'landing';
-    this.loadLandingProducts();
+    this.filterResetToken += 1;
+    this.refreshCatalogListing();
+  }
+
+  handleActiveFilterRemoval(filter: 'selectedCategory' | 'selectedBrand' | 'price' | 'ratingFilter'): void {
+    switch (filter) {
+      case 'selectedCategory':
+        this.selectedCategorySlug = 'all';
+        this.selectedCategoryIds = [];
+        break;
+      case 'selectedBrand':
+        this.selectedBrand = 'all';
+        this.selectedBrandIds = [];
+        break;
+      case 'price':
+        this.minPrice = '';
+        this.maxPrice = '';
+        break;
+      case 'ratingFilter':
+        this.ratingFilter = 'all';
+        break;
+    }
+
+    this.currentPage = 1;
+    this.refreshCatalogListing();
   }
 
   brandOptions(): string[] {
     const seen = new Set<string>();
     const brands: string[] = [];
 
-    this.products.forEach((product) => {
+    const sourceProducts = this.landingCategories.length
+      ? this.flattenLandingProducts(this.landingCategories)
+      : this.products;
+
+    sourceProducts.forEach((product) => {
       const brand = String(product.brand || '').trim();
       const normalized = this.normalizeCatalogKey(brand);
 
@@ -835,116 +996,6 @@ export class ProductsPageComponent implements OnInit {
     });
 
     return brands.sort((a, b) => a.localeCompare(b));
-  }
-
-  private applyCatalogFilters(products: CustomerCatalogProduct[]): CustomerCatalogProduct[] {
-    const filtered = products.filter((product) => {
-      if (!this.matchesCategory(product)) {
-        return false;
-      }
-
-      if (!this.matchesBrand(product)) {
-        return false;
-      }
-
-      if (!this.matchesPrice(product)) {
-        return false;
-      }
-
-      if (!this.matchesAvailability(product)) {
-        return false;
-      }
-
-      if (!this.matchesRating(product)) {
-        return false;
-      }
-
-      return true;
-    });
-
-    return this.sortCatalogProducts(filtered);
-  }
-
-  private matchesCategory(product: CustomerCatalogProduct): boolean {
-    if (this.selectedCategorySlug === 'all') {
-      return true;
-    }
-
-    const selectedKeys = this.getSelectedCategoryKeys();
-    if (selectedKeys.size === 0) {
-      return true;
-    }
-
-    const productCategory = this.normalizeCatalogKey(product.catalogCategorySlug || product.categoryDetails?.slug || product.categoryDetails?.name || '');
-    const productCategoryName = this.normalizeCatalogKey(product.catalogCategoryName || product.categoryDetails?.name || '');
-
-    return selectedKeys.has(productCategory) || selectedKeys.has(productCategoryName);
-  }
-
-  private matchesBrand(product: CustomerCatalogProduct): boolean {
-    if (this.selectedBrand === 'all') {
-      return true;
-    }
-
-    return this.normalizeCatalogKey(product.brand || '') === this.normalizeCatalogKey(this.selectedBrand);
-  }
-
-  private matchesPrice(product: CustomerCatalogProduct): boolean {
-    const price = this.productDisplayPrice(product);
-
-    if (this.minPrice !== '' && price < Number(this.minPrice)) {
-      return false;
-    }
-
-    if (this.maxPrice !== '' && price > Number(this.maxPrice)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private matchesAvailability(product: CustomerCatalogProduct): boolean {
-    if (this.availabilityFilter === 'all') {
-      return true;
-    }
-
-    const inStock = (product.variants || []).some((variant) => Number(variant.productStock || 0) > 0 || !!variant.isAvailable);
-    return this.availabilityFilter === 'in-stock' ? inStock : !inStock;
-  }
-
-  private matchesRating(product: CustomerCatalogProduct): boolean {
-    if (this.ratingFilter === 'all') {
-      return true;
-    }
-
-    return Number(product.averageRating || 0) >= Number(this.ratingFilter);
-  }
-
-  private sortCatalogProducts(products: CustomerCatalogProduct[]): CustomerCatalogProduct[] {
-    const sorted = [...products];
-
-    switch (this.sortBy) {
-      case 'price-asc':
-        return sorted.sort((a, b) => this.productDisplayPrice(a) - this.productDisplayPrice(b));
-      case 'price-desc':
-        return sorted.sort((a, b) => this.productDisplayPrice(b) - this.productDisplayPrice(a));
-      case 'rating-desc':
-        return sorted.sort((a, b) => Number(b.averageRating || 0) - Number(a.averageRating || 0));
-      case 'newest':
-        return sorted.sort((a, b) => this.toTimestamp(b.createdAt) - this.toTimestamp(a.createdAt));
-      case 'popular':
-        return sorted.sort((a, b) => {
-          const reviewDiff = Number(b.numberOfReviews || 0) - Number(a.numberOfReviews || 0);
-          if (reviewDiff !== 0) return reviewDiff;
-          return Number(b.averageRating || 0) - Number(a.averageRating || 0);
-        });
-      default:
-        return sorted;
-    }
-  }
-
-  private productDisplayPrice(product: CustomerCatalogProduct): number {
-    return Number(product.displayVariant?.finalPrice || product.basePrice || 0);
   }
 
   private attachCatalogContext(product: CustomerCatalogProduct): CustomerCatalogProduct {
@@ -989,20 +1040,60 @@ export class ProductsPageComponent implements OnInit {
     return catalogProducts;
   }
 
-  private hasActiveFilters(): boolean {
+  hasActiveFilters(): boolean {
     return [
       this.sortBy !== 'relevance',
-      this.selectedBrand !== 'all',
-      this.availabilityFilter !== 'all',
+      this.selectedBrandIds.length > 0,
       this.ratingFilter !== 'all',
       this.minPrice !== '',
       this.maxPrice !== '',
-      this.selectedCategorySlug !== 'all'
+      this.selectedCategoryIds.length > 0
     ].some(Boolean);
   }
 
   private normalizeCatalogKey(value: string): string {
     return String(value || '').trim().toLowerCase();
+  }
+
+  private loadWishlistState(): void {
+    this.wishlistService.getWishlist().subscribe({
+      next: (wishlist) => {
+        this.syncWishlistSet(wishlist?.products || []);
+      },
+      error: () => {
+        this.wishlistedProductIds = new Set<string>();
+      }
+    });
+  }
+
+  private loadGuestWishlistState(): void {
+    this.syncWishlistSet(this.guestDataService.getGuestWishlist());
+  }
+
+  private syncWishlistSet(products: Array<{ _id?: string; productId?: string }>): void {
+    this.wishlistedProductIds = new Set(
+      (products || [])
+        .map((item) => item?._id || item?.productId)
+        .filter((id): id is string => !!id)
+    );
+  }
+
+  private toggleGuestWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    const isCurrentlyWishlisted = this.wishlistedProductIds.has(product._id);
+
+    if (isCurrentlyWishlisted) {
+      this.guestDataService.removeFromGuestWishlist(product._id);
+      this.errorService.showToast('Removed from guest wishlist.', 'success');
+    } else {
+      this.guestDataService.addToGuestWishlist(product);
+      this.errorService.showToast('Saved to guest wishlist.', 'success');
+    }
+
+    this.loadGuestWishlistState();
   }
 
   private toTimestamp(value?: string): number {
@@ -1011,56 +1102,11 @@ export class ProductsPageComponent implements OnInit {
   }
 
   private buildCategoryTree(categories: CustomerLandingCategory[]): LandingCategoryNode[] {
-    const nodeMap = new Map<string, LandingCategoryNode>();
-
-    categories.forEach((category) => {
-      nodeMap.set(category._id, {
-        ...category,
-        children: []
-      });
-    });
-
-    const roots: LandingCategoryNode[] = [];
-
-    nodeMap.forEach((node) => {
-      const parentId = node.parentCategory ? String(node.parentCategory) : '';
-      if (parentId && nodeMap.has(parentId)) {
-        nodeMap.get(parentId)?.children.push(node);
-      } else {
-        roots.push(node);
-      }
-    });
-
-    const sortNodes = (nodes: LandingCategoryNode[]): LandingCategoryNode[] => {
-      return nodes
-        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
-        .map((node) => ({
-          ...node,
-          children: sortNodes(node.children || [])
-        }));
-    };
-
-    return sortNodes(roots);
+    return buildCategoryTree(categories);
   }
 
   private buildVisibleCategoryList(): LandingCategoryNode[] {
-    const visible: LandingCategoryNode[] = [];
-
-    const visit = (nodes: LandingCategoryNode[], depth = 0): void => {
-      nodes.forEach((node) => {
-        visible.push({
-          ...node,
-          level: depth
-        });
-
-        if (node.children.length > 0 && this.expandedCategoryIds.has(node._id)) {
-          visit(node.children, depth + 1);
-        }
-      });
-    };
-
-    visit(this.catalogCategoryTree);
-    return visible;
+    return buildVisibleCategoryList(this.catalogCategoryTree, this.expandedCategoryIds);
   }
 
   private toggleCategoryExpansion(category: LandingCategoryNode): void {
@@ -1074,21 +1120,7 @@ export class ProductsPageComponent implements OnInit {
   }
 
   private findCategoryNodeBySlug(slug: string): LandingCategoryNode | null {
-    const targetSlug = this.normalizeCategoryKey(slug);
-    const stack = [...this.catalogCategoryTree];
-
-    while (stack.length > 0) {
-      const current = stack.shift();
-      if (!current) continue;
-
-      if (this.normalizeCategoryKey(current.slug || current.name) === targetSlug) {
-        return current;
-      }
-
-      stack.unshift(...(current.children || []));
-    }
-
-    return null;
+    return findCategoryNodeBySlug(this.catalogCategoryTree, slug);
   }
 
   private getSelectedCategoryKeys(): Set<string> {
@@ -1101,29 +1133,11 @@ export class ProductsPageComponent implements OnInit {
   }
 
   private collectCategoryKeys(node: LandingCategoryNode): Set<string> {
-    const keys = new Set<string>();
-    const visit = (current: LandingCategoryNode): void => {
-      const slug = this.normalizeCatalogKey(current.slug || '');
-      const name = this.normalizeCatalogKey(current.name || '');
-
-      if (slug) keys.add(slug);
-      if (name) keys.add(name);
-
-      (current.children || []).forEach(visit);
-    };
-
-    visit(node);
-    return keys;
+    return collectCategoryKeys(node);
   }
 
   private countProductsForNode(node: LandingCategoryNode): number {
-    const directCount = this.productsForNode(node).length;
-
-    if (!node.children.length) {
-      return directCount;
-    }
-
-    return node.children.reduce((total, child) => total + this.countProductsForNode(child), directCount);
+    return countProductsForNode(node, (targetNode) => this.productsForNode(targetNode));
   }
 
   private refreshSidebarCategories(): void {
@@ -1135,41 +1149,19 @@ export class ProductsPageComponent implements OnInit {
     this.sidebarCategories = this.catalogCategories.filter((category) => this.categoryCount(category) > 0);
   }
 
+  private buildCatalogMessage(query: string): string {
+    return buildCatalogMessage({
+      query,
+      selectedCategoryIds: this.selectedCategoryIds,
+      totalProductCount: this.totalProductCount(),
+      hasActiveFilters: this.hasActiveFilters(),
+      landingCategoriesCount: this.landingCategories.length,
+      catalogCategoryTree: this.catalogCategoryTree
+    });
+  }
+
   private refreshCatalogMessage(): void {
-    if (this.viewMode === 'search') {
-      if (!this.searchQuery.trim()) {
-        this.catalogMessage = '';
-        return;
-      }
-
-      const count = this.displayProducts().length;
-      this.catalogMessage = count
-        ? `${count} product${count === 1 ? '' : 's'} found for "${this.searchQuery.trim()}".`
-        : `No products matched "${this.searchQuery.trim()}".`;
-      return;
-    }
-
-    const selectedCategory = this.findCategoryNodeBySlug(this.selectedCategorySlug);
-
-    if (this.selectedCategorySlug === 'all') {
-      if (this.hasActiveFilters()) {
-        const filteredCount = this.displayProducts().length;
-        this.catalogMessage = `Showing ${filteredCount} filtered product${filteredCount === 1 ? '' : 's'} across ${this.products.length} available item${this.products.length === 1 ? '' : 's'}.`;
-        return;
-      }
-
-      this.catalogMessage = this.landingCategories.length
-        ? `Showing ${this.totalProductCount()} curated product${this.totalProductCount() === 1 ? '' : 's'} across ${this.landingCategories.length} categorie${this.landingCategories.length === 1 ? 'y' : 's'}.`
-        : 'No active product categories are available in the catalog yet.';
-      return;
-    }
-
-    const count = this.displayProducts().length;
-    this.catalogMessage = selectedCategory?.name
-      ? this.hasActiveFilters()
-        ? `Browsing ${selectedCategory.name} with ${count} filtered product${count === 1 ? '' : 's'}.`
-        : `Browsing ${selectedCategory.name} with ${count} product${count === 1 ? '' : 's'}.`
-      : 'Browse premium dry fruits by type or search for a specific pack.';
+    this.catalogMessage = this.buildCatalogMessage(this.searchQuery.trim());
   }
 
   private collectProductsForNode(node: LandingCategoryNode): CustomerCatalogProduct[] {

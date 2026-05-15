@@ -5,6 +5,9 @@ import {
     getVendorDetails,  
     getVendorAnalytics, 
     getVendorSoldProducts, 
+    getVendorNotifications,
+    markAllVendorNotificationsRead,
+    markVendorNotificationRead,
     setupInitialAdminAndStore,
     updateBankDetails,
     updateVendorDetails,
@@ -17,6 +20,15 @@ import {
     getAllUsers, 
     toggleProductStatusByAdmin 
 } from "../controllers/admin.Controllers.js";
+import {
+    getAdminBulkInquiryById,
+    getAdminBulkInquiries,
+    updateAdminBulkInquiryStatus
+} from "../controllers/adminBulkInquiry.controller.js";
+import {
+    getAdminShipments,
+    updateAdminShipment
+} from "../controllers/shipment.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router()
@@ -83,7 +95,15 @@ router.route("/update-logo").patch(verifyJWT, authorizeRoles("vendor", "admin"),
 router.route("/profile").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorDetails) //working nicely
 router.route("/analytics").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorAnalytics); //partially tested without products working
 router.route("/sold-items").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorSoldProducts); //partially tested without products working
+router.route("/notifications").get(verifyJWT, authorizeRoles("vendor", "admin"), getVendorNotifications);
+router.route("/notifications/:notificationId/read").patch(verifyJWT, authorizeRoles("vendor", "admin"), markVendorNotificationRead);
+router.route("/notifications/read-all").patch(verifyJWT, authorizeRoles("vendor", "admin"), markAllVendorNotificationsRead);
 router.route("/reports/orders").get(verifyJWT, authorizeRoles("vendor", "admin"), downloadOrderReports);
+router.route("/shipments").get(verifyJWT, authorizeRoles("vendor", "admin"), getAdminShipments);
+router.route("/shipments/:orderId").patch(verifyJWT, authorizeRoles("admin"), updateAdminShipment);
+router.route("/bulk-inquiries").get(verifyJWT, authorizeRoles("vendor", "Vendor", "admin", "Admin"), getAdminBulkInquiries);
+router.route("/bulk-inquiries/:id").get(verifyJWT, authorizeRoles("vendor", "Vendor", "admin", "Admin"), getAdminBulkInquiryById);
+router.route("/bulk-inquiries/:id/status").patch(verifyJWT, authorizeRoles("vendor", "Vendor", "admin", "Admin"), updateAdminBulkInquiryStatus);
 
 router.route("/initial-setup-129986").post(upload.single("vendorLogo"), setupInitialAdminAndStore) //working nicely
 

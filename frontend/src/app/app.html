@@ -10,4 +10,8 @@
     <router-outlet></router-outlet>
   </div>
 </main>
-<app-footer></app-footer>
+@defer (on viewport) {
+  <app-footer></app-footer>
+} @placeholder {
+  <div class="h-0"></div>
+}

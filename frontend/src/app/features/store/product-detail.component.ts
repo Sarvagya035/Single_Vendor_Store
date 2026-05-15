@@ -1,50 +1,94 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { ErrorService } from '../../core/services/error.service';
+import { GuestDataService } from '../../core/services/guest-data.service';
 import { ReviewService } from '../../core/services/review.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import {
   CustomerCatalogProduct,
   CustomerCatalogVariant,
-  CustomerLandingCategoryGroup
+  CustomerLandingCategoryGroup,
+  CustomerWishlistProduct
 } from '../../core/models/customer.models';
 import { ProductReview, ProductReviewForm, ProductReviewStat } from '../../core/models/review.models';
 import { ProductGalleryComponent } from './product-gallery/product-gallery.component';
+import { ProductCardVariantActionEvent } from './components/product-card/product-card.component';
+import { ProductRelatedProductsSectionComponent } from './components/product-related-products-section/product-related-products-section.component';
+import { ProductReviewsSummaryComponent } from './components/product-reviews-summary/product-reviews-summary.component';
+import { ProductReviewsListComponent } from './components/product-reviews-list/product-reviews-list.component';
+import { ProductReviewFormComponent } from './components/product-review-form/product-review-form.component';
 import { ProductPurchasePanelComponent } from './product-purchase-panel/product-purchase-panel.component';
+import {
+  buildActiveImage,
+  buildAttributeEntries,
+  buildDiscountedPriceLabel,
+  buildGalleryImages,
+  buildOriginalPriceLabel,
+  buildVariantLabel,
+  buildVariantLabels
+} from './utils/product-detail-variants.helpers';
+import { resolveVariantImage } from './utils/product-detail-variants.helpers';
+import {
+  ratingBreakdown as buildRatingBreakdown,
+  reviewTotalCount as getReviewTotalCount
+} from './utils/product-detail-reviews.helpers';
+import { findSimilarProducts as buildSimilarProducts } from './utils/product-detail-related.helpers';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ProductGalleryComponent, ProductPurchasePanelComponent, ProductRelatedProductsSectionComponent, ProductReviewsSummaryComponent, ProductReviewsListComponent, ProductReviewFormComponent],
   template: `
     <div class="min-h-[calc(100vh-64px)] bg-[radial-gradient(circle_at_top_left,rgba(212,160,23,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(111,78,55,0.12),transparent_24%),#fff9f2]">
-      <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <a routerLink="/products" class="inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 transition hover:text-slate-900">
-          <span>&larr;</span>
-          Back to products
-        </a>
+      <section class="storefront-section pt-2 pb-8 sm:pt-4 sm:pb-10 lg:pt-5 lg:pb-12">
+        <div class="storefront-container">
+          <a routerLink="/products" class="mb-2 inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 transition hover:text-slate-900">
+            <span>&larr;</span>
+            Back to products
+          </a>
 
-        <div *ngIf="loading" class="mt-8 text-sm font-semibold text-slate-500">Loading product...</div>
+          <div *ngIf="loading" class="mt-2 text-sm font-semibold text-slate-500">Loading product...</div>
 
-        <div *ngIf="successMessage" class="mt-8 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
-          {{ successMessage }}
-        </div>
+          <div *ngIf="successMessage" class="mt-2 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+            {{ successMessage }}
+          </div>
 
-        <ng-container *ngIf="product && !loading">
-          <div class="mt-8 rounded-[2rem] border border-[#eadcc9] bg-white/90 p-4 shadow-[0_24px_60px_rgba(47,27,20,0.08)] sm:p-6 lg:p-7">
-            <div class="grid gap-8 lg:grid-cols-[1.05fr_minmax(0,1fr)]">
-              <app-product-gallery
-                [productName]="product.productName"
-                [activeImage]="activeImage()"
-                [selectedImage]="selectedImage"
-                [images]="galleryImages()"
-                (imageSelected)="selectedImage = $event"
-              />
+          <div *ngIf="loading" class="mt-6 space-y-6">
+            <div class="grid gap-6 rounded-[2rem] border border-[#eadcc9] bg-white/90 p-4 shadow-[0_24px_60px_rgba(47,27,20,0.08)] lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:p-6">
+              <div class="space-y-4">
+                <div class="aspect-square rounded-[1.8rem] bg-slate-200/80 animate-pulse"></div>
+                <div class="grid grid-cols-4 gap-3">
+                  <div *ngFor="let _ of detailSkeletonTiles" class="aspect-square rounded-[1rem] bg-slate-200/80 animate-pulse"></div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div class="h-4 w-24 rounded-full bg-slate-200/80 animate-pulse"></div>
+                <div class="h-10 w-4/5 rounded-full bg-slate-200/80 animate-pulse"></div>
+                <div class="h-4 w-2/3 rounded-full bg-slate-200/80 animate-pulse"></div>
+                <div class="h-28 rounded-[1.5rem] bg-slate-200/80 animate-pulse"></div>
+                <div class="h-12 rounded-[1.5rem] bg-slate-200/80 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngIf="product && !loading">
+            <div class="mt-0 rounded-[2rem] border border-[#eadcc9] bg-white/90 app-card-tight shadow-[0_24px_60px_rgba(47,27,20,0.08)]">
+              <div class="grid gap-6 lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:gap-8">
+                <app-product-gallery
+                  [productName]="product.productName"
+                  [activeImage]="activeImage()"
+                  [selectedImage]="selectedImage"
+                  [images]="galleryImages()"
+                  [offerBadgeText]="offerBadgeText()"
+                  (imageSelected)="selectedImage = $event"
+                />
 
               <app-product-purchase-panel
                 [product]="product"
@@ -54,262 +98,109 @@ import { ProductPurchasePanelComponent } from './product-purchase-panel/product-
                 [priceLabel]="formatCurrency(selectedVariant()?.finalPrice || product.basePrice || 0)"
                 [originalPriceLabel]="originalPriceLabel()"
                 [discountedPriceLabel]="discountedPriceLabel()"
-              [quantity]="quantity"
-              [isAdding]="isAdding"
-              [isBuying]="isBuying"
-              [variantLabels]="variantLabels()"
-              [attributes]="attributeEntries(selectedVariant()?.attributes)"
-              (variantChanged)="onVariantChange($event)"
-              (quantityChanged)="setQuantity($event)"
-              (addToCart)="addToCart()"
-              (buyNow)="buyNow()"
+                [quantity]="quantity"
+                [isAdding]="isAdding"
+                [isBuying]="isBuying"
+                [isWishlisted]="isWishlisted"
+                [isWishlistBusy]="isWishlistBusy"
+                [variantLabels]="variantLabels()"
+                [attributes]="attributeEntries(selectedVariant()?.attributes)"
+                (variantChanged)="onVariantChange($event)"
+                (quantityChanged)="setQuantity($event)"
+                (addToCart)="addToCart()"
+                (buyNow)="buyNow()"
+                (toggleWishlist)="toggleWishlist()"
+              />
+              </div>
+            </div>
+
+            <app-product-related-products-section
+              [relatedProducts]="visibleRelatedProducts()"
+              [wishlistBusyId]="wishlistBusyId"
+              [wishlistedProductIds]="wishlistedProductIds"
+              (productClick)="openProduct($event)"
+              (wishlistToggle)="toggleRelatedWishlist($event)"
+              (addToCart)="handleRelatedProductCardAddToCart($event)"
+              (buyNow)="handleRelatedProductCardBuyNow($event)"
             />
-            </div>
-          </div>
 
-          <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
-            <div class="flex flex-col gap-2 border-b border-[#f1e4d4] pb-5 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Similar products</p>
-                <h2 class="mt-2 text-2xl font-extrabold text-slate-900">You may also like</h2>
-              </div>
-              <p class="text-sm font-medium text-slate-500">
-                Handpicked from the same dry fruit family and flavor profile.
-              </p>
-            </div>
-
-            <div *ngIf="relatedProducts.length; else noRelatedProducts" class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              <a
-                *ngFor="let related of relatedProducts; trackBy: trackByProductId"
-                [routerLink]="['/products', related._id]"
-                class="group rounded-[1.6rem] border border-[#e7dac9] bg-[#fff7ed]/50 p-4 shadow-[0_16px_40px_rgba(111,78,55,0.05)] transition hover:-translate-y-1 hover:border-[#d4a017] hover:bg-white hover:shadow-[0_24px_60px_rgba(111,78,55,0.1)]"
-              >
-                <div class="aspect-square overflow-hidden rounded-[1.25rem] border border-[#e7dac9] bg-white">
-                  <img
-                    [src]="productImage(related)"
-                    [alt]="related.productName"
-                    class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                  />
-                </div>
-
-                <div class="mt-4 space-y-3">
-                  <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                      <p class="truncate text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-400">
-                        {{ related.brand || 'Dry fruit pack' }}
-                      </p>
-                      <h3 class="mt-1 line-clamp-2 text-lg font-extrabold text-slate-900">
-                        {{ related.productName }}
-                      </h3>
-                    </div>
-                    <span class="shrink-0 rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-extrabold text-[#6f4e37] shadow-sm ring-1 ring-[#e7dac9]">
-                      {{ formatCurrency(related.displayVariant?.finalPrice || related.basePrice || 0) }}
-                    </span>
-                  </div>
-
-                  <p class="text-sm font-semibold text-slate-500">
-                    {{ related.categoryDetails?.name || 'Dry fruits & nuts' }}
-                  </p>
-                </div>
-              </a>
-            </div>
-            <ng-template #noRelatedProducts>
-              <div class="mt-6 rounded-[1.4rem] border border-dashed border-[#e7dac9] bg-[#fff7ed] px-6 py-10 text-center">
-                <h3 class="text-xl font-extrabold text-slate-900">More dry fruits coming soon</h3>
-                <p class="mt-3 text-sm font-medium text-slate-500">
-                  We’re still building out similar item suggestions for this product.
-                </p>
-              </div>
-            </ng-template>
-          </section>
-
-          <section class="mt-10 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-            <div class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
-              <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <section class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <div class="flex flex-col gap-4 border-b border-[#f1e4d4] pb-6 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Ratings & Reviews</p>
-                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">What customers are saying</h2>
+                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Customer Reviews</h2>
                 </div>
-                <div class="rounded-[1.5rem] border border-amber-100 bg-[#fff7ed] px-4 py-3 text-right">
-                  <p class="text-3xl font-extrabold text-slate-900">{{ formatRating(product.averageRating || 0) }}</p>
-                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">{{ product.numberOfReviews || 0 }} reviews</p>
-                </div>
-              </div>
-
-              <div class="mt-5 grid gap-3">
-                <div *ngFor="let row of ratingBreakdown()" class="flex items-center gap-4">
-                  <p class="w-12 text-sm font-extrabold text-slate-700">{{ row.star }} star</p>
-                  <div class="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
-                    <div class="h-full rounded-full bg-amber-400 transition-all" [style.width.%]="row.percentage"></div>
-                  </div>
-                  <p class="w-12 text-right text-sm font-bold text-slate-500">{{ row.count }}</p>
-                </div>
-              </div>
-
-              <div class="mt-8 space-y-4">
-                <article
-                  *ngFor="let review of reviews; trackBy: trackByReview"
-                  class="rounded-[1.75rem] border border-[#e7dac9] bg-gradient-to-br from-white to-[#fff7ed]/80 p-5 shadow-[0_10px_30px_rgba(111,78,55,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(111,78,55,0.07)]"
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-full bg-[#f08a00] px-5 py-3 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(240,138,0,0.22)] transition hover:-translate-y-0.5 hover:bg-[#e07d00]"
+                  [attr.aria-expanded]="showReviewForm"
+                  (click)="toggleReviewForm()"
                 >
-                  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div class="flex flex-wrap items-center gap-3">
-                        <p class="text-base font-extrabold text-slate-900">{{ review.title || 'Customer review' }}</p>
-                        <span class="rounded-full bg-[#f5e6d3] px-3 py-1 text-xs font-extrabold uppercase tracking-[0.18em] text-[#6f4e37]">
-                          {{ formatRating(review.rating || 0) }}/5
-                        </span>
-                      </div>
-                      <p class="mt-2 text-sm font-semibold text-slate-600">{{ reviewAuthor(review) }}</p>
-                    </div>
-                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{{ formatDate(review.updatedAt || review.createdAt) }}</p>
-                  </div>
-
-                  <p class="mt-4 text-sm leading-7 text-slate-600">{{ review.commentBody || 'No review text provided.' }}</p>
-
-                  <div *ngIf="review.reviewImages?.length" class="mt-4 flex flex-wrap gap-3">
-                    <a
-                      *ngFor="let image of review.reviewImages"
-                      [href]="image"
-                      target="_blank"
-                      rel="noreferrer"
-                      class="inline-flex items-center gap-2 rounded-full border border-[#e7dac9] bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-600 transition hover:border-[#d4a017] hover:text-slate-900"
-                    >
-                      <span class="h-2 w-2 rounded-full bg-[#d4a017]"></span>
-                      View image
-                    </a>
-                  </div>
-
-                  <div *ngIf="isOwnReview(review)" class="mt-5 flex items-center gap-3">
-                    <button
-                      type="button"
-                      class="rounded-full border border-[#e7dac9] bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-700 transition hover:border-[#d4a017] hover:text-slate-900"
-                      (click)="editReview(review)"
-                    >
-                      Edit Review
-                    </button>
-                  </div>
-                </article>
-
-                <div *ngIf="!reviews.length" class="rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fff7ed] px-6 py-10 text-center">
-                  <h3 class="text-xl font-extrabold text-slate-900">No reviews yet</h3>
-                  <p class="mt-3 text-sm font-medium text-slate-500">Be the first customer to share feedback for this product.</p>
-                </div>
+                  {{ showReviewForm ? 'Hide Review Form' : 'Write a Review' }}
+                </button>
               </div>
-            </div>
 
-            <aside #reviewFormSection class="rounded-[2rem] border border-[#e7dac9] bg-white p-6 shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
+              <app-product-reviews-summary
+                [averageRating]="product.averageRating || 0"
+                [reviewTotalCount]="reviewTotalCount()"
+                [ratingBreakdown]="ratingBreakdown()"
+                [starSlots]="reviewStarSlots"
+              />
+
+              <app-product-reviews-list
+                [reviews]="reviews"
+                [currentUserId]="user?._id || ''"
+                [starSlots]="reviewStarSlots"
+                (editReview)="editReview($event)"
+              />
+            </section>
+
+            <section *ngIf="showReviewForm" #reviewFormSection class="mt-10 rounded-[2rem] border border-[#e7dac9] bg-white app-card-body shadow-[0_18px_50px_rgba(111,78,55,0.06)]">
               <ng-container *ngIf="isCustomer(); else guestReviewPrompt">
                 <div class="border-b border-[#f1e4d4] pb-5">
-                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Write A Review</p>
-                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Share your experience</h2>
-                  <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-                    Reviews are allowed only after this product has been delivered to you.
-                  </p>
-                </div>
-
-                <form class="mt-6 space-y-4" (ngSubmit)="submitReview()">
-                  <div *ngIf="isEditingReview" class="rounded-2xl border border-amber-100 bg-[#fff7ed] px-4 py-3">
-                    <div class="flex items-center justify-between gap-3">
-                      <div>
-                        <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Edit mode</p>
-                        <p class="mt-1 text-sm font-semibold text-slate-700">You are updating your existing review.</p>
-                      </div>
-                      <button
-                        type="button"
-                        class="rounded-full border border-amber-200 bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700 transition hover:border-amber-300 hover:text-amber-800"
-                        (click)="cancelReviewEdit()"
-                      >
-                        Cancel
-                      </button>
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-amber-700">Write A Review</p>
+                      <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Share your experience</h2>
+                      <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                        Reviews are allowed only after this product has been delivered to you.
+                      </p>
                     </div>
-                  </div>
-
-                  <label class="block">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Rating</span>
-                    <select
-                      [(ngModel)]="reviewForm.rating"
-                      name="rating"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                    <button
+                      type="button"
+                      class="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                      (click)="toggleReviewForm()"
                     >
-                      <option *ngFor="let star of ratingOptions" [ngValue]="star">{{ star }} / 5</option>
-                    </select>
-                  </label>
-
-                  <label class="block">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Title</span>
-                    <input
-                      [(ngModel)]="reviewForm.title"
-                      name="title"
-                      type="text"
-                      maxlength="120"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      placeholder="Summarize your experience"
-                    />
-                  </label>
-
-                  <label class="block">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review</span>
-                    <textarea
-                      [(ngModel)]="reviewForm.commentBody"
-                      name="commentBody"
-                      rows="5"
-                      class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                      placeholder="What stood out? Quality, packaging, delivery, value..."
-                    ></textarea>
-                  </label>
-
-                  <label class="block">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review images</span>
-                    <input
-                      #reviewImagesInput
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png,image/webp"
-                      multiple
-                      (change)="onReviewImagesSelected($event)"
-                      class="mt-2 w-full cursor-pointer rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-inner focus:border-amber-300 focus:outline-none focus:ring-4 focus:ring-amber-100"
-                    />
-                    <p class="mt-2 text-xs font-semibold text-slate-500">
-                      Upload up to 5 images. JPG, PNG, and WEBP only.
-                    </p>
-                    <div *ngIf="reviewImageFiles.length" class="mt-3 flex flex-wrap gap-2">
-                      <span
-                        *ngFor="let file of reviewImageFiles; trackBy: trackByReviewFile"
-                        class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700"
-                      >
-                        {{ file.name }}
-                      </span>
-                    </div>
-                    <div *ngIf="reviewForm.reviewImages?.length" class="mt-3 flex flex-wrap gap-2">
-                      <span
-                        *ngFor="let image of reviewForm.reviewImages"
-                        class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600"
-                      >
-                        Existing image
-                      </span>
-                    </div>
-                  </label>
-
-                  <button
-                    type="submit"
-                    [disabled]="isSubmittingReview || !product"
-                    class="btn-primary w-full !py-3 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {{ isSubmittingReview ? 'Saving Review...' : (isEditingReview ? 'Update Review' : 'Submit Review') }}
-                  </button>
-                </form>
+                      Hide
+                    </button>
+                  </div>
+                </div>
+                <app-product-review-form
+                  [reviewForm]="reviewForm"
+                  [reviewImageFiles]="reviewImageFiles"
+                  [isEditingReview]="isEditingReview"
+                  [isSubmittingReview]="isSubmittingReview"
+                  [canSubmit]="!!product"
+                  [ratingOptions]="ratingOptions"
+                  (submitReview)="submitReview()"
+                  (cancelEdit)="cancelReviewEdit()"
+                  (imagesSelected)="onReviewImagesSelected($event)"
+                />
               </ng-container>
 
               <ng-template #guestReviewPrompt>
-                <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review access</p>
-                <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Sign in to leave a review</h2>
-                <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
-                  Guest visitors can read product details and reviews, but only signed-in customers can write one.
-                </p>
-                <a routerLink="/login" class="btn-primary mt-6 inline-flex !px-6 !py-3">Go To Login</a>
+                <div class="flex h-full flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-[#e7dac9] bg-[#fffaf5] px-6 py-10 text-center">
+                  <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-400">Review access</p>
+                  <h2 class="mt-2 text-2xl font-extrabold text-slate-900">Sign in to leave a review</h2>
+                  <p class="mt-3 text-sm font-medium leading-7 text-slate-500">
+                    Guest visitors can read product details and reviews, but only signed-in customers can write one.
+                  </p>
+                  <a routerLink="/login" class="btn-primary mt-6 inline-flex !px-6 !py-3">Go To Login</a>
+                </div>
               </ng-template>
-            </aside>
-          </section>
-        </ng-container>
+            </section>
+          </ng-container>
+        </div>
       </section>
     </div>
   `
@@ -318,19 +209,26 @@ export class ProductDetailComponent implements OnInit {
   user: any = null;
   product: CustomerCatalogProduct | null = null;
   relatedProducts: CustomerCatalogProduct[] = [];
+  wishlistedProductIds = new Set<string>();
   loading = false;
   successMessage = '';
+  isMobileViewport = false;
   selectedVariantId = '';
   selectedImage = '';
   quantity = 1;
   isAdding = false;
   isBuying = false;
+  isWishlisted = false;
+  wishlistBusyId = '';
+  isWishlistBusy = false;
   reviews: ProductReview[] = [];
   reviewStats: ProductReviewStat[] = [];
   isSubmittingReview = false;
   isEditingReview = false;
   reviewImageFiles: File[] = [];
   ratingOptions = [5, 4, 3, 2, 1];
+  reviewStarSlots = [1, 2, 3, 4, 5];
+  showReviewForm = false;
   reviewForm: ProductReviewForm = {
     productId: '',
     title: '',
@@ -338,22 +236,35 @@ export class ProductDetailComponent implements OnInit {
     rating: 5,
     reviewImages: []
   };
-  @ViewChild('reviewImagesInput') reviewImagesInput?: ElementRef<HTMLInputElement>;
+  readonly detailSkeletonTiles = Array.from({ length: 4 });
   @ViewChild('reviewFormSection') reviewFormSection?: ElementRef<HTMLElement>;
+  @ViewChild(ProductReviewFormComponent) reviewFormComponent?: ProductReviewFormComponent;
 
   constructor(
     private authService: AuthService,
     private cartService: CartService,
     private catalogService: CatalogService,
     private errorService: ErrorService,
+    private guestDataService: GuestDataService,
+    private wishlistService: WishlistService,
     private reviewService: ReviewService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.updateViewportState();
+
     this.authService.currentUser$.subscribe((user) => {
       this.user = user;
+      if (this.isCustomer()) {
+        this.loadWishlistState();
+      } else {
+        this.loadGuestWishlistState();
+      }
+      if (this.product?._id) {
+        this.syncWishlistState(this.product._id);
+      }
     });
 
     this.authService.getCurrentUser().subscribe({
@@ -400,26 +311,52 @@ export class ProductDetailComponent implements OnInit {
       catalogProducts: this.catalogService.getCatalogProducts(1, 1000),
       landingProducts: this.catalogService.getLandingPageProducts(),
       reviews: this.reviewService.getProductReviews(productId),
-      reviewStats: this.reviewService.getReviewStats(productId)
+      reviewStats: this.reviewService.getReviewStats(productId),
+      wishlist: this.isCustomer() ? this.wishlistService.getWishlist() : of(null)
     }).subscribe({
-      next: ({ productResponse, catalogProducts, landingProducts, reviews, reviewStats }) => {
+      next: ({ productResponse, catalogProducts, landingProducts, reviews, reviewStats, wishlist }) => {
         this.loading = false;
         this.product = productResponse?.data || null;
         this.reviews = reviews;
         this.reviewStats = reviewStats;
+        const catalogPayload = (catalogProducts?.data ?? {}) as
+          | CustomerCatalogProduct[]
+          | {
+              docs?: CustomerCatalogProduct[];
+            };
         this.relatedProducts = this.product
-          ? this.findSimilarProducts(this.product, catalogProducts?.data || [], landingProducts?.data || [])
+          ? this.findSimilarProducts(
+              this.product,
+              Array.isArray(catalogPayload)
+                ? catalogPayload
+                : Array.isArray(catalogPayload.docs)
+                  ? catalogPayload.docs
+                  : [],
+              Array.isArray(landingProducts?.data)
+                ? landingProducts.data
+                : []
+            )
           : [];
 
         const initialVariant = this.product?.displayVariant || this.product?.variants?.[0];
         this.selectedVariantId = initialVariant?._id || '';
         this.selectedImage = this.activeImage();
+        this.syncWishlistState(this.product?._id, wishlist);
         this.resetReviewForm();
       },
       error: (error) => {
         this.loading = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to load the product right now.',
+          'error'
+        );
       }
     });
+  }
+
+  @HostListener('window:resize')
+  handleResize(): void {
+    this.updateViewportState();
   }
 
   selectedVariant(): CustomerCatalogVariant | undefined {
@@ -432,16 +369,11 @@ export class ProductDetailComponent implements OnInit {
 
   onVariantChange(variantId: string): void {
     this.selectedVariantId = variantId;
-    this.selectedImage = this.activeImage();
+    this.selectedImage = resolveVariantImage(this.selectedVariant()) || this.product?.mainImages?.[0] || '';
   }
 
   galleryImages(): string[] {
-    const images = [
-      ...(this.product?.mainImages || []),
-      ...((this.product?.variants || []).map((variant) => variant.variantImage).filter(Boolean) as string[])
-    ];
-
-    return [...new Set(images)];
+    return buildGalleryImages(this.product);
   }
 
   productImage(product: CustomerCatalogProduct): string {
@@ -452,13 +384,16 @@ export class ProductDetailComponent implements OnInit {
     );
   }
 
+  openProduct(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    this.router.navigate(['/products', product._id]);
+  }
+
   activeImage(): string {
-    return (
-      this.selectedImage ||
-      this.selectedVariant()?.variantImage ||
-      this.product?.mainImages?.[0] ||
-      'https://via.placeholder.com/800x600?text=Product'
-    );
+    return buildActiveImage(this.selectedImage, this.selectedVariant(), this.product);
   }
 
   setQuantity(value: number | string): void {
@@ -476,12 +411,16 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
+    if (variant.isAvailable === false || Number(variant.productStock || 0) <= 0) {
+      this.errorService.showToast('This variant is out of stock.', 'error');
+      return;
+    }
+
     if (!this.isCustomer()) {
-      this.router.navigate(['/login'], {
-        queryParams: {
-          redirectTo: this.router.url
-        }
-      });
+      this.guestDataService.addToGuestCart(this.product._id, variant._id, this.quantity);
+      this.successMessage = 'Item saved to this device. Sign in to sync your cart.';
+      this.quantity = 1;
+      this.errorService.showToast(this.successMessage, 'success');
       return;
     }
 
@@ -496,6 +435,10 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (error) => {
         this.isAdding = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to add this item to the cart right now.',
+          'error'
+        );
       }
     });
   }
@@ -504,6 +447,11 @@ export class ProductDetailComponent implements OnInit {
     const variant = this.selectedVariant();
     if (!this.product?._id || !variant?._id) {
       this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (variant.isAvailable === false || Number(variant.productStock || 0) <= 0) {
+      this.errorService.showToast('This variant is out of stock.', 'error');
       return;
     }
 
@@ -525,35 +473,91 @@ export class ProductDetailComponent implements OnInit {
         this.quantity = 1;
         this.router.navigate(['/checkout']);
       },
-      error: () => {
+      error: (error) => {
         this.isBuying = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
       }
     });
   }
 
-  variantLabel(variant?: CustomerCatalogVariant): string {
-    if (!variant) {
-      return 'Variant';
+  toggleWishlist(): void {
+    if (!this.product?._id) {
+      return;
     }
 
-    const attributes = this.attributeEntries(variant.attributes).map(
-      (entry) => `${entry.key}: ${entry.value}`
-    );
+    if (!this.isCustomer()) {
+      this.toggleGuestWishlist(this.product);
+      return;
+    }
 
-    return attributes.length ? attributes.join(' | ') : variant.sku || 'Variant';
+    this.isWishlistBusy = true;
+    this.wishlistService.toggleWishlist(this.product._id).subscribe({
+      next: (wishlist) => {
+        this.isWishlistBusy = false;
+        this.syncWishlistState(this.product?._id, wishlist);
+        this.errorService.showToast(
+          this.isWishlisted ? 'Saved to wishlist.' : 'Removed from wishlist.',
+          'success'
+        );
+      },
+      error: (error) => {
+        this.isWishlistBusy = false;
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to update wishlist right now.',
+          'error'
+        );
+      }
+    });
+  }
+
+  toggleRelatedWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.toggleGuestWishlist(product);
+      return;
+    }
+
+    if (this.wishlistBusyId === product._id) {
+      return;
+    }
+
+    this.wishlistBusyId = product._id;
+    this.wishlistService.toggleWishlist(product._id).subscribe({
+      next: (wishlist) => {
+        this.wishlistBusyId = '';
+        this.syncWishlistSet(wishlist?.products || []);
+        this.errorService.showToast(
+          this.isWishlistedProduct(product) ? 'Saved to wishlist.' : 'Removed from wishlist.',
+          'success'
+        );
+      },
+      error: () => {
+        this.wishlistBusyId = '';
+        this.errorService.showToast('Unable to update wishlist right now.', 'error');
+      }
+    });
+  }
+
+  isWishlistedProduct(product: CustomerCatalogProduct): boolean {
+    return !!product?._id && this.wishlistedProductIds.has(product._id);
+  }
+
+  variantLabel(variant?: CustomerCatalogVariant): string {
+    return buildVariantLabel(variant, this.attributeEntries.bind(this));
   }
 
   variantLabels(): Record<string, string> {
-    return (this.product?.variants || []).reduce((labels, variant) => {
-      if (variant._id) {
-        labels[variant._id] = `${this.variantLabel(variant)} - ${this.formatCurrency(variant.finalPrice || variant.productPrice || 0)}`;
-      }
-      return labels;
-    }, {} as Record<string, string>);
+    return buildVariantLabels(this.product?.variants, this.variantLabel.bind(this), this.formatCurrency.bind(this));
   }
 
   attributeEntries(attributes?: Record<string, string>): Array<{ key: string; value: string }> {
-    return Object.entries(attributes || {}).map(([key, value]) => ({ key, value }));
+    return buildAttributeEntries(attributes);
   }
 
   formatCurrency(amount: number): string {
@@ -565,27 +569,51 @@ export class ProductDetailComponent implements OnInit {
   }
 
   originalPriceLabel(): string {
-    const variant = this.selectedVariant();
-    if (!this.product) {
-      return '';
-    }
-
-    const original = variant?.productPrice || this.product.basePrice || 0;
-    const discounted = variant?.finalPrice || this.product.basePrice || 0;
-
-    if (!original || original === discounted) {
-      return '';
-    }
-
-    return this.formatCurrency(original);
+    return buildOriginalPriceLabel(this.product, this.selectedVariant(), this.formatCurrency.bind(this));
   }
 
   discountedPriceLabel(): string {
-    if (!this.product) {
-      return '';
+    return buildDiscountedPriceLabel(this.product, this.selectedVariant(), this.formatCurrency.bind(this));
+  }
+
+  offerBadgeText(): string {
+    const selectedVariant = this.selectedVariant();
+    const offerText = this.getTextField(selectedVariant, ['offerText', 'offerDescription', 'offer']) ||
+      this.getTextField(this.product, ['offerText', 'offerDescription', 'offer']);
+
+    if (offerText) {
+      return offerText;
     }
 
-    return this.formatCurrency(this.selectedVariant()?.finalPrice || this.product.basePrice || 0);
+    const originalPrice = this.getNumericField(selectedVariant, ['productPrice', 'mrp', 'originalPrice', 'price']) ??
+      this.getNumericField(this.product, ['basePrice', 'mrp', 'originalPrice', 'price']);
+    const discountedPrice = this.getNumericField(selectedVariant, ['finalPrice', 'salePrice', 'discountedPrice', 'price']) ??
+      this.getNumericField(this.product, ['basePrice', 'salePrice', 'discountedPrice', 'price']);
+    const discountPercentage =
+      this.getNumericField(selectedVariant, ['discountPercentage']) ??
+      this.getNumericField(this.product, ['discountPercentage']);
+
+    if (typeof originalPrice === 'number' && typeof discountedPrice === 'number' && originalPrice > discountedPrice) {
+      const savedAmount = Math.max(0, Math.round(originalPrice - discountedPrice));
+      const percent = Math.max(0, Math.round(((originalPrice - discountedPrice) / originalPrice) * 100));
+      const parts: string[] = [];
+
+      if (percent > 0) {
+        parts.push(`${percent}% OFF`);
+      }
+
+      if (savedAmount > 0) {
+        parts.push(`Save ₹${savedAmount}`);
+      }
+
+      return parts.length ? parts.join(' · ') : 'Limited time offer';
+    }
+
+    if (typeof discountPercentage === 'number' && discountPercentage > 0) {
+      return `${Math.round(discountPercentage)}% OFF`;
+    }
+
+    return '';
   }
 
   get existingReview(): ProductReview | null {
@@ -596,41 +624,81 @@ export class ProductDetailComponent implements OnInit {
     return this.reviews.find((review) => review.user?._id === this.user._id) || null;
   }
 
-  reviewAuthor(review: ProductReview): string {
-    return review.user?.username || review.user?.email || 'Customer';
-  }
-
-  reviewCountForStar(star: number): number {
-    return this.reviewStats.find((entry) => entry._id === star)?.count || 0;
+  reviewTotalCount(): number {
+    return getReviewTotalCount(this.reviewStats, this.reviews, this.product);
   }
 
   ratingBreakdown(): Array<{ star: number; count: number; percentage: number }> {
-    const total = this.reviews.length || 1;
+    return buildRatingBreakdown(this.reviewStats, this.reviews, this.product);
+  }
 
-    return [5, 4, 3, 2, 1].map((star) => {
-      const count = this.reviewCountForStar(star);
-      return {
-        star,
-        count,
-        percentage: Math.round((count / total) * 100)
-      };
+  scrollToReviewForm(): void {
+    this.showReviewForm = true;
+    setTimeout(() => {
+      this.reviewFormSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
-  formatRating(value: number): string {
-    return Number(value || 0).toFixed(1);
+  toggleReviewForm(): void {
+    this.showReviewForm = !this.showReviewForm;
+    if (this.showReviewForm) {
+      setTimeout(() => {
+        this.reviewFormSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
   }
 
-  formatDate(value?: string): string {
-    if (!value) {
-      return 'Recently';
+  handleRelatedProductCardAddToCart(event: ProductCardVariantActionEvent): void {
+    if (!event?.product?._id || !event?.variant?._id) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
     }
 
-    return new Intl.DateTimeFormat('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    }).format(new Date(value));
+    if (!this.isCustomer()) {
+      this.guestDataService.addToGuestCart(event.product._id, event.variant._id, 1);
+      this.errorService.showToast('Item saved to this device. Sign in to sync your cart.', 'success');
+      return;
+    }
+
+    this.cartService.addToCart(event.product._id, event.variant._id, 1).subscribe({
+      next: () => {
+        this.errorService.showToast('Item added to cart.', 'success');
+      },
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to add this item to the cart right now.',
+          'error'
+        );
+      }
+    });
+  }
+
+  handleRelatedProductCardBuyNow(event: ProductCardVariantActionEvent): void {
+    if (!event?.product?._id || !event?.variant?._id) {
+      this.errorService.showToast('Please choose a valid variant.', 'error');
+      return;
+    }
+
+    if (!this.isCustomer()) {
+      this.router.navigate(['/login'], {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      });
+      return;
+    }
+
+    this.cartService.addToCart(event.product._id, event.variant._id, 1).subscribe({
+      next: () => {
+        this.router.navigate(['/checkout']);
+      },
+      error: (error) => {
+        this.errorService.showToast(
+          this.errorService.extractErrorMessage(error) || 'Unable to start checkout right now.',
+          'error'
+        );
+      }
+    });
   }
 
   submitReview(): void {
@@ -674,31 +742,25 @@ export class ProductDetailComponent implements OnInit {
         this.isSubmittingReview = false;
         this.successMessage = this.isEditingReview ? 'Review updated successfully.' : 'Review submitted successfully.';
         this.resetReviewForm();
+        this.showReviewForm = false;
         this.errorService.showToast('Review submitted and form cleared.', 'success');
         if (this.product?._id) {
           this.loadProduct(this.product._id, true);
         }
       },
-      error: (error) => {
+      error: () => {
         this.isSubmittingReview = false;
+        this.errorService.showToast('Unable to save your review right now.', 'error');
       }
     });
   }
 
-  trackByReview(index: number, review: ProductReview): string {
-    return review._id || String(index);
-  }
-
-  isOwnReview(review: ProductReview): boolean {
-    return !!this.user?._id && review.user?._id === this.user._id;
-  }
-
-  trackByReviewFile(_: number, file: File): string {
-    return `${file.name}-${file.size}-${file.lastModified}`;
-  }
-
   trackByProductId(_: number, product: CustomerCatalogProduct): string {
     return product._id;
+  }
+
+  visibleRelatedProducts(): CustomerCatalogProduct[] {
+    return this.isMobileViewport ? this.relatedProducts.slice(0, 3) : this.relatedProducts;
   }
 
   onReviewImagesSelected(event: Event): void {
@@ -707,9 +769,14 @@ export class ProductDetailComponent implements OnInit {
     this.reviewImageFiles = files.slice(0, 5);
   }
 
+  private updateViewportState(): void {
+    this.isMobileViewport = typeof window !== 'undefined' ? window.innerWidth < 640 : false;
+  }
+
   editReview(review: ProductReview): void {
     this.isEditingReview = true;
     this.successMessage = '';
+    this.showReviewForm = true;
     this.reviewForm = {
       productId: this.product?._id || '',
       title: review.title || '',
@@ -718,9 +785,7 @@ export class ProductDetailComponent implements OnInit {
       reviewImages: review.reviewImages || []
     };
     this.reviewImageFiles = [];
-    if (this.reviewImagesInput?.nativeElement) {
-      this.reviewImagesInput.nativeElement.value = '';
-    }
+    this.reviewFormComponent?.clearReviewImagesInput();
 
     setTimeout(() => {
       this.reviewFormSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -756,9 +821,81 @@ export class ProductDetailComponent implements OnInit {
       reviewImages: []
     };
     this.reviewImageFiles = [];
-    if (this.reviewImagesInput?.nativeElement) {
-      this.reviewImagesInput.nativeElement.value = '';
+    this.reviewFormComponent?.clearReviewImagesInput();
+  }
+
+  private syncWishlistState(productId?: string, wishlist?: { products?: CustomerWishlistProduct[] } | null): void {
+    if (!productId || !this.isCustomer()) {
+      this.syncWishlistSet(this.guestDataService.getGuestWishlist());
+      this.isWishlisted = this.wishlistedProductIds.has(productId || '');
+      return;
     }
+
+    if (wishlist !== undefined && wishlist !== null) {
+      const wishlistProducts = Array.isArray(wishlist.products) ? wishlist.products : [];
+      this.syncWishlistSet(wishlistProducts);
+      this.isWishlisted = this.wishlistedProductIds.has(productId);
+      return;
+    }
+
+    this.wishlistService.getWishlist().subscribe({
+      next: (response) => {
+        const wishlistProducts = Array.isArray(response?.products) ? response.products : [];
+        this.syncWishlistSet(wishlistProducts);
+        this.isWishlisted = this.wishlistedProductIds.has(productId);
+      },
+      error: () => {
+        this.isWishlisted = false;
+      }
+    });
+  }
+
+  private loadWishlistState(): void {
+    this.wishlistService.getWishlist().subscribe({
+      next: (wishlist) => {
+        this.syncWishlistSet(wishlist?.products || []);
+        if (this.product?._id) {
+          this.isWishlisted = this.wishlistedProductIds.has(this.product._id);
+        }
+      },
+      error: () => {
+        this.wishlistedProductIds = new Set<string>();
+        this.isWishlisted = false;
+      }
+    });
+  }
+
+  private loadGuestWishlistState(): void {
+    this.syncWishlistSet(this.guestDataService.getGuestWishlist());
+    if (this.product?._id) {
+      this.isWishlisted = this.wishlistedProductIds.has(this.product._id);
+    }
+  }
+
+  private syncWishlistSet(products: Array<{ _id?: string; productId?: string }>): void {
+    this.wishlistedProductIds = new Set(
+      (products || [])
+        .map((item) => item?._id || item?.productId)
+        .filter((id): id is string => !!id)
+    );
+  }
+
+  private toggleGuestWishlist(product: CustomerCatalogProduct): void {
+    if (!product?._id) {
+      return;
+    }
+
+    const isCurrentlyWishlisted = this.wishlistedProductIds.has(product._id);
+
+    if (isCurrentlyWishlisted) {
+      this.guestDataService.removeFromGuestWishlist(product._id);
+      this.errorService.showToast('Removed from guest wishlist.', 'success');
+    } else {
+      this.guestDataService.addToGuestWishlist(product);
+      this.errorService.showToast('Saved to guest wishlist.', 'success');
+    }
+
+    this.loadGuestWishlistState();
   }
 
   private findSimilarProducts(
@@ -766,75 +903,50 @@ export class ProductDetailComponent implements OnInit {
     catalogProducts: CustomerCatalogProduct[],
     groups: CustomerLandingCategoryGroup[]
   ): CustomerCatalogProduct[] {
-    const landingProducts = this.flattenLandingProducts(groups);
-    const combinedProducts = [...catalogProducts, ...landingProducts];
-    const uniqueProducts = Array.from(
-      new Map(
-        combinedProducts
-          .filter((product) => product?._id && product._id !== currentProduct._id)
-          .map((product) => [product._id, product] as const)
-      ).values()
-    );
-    const allProducts = uniqueProducts;
-    const currentCategoryKey = this.normalizeKey(
-      currentProduct.catalogCategorySlug || currentProduct.categoryDetails?.slug || currentProduct.categoryDetails?.name || ''
-    );
-    const currentBrandKey = this.normalizeKey(currentProduct.brand || '');
-
-    const scoredProducts = allProducts
-      .map((product) => {
-        let score = 0;
-        const productCategoryKey = this.normalizeKey(
-          product.catalogCategorySlug || product.categoryDetails?.slug || product.categoryDetails?.name || ''
-        );
-        const productBrandKey = this.normalizeKey(product.brand || '');
-
-        if (currentCategoryKey && productCategoryKey === currentCategoryKey) {
-          score += 3;
-        }
-
-        if (currentBrandKey && productBrandKey === currentBrandKey) {
-          score += 2;
-        }
-
-        if (
-          currentProduct.categoryDetails?.name &&
-          product.categoryDetails?.name &&
-          this.normalizeKey(product.categoryDetails.name) === this.normalizeKey(currentProduct.categoryDetails.name)
-        ) {
-          score += 1;
-        }
-
-        return { product, score };
-      })
-      .filter(({ score }) => score > 0)
-      .sort((a, b) => b.score - a.score)
-      .map(({ product }) => product);
-
-    const fallbackProducts = allProducts.slice(0, 4);
-    const selectedProducts = scoredProducts.length ? scoredProducts : fallbackProducts;
-
-    return selectedProducts.slice(0, 4);
+    return buildSimilarProducts(currentProduct, catalogProducts, groups);
   }
 
-  private flattenLandingProducts(groups: CustomerLandingCategoryGroup[]): CustomerCatalogProduct[] {
-    const products: CustomerCatalogProduct[] = [];
+  private getTextField(
+    source: CustomerCatalogVariant | CustomerCatalogProduct | null | undefined,
+    keys: string[]
+  ): string {
+    if (!source || typeof source !== 'object') {
+      return '';
+    }
 
-    groups.forEach((group) => {
-      (group.products || []).forEach((product) => {
-        products.push({
-          ...product,
-          catalogCategorySlug: group.categorySlug || product.categoryDetails?.slug || '',
-          catalogCategoryName: group.categoryName || product.categoryDetails?.name || ''
-        });
-      });
-    });
+    const record = source as Record<string, unknown>;
+    for (const key of keys) {
+      const value = record[key];
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+    }
 
-    return products;
+    return '';
   }
 
-  private normalizeKey(value: string): string {
-    return String(value || '').trim().toLowerCase();
+  private getNumericField(
+    source: CustomerCatalogVariant | CustomerCatalogProduct | null | undefined,
+    keys: string[]
+  ): number | null {
+    if (!source || typeof source !== 'object') {
+      return null;
+    }
+
+    const record = source as Record<string, unknown>;
+    for (const key of keys) {
+      const value = record[key];
+      if (value === null || value === undefined || value === '') {
+        continue;
+      }
+
+      const numeric = Number(value);
+      if (!Number.isNaN(numeric)) {
+        return numeric;
+      }
+    }
+
+    return null;
   }
 }
 
