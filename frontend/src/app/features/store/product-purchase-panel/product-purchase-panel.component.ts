@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/models/customer.models';
+import {
+  buildVariantAttributeGroups,
+  getVariantAttributeValue,
+  findVariantByAttributes,
+  VariantAttributeGroup
+} from '../utils/product-detail-variants.helpers';
 
 @Component({
   selector: 'app-product-purchase-panel',
@@ -59,15 +65,38 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
           {{ product?.productDescription || 'No description available for this product.' }}
         </p>
 
-      <div class="mt-6 w-full min-w-0 space-y-2" *ngIf="showVariantSelector">
-          <div class="flex items-center justify-between gap-3">
-            <label class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 md:text-[11px]">
-              Choose Variant
-            </label>
-            <span class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              {{ variants.length }} options
-            </span>
+      <div class="mt-6 w-full min-w-0 space-y-3" *ngIf="showVariantSelector">
+        
+        <ng-container *ngIf="usesGroupedVariantSelector; else flatVariantSelector">
+          <div class="space-y-4">
+            <div *ngFor="let group of attributeGroups; let groupIndex = index; trackBy: trackByGroup" class="space-y-2">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 md:text-[11px]">
+                  {{ group.label }}
+                </span>
+                <span class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  {{ visibleAttributeValues(groupIndex).length }} options
+                </span>
+              </div>
+
+              <div class="flex max-w-full min-w-0 flex-wrap gap-1.5">
+                <button
+                  *ngFor="let value of visibleAttributeValues(groupIndex); trackBy: trackByAttributeValue"
+                  type="button"
+                  class="shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300"
+                  [ngClass]="isAttributeSelected(group.key, value)
+                    ? 'border-[#7a4f35] bg-[#7a4f35] text-white shadow-sm'
+                    : 'border-orange-200 bg-white text-slate-600 hover:border-[#7a4f35] hover:text-[#7a4f35]'"
+                  (click)="selectAttribute(groupIndex, group.key, value)"
+                >
+                  {{ value }}
+                </button>
+              </div>
+            </div>
           </div>
+        </ng-container>
+
+        <ng-template #flatVariantSelector>
           <div class="flex max-w-full min-w-0 gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <button
               *ngFor="let variant of variants; let index = index; trackBy: trackByVariant"
@@ -82,7 +111,8 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
               {{ getVariantLabel(variant, index + 1) }}
             </button>
           </div>
-        </div>
+        </ng-template>
+      </div>
 
         <div class="mt-5 w-full min-w-0 rounded-2xl bg-slate-50 p-4 md:mt-6">
           <div class="flex flex-wrap gap-2">
@@ -97,7 +127,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
           <div class="mt-4 grid min-w-0 gap-3 text-[13px] font-semibold text-slate-600 sm:grid-cols-2 md:text-sm">
             <div>
               SKU:
-              <span class="text-slate-900">{{ selectedVariant?.sku || 'N/A' }}</span>
+              <span class="text-slate-900">{{ currentSelectedVariant?.sku || 'N/A' }}</span>
             </div>
             <div>
               Stock:
@@ -152,7 +182,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             <button
               type="button"
               class="btn-secondary w-full min-w-0 justify-center py-3.5 md:flex-1 md:w-auto"
-              [disabled]="!selectedVariant?._id || selectedVariantStock <= 0 || isBuying"
+              [disabled]="!currentSelectedVariant?._id || selectedVariantStock <= 0 || isBuying"
               (click)="buyNow.emit()"
             >
               {{ isBuying ? 'Processing...' : 'Buy Now' }}
@@ -161,7 +191,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
             <button
               type="button"
               class="btn-primary w-full min-w-0 justify-center py-3.5 md:flex-1 md:w-auto"
-              [disabled]="!selectedVariant?._id || selectedVariantStock <= 0 || isAdding"
+              [disabled]="!currentSelectedVariant?._id || selectedVariantStock <= 0 || isAdding"
               (click)="addToCart.emit()"
             >
               {{ isAdding ? 'Adding...' : 'Add To Cart' }}
@@ -172,7 +202,7 @@ import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/mo
     </div>
   `
 })
-export class ProductPurchasePanelComponent {
+export class ProductPurchasePanelComponent implements OnChanges {
   @Input() product: CustomerCatalogProduct | null = null;
   @Input() variants: CustomerCatalogVariant[] = [];
   @Input() selectedVariant?: CustomerCatalogVariant;
@@ -194,27 +224,53 @@ export class ProductPurchasePanelComponent {
   @Output() buyNow = new EventEmitter<void>();
   @Output() toggleWishlist = new EventEmitter<void>();
 
+  selectedAttributes: Record<string, string> = {};
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['variants'] || changes['selectedVariantId']) {
+      this.syncSelectedAttributes();
+    }
+  }
+
   get showVariantSelector(): boolean {
     return this.variants.length > 1;
   }
 
+  get attributeGroups(): VariantAttributeGroup[] {
+    return this.usesGroupedVariantSelector ? buildVariantAttributeGroups(this.variants) : [];
+  }
+
+  get usesGroupedVariantSelector(): boolean {
+    return this.variants.length > 1 && buildVariantAttributeGroups(this.variants).length > 0 && this.variants.every((variant) => this.hasStructuredAttributes(variant));
+  }
+
   get selectedVariantStock(): number {
-    return this.selectedVariant?.productStock || 0;
+    return this.currentSelectedVariant?.productStock || 0;
+  }
+
+  get currentSelectedVariant(): CustomerCatalogVariant | undefined {
+    const groupedSelection = this.usesGroupedVariantSelector
+      ? findVariantByAttributes(this.variants, this.selectedAttributes)
+      : undefined;
+
+    return groupedSelection ||
+      this.variants.find((variant) => String(variant?._id || '') === String(this.selectedVariantId || '')) ||
+      this.variants[0];
   }
 
   get offerBadgeText(): string {
-    const offerText = this.getTextField(this.selectedVariant, ['offerText', 'offerDescription', 'offer']) ||
+    const offerText = this.getTextField(this.currentSelectedVariant, ['offerText', 'offerDescription', 'offer']) ||
       this.getTextField(this.product, ['offerText', 'offerDescription', 'offer']);
     if (offerText) {
       return offerText;
     }
 
-    const originalPrice = this.getNumericField(this.selectedVariant, ['productPrice', 'mrp', 'originalPrice', 'price']) ??
+    const originalPrice = this.getNumericField(this.currentSelectedVariant, ['productPrice', 'mrp', 'originalPrice', 'price']) ??
       this.getNumericField(this.product, ['basePrice', 'mrp', 'originalPrice', 'price']);
-    const discountedPrice = this.getNumericField(this.selectedVariant, ['finalPrice', 'salePrice', 'discountedPrice', 'price']) ??
+    const discountedPrice = this.getNumericField(this.currentSelectedVariant, ['finalPrice', 'salePrice', 'discountedPrice', 'price']) ??
       this.getNumericField(this.product, ['basePrice', 'salePrice', 'discountedPrice', 'price']);
     const discountPercentage =
-      this.getNumericField(this.selectedVariant, ['discountPercentage']) ??
+      this.getNumericField(this.currentSelectedVariant, ['discountPercentage']) ??
       this.getNumericField(this.product, ['discountPercentage']);
 
     if (typeof originalPrice === 'number' && typeof discountedPrice === 'number' && originalPrice > discountedPrice) {
@@ -242,6 +298,66 @@ export class ProductPurchasePanelComponent {
 
   isVariantSelected(variant: CustomerCatalogVariant): boolean {
     return String(variant?._id || '') === String(this.selectedVariantId || '');
+  }
+
+  selectAttribute(groupIndex: number, key: string, value: string): void {
+    const nextSelection = { ...this.selectedAttributes, [key]: value };
+    this.attributeGroups
+      .slice(groupIndex + 1)
+      .forEach((group) => {
+        delete nextSelection[group.key];
+      });
+
+    this.selectedAttributes = nextSelection;
+    const matchingVariant = findVariantByAttributes(this.variants, nextSelection);
+    if (matchingVariant?._id) {
+      this.variantChanged.emit(matchingVariant._id);
+    }
+  }
+
+  isAttributeSelected(groupKey: string, value: string): boolean {
+    return String(this.selectedAttributes[groupKey] || '') === String(value || '');
+  }
+
+  visibleAttributeValues(groupIndex: number): string[] {
+    const group = this.attributeGroups[groupIndex];
+    if (!group) {
+      return [];
+    }
+
+    const selection: Record<string, string> = {};
+    this.attributeGroups.slice(0, groupIndex).forEach((priorGroup) => {
+      const selectedValue = this.selectedAttributes[priorGroup.key];
+      if (selectedValue) {
+        selection[priorGroup.key] = selectedValue;
+      }
+    });
+
+    const values = new Set<string>();
+    for (const variant of this.variants) {
+      const matchesPriorSelection = Object.entries(selection).every(([selectedKey, selectedValue]) => {
+        return getVariantAttributeValue(variant, selectedKey) === selectedValue;
+      });
+
+      if (!matchesPriorSelection) {
+        continue;
+      }
+
+      const rawValue = getVariantAttributeValue(variant, group.key);
+      if (rawValue) {
+        values.add(rawValue);
+      }
+    }
+
+    return Array.from(values);
+  }
+
+  trackByGroup(_: number, group: VariantAttributeGroup): string {
+    return group.key;
+  }
+
+  trackByAttributeValue(_: number, value: string): string {
+    return value;
   }
 
   trackByVariant(_: number, variant: CustomerCatalogVariant): string {
@@ -286,6 +402,27 @@ export class ProductPurchasePanelComponent {
     }
 
     return attributes.map((attribute) => attribute.value).join(' • ');
+  }
+
+  private syncSelectedAttributes(): void {
+    const selectedVariant = this.currentSelectedVariant;
+    const attributes = selectedVariant?.attributes && typeof selectedVariant.attributes === 'object'
+      ? selectedVariant.attributes
+      : {};
+
+    this.selectedAttributes = Object.entries(attributes)
+      .reduce((acc, [key, value]) => {
+        const normalizedKey = String(key || '').trim().toLowerCase();
+        const normalizedValue = String(value || '').trim();
+        if (normalizedKey && normalizedValue) {
+          acc[normalizedKey] = normalizedValue;
+        }
+        return acc;
+      }, {} as Record<string, string>);
+  }
+
+  private hasStructuredAttributes(variant: CustomerCatalogVariant | null | undefined): boolean {
+    return !!variant && Object.keys(variant.attributes || {}).length > 0;
   }
 
   private getTextField(

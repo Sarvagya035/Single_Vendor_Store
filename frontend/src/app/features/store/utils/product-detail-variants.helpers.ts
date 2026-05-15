@@ -1,7 +1,118 @@
 import { CustomerCatalogProduct, CustomerCatalogVariant } from '../../../core/models/customer.models';
 
+export interface VariantAttributeGroup {
+  key: string;
+  label: string;
+  values: string[];
+}
+
 export function buildAttributeEntries(attributes?: Record<string, string>): Array<{ key: string; value: string }> {
   return Object.entries(attributes || {}).map(([key, value]) => ({ key, value }));
+}
+
+export function buildVariantAttributeGroups(variants?: CustomerCatalogVariant[] | null): VariantAttributeGroup[] {
+  const orderedKeys: Array<{ key: string; label: string }> = [];
+  const valuesByKey = new Map<string, Set<string>>();
+
+  for (const variant of variants || []) {
+    const attributes = normalizeVariantAttributes(variant);
+    for (const [rawKey, rawValue] of attributes) {
+      const key = normalizeAttributeKey(rawKey);
+      const value = String(rawValue || '').trim();
+
+      if (!key || !value) {
+        continue;
+      }
+
+      if (!valuesByKey.has(key)) {
+        valuesByKey.set(key, new Set<string>());
+        orderedKeys.push({ key, label: String(rawKey || key).trim() || key });
+      }
+
+      valuesByKey.get(key)?.add(value);
+    }
+  }
+
+  return orderedKeys
+    .map((group) => ({
+      key: group.key,
+      label: group.label,
+      values: Array.from(valuesByKey.get(group.key) || [])
+    }))
+    .filter((group) => group.values.length > 0);
+}
+
+export function normalizeVariantAttributes(
+  variant?: CustomerCatalogVariant | null
+): Array<[string, string]> {
+  if (!variant || typeof variant !== 'object') {
+    return [];
+  }
+
+  const attributes = variant.attributes && typeof variant.attributes === 'object'
+    ? Object.entries(variant.attributes)
+    : [];
+
+  return attributes
+    .map(([key, value]) => [String(key || '').trim(), String(value || '').trim()] as [string, string])
+    .filter(([key, value]) => !!key && !!value);
+}
+
+export function variantMatchesAttributes(
+  variant?: CustomerCatalogVariant | null,
+  selectedAttributes?: Record<string, string> | null
+): boolean {
+  const normalizedSelected = normalizeSelection(selectedAttributes);
+  if (!variant || !Object.keys(normalizedSelected).length) {
+    return !!variant;
+  }
+
+  const variantAttributes = new Map(normalizeVariantAttributes(variant).map(([key, value]) => [normalizeAttributeKey(key), value]));
+  return Object.entries(normalizedSelected).every(([key, value]) => variantAttributes.get(key) === value);
+}
+
+export function findVariantByAttributes(
+  variants?: CustomerCatalogVariant[] | null,
+  selectedAttributes?: Record<string, string> | null
+): CustomerCatalogVariant | undefined {
+  const normalizedSelection = normalizeSelection(selectedAttributes);
+  if (!variants?.length) {
+    return undefined;
+  }
+
+  const exactMatch = variants.find((variant) => variantMatchesAttributes(variant, normalizedSelection));
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  const partialMatch = variants.find((variant) => {
+    if (!variant) {
+      return false;
+    }
+
+    const attributes = new Map(normalizeVariantAttributes(variant).map(([key, value]) => [normalizeAttributeKey(key), value]));
+    return Object.entries(normalizedSelection).every(([key, value]) => attributes.get(key) === value);
+  });
+
+  return partialMatch;
+}
+
+export function getVariantAttributeValue(
+  variant?: CustomerCatalogVariant | null,
+  key?: string
+): string {
+  if (!variant || !key) {
+    return '';
+  }
+
+  const normalizedKey = normalizeAttributeKey(key);
+  for (const [variantKey, variantValue] of normalizeVariantAttributes(variant)) {
+    if (normalizeAttributeKey(variantKey) === normalizedKey) {
+      return String(variantValue || '').trim();
+    }
+  }
+
+  return '';
 }
 
 export function buildGalleryImages(product?: CustomerCatalogProduct | null): string[] {
@@ -164,4 +275,20 @@ function firstImageFromArrayField(
 
   const first = value.find((item): item is string => typeof item === 'string' && item.trim().length > 0);
   return first?.trim() || '';
+}
+
+function normalizeAttributeKey(key: string): string {
+  return String(key || '').trim().toLowerCase();
+}
+
+function normalizeSelection(selectedAttributes?: Record<string, string> | null): Record<string, string> {
+  const normalized: Record<string, string> = {};
+  for (const [key, value] of Object.entries(selectedAttributes || {})) {
+    const normalizedKey = normalizeAttributeKey(key);
+    const normalizedValue = String(value || '').trim();
+    if (normalizedKey && normalizedValue) {
+      normalized[normalizedKey] = normalizedValue;
+    }
+  }
+  return normalized;
 }
